@@ -33,9 +33,7 @@ export const getAbiUsingExplorereUrl = async (
         }
         if (!URL) return
         const resABI = await axios.get(URL)
-        console.log("resABI")
         console.log(resABI.data.result[0].ContractName)
-        // return JSON.parse(resABI.data.result[0].ABI);
         return resABI.data.result[0]
     } catch (error) {
         console.log("GetABI-Error: ", error)

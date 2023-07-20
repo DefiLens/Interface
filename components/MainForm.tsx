@@ -60,7 +60,7 @@ export default function MainForm() {
     const [contractName, setContractName] = useState<any>()
     const [isThisAmount, setIsThisFieldAmount] = useState<any>()
 
-    const [tokenIn, setTokenIn] = useState<any>()
+    const [tokenIn, setTokenIn] = useState<any>(polygonUSDTAddress)
     const [tokenInDecimals, setTokenInDecimals] = useState<any>(6)
     const [fromNetwork, setFromNetwork] = useState<any>("polygon")
     const [toNetwork, setToNetwork] = useState<any>("avalanche")
@@ -69,19 +69,124 @@ export default function MainForm() {
     const [gasUsed, setGasUsed] = useState<any>()
     const [inputData, setInputData] = useState<any>()
 
+    useEffect(() => {
+        setTokenIn(polygonUSDTAddress)
+        setTokenInDecimals(6)
+        setAmountIn('')
+    }, [fromNetwork])
+
+    useEffect(() => {
+        setContractAddress("")
+        resetField()
+    }, [toNetwork])
 
     useEffect(() => {
         if (contractAddress) {
+            resetField()
             generateAbis()
         }
-    }, [contractAddress])
+    }, [contractAddress, smartAccount])
+
+    const resetField = async () => {
+        setFunctionArray([])
+        setParams("")
+        setCurrentFunc("")
+        setCurrentFuncIndex(0)
+        setIsThisFieldAmount(-1)
+    }
+
+    const onChangeFromNetwork = async (_fromNetwork: any) => {
+        setFromNetwork(_fromNetwork)
+    }
+
+    const onChangeToNetwork = async (_toNetwork: any) => {
+        setToNetwork(_toNetwork)
+    }
+
+    const handleContractAddress = async (_contractAddress) => {
+        if (!smartAccount) {
+            alert('You need to biconomy login');
+            return;
+        }
+        setContractAddress(_contractAddress)
+    }
+
+    // for e.g usdt -> usdc
+    const onChangeTokenIn = async (tokenIn: any) => {
+        if (tokenIn == "usdt") {
+            setTokenIn(polygonUSDTAddress)
+            setTokenInDecimals(6)
+        } else if (tokenIn == "usdc") {
+            setTokenIn(polygonUSDCAddress)
+            setTokenInDecimals(6)
+        } else if (tokenIn == "dai") {
+            setTokenIn(polygonDAIAddress)
+            setTokenInDecimals(18)
+        }
+        setAmountIn('')
+    }
+
+    // for e.g 0 -> 1000
+    const handleAmountIn = async (_amountIn) => {
+        if (!smartAccount) {
+            alert('You need to biconomy login');
+            return;
+        }
+        if (_amountIn) {
+            let amountInByDecimals = bg(_amountIn)
+            amountInByDecimals = amountInByDecimals.multipliedBy(
+                bg(10).pow(tokenInDecimals)
+            )
+            if (amountInByDecimals.eq(0)) {
+                setAmountIn(_amountIn)
+            } else {
+                setAmountIn(amountInByDecimals.toString())
+            }
+        } else {
+            setAmountIn('')
+        }
+    }
+
+    const onChangeFunctions = async (funcIndex: any) => {
+        console.log("funcIndex: ", funcIndex)
+        setParams("")
+        setCurrentFunc(funcArray[funcIndex].name)
+        setCurrentFuncIndex(funcIndex)
+        setIsThisFieldAmount(-1)
+    }
+
+    const onChangeInput = async (
+        funcIndex: any,
+        inputIndex: any,
+        inputValue: any
+    ) => {
+        setCurrentFunc(funcArray[funcIndex].name)
+        let _params: any = []
+
+        if (params[funcIndex] != undefined) {
+            _params = [...params[funcIndex]]
+            _params[inputIndex] = inputValue
+        } else {
+            _params[inputIndex] = inputValue
+        }
+        let _func = [...params]
+        _func[funcIndex] = _params
+        setParams(_func)
+    }
+
+    function isThisFieldAmount(index) {
+        if (index >= 0) {
+            setIsThisFieldAmount(index)
+        } else {
+            alert("Somethig gets wrong")
+        }
+    }
 
     const generateAbis = async () => {
         try {
             if (!contractAddress) return
             if (!smartAccount) return
             if (!toNetwork) return
-            setFunctionArray([])
             const provider = smartAccount.provider
 
             let contractData = await getAbiUsingExplorereUrl(
@@ -128,38 +233,14 @@ export default function MainForm() {
         }
     }
 
-    const onChangeFunctions = async (funcIndex: any) => {
-        console.log("funcIndex: ", funcIndex)
-        setIsThisFieldAmount(-1)
-        setCurrentFunc(funcArray[funcIndex].name)
-        setCurrentFuncIndex(funcIndex)
-        setParams("")
-    }
-
-    const onChangeInput = async (
-        funcIndex: any,
-        inputIndex: any,
-        inputValue: any
-    ) => {
-        // console.log('inputIndex', inputIndex, params[funcIndex], currentAbi[funcIndex].name);
-        setCurrentFunc(funcArray[funcIndex].name)
-        let _params: any = []
-
-        if (params[funcIndex] != undefined) {
-            _params = [...params[funcIndex]]
-            _params[inputIndex] = inputValue
-        } else {
-            _params[inputIndex] = inputValue
-        }
-        let _func = [...params]
-        _func[funcIndex] = _params
-        setParams(_func)
-    }
-
     const simulate = async (funcIndex: any) => {
         setGasUsed(undefined)
         setInputData(undefined)
         setSimulation(undefined)
+        if (!smartAccount) {
+            alert('You need to login');
+            return;
+        }
         if (contractAddress == "") {
             alert("enter contractAddress field")
             return
@@ -172,14 +253,21 @@ export default function MainForm() {
             alert("select amount field")
             return
         }
+
         const abi = ethers.utils.defaultAbiCoder
         const provider = await ethers.getDefaultProvider()
         const signer = new ethers.VoidSigner(smartAccount.address, provider)
         const USDT = await new ethers.Contract(
-            polygonUSDTAddress,
+            tokenIn,
             IERC20,
-            signer
+            smartAccount.provider
         )
+
+        const balance = await USDT.balanceOf(smartAccount.address)
+        if (BigNumber.from(balance).lt(BigNumber.from(amountIn))) {
+            alert("You don't have enough balance");
+            return
+        }
 
         const approveData = await USDT.populateTransaction.approve(
             polygonStargateRouter,
@@ -262,6 +350,10 @@ export default function MainForm() {
     }
 
     const sendTx = async (funcIndex: any) => {
+        if (!smartAccount) {
+            alert('You need to login');
+            return;
+        }
         if (!simulation) {
             alert("simulation failed")
             return
@@ -282,10 +374,16 @@ export default function MainForm() {
         const provider = await ethers.getDefaultProvider()
         const signer = new ethers.VoidSigner(smartAccount.address, provider)
         const USDT = await new ethers.Contract(
-            polygonUSDTAddress,
+            tokenIn,
             IERC20,
-            signer
+            smartAccount.provider
         )
+        
+        const balance = await USDT.balanceOf(smartAccount.address)
+        if (BigNumber.from(balance).lt(BigNumber.from(amountIn))) {
+            alert("You don't have enough balance");
+            return
+        }
 
         const approveData = await USDT.populateTransaction.approve(
             polygonStargateRouter,
@@ -410,50 +508,6 @@ export default function MainForm() {
         console.log("Tx hash", txReciept?.transactionHash)
     }
 
-    function isThisFieldAmount(index) {
-        if (index >= 0) {
-            setIsThisFieldAmount(index)
-        } else {
-            alert("Somethig gets wrong")
-        }
-    }
-
-    const onChangeFromNetwork = async (_fromNetwork: any) => {
-        setFromNetwork(_fromNetwork)
-    }
-
-    const onChangeToNetwork = async (_toNetwork: any) => {
-        setToNetwork(_toNetwork)
-    }
-
-    const onChangeTokenIn = async (tokenIn: any) => {
-        if (tokenIn == "usdt") {
-            setTokenIn(polygonUSDTAddress)
-            setTokenInDecimals(6)
-        } else if (tokenIn == "usdc") {
-            setTokenIn(polygonUSDCAddress)
-            setTokenInDecimals(6)
-        } else if (tokenIn == "dai") {
-            setTokenIn(polygonDAIAddress)
-            setTokenInDecimals(18)
-        }
-    }
-
-    const handleContractAddress = async (_contractAddress) => {
-        setContractAddress(_contractAddress)
-    }
-
-    const handleAmountIn = async (_amountIn) => {
-        if (_amountIn) {
-            let amountInByDecimals = bg(_amountIn)
-            amountInByDecimals = amountInByDecimals.multipliedBy(
-                bg(10).pow(tokenInDecimals)
-            )
-            console.log("amountInByDecimals:", amountInByDecimals.toString())
-            setAmountIn(amountInByDecimals.toString())
-        }
-    }
-
     return (
         <>
             <div className={center}>
@@ -491,7 +545,7 @@ export default function MainForm() {
                                 marginBottom: "2%",
                             }}
                             placeholder="AmountIn"
-                            // value={amountIn}
+                            value={amountIn != 0 ? (bg(amountIn).dividedBy(bg(10).pow(tokenInDecimals))).toString() : amountIn}
                             onChange={(e: any) =>
                                 handleAmountIn(e.target.value)
                             }
