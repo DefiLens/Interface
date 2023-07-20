@@ -2,5 +2,5 @@
 
 setup .env from .env.example
 
-yarn
-yarn dev  
+yarn  
+yarn dev
