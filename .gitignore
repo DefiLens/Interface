@@ -1,0 +1,6 @@
+.env
+node_modules
+components/Form.tsx
+components/Form2.tsx
+.next
+contracts
