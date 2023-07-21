@@ -12,13 +12,9 @@ import IERC20 from "../abis/IERC20.json"
 import ChainPing from "../abis/ChainPing.json"
 import {css} from "@emotion/css"
 import {BigNumber as bg} from "bignumber.js"
-import { MAINNET_INFURA } from "../utils/keys"
+import {MAINNET_INFURA} from "../utils/keys"
 
 export default function MainForm() {
-    const fromChainId = 109
-    const toChainId = 106
-    const srcPoolId = 2
-    const destPoolId = 2
     const _functionType = 1
     const _nonce = 1
     const implementation_slot =
@@ -31,7 +27,8 @@ export default function MainForm() {
     const polygonUSDCAddress = "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174"
     const polygonDAIAddress = "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063"
 
-    const avaxUSDTAddress = "0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7"
+    const avaxUSDTAddress = "0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7" // avax mainnet usdt
+    // const avaxUSDTAddress = "0xdAC17F958D2ee523a2206206994597C13D831ec7" // eth mainnet usdt
     const avaxUSDCAddress = "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E"
 
     const polygonStargateRouter = "0x45A01E4e04F14f7A4a6702c74187c5F6222033cd"
@@ -48,9 +45,7 @@ export default function MainForm() {
         // isThisAmount, setIsThisFieldAmount,
         smartAccount,
     }: any = useAppStore((state) => state)
-    const [contractAddress, setContractAddress] = useState(
-        avaxUSDTAddress
-    )
+    const [contractAddress, setContractAddress] = useState()
     const [amountIn, setAmountIn] = useState<any>()
     const [funcArray, setFunctionArray] = useState<any[]>([])
     const [params, setParams] = useState<any>([[]])
@@ -62,23 +57,28 @@ export default function MainForm() {
 
     const [tokenIn, setTokenIn] = useState<any>(polygonUSDTAddress)
     const [tokenInDecimals, setTokenInDecimals] = useState<any>(6)
-    const [fromNetwork, setFromNetwork] = useState<any>("polygon")
-    const [toNetwork, setToNetwork] = useState<any>("avalanche")
+    // const [fromNetwork, setFromNetwork] = useState<any>(109)
+    // const [toNetwork, setToNetwork] = useState<any>(106)
 
     const [simulation, setSimulation] = useState<any>()
     const [gasUsed, setGasUsed] = useState<any>()
     const [inputData, setInputData] = useState<any>()
 
+    const [fromChainId, setFromChainId] = useState<any>("109")
+    const [toChainId, setToChainId] = useState<any>("106")
+    const [srcPoolId, setSrcPoolId] = useState<any>(2)
+    const [destPoolId, setDestPoolId] = useState<any>(2)
+
     useEffect(() => {
         setTokenIn(polygonUSDTAddress)
         setTokenInDecimals(6)
-        setAmountIn('')
-    }, [fromNetwork])
+        setAmountIn("")
+    }, [fromChainId])
 
     useEffect(() => {
         setContractAddress("")
         resetField()
-    }, [toNetwork])
+    }, [toChainId])
 
     useEffect(() => {
         if (contractAddress) {
@@ -93,44 +93,56 @@ export default function MainForm() {
         setCurrentFunc("")
         setCurrentFuncIndex(0)
         setIsThisFieldAmount(-1)
+
+        setGasUsed(undefined)
+        setInputData(undefined)
+        setSimulation(undefined)
     }
 
     const onChangeFromNetwork = async (_fromNetwork: any) => {
-        setFromNetwork(_fromNetwork)
+        // setFromNetwork(_fromNetwork)
+        setFromChainId(_fromNetwork)
     }
 
     const onChangeToNetwork = async (_toNetwork: any) => {
-        setToNetwork(_toNetwork)
+        // setToNetwork(_toNetwork)
+        setToChainId(_toNetwork)
     }
 
     const handleContractAddress = async (_contractAddress) => {
         if (!smartAccount) {
-            alert('You need to biconomy login');
-            return;
+            alert("You need to biconomy login")
+            return
         }
         setContractAddress(_contractAddress)
     }
 
     // for e.g usdt -> usdc
     const onChangeTokenIn = async (tokenIn: any) => {
-        if (tokenIn == "usdt") {
-            setTokenIn(polygonUSDTAddress)
-            setTokenInDecimals(6)
-        } else if (tokenIn == "usdc") {
+        if (tokenIn == "usdc") {
             setTokenIn(polygonUSDCAddress)
             setTokenInDecimals(6)
+            setSrcPoolId(1)
+            setDestPoolId(1)
+        } else if (tokenIn == "usdt") {
+            setTokenIn(polygonUSDTAddress)
+            setTokenInDecimals(6)
+            setSrcPoolId(2)
+            setDestPoolId(2)
         } else if (tokenIn == "dai") {
             setTokenIn(polygonDAIAddress)
             setTokenInDecimals(18)
+            setSrcPoolId(3)
+            setDestPoolId(3)
         }
-        setAmountIn('')
+        setAmountIn("")
     }
 
     // for e.g 0 -> 1000
     const handleAmountIn = async (_amountIn) => {
         if (!smartAccount) {
-            alert('You need to biconomy login');
-            return;
+            alert("You need to biconomy login")
+            return
         }
         if (_amountIn) {
             let amountInByDecimals = bg(_amountIn)
@@ -143,7 +155,7 @@ export default function MainForm() {
                 setAmountIn(amountInByDecimals.toString())
             }
         } else {
-            setAmountIn('')
+            setAmountIn("")
         }
     }
 
@@ -153,6 +165,10 @@ export default function MainForm() {
         setCurrentFunc(funcArray[funcIndex].name)
         setCurrentFuncIndex(funcIndex)
         setIsThisFieldAmount(-1)
+
+        setGasUsed(undefined)
+        setInputData(undefined)
+        setSimulation(undefined)
     }
 
     const onChangeInput = async (
@@ -174,7 +190,7 @@ export default function MainForm() {
         setParams(_func)
     }
 
-    function isThisFieldAmount(index) {
+    const isThisFieldAmount = async (index: any) => {
         if (index >= 0) {
             setIsThisFieldAmount(index)
         } else {
@@ -186,11 +202,11 @@ export default function MainForm() {
         try {
             if (!contractAddress) return
             if (!smartAccount) return
-            if (!toNetwork) return
+            if (!toChainId) return
             const provider = smartAccount.provider
 
             let contractData = await getAbiUsingExplorereUrl(
-                toNetwork,
+                toChainId,
                 contractAddress
             )
             let abi = JSON.parse(contractData.ABI)
@@ -209,7 +225,7 @@ export default function MainForm() {
                 implementation_contract_address =
                     "0x" + implementation_contract_address.slice(26, 66)
                 contractData = await getAbiUsingExplorereUrl(
-                    toNetwork,
+                    toChainId,
                     implementation_contract_address
                 )
                 abi = JSON.parse(contractData.ABI)
@@ -238,8 +254,8 @@ export default function MainForm() {
         setInputData(undefined)
         setSimulation(undefined)
         if (!smartAccount) {
-            alert('You need to login');
-            return;
+            alert("You need to login")
+            return
         }
         if (contractAddress == "") {
             alert("enter contractAddress field")
@@ -265,7 +281,7 @@ export default function MainForm() {
 
         const balance = await USDT.balanceOf(smartAccount.address)
         if (BigNumber.from(balance).lt(BigNumber.from(amountIn))) {
-            alert("You don't have enough balance");
+            alert("You don't have enough balance")
             return
         }
 
@@ -280,6 +296,9 @@ export default function MainForm() {
         const amountAfterSlippage = await calculateFees(
             userAddress,
             amountIn,
+            srcPoolId,
+            destPoolId,
+            toChainId,
             polygonStargateRouter,
             smartAccount.provider
         )
@@ -314,7 +333,7 @@ export default function MainForm() {
             fromChainId,
             srcAddress,
             _nonce,
-            avaxUSDTAddress,
+            avaxUSDCAddress,
             amountAfterSlippage,
             data,
         ]
@@ -332,11 +351,12 @@ export default function MainForm() {
         )
         const simulation = await batch(
             userAddress,
-            avaxUSDTAddress,
+            avaxUSDCAddress,
             toAddress,
             dummmyTranferToCheckData,
             encodedDataForChainPing,
-            true
+            true,
+            chooseChianId(toChainId)
         )
 
         setGasUsed(simulation.simulation.gas_used)
@@ -349,10 +369,26 @@ export default function MainForm() {
         console.log("simulation-gasused: ", simulation.simulation.gas_used)
     }
 
+    const chooseChianId = (stargateChainId: any) => {
+        let realChainId = "0"
+        if (stargateChainId == "106") {
+            realChainId = "43114"
+        } else if (stargateChainId == "109") {
+            realChainId = "137"
+        } else if (stargateChainId == "110") {
+            realChainId = "42161"
+        } else if (stargateChainId == "111") {
+            realChainId = "10"
+        } else if (stargateChainId == "101") {
+            realChainId = "1"
+        }
+        return realChainId
+    }
+
     const sendTx = async (funcIndex: any) => {
         if (!smartAccount) {
-            alert('You need to login');
-            return;
+            alert("You need to login")
+            return
         }
         if (!simulation) {
             alert("simulation failed")
@@ -378,10 +414,10 @@ export default function MainForm() {
             IERC20,
             smartAccount.provider
         )
-        
+
         const balance = await USDT.balanceOf(smartAccount.address)
         if (BigNumber.from(balance).lt(BigNumber.from(amountIn))) {
-            alert("You don't have enough balance");
+            alert("You don't have enough balance")
             return
         }
 
@@ -396,6 +432,9 @@ export default function MainForm() {
         const amountAfterSlippage = await calculateFees(
             userAddress,
             amountIn,
+            srcPoolId,
+            destPoolId,
+            toChainId,
             polygonStargateRouter,
             smartAccount.provider
         )
@@ -430,7 +469,7 @@ export default function MainForm() {
             fromChainId,
             srcAddress,
             _nonce,
-            avaxUSDTAddress,
+            avaxUSDCAddress,
             amountAfterSlippage,
             data,
         ]
@@ -448,11 +487,12 @@ export default function MainForm() {
         )
         const gasUsed = await batch(
             userAddress,
-            avaxUSDTAddress,
+            avaxUSDCAddress,
             toAddress,
             dummmyTranferToCheckData,
             encodedDataForChainPing,
-            false
+            false,
+            chooseChianId(toChainId)
         )
         console.log("gasUsed: ", gasUsed)
 
@@ -478,6 +518,8 @@ export default function MainForm() {
             lzParams
         )
         console.log("quoteData", quoteData.toString(), amountIn)
+
+        console.log("srcPoolId-destPoolId", srcPoolId, destPoolId)
 
         let stargateTx = await stargateRouter.populateTransaction.swap(
             toChainId,
@@ -521,7 +563,7 @@ export default function MainForm() {
                             onChangeFromNetwork(e.target.value)
                         }
                     >
-                        <option value="polygon">Polygon</option>
+                        <option value="109">Polygon</option>
                     </select>
                     <select
                         style={{width: "50%", padding: "10px"}}
@@ -529,9 +571,9 @@ export default function MainForm() {
                         id="networks"
                         onChange={(e: any) => onChangeTokenIn(e.target.value)}
                     >
-                        <option value="usdt">USDT</option>
+                        {/* <option value="usdt">USDT</option> */}
                         <option value="usdc">USDC</option>
-                        <option value="dai">DAI</option>
+                        {/* <option value="dai">DAI</option> */}
                     </select>
                     <div style={{marginTop: "2%"}}>
                         <h3>AmountIn USDT: </h3>
@@ -545,7 +587,15 @@ export default function MainForm() {
                                 marginBottom: "2%",
                             }}
                             placeholder="AmountIn"
-                            value={amountIn != 0 ? (bg(amountIn).dividedBy(bg(10).pow(tokenInDecimals))).toString() : amountIn}
+                            value={
+                                amountIn != 0
+                                    ? bg(amountIn)
+                                          .dividedBy(
+                                              bg(10).pow(tokenInDecimals)
+                                          )
+                                          .toString()
+                                    : amountIn
+                            }
                             onChange={(e: any) =>
                                 handleAmountIn(e.target.value)
                             }
@@ -561,11 +611,11 @@ export default function MainForm() {
                         id="networks"
                         onChange={(e: any) => onChangeToNetwork(e.target.value)}
                     >
-                        <option value="avalanche">Avalanche</option>
-                        <option value="polygon">Polygon</option>
-                        <option value="arbitrum">Arbitrum</option>
-                        <option value="optimism">Optimism</option>
-                        <option value="mainnet">Mainnet</option>
+                        <option value="106">Avalanche</option>
+                        {/* <option value="109">Polygon</option>
+                        <option value="110">Arbitrum</option>
+                        <option value="111">Optimism</option>
+                        <option value="101">Mainnet</option> */}
                     </select>
                     <div style={{marginTop: "2%"}}>
                         <h3>Contract Address: </h3>
@@ -609,10 +659,16 @@ export default function MainForm() {
 
                 <div className={box1}>
                     {currentFunc && (
-                        <h3 style={{marginTop: "10px"}}>
-                            {funcArray.length > 0 &&
-                                funcArray[currentFuncIndex].name}
-                        </h3>
+                        <>
+                            <h2 style={{marginTop: "10px"}}>
+                                Selected Method and its Params
+                            </h2>
+                            <h3 style={{marginTop: "10px"}}>
+                                MethodName:{" "}
+                                {funcArray.length > 0 &&
+                                    funcArray[currentFuncIndex].name}
+                            </h3>
+                        </>
                     )}
                     {currentFunc &&
                         currentFuncIndex >= 0 &&
@@ -681,10 +737,24 @@ export default function MainForm() {
                             )
                         )}
 
-                    {simulation && <h5>Simulation: {simulation ? 'Success' : 'failed'}</h5>}
-                    {simulation && <h5>MethodName: sgReceive</h5>}
-                    {simulation && <h5>Gas will use in gwei: {gasUsed}</h5>}
-                    {simulation && <h5 style={{width:"100%", wordWrap: "break-word", display:"inline-block"}}>Destination Calldata: {inputData}</h5>}
+                    {simulation != undefined && (
+                        <h5>Simulation: {simulation ? "Success" : "failed"}</h5>
+                    )}
+                    {simulation != undefined && <h5>MethodName: sgReceive</h5>}
+                    {simulation != undefined && (
+                        <h5>Gas will use in gwei: {gasUsed}</h5>
+                    )}
+                    {simulation != undefined && (
+                        <h5
+                            style={{
+                                width: "100%",
+                                wordWrap: "break-word",
+                                display: "inline-block",
+                            }}
+                        >
+                            Destination Calldata: {inputData}
+                        </h5>
+                    )}
 
                     {currentFunc && (
                         <div>

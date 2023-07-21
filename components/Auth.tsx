@@ -110,7 +110,7 @@ export default function Home() {
                 )}
                 {!!smartAccount && (
                     <li>
-                        <a>SCW WalletAddress: {smartAccount.address}</a>
+                        <a>Biconomy SCW Wallet: {smartAccount.address}</a>
                     </li>
                 )}
             </ul>

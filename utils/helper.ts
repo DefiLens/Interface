@@ -23,14 +23,16 @@ export const getAbiUsingExplorereUrl = async (
     toAddress: string
 ) => {
     try {
+        console.log("network: ", network)
         let URL
-        if (network === "mainnet") {
+        if (network === "101") {
             URL = `https://api.etherscan.io/api?module=contract&action=getsourcecode&address=${toAddress}&apikey=${ETHERSCAN_API_KEY}`
-        } else if (network === "polygon") {
+        } else if (network === "109") {
             URL = `https://api.polygonscan.com/api?module=contract&action=getsourcecode&address=${toAddress}&apikey=${POLYGON_ETHERSCAN_API_KEY}`
-        } else if (network === "avalanche") {
+        } else if (network === "106") {
             URL = `https://api.snowtrace.io/api?module=contract&action=getsourcecode&address=${toAddress}&apikey=${AVAX_ETHERSCAN_API_KEY}`
         }
+        console.log("URL:", URL)
         if (!URL) return
         const resABI = await axios.get(URL)
         console.log(resABI.data.result[0].ContractName)
@@ -78,6 +80,9 @@ export const checkIfContractIsProxy = async (
 export const calculateFees = async (
     userAddress: any,
     amountIn: any,
+    srcPoolId: any,
+    destPoolId: any,
+    toChainId: any,
     stargateRouter: any,
     provider: any
 ) => {
@@ -109,9 +114,9 @@ export const calculateFees = async (
             provider
         )
         const fees = await feeLibraryInstance.getFees(
-            2,
-            2,
-            106,
+            srcPoolId,
+            destPoolId,
+            toChainId,
             userAddress,
             amountIn
         )
@@ -132,9 +137,11 @@ export const batch = async (
     chainPingContract: any,
     txdata1: any,
     txdata2: any,
-    isSimulate: any
+    isSimulate: any,
+    destChainId: any
 ) => {
     console.time("Batch Simulation")
+    console.log("destChainId", destChainId)
 
     const simulate = (
         await axios.post(
@@ -148,7 +155,7 @@ export const batch = async (
                     txdata1,
                     txdata2
                 ).map((transaction) => ({
-                    network_id: "43114", // network to simulate on
+                    network_id: destChainId, // network to simulate on
                     save: true,
                     save_if_fails: true,
                     simulation_type: "full",
