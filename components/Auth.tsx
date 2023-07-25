@@ -91,7 +91,7 @@ export default function Home() {
         <div>
             <ul>
                 <li>
-                    <a href="#">ChainPing</a>
+                    <a href="#">DefiLens</a>
                 </li>
                 {!smartAccount && !loading && (
                     <li>

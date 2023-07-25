@@ -13,6 +13,7 @@ import ChainPing from "../abis/ChainPing.json"
 import {css} from "@emotion/css"
 import {BigNumber as bg} from "bignumber.js"
 import {MAINNET_INFURA} from "../utils/keys"
+import PimlicoLogin from "./pimlicoLogin"
 
 export default function MainForm() {
     const _functionType = 1
@@ -28,7 +29,6 @@ export default function MainForm() {
     const polygonDAIAddress = "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063"
 
     const avaxUSDTAddress = "0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7" // avax mainnet usdt
-    // const avaxUSDTAddress = "0xdAC17F958D2ee523a2206206994597C13D831ec7" // eth mainnet usdt
     const avaxUSDCAddress = "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E"
 
     const polygonStargateRouter = "0x45A01E4e04F14f7A4a6702c74187c5F6222033cd"
@@ -45,6 +45,11 @@ export default function MainForm() {
         // isThisAmount, setIsThisFieldAmount,
         smartAccount,
     }: any = useAppStore((state) => state)
+
+    const [fromChainId, setFromChainId] = useState<any>("109")
+    const [toChainId, setToChainId] = useState<any>("106")
+    const [srcPoolId, setSrcPoolId] = useState<any>(2)
+    const [destPoolId, setDestPoolId] = useState<any>(2)
     const [contractAddress, setContractAddress] = useState()
     const [amountIn, setAmountIn] = useState<any>()
     const [funcArray, setFunctionArray] = useState<any[]>([])
@@ -54,20 +59,11 @@ export default function MainForm() {
     const [currentFuncIndex, setCurrentFuncIndex] = useState<any>(0)
     const [contractName, setContractName] = useState<any>()
     const [isThisAmount, setIsThisFieldAmount] = useState<any>()
-
     const [tokenIn, setTokenIn] = useState<any>(polygonUSDTAddress)
     const [tokenInDecimals, setTokenInDecimals] = useState<any>(6)
-    // const [fromNetwork, setFromNetwork] = useState<any>(109)
-    // const [toNetwork, setToNetwork] = useState<any>(106)
-
     const [simulation, setSimulation] = useState<any>()
     const [gasUsed, setGasUsed] = useState<any>()
     const [inputData, setInputData] = useState<any>()
-
-    const [fromChainId, setFromChainId] = useState<any>("109")
-    const [toChainId, setToChainId] = useState<any>("106")
-    const [srcPoolId, setSrcPoolId] = useState<any>(2)
-    const [destPoolId, setDestPoolId] = useState<any>(2)
 
     useEffect(() => {
         setTokenIn(polygonUSDTAddress)
@@ -554,6 +550,7 @@ export default function MainForm() {
         <>
             <div className={center}>
                 <div className={box1}>
+                    {/* <PimlicoLogin/> */}
                     <h3>From Network: </h3>
                     <select
                         style={{width: "50%", padding: "10px"}}
@@ -780,7 +777,7 @@ export default function MainForm() {
 
 const center = css`
     padding: 60px 0;
-    border: 3px solid green;
+    border: 3px solid grey;
     text-align: center;
     height: auto;
 `

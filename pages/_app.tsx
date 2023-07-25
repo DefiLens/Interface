@@ -1,4 +1,5 @@
 import "../styles/globals.css"
+import 'react-tabs/style/react-tabs.css';
 import type {AppProps} from "next/app"
 // import $ from 'jquery';
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query"
