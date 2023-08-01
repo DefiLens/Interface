@@ -12,6 +12,7 @@ import {
     getAbiUsingExplorereUrl,
     batch,
     calculateFees,
+    fetchContractDetails,
 } from "../utils/helper"
 import {MAINNET_INFURA} from "../utils/keys"
 import {useAddress, useSigner} from "@thirdweb-dev/react"
@@ -44,8 +45,10 @@ export default function MainForm() {
         // contractName, setContractName,
         // isThisAmount, setIsThisFieldAmount,
         smartAccount,
-        setCurrentSigner, currentSigner,
-        setCurrentAddress, currentAddress,
+        setCurrentSigner,
+        currentSigner,
+        setCurrentAddress,
+        currentAddress,
     }: any = useAppStore((state) => state)
 
     const [fromChainId, setFromChainId] = useState<any>("109")
@@ -57,6 +60,7 @@ export default function MainForm() {
     const [funcArray, setFunctionArray] = useState<any[]>([])
     const [params, setParams] = useState<any>([[]])
     const [currentAbi, setAbi] = useState<any>()
+    const [amountFieldIndexes, setAmountFieldIndexes] = useState<any>()
     const [currentFunc, setCurrentFunc] = useState<any>()
     const [currentFuncIndex, setCurrentFuncIndex] = useState<any>(0)
     const [contractName, setContractName] = useState<any>()
@@ -181,7 +185,7 @@ export default function MainForm() {
         setParams("")
         setCurrentFunc(funcArray[funcIndex].name)
         setCurrentFuncIndex(funcIndex)
-        setIsThisFieldAmount(-1)
+        setIsThisFieldAmount(amountFieldIndexes[funcIndex])
 
         setGasUsed(undefined)
         setInputData(undefined)
@@ -220,43 +224,20 @@ export default function MainForm() {
             if (!contractAddress) return
             if (!currentSigner) return
             if (!toChainId) return
-            const provider = currentSigner.provider
-
-            let contractData = await getAbiUsingExplorereUrl(
-                toChainId,
-                contractAddress
-            )
-            let abi = JSON.parse(contractData.ABI)
-            const {isProxy, currentImplAddress}: any =
-                await checkIfContractIsProxy(abi, contractAddress, provider)
-            if (isProxy) {
-                console.log("isProxy", isProxy)
-                const avaxProvider = new ethers.providers.JsonRpcProvider(
-                    avaxRPCUrl
-                )
-                let implementation_contract_address =
-                    await avaxProvider.getStorageAt(
-                        contractAddress,
-                        implementation_slot
-                    )
-                implementation_contract_address =
-                    "0x" + implementation_contract_address.slice(26, 66)
-                contractData = await getAbiUsingExplorereUrl(
-                    toChainId,
-                    implementation_contract_address
-                )
-                abi = JSON.parse(contractData.ABI)
-            }
+            const provider = smartAccount.provider
+            let {abi, amountFieldIndex, contractName}: any =
+                await fetchContractDetails(provider, contractAddress, toChainId)
             console.log("abi: ", abi)
             setAbi(abi)
-            setContractName(contractData.ContractName)
+            setContractName(contractName)
+            setAmountFieldIndexes(amountFieldIndex)
 
             for (let i = 0; i < abi.length; i++) {
                 if (abi[i].stateMutability != "view") {
                     if (abi[i].type == "fallback") {
-                        // console.log('fallback');
+                        console.log("fallback")
                     } else if (abi[i].type != "event") {
-                        // console.log('abi[i]: ', abi[i].name);
+                        console.log("abi[i]: ", abi[i].name)
                         setFunctionArray((funcArray) => [...funcArray, abi[i]])
                     }
                 }
@@ -265,6 +246,63 @@ export default function MainForm() {
             console.log("callCrossChain-error", error)
         }
     }
+
+    // const generateAbis = async () => {
+    //     try {
+    //         if (!contractAddress) return
+    //         if (!smartAccount) return
+    //         if (!toChainId) return
+    //         const provider = smartAccount.provider
+
+    //         let contractData = await getAbiUsingExplorereUrl(
+    //             toChainId,
+    //             contractAddress
+    //         )
+    //         let abi = JSON.parse(contractData.ABI)
+    //         const {isProxy, currentImplAddress}: any =
+    //             await checkIfContractIsProxy(abi, contractAddress, provider)
+    //         if (isProxy) {
+    //             console.log("isProxy", isProxy)
+    //             const avaxProvider = new ethers.providers.JsonRpcProvider(
+    //                 avaxRPCUrl
+    //             )
+    //             let implementation_contract_address =
+    //                 await avaxProvider.getStorageAt(
+    //                     contractAddress,
+    //                     implementation_slot
+    //                 )
+    //             implementation_contract_address =
+    //                 "0x" + implementation_contract_address.slice(26, 66)
+    //             contractData = await getAbiUsingExplorereUrl(
+    //                 toChainId,
+    //                 implementation_contract_address
+    //             )
+    //             abi = JSON.parse(contractData.ABI)
+    //         }
+    //         // let {abi, amountFieldIndex, contractName}: any = await fetchContractDetails(
+    //         //     smartAccount.provider,
+    //         //     contractAddress
+    //         // )
+    //         console.log("abi: ", abi)
+    //         setAbi(abi)
+    //         // setContractName(contractName)
+    //         // setAmountFieldIndexes(amountFieldIndex)
+    //         setContractName(contractData.ContractName)
+
+    //         for (let i = 0; i < abi.length; i++) {
+    //             if (abi[i].stateMutability != "view") {
+    //                 if (abi[i].type == "fallback") {
+    //                     console.log("fallback")
+    //                 } else if (abi[i].type != "event") {
+    //                     console.log("abi[i]: ", abi[i].name)
+    //                     setFunctionArray((funcArray) => [...funcArray, abi[i]])
+    //                 }
+    //             }
+    //         }
+    //     } catch (error) {
+    //         console.log("callCrossChain-error", error)
+    //     }
+    // }
 
     const simulate = async (funcIndex: any) => {
         setGasUsed(undefined)
@@ -289,10 +327,7 @@ export default function MainForm() {
 
         const abi = ethers.utils.defaultAbiCoder
         const provider = await ethers.getDefaultProvider()
-        const signer: Signer = new ethers.VoidSigner(
-            currentAddress,
-            provider
-        )
+        const signer: Signer = new ethers.VoidSigner(currentAddress, provider)
         const USDT = await new ethers.Contract(
             tokenIn,
             IERC20,
@@ -569,180 +604,196 @@ export default function MainForm() {
         console.log("Tx hash", txReciept?.transactionHash)
     }
 
-    const sendTxByEOA = async (funcIndex: any) => {
-        if (!currentSigner) {
-            alert("You need to login")
-            return
-        }
-        if (!simulation) {
-            alert("simulation failed")
-            return
-        }
-        if (contractAddress == "") {
-            alert("enter contractAddress field")
-            return
-        }
-        if (amountIn == "") {
-            alert("enter amountIn field")
-            return
-        }
-        if (isThisAmount < 0) {
-            alert("select amount field")
-            return
-        }
-        const abi = ethers.utils.defaultAbiCoder
-        const USDT = await new ethers.Contract(
-            tokenIn,
-            IERC20,
-            currentSigner.provider
-        )
+    // const sendTxByEOA = async (funcIndex: any) => {
+    //     if (!currentSigner) {
+    //         alert("You need to login")
+    //         return
+    //     }
+    //     if (!simulation) {
+    //         alert("simulation failed")
+    //         return
+    //     }
+    //     if (contractAddress == "") {
+    //         alert("enter contractAddress field")
+    //         return
+    //     }
+    //     if (amountIn == "") {
+    //         alert("enter amountIn field")
+    //         return
+    //     }
+    //     if (isThisAmount < 0) {
+    //         alert("select amount field")
+    //         return
+    //     }
+    //     const abi = ethers.utils.defaultAbiCoder
+    //     const USDT = await new ethers.Contract(
+    //         tokenIn,
+    //         IERC20,
+    //         currentSigner.provider
+    //     )
 
-        const balance = await USDT.balanceOf(currentAddress)
-        if (BigNumber.from(balance).lt(BigNumber.from(amountIn))) {
-            alert("You don't have enough balance")
-            return
-        }
+    //     const balance = await USDT.balanceOf(currentAddress)
+    //     if (BigNumber.from(balance).lt(BigNumber.from(amountIn))) {
+    //         alert("You don't have enough balance")
+    //         return
+    //     }
 
-        const approveData = await USDT.populateTransaction.approve(
-            polygonStargateRouter,
-            amountIn
-        )
-        const approveTx = {to: approveData.to, data: approveData.data}
-        console.log("approveTx", approveTx)
+    //     const approveData = await USDT.populateTransaction.approve(
+    //         polygonStargateRouter,
+    //         amountIn
+    //     )
+    //     const approveTx = {to: approveData.to, data: approveData.data}
+    //     console.log("approveTx", approveTx)
 
-        console.log("params1", params[funcIndex])
-        const amountAfterSlippage = await calculateFees(
-            userAddress,
-            amountIn,
-            srcPoolId,
-            destPoolId,
-            toChainId,
-            polygonStargateRouter,
-            currentSigner.provider
-        )
-        params[funcIndex][isThisAmount] = amountAfterSlippage.toString()
-        console.log("params2", params[funcIndex])
+    //     console.log("params1", params[funcIndex])
+    //     const amountAfterSlippage = await calculateFees(
+    //         userAddress,
+    //         amountIn,
+    //         srcPoolId,
+    //         destPoolId,
+    //         toChainId,
+    //         polygonStargateRouter,
+    //         currentSigner.provider
+    //     )
+    //     params[funcIndex][isThisAmount] = amountAfterSlippage.toString()
+    //     console.log("params2", params[funcIndex])
 
-        let abiInterfaceForDestDefiProtocol = new ethers.utils.Interface(
-            currentAbi
-        )
-        const destChainExecData = abiInterfaceForDestDefiProtocol.encodeFunctionData(currentFunc, params[funcIndex])
-        const destChainExecTx = {to: contractAddress, data: destChainExecData}
-        const data = abi.encode(
-            ["uint256", "address", "address", "bytes"],
-            [
-                BigNumber.from("0"),
-                contractAddress,
-                currentAddress,
-                destChainExecTx.data,
-            ]
-        )
+    //     let abiInterfaceForDestDefiProtocol = new ethers.utils.Interface(
+    //         currentAbi
+    //     )
+    //     const destChainExecData =
+    //         abiInterfaceForDestDefiProtocol.encodeFunctionData(
+    //             currentFunc,
+    //             params[funcIndex]
+    //         )
+    //     const destChainExecTx = {to: contractAddress, data: destChainExecData}
+    //     const data = abi.encode(
+    //         ["uint256", "address", "address", "bytes"],
+    //         [
+    //             BigNumber.from("0"),
+    //             contractAddress,
+    //             currentAddress,
+    //             destChainExecTx.data,
+    //         ]
+    //     )
 
-        const srcAddress = ethers.utils.solidityPack(
-            ["address"],
-            [currentAddress]
-        )
-        let abiInterfaceForChainPing = new ethers.utils.Interface(ChainPing)
-        const stargateParams = [
-            fromChainId,
-            srcAddress,
-            _nonce,
-            avaxUSDCAddress,
-            amountAfterSlippage,
-            data,
-        ]
-        const encodedDataForChainPing =
-            abiInterfaceForChainPing.encodeFunctionData(
-                "sgReceive",
-                stargateParams
+    //     const srcAddress = ethers.utils.solidityPack(
+    //         ["address"],
+    //         [currentAddress]
+    //     )
+    //     let abiInterfaceForChainPing = new ethers.utils.Interface(ChainPing)
+    //     const stargateParams = [
+    //         fromChainId,
+    //         srcAddress,
+    //         _nonce,
+    //         avaxUSDCAddress,
+    //         amountAfterSlippage,
+    //         data,
+    //     ]
+    //     const encodedDataForChainPing =
+    //         abiInterfaceForChainPing.encodeFunctionData(
+    //             "sgReceive",
+    //             stargateParams
+    //         )
+    //     const erc20Interface = new ethers.utils.Interface([
+    //         "function transfer(address _account, uint256 _value)",
+    //     ])
+    //     const dummmyTranferToCheckData = erc20Interface.encodeFunctionData(
+    //         "transfer",
+    //         [toAddress, amountAfterSlippage]
+    //     )
+    //     const gasUsed = await batch(
+    //         userAddress,
+    //         avaxUSDCAddress,
+    //         toAddress,
+    //         dummmyTranferToCheckData,
+    //         encodedDataForChainPing,
+    //         false,
+    //         chooseChianId(toChainId)
+    //     )
+    //     console.log("gasUsed: ", gasUsed)
+
+    //     const stargateRouter = await new ethers.Contract(
+    //         polygonStargateRouter,
+    //         IStarGateRouter,
+    //         currentSigner.provider
+    //     )
+    //     const lzParams = {
+    //         dstGasForCall: gasUsed,
+    //         dstNativeAmount: 0,
+    //         dstNativeAddr: "0x",
+    //     }
+    //     const packedToAddress = ethers.utils.solidityPack(
+    //         ["address"],
+    //         [toAddress]
+    //     )
+    //     let quoteData = await stargateRouter.quoteLayerZeroFee(
+    //         toChainId,
+    //         _functionType,
+    //         packedToAddress,
+    //         data,
+    //         lzParams
+    //     )
+    //     console.log("quoteData", quoteData.toString(), amountIn)
+    //     console.log("srcPoolId-destPoolId", srcPoolId, destPoolId)
+
+    //     let stargateTx = await stargateRouter.populateTransaction.swap(
+    //         toChainId,
+    //         srcPoolId,
+    //         destPoolId,
+    //         currentAddress,
+    //         amountIn,
+    //         0,
+    //         lzParams,
+    //         packedToAddress,
+    //         data,
+    //         {
+    //             value: quoteData[0],
+    //         }
+    //     )
+    //     console.log("stargateTx", stargateTx)
+
+    //     const sendTx = {
+    //         to: stargateTx.to,
+    //         data: stargateTx.data,
+    //         value: stargateTx.value,
+    //     }
+
+    //     const tx1 = await currentSigner?.sendTransaction({
+    //         to: approveTx.to,
+    //         data: approveTx.data,
+    //     })
+    //     await tx1?.wait()
+    //     console.log("tx1", tx1)
+
+    //     const tx2 = await currentSigner?.sendTransaction({
+    //         to: sendTx.to,
+    //         data: sendTx.data,
+    //         value: sendTx.value,
+    //     })
+    //     await tx2?.wait()
+    //     console.log("tx2", tx2)
+    // }
+
+    // const sendTraditionalTx = async () => {
+    //     let provider = await new ethers.providers.Web3Provider(
+    //         web3.givenProvider
+    //     )
+    //     if (!provider) return
+    //     const signer = await provider.getSigner()
+    //     console.log("signer", signer)
+    // }
+
+    const fetchdetails = async () => {
+        try {
+            await fetchContractDetails(
+                smartAccount.provider,
+                "0x794a61358D6845594F94dc1DB02A252b5b4814aD",
+                "106"
             )
-        const erc20Interface = new ethers.utils.Interface([
-            "function transfer(address _account, uint256 _value)",
-        ])
-        const dummmyTranferToCheckData = erc20Interface.encodeFunctionData(
-            "transfer",
-            [toAddress, amountAfterSlippage]
-        )
-        const gasUsed = await batch(
-            userAddress,
-            avaxUSDCAddress,
-            toAddress,
-            dummmyTranferToCheckData,
-            encodedDataForChainPing,
-            false,
-            chooseChianId(toChainId)
-        )
-        console.log("gasUsed: ", gasUsed)
-
-        const stargateRouter = await new ethers.Contract(
-            polygonStargateRouter,
-            IStarGateRouter,
-            currentSigner.provider
-        )
-        const lzParams = {
-            dstGasForCall: gasUsed,
-            dstNativeAmount: 0,
-            dstNativeAddr: "0x",
+        } catch (error) {
+            console.log("fetchdetails-error: ", error)
         }
-        const packedToAddress = ethers.utils.solidityPack(
-            ["address"],
-            [toAddress]
-        )
-        let quoteData = await stargateRouter.quoteLayerZeroFee(
-            toChainId,
-            _functionType,
-            packedToAddress,
-            data,
-            lzParams
-        )
-        console.log("quoteData", quoteData.toString(), amountIn)
-        console.log("srcPoolId-destPoolId", srcPoolId, destPoolId)
-
-        let stargateTx = await stargateRouter.populateTransaction.swap(
-            toChainId,
-            srcPoolId,
-            destPoolId,
-            currentAddress,
-            amountIn,
-            0,
-            lzParams,
-            packedToAddress,
-            data,
-            {
-                value: quoteData[0],
-            }
-        )
-        console.log("stargateTx", stargateTx)
-
-        const sendTx = {
-            to: stargateTx.to,
-            data: stargateTx.data,
-            value: stargateTx.value,
-        }
-
-        const tx1 = await currentSigner?.sendTransaction({
-            to: approveTx.to,
-            data: approveTx.data,
-        });
-        await tx1?.wait();
-        console.log("tx1", tx1)
-
-        const tx2 = await currentSigner?.sendTransaction({
-            to: sendTx.to,
-            data: sendTx.data,
-            value: sendTx.value,
-        });
-        await tx2?.wait();
-        console.log("tx2", tx2)
-    }
-
-    const sendTraditionalTx = async () => {
-        let provider = await new ethers.providers.Web3Provider(
-            web3.givenProvider
-        )
-        if (!provider) return
-        const signer = await provider.getSigner()
-        console.log("signer", signer)
     }
 
     return (
@@ -754,6 +805,16 @@ export default function MainForm() {
             )}
             {smartAccount && (
                 <div className={center}>
+                    <button
+                        style={{
+                            backgroundColor: "black",
+                            color: "white",
+                            padding: "20px",
+                        }}
+                        onClick={(e: any) => fetchdetails()}
+                    >
+                        Fetch Contract Details
+                    </button>
                     <div className={box1}>
                         <div style={{marginTop: "2%"}}>
                             <input
@@ -914,7 +975,9 @@ export default function MainForm() {
                                 (input: any, inputIndex: any) => (
                                     <>
                                         <label>
-                                            {isThisAmount == inputIndex &&
+                                            {amountFieldIndexes[
+                                                currentFuncIndex
+                                            ] == inputIndex &&
                                                 input.type == "uint256" && (
                                                     <button
                                                         style={{
@@ -922,18 +985,6 @@ export default function MainForm() {
                                                                 "blue",
                                                             color: "white",
                                                         }}
-                                                        onClick={(e: any) =>
-                                                            isThisFieldAmount(
-                                                                inputIndex
-                                                            )
-                                                        }
-                                                    >
-                                                        isThisAmountField
-                                                    </button>
-                                                )}
-                                            {isThisAmount != inputIndex &&
-                                                input.type == "uint256" && (
-                                                    <button
                                                         onClick={(e: any) =>
                                                             isThisFieldAmount(
                                                                 inputIndex
@@ -1016,14 +1067,6 @@ export default function MainForm() {
                                 >
                                     sendTx
                                 </button>
-                                {/* <button
-                                    className={sendTxcss}
-                                    onClick={(e: any) =>
-                                        sendTxByEOA(currentFuncIndex)
-                                    }
-                                >
-                                    sendTxByEOA
-                                </button> */}
                             </div>
                         )}
                     </div>

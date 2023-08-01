@@ -6,6 +6,7 @@ import {
 import {
     AVAX_ETHERSCAN_API_KEY,
     ETHERSCAN_API_KEY,
+    MAINNET_INFURA,
     POLYGON_ETHERSCAN_API_KEY,
     TENDERLY_ACCESS_KEY,
     TENDERLY_PROJECT,
@@ -17,24 +18,125 @@ import IStarGateFactory from "../abis/IStarGateFactory.json"
 import IStarGateFeeLibrary from "../abis/IStarGateFeeLibrary.json"
 import IStarGatePool from "../abis/IStarGatePool.json"
 import IStarGateRouter from "../abis/IStarGateRouter.json"
-import Permit2Abi from '../abis/Permit2.json';
-import {
-    ABI_DEFINITION,
-    CommandType,
-    Permit2Address,
-    RouterCommand,
-    PermitSingle
-} from './constants';
-import { encodePathExactInput, getPermitSignature } from './permit2';
-import { defaultAbiCoder } from 'ethers/lib/utils';
-import {
-    getDeadline,
-    getErc20Contract,
-    getProvider,
-    getSigner
-} from './commonHelper';
-import erc20Abi from '../abis/erc20_2.json';
-import { ThirdwebSDK } from '@thirdweb-dev/sdk';
+import {Provider} from "web3/providers"
+
+const avaxRPCUrl = `https://avalanche-mainnet.infura.io/v3/${MAINNET_INFURA}`
+const implementation_slot =
+    "0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc"
+
+const contractDataByNetwork = [
+    {
+        // avax stargate chainId
+        106: {
+            "0x794a61358D6845594F94dc1DB02A252b5b4814aD": {
+                methodNames: ["supply", "repay"],
+                amountFieldIndex: [1, 1],
+                contractName: "AAVE Lending POOL-V3",
+                network: "Avalanche",
+            },
+        },
+    },
+]
+
+interface FunctionABI {
+    name: string
+    inputs: Array<{name: string; type: string}>
+    outputs: Array<{name: string; type: string}>
+    stateMutability: string
+    payable: boolean
+}
+
+function findDepositField(abi: FunctionABI[]): FunctionABI | undefined {
+    return abi.find((func) => func.name === "supply")
+}
+
+function findSelectedFunctions(
+    abi: FunctionABI[],
+    selectedFunctions: string[]
+): FunctionABI[] {
+    return abi.filter((func) => selectedFunctions.includes(func.name))
+}
+
+function createUpdatedABI(selectedFunctions: FunctionABI[]): object[] {
+    return selectedFunctions.map((func) => ({
+        name: func.name,
+        inputs: func.inputs,
+        outputs: func.outputs,
+        stateMutability: func.stateMutability,
+        payable: func.payable,
+        type: "function",
+    }))
+}
+
+function checkChainIdIndex(toChainId: string): number | null {
+    if (toChainId == "106") {
+        return 0
+    }
+    return null
+}
+
+export const fetchContractDetails = async (
+    provider: Provider,
+    contractAddress: string,
+    toChainId: string
+) => {
+    try {
+        console.log("fetchdetails: ", contractDataByNetwork)
+        const result = checkChainIdIndex(toChainId)
+        if (result != null) {
+            let chainIdIndex: number = result
+            const contractMetaData =
+                contractDataByNetwork[chainIdIndex][toChainId][contractAddress]
+            const methodNames = contractMetaData["methodNames"]
+            const amountFieldIndex = contractMetaData["amountFieldIndex"]
+            const contractName = contractMetaData["contractName"]
+            console.log("fetchdetails-methodNames: ", methodNames)
+
+            let contractAbis = await getAbiUsingExplorereUrl(
+                toChainId,
+                contractAddress
+            )
+            let abi = JSON.parse(contractAbis.ABI)
+
+            const {isProxy, currentImplAddress}: any =
+                await checkIfContractIsProxy(abi, contractAddress, provider)
+            if (isProxy) {
+                console.log("isProxy", isProxy)
+                const avaxProvider = new ethers.providers.JsonRpcProvider(
+                    avaxRPCUrl
+                )
+                let implementation = await avaxProvider.getStorageAt(
+                    contractAddress,
+                    implementation_slot
+                )
+                implementation = "0x" + implementation.slice(26, 66)
+                contractAbis = await getAbiUsingExplorereUrl(
+                    toChainId,
+                    implementation
+                )
+                abi = JSON.parse(contractAbis.ABI)
+            }
+
+            // Find the selected functions
+            const selectedFunctions = findSelectedFunctions(abi, methodNames)
+
+            // Create the updated ABI
+            abi = createUpdatedABI(selectedFunctions)
+
+            console.log("Updated ABI:")
+            console.log(abi)
+
+            console.log("fetchdetails-data: ", abi)
+            return {
+                abi,
+                amountFieldIndex,
+                contractName,
+            }
+        }
+    } catch (error) {
+        console.log("fetchdetails-error: ", error)
+    }
+}
 
 export const getAbiUsingExplorereUrl = async (
     network: string,
