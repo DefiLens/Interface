@@ -3,12 +3,16 @@ import 'react-tabs/style/react-tabs.css';
 import type {AppProps} from "next/app"
 // import $ from 'jquery';
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query"
-import {ThirdwebProvider} from "@thirdweb-dev/react"
+import {ThirdwebProvider, metamaskWallet} from "@thirdweb-dev/react"
 import "@biconomy/web3-auth/dist/src/style.css"
+import { Ethereum, Polygon, Avalanche } from "@thirdweb-dev/chains";
+
 import {Inter} from "@next/font/google"
 const inter = Inter({subsets: ["latin"]})
 
 export default function App({Component, pageProps}: AppProps) {
+    const metamaskConfig = metamaskWallet({});
+
     const queryClient = new QueryClient({
         defaultOptions: {
             queries: {
@@ -20,7 +24,10 @@ export default function App({Component, pageProps}: AppProps) {
 
     return (
         // <main className={inter.className}>
-        <ThirdwebProvider activeChain="polygon">
+        <ThirdwebProvider
+            supportedWallets={[metamaskConfig]}
+            supportedChains={[Polygon]}
+            clientId={process.env.NEXT_PUBLIC_TEMPLATE_CLIENT_ID} activeChain="polygon">
             <QueryClientProvider client={queryClient}>
                 <Component {...pageProps} />
             </QueryClientProvider>

@@ -1,10 +1,9 @@
 import dynamic from "next/dynamic"
 import {Suspense} from "react"
 import MainForm from "../components/MainForm"
-import PimlicoLogin from "../components/pimlicoLogin"
 import {Tab, Tabs, TabList, TabPanel} from "react-tabs"
 import {css} from "@emotion/css"
-import TokenRecipes from "../components/TokenRecipes"
+import Transfer from "../components/Transfer"
 
 const Index = () => {
     const SocialLoginDynamic = dynamic(
@@ -17,21 +16,18 @@ const Index = () => {
         <>
             <Suspense fallback={<div>Loading...</div>}>
                 <SocialLoginDynamic />
-                {/* <PimlicoLogin /> */}
-                {/* <MainForm /> */}
                 <Tabs>
                     <TabList className={tabcss}>
-                        <Tab>Cross Chain Defi</Tab>
-                        <Tab>One-Click Defi recipes</Tab>
+                        <Tab className={tab}>Cross Chain Defi</Tab>
+                        <Tab className={tab}>
+                            Transfer Funds
+                        </Tab>
                     </TabList>
                     <TabPanel>
                         <MainForm />
                     </TabPanel>
                     <TabPanel>
-                        <TokenRecipes />
-                    </TabPanel>
-                    <TabPanel>
-                        <TokenRecipes />
+                        <Transfer />
                     </TabPanel>
                 </Tabs>
             </Suspense>
@@ -45,4 +41,9 @@ const tabcss = css`
     background-color: grey;
     font-size: 30px;
     text-align: center;
+`
+
+const tab = css`
+    border: 1px solid rgba(0, 0, 0, 0.8);
+    padding: 15px;
 `

@@ -12,7 +12,7 @@ import IERC20 from "../abis/IERC20.json"
 import ChainPing from "../abis/ChainPing.json"
 import {css} from "@emotion/css"
 import {BigNumber as bg} from "bignumber.js"
-import {MAINNET_INFURA} from "../utils/keys"
+import {MAINNET_INFURA, PIMLICO_API_KEY} from "../utils/keys"
 
 import {
     SimpleAccountFactory__factory,
@@ -143,7 +143,7 @@ export default function PimlicoLogin() {
 
         // REQUEST PIMLICO VERIFYING PAYMASTER SPONSORSHIP
         const chain = "linea-testnet" // find the list of chain names on the Pimlico verifying paymaster reference page
-        const apiKey = "90ebffcf-e089-4af5-86de-0460648a2cae"
+        const apiKey = PIMLICO_API_KEY
 
         const pimlicoEndpoint = `https://api.pimlico.io/v1/${chain}/rpc?apikey=${apiKey}`
 

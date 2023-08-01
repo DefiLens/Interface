@@ -16,7 +16,7 @@ import {
 import {MAINNET_INFURA} from "../utils/keys"
 import {useAddress, useSigner} from "@thirdweb-dev/react"
 
-export default function MainForm() {
+export default function MainFormForAvax() {
     const address = useAddress() // Detect the connected address
     const signer: any = useSigner() // Detect the connected address
 
@@ -24,15 +24,17 @@ export default function MainForm() {
     const _nonce = 1
     const implementation_slot =
         "0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc"
-    const avaxRPCUrl = `https://avalanche-mainnet.infura.io/v3/${MAINNET_INFURA}`
+    // const avaxRPCUrl = `https://avalanche-mainnet.infura.io/v3/${MAINNET_INFURA}`
+    const polygonRPCUrl = `https://polygon-mainnet.infura.io/v3/${MAINNET_INFURA}`
     const userAddress = "0xb50685c25485CA8C520F5286Bbbf1d3F216D6989"
     const polygonUSDTAddress = "0xc2132D05D31c914a87C6611C10748AEb04B58e8F"
     const polygonUSDCAddress = "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174"
     const polygonDAIAddress = "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063"
     const avaxUSDTAddress = "0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7" // avax mainnet usdt
+    // const avaxUSDTAddress = "0xdAC17F958D2ee523a2206206994597C13D831ec7" // eth mainnet usdt
     const avaxUSDCAddress = "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E"
-    const polygonStargateRouter = "0x45A01E4e04F14f7A4a6702c74187c5F6222033cd"
-    const toAddress = "0x6FE8e3E0c47043f136640dF7972C1e3F144B807F"
+    const avaxStargateRouter = "0x45A01E4e04F14f7A4a6702c74187c5F6222033cd"
+    const toAddress = "0x8E62F511d4b5D99AC8D6711C7E0380d331faAeC5"
     const {
         // contractAddress, setContractAddress,
         // amountIn, setAmountIn,
@@ -47,11 +49,6 @@ export default function MainForm() {
         setCurrentSigner, currentSigner,
         setCurrentAddress, currentAddress,
     }: any = useAppStore((state) => state)
-
-    const [fromChainId, setFromChainId] = useState<any>("109")
-    const [toChainId, setToChainId] = useState<any>("106")
-    const [srcPoolId, setSrcPoolId] = useState<any>(2)
-    const [destPoolId, setDestPoolId] = useState<any>(2)
     const [contractAddress, setContractAddress] = useState<any>()
     const [amountIn, setAmountIn] = useState<any>()
     const [funcArray, setFunctionArray] = useState<any[]>([])
@@ -61,12 +58,18 @@ export default function MainForm() {
     const [currentFuncIndex, setCurrentFuncIndex] = useState<any>(0)
     const [contractName, setContractName] = useState<any>()
     const [isThisAmount, setIsThisFieldAmount] = useState<any>()
-    const [tokenIn, setTokenIn] = useState<any>(polygonUSDCAddress)
+    const [tokenIn, setTokenIn] = useState<any>(avaxUSDCAddress)
     const [tokenInDecimals, setTokenInDecimals] = useState<any>(6)
+    // const [fromNetwork, setFromNetwork] = useState<any>(109)
+    // const [toNetwork, setToNetwork] = useState<any>(106)
     const [simulation, setSimulation] = useState<any>()
     const [gasUsed, setGasUsed] = useState<any>()
     const [inputData, setInputData] = useState<any>()
-    const [isSCW, swtIsSCW] = useState<any>("SCW")
+    const [fromChainId, setFromChainId] = useState<any>("106")
+    const [toChainId, setToChainId] = useState<any>("109")
+    const [srcPoolId, setSrcPoolId] = useState<any>(1)
+    const [destPoolId, setDestPoolId] = useState<any>(1)
+    const [isSCW, swtIsSCW] = useState<any>("EOA")
 
     const onOptionChange = async (e) => {
         swtIsSCW(e.target.value)
@@ -81,15 +84,19 @@ export default function MainForm() {
         }
     }
 
-    useEffect(() => {
-        if (!currentSigner && smartAccount) {
-            setCurrentSigner(smartAccount)
-            setCurrentAddress(smartAccount.address)
-        }
-    }, [smartAccount])
+    const check = async () => {
+        console.log("currentSigner", currentAddress, currentSigner, currentSigner.provider)
+    }
 
     useEffect(() => {
-        setTokenIn(polygonUSDCAddress)
+        if (!currentSigner && address) {
+            setCurrentSigner(signer)
+            setCurrentAddress(address)
+        }
+    }, [signer])
+
+    useEffect(() => {
+        setTokenIn(avaxUSDCAddress)
         setTokenInDecimals(6)
         setAmountIn("")
     }, [fromChainId])
@@ -119,10 +126,12 @@ export default function MainForm() {
     }
 
     const onChangeFromNetwork = async (_fromNetwork: any) => {
+        // setFromNetwork(_fromNetwork)
         setFromChainId(_fromNetwork)
     }
 
     const onChangeToNetwork = async (_toNetwork: any) => {
+        // setToNetwork(_toNetwork)
         setToChainId(_toNetwork)
     }
 
@@ -137,21 +146,22 @@ export default function MainForm() {
     // for e.g usdt -> usdc
     const onChangeTokenIn = async (tokenIn: any) => {
         if (tokenIn == "usdc") {
-            setTokenIn(polygonUSDCAddress)
+            setTokenIn(avaxUSDCAddress)
             setTokenInDecimals(6)
             setSrcPoolId(1)
             setDestPoolId(1)
-        } else if (tokenIn == "usdt") {
-            setTokenIn(polygonUSDTAddress)
-            setTokenInDecimals(6)
-            setSrcPoolId(2)
-            setDestPoolId(2)
-        } else if (tokenIn == "dai") {
-            setTokenIn(polygonDAIAddress)
-            setTokenInDecimals(18)
-            setSrcPoolId(3)
-            setDestPoolId(3)
         }
+        // else if (tokenIn == "usdt") {
+        //     setTokenIn(polygonUSDTAddress)
+        //     setTokenInDecimals(6)
+        //     setSrcPoolId(2)
+        //     setDestPoolId(2)
+        // } else if (tokenIn == "dai") {
+        //     setTokenIn(polygonDAIAddress)
+        //     setTokenInDecimals(18)
+        //     setSrcPoolId(3)
+        //     setDestPoolId(3)
+        // }
         setAmountIn("")
     }
 
@@ -226,27 +236,30 @@ export default function MainForm() {
                 toChainId,
                 contractAddress
             )
+            console.log('contractData----', contractData)
             let abi = JSON.parse(contractData.ABI)
-            const {isProxy, currentImplAddress}: any =
-                await checkIfContractIsProxy(abi, contractAddress, provider)
-            if (isProxy) {
-                console.log("isProxy", isProxy)
-                const avaxProvider = new ethers.providers.JsonRpcProvider(
-                    avaxRPCUrl
+            // const {isProxy, currentImplAddress}: any =
+            //     await checkIfContractIsProxy(abi, contractAddress, provider)
+            // if (isProxy) {
+                // console.log("isProxy", isProxy)
+                const polygonProvider = new ethers.providers.JsonRpcProvider(
+                    polygonRPCUrl
                 )
                 let implementation_contract_address =
-                    await avaxProvider.getStorageAt(
+                    await polygonProvider.getStorageAt(
                         contractAddress,
                         implementation_slot
                     )
+                console.log('implementation_contract_address', implementation_contract_address)
                 implementation_contract_address =
                     "0x" + implementation_contract_address.slice(26, 66)
+                console.log('implementation_contract_address', implementation_contract_address)
                 contractData = await getAbiUsingExplorereUrl(
                     toChainId,
                     implementation_contract_address
                 )
                 abi = JSON.parse(contractData.ABI)
-            }
+            // }
             console.log("abi: ", abi)
             setAbi(abi)
             setContractName(contractData.ContractName)
@@ -306,7 +319,7 @@ export default function MainForm() {
         }
 
         const approveData = await USDT.populateTransaction.approve(
-            polygonStargateRouter,
+            avaxStargateRouter,
             amountIn
         )
         const approveTx = {to: approveData.to, data: approveData.data}
@@ -319,7 +332,7 @@ export default function MainForm() {
             srcPoolId,
             destPoolId,
             toChainId,
-            polygonStargateRouter,
+            avaxStargateRouter,
             currentSigner.provider
         )
         params[funcIndex][isThisAmount] = amountAfterSlippage.toString()
@@ -335,9 +348,10 @@ export default function MainForm() {
             )
         const destChainExecTx = {to: contractAddress, data: destChainExecData}
         const data = abi.encode(
-            ["uint256", "address", "address", "bytes"],
+            ["uint256", "uint256","address", "address", "bytes"],
             [
                 BigNumber.from("0"),
+                amountAfterSlippage,
                 contractAddress,
                 currentAddress,
                 destChainExecTx.data,
@@ -353,7 +367,7 @@ export default function MainForm() {
             fromChainId,
             srcAddress,
             _nonce,
-            avaxUSDCAddress,
+            polygonUSDCAddress,
             amountAfterSlippage,
             data,
         ]
@@ -371,7 +385,7 @@ export default function MainForm() {
         )
         const simulation = await batch(
             userAddress,
-            avaxUSDCAddress,
+            polygonUSDCAddress,
             toAddress,
             dummmyTranferToCheckData,
             encodedDataForChainPing,
@@ -403,6 +417,15 @@ export default function MainForm() {
             realChainId = "1"
         }
         return realChainId
+    }
+
+    const sendTraditionalTx = async () => {
+        let provider = await new ethers.providers.Web3Provider(
+            web3.givenProvider
+        )
+        if (!provider) return
+        const signer = await provider.getSigner()
+        console.log("signer", signer)
     }
 
     const sendTx = async (funcIndex: any) => {
@@ -442,7 +465,7 @@ export default function MainForm() {
         }
 
         const approveData = await USDT.populateTransaction.approve(
-            polygonStargateRouter,
+            avaxStargateRouter,
             amountIn
         )
         const approveTx = {to: approveData.to, data: approveData.data}
@@ -455,7 +478,7 @@ export default function MainForm() {
             srcPoolId,
             destPoolId,
             toChainId,
-            polygonStargateRouter,
+            avaxStargateRouter,
             currentSigner.provider
         )
         params[funcIndex][isThisAmount] = amountAfterSlippage.toString()
@@ -517,7 +540,7 @@ export default function MainForm() {
         console.log("gasUsed: ", gasUsed)
 
         const stargateRouter = await new ethers.Contract(
-            polygonStargateRouter,
+            avaxStargateRouter,
             IStarGateRouter,
             currentSigner.provider
         )
@@ -604,7 +627,7 @@ export default function MainForm() {
         }
 
         const approveData = await USDT.populateTransaction.approve(
-            polygonStargateRouter,
+            avaxStargateRouter,
             amountIn
         )
         const approveTx = {to: approveData.to, data: approveData.data}
@@ -617,7 +640,7 @@ export default function MainForm() {
             srcPoolId,
             destPoolId,
             toChainId,
-            polygonStargateRouter,
+            avaxStargateRouter,
             currentSigner.provider
         )
         params[funcIndex][isThisAmount] = amountAfterSlippage.toString()
@@ -629,9 +652,10 @@ export default function MainForm() {
         const destChainExecData = abiInterfaceForDestDefiProtocol.encodeFunctionData(currentFunc, params[funcIndex])
         const destChainExecTx = {to: contractAddress, data: destChainExecData}
         const data = abi.encode(
-            ["uint256", "address", "address", "bytes"],
+            ["uint256", "uint256", "address", "address", "bytes"],
             [
                 BigNumber.from("0"),
+                amountAfterSlippage,
                 contractAddress,
                 currentAddress,
                 destChainExecTx.data,
@@ -647,7 +671,7 @@ export default function MainForm() {
             fromChainId,
             srcAddress,
             _nonce,
-            avaxUSDCAddress,
+            polygonUSDCAddress,
             amountAfterSlippage,
             data,
         ]
@@ -665,7 +689,7 @@ export default function MainForm() {
         )
         const gasUsed = await batch(
             userAddress,
-            avaxUSDCAddress,
+            polygonUSDCAddress,
             toAddress,
             dummmyTranferToCheckData,
             encodedDataForChainPing,
@@ -675,7 +699,7 @@ export default function MainForm() {
         console.log("gasUsed: ", gasUsed)
 
         const stargateRouter = await new ethers.Contract(
-            polygonStargateRouter,
+            avaxStargateRouter,
             IStarGateRouter,
             currentSigner.provider
         )
@@ -736,24 +760,25 @@ export default function MainForm() {
         console.log("tx2", tx2)
     }
 
-    const sendTraditionalTx = async () => {
-        let provider = await new ethers.providers.Web3Provider(
-            web3.givenProvider
-        )
-        if (!provider) return
-        const signer = await provider.getSigner()
-        console.log("signer", signer)
-    }
-
     return (
         <>
-            {!smartAccount && (
+            {!address && (
                 <div className={box1}>
                     <h3>Login First!</h3>
                 </div>
             )}
-            {smartAccount && (
+            {address && (
                 <div className={center}>
+                    <h2>For Avax</h2>
+                    <button
+                        style={{
+                            backgroundColor: "blue",
+                            color: "white",
+                        }}
+                        onClick={(e: any) => check()}
+                    >
+                        check2
+                    </button>
                     <div className={box1}>
                         <div style={{marginTop: "2%"}}>
                             <input
@@ -788,7 +813,7 @@ export default function MainForm() {
                                 onChangeFromNetwork(e.target.value)
                             }
                         >
-                            <option value="109">Polygon</option>
+                            <option value="106">Avax</option>
                         </select>
                         <select
                             style={{width: "50%", padding: "10px"}}
@@ -840,7 +865,7 @@ export default function MainForm() {
                                 onChangeToNetwork(e.target.value)
                             }
                         >
-                            <option value="106">Avalanche</option>
+                            <option value="109">Polygon</option>
                             {/* <option value="109">Polygon</option>
                         <option value="110">Arbitrum</option>
                         <option value="111">Optimism</option>
@@ -867,10 +892,10 @@ export default function MainForm() {
                         {contractName && <h4>ContractName: {contractName}</h4>}
                     </div>
 
-                    <h6>0x794a61358D6845594F94dc1DB02A252b5b4814aD</h6>
+                    <h6>0x8dFf5E27EA6b7AC08EbFdf9eB090F32ee9a30fcf</h6>
                     <h6>0xb50685c25485CA8C520F5286Bbbf1d3F216D6989</h6>
                     <h6>0x2DF6fc68709AB8414b27b3bc4a972B3AE352274F</h6>
-                    <h6>0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E</h6>
+                    <h6>0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174</h6>
                     <div className={box1}>
                         {contractName && <h3>ContractName: {contractName}</h3>}
                         <h4>Select function name from below:</h4>
@@ -1016,14 +1041,14 @@ export default function MainForm() {
                                 >
                                     sendTx
                                 </button>
-                                {/* <button
+                                <button
                                     className={sendTxcss}
                                     onClick={(e: any) =>
                                         sendTxByEOA(currentFuncIndex)
                                     }
                                 >
                                     sendTxByEOA
-                                </button> */}
+                                </button>
                             </div>
                         )}
                     </div>
@@ -1035,7 +1060,7 @@ export default function MainForm() {
 
 const center = css`
     padding: 60px 0;
-    border: 3px solid grey;
+    border: 3px solid green;
     text-align: center;
     height: auto;
 `

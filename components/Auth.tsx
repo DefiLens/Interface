@@ -6,14 +6,26 @@ import SmartAccount from "@biconomy/smart-account"
 import {css} from "@emotion/css"
 import {Biconomy_AA_Key} from "../utils/keys"
 import {useAppStore} from "../store/appStore"
+import {
+    ConnectWallet,
+    metamaskWallet,
+    useAddress,
+    useConnect,
+    useNetwork,
+    useNetworkMismatch,
+    useSwitchChain,
+} from "@thirdweb-dev/react"
 
 export default function Home() {
     const {setSmartAccount, smartAccount}: any = useAppStore((state) => state)
-
-    // const [smartAccount, setSmartAccount] = useState<SmartAccount | null>(null);
     const [interval, enableInterval] = useState(false)
     const sdkRef = useRef<SocialLogin | null>(null)
     const [loading, setLoading] = useState<boolean>(false)
+    const isOnWrongNetwork = useNetworkMismatch() // Detect if the user is on the wrong network
+    const [, switchNetwork] = useNetwork()
+    const metamaskConfig = metamaskWallet()
+    const connect = useConnect()
+    const address = useAddress() // Detect the connected address
 
     useEffect(() => {
         let configureLogin
@@ -87,53 +99,63 @@ export default function Home() {
         enableInterval(false)
     }
 
+    const handleConnect = async () => {
+        alert("Metamask Connect")
+        await connect(metamaskConfig, {})
+        await login()
+    }
+
+    const shorten = (text: any) => {
+        return (
+            text.substring(0, 6) +
+            "..." +
+            text.substring(text.length - 4, text.length)
+        )
+    }
+
     return (
         <div>
             <ul>
                 <li>
                     <a href="#">DefiLens</a>
                 </li>
-                {!smartAccount && !loading && (
-                    <li>
-                        <a onClick={login}>Login</a>
-                    </li>
-                )}
-                {loading && (
-                    <li>
-                        <a>Loading account details...</a>
-                    </li>
-                )}
-                {!!smartAccount && (
-                    <li>
-                        <a onClick={logout}>Logout</a>
-                    </li>
-                )}
-                {!!smartAccount && (
-                    <li>
-                        <a>Biconomy SCW Wallet: {smartAccount.address}</a>
-                    </li>
-                )}
+                <li style={{float: "right", padding: "5px"}}>
+                    <div>
+                        {isOnWrongNetwork ? (
+                            <button
+                                className="rounded-lg bg-[#FF0000] text-[#ffffff] p-3"
+                                onClick={() => switchNetwork?.(137)}
+                            >
+                                Switch Network
+                            </button>
+                        ) : (
+                            smartAccount && (
+                                <>
+                                    <p>{smartAccount && smartAccount.address}</p>
+                                    <button className="bg-[#000000] py-2  w-full text-center rounded-lg  mt-4">
+                                        SCW Wallet:{" "}
+                                        {(smartAccount && smartAccount.address)}
+                                    </button>
+                                    <p>{address}</p>
+                                    <button className="bg-[#000000] py-2  w-full text-center rounded-lg  mt-4 mb-4">
+                                        EOA Wallet: {(address)}
+                                    </button>
+                                </>
+                            )
+                        )}
+                        {!smartAccount && !loading && (
+                            <li>
+                                <a onClick={handleConnect}>Login</a>
+                            </li>
+                        )}
+                        {loading && (
+                            <li>
+                                <a>Loading account details...</a>
+                            </li>
+                        )}
+                    </div>
+                </li>
             </ul>
-            {/* <div className={containerStyle}>
-        <h1 className={headerStyle}>OnClick Recipe For Defi</h1>
-        {!smartAccount && !loading && (
-          <button className={buttonStyle} onClick={login}>
-            Login
-          </button>
-        )}
-        {loading && <p>Loading account details...</p>}
-        {!!smartAccount && (
-          <div className={detailsContainerStyle}>
-            <div>
-              <h3>Smart account address of 0xb50685c25485CA8C520F5286Bbbf1d3F216D6989:</h3>
-              <p>{smartAccount.address}</p>
-              <button className={buttonStyle} onClick={logout}>
-                Logout
-              </button>
-            </div>
-          </div>
-        )}
-      </div> */}
         </div>
     )
 }
