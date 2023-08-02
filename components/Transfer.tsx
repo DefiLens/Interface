@@ -1,19 +1,10 @@
-import {useEffect, useState} from "react"
+import {useState} from "react"
 import {css} from "@emotion/css"
 import web3 from "web3"
 import {BigNumber, ethers} from "ethers"
 import {BigNumber as bg} from "bignumber.js"
-import IStarGateRouter from "../abis/IStarGateRouter.json"
 import IERC20 from "../abis/IERC20.json"
-import ChainPing from "../abis/ChainPing.json"
 import {useAppStore} from "../store/appStore"
-import {
-    checkIfContractIsProxy,
-    getAbiUsingExplorereUrl,
-    batch,
-    calculateFees,
-} from "../utils/helper"
-import {MAINNET_INFURA} from "../utils/keys"
 import {useAddress} from "@thirdweb-dev/react"
 
 export default function Transfer() {
@@ -51,10 +42,7 @@ export default function Transfer() {
             } else {
                 setAmountIn(amountInByDecimals.toString())
             }
-            console.log(
-                "amountInByDecimals-native",
-                amountInByDecimals.toString()
-            )
+            console.log("amountInByDecimals-native", amountInByDecimals.toString())
         } else {
             const contract = await getContract(tokenAddress)
             if (!contract) {
@@ -63,33 +51,22 @@ export default function Transfer() {
             }
             let decimal = await contract.decimals()
             let amountInByDecimals = bg(_amountIn)
-            amountInByDecimals = amountInByDecimals.multipliedBy(
-                bg(10).pow(decimal.toNumber())
-            )
+            amountInByDecimals = amountInByDecimals.multipliedBy(bg(10).pow(decimal.toNumber()))
             if (amountInByDecimals.eq(0)) {
                 setAmountIn(_amountIn)
             } else {
                 setAmountIn(amountInByDecimals.toString())
             }
-            console.log(
-                "amountInByDecimals-erc20",
-                amountInByDecimals.toString()
-            )
+            console.log("amountInByDecimals-erc20", amountInByDecimals.toString())
         }
     }
     const getContract = async (_tokenAddress) => {
         try {
-            let provider = await new ethers.providers.Web3Provider(
-                web3.givenProvider
-            )
+            let provider = await new ethers.providers.Web3Provider(web3.givenProvider)
             if (!provider) return
             const signer = await provider.getSigner()
             if (!signer) return
-            const contract = await new ethers.Contract(
-                _tokenAddress,
-                IERC20,
-                signer
-            )
+            const contract = await new ethers.Contract(_tokenAddress, IERC20, signer)
             return contract
         } catch (error) {
             console.log("getContract-error", error)
@@ -105,19 +82,14 @@ export default function Transfer() {
             }
             let tx
             if (isNative == "Native") {
-                let provider = await new ethers.providers.Web3Provider(
-                    web3.givenProvider
-                )
+                let provider = await new ethers.providers.Web3Provider(web3.givenProvider)
                 if (!provider) throw "no provider"
                 const balance = await provider.getBalance(smartAccount.address)
                 if (!BigNumber.from(balance).gte(amountIn)) {
                     alert("Not native enough balance")
                     throw "Not native enough balance"
                 }
-                tx = {
-                    to: address,
-                    value: amountIn,
-                }
+                tx = {to: address, value: amountIn,}
                 console.log("tx", tx)
             } else {
                 const contract = await getContract(tokenAddress)
@@ -131,20 +103,11 @@ export default function Transfer() {
                     throw "Not erc20 enough balance"
                 }
                 console.log("erc20", address, amountIn.toString())
-                const data = await contract.populateTransaction.transfer(
-                    address,
-                    amountIn
-                )
-                tx = {
-                    to: tokenAddress,
-                    data: data.data,
-                }
+                const data = await contract.populateTransaction.transfer(address, amountIn)
+                tx = {to: tokenAddress, data: data.data,}
                 console.log("tx", tx)
             }
-            const txResponseOfBiconomyAA =
-                await smartAccount?.sendTransactionBatch({
-                    transactions: [tx],
-                })
+            const txResponseOfBiconomyAA = await smartAccount?.sendTransactionBatch({transactions: [tx],})
             const txReciept = await txResponseOfBiconomyAA?.wait()
             console.log("userOp hash", txResponseOfBiconomyAA?.hash)
             console.log("Tx hash", txReciept?.transactionHash)
@@ -176,9 +139,7 @@ export default function Transfer() {
                                 checked={isNative === "Native"}
                                 onChange={onOptionChange}
                             />
-                            <label htmlFor="regular">
-                                Native Token transfer
-                            </label>
+                            <label htmlFor="regular">Native Token transfer</label>
 
                             <input
                                 type="radio"
@@ -192,9 +153,7 @@ export default function Transfer() {
                         </div>
                         <div className={box1}>
                             <h3>From SCW Address</h3>
-                            <h6 style={{marginBottom: "2%"}}>
-                                {smartAccount.address}
-                            </h6>
+                            <h6 style={{marginBottom: "2%"}}>{smartAccount.address}</h6>
                             <h3>To EOA Address</h3>
                             <h6 style={{marginBottom: "2%"}}>{address}</h6>
                             {isNative != "Native" ? (
@@ -211,9 +170,7 @@ export default function Transfer() {
                                         }}
                                         placeholder="Token"
                                         value={tokenAddress}
-                                        onChange={(e: any) =>
-                                            handleTokenAddress(e.target.value)
-                                        }
+                                        onChange={(e: any) => handleTokenAddress(e.target.value)}
                                     />
                                 </>
                             ) : (
@@ -231,27 +188,10 @@ export default function Transfer() {
                                 }}
                                 placeholder="Amount"
                                 value={amountInDecimals}
-                                onChange={(e: any) =>
-                                    handleAmountIn(e.target.value)
-                                }
+                                onChange={(e: any) => handleAmountIn(e.target.value)}
                             />
-                            <button
-                                // style={{
-                                //     width: "50%",
-                                //     height: "50%",
-                                //     padding: "10px",
-                                //     marginLeft: "20%",
-                                //     marginRight: "20%",
-                                //     marginBottom: "2%",
-                                //     backgroundColor: "black",
-                                //     color: "white",
-                                // }}
-                                className={buttonload}
-                                onClick={(e: any) => send()}
-                            >
-                                {sendTxLoading && (
-                                    <i className="fa fa-spinner fa-spin"></i>
-                                )}
+                            <button className={buttonload} onClick={(e: any) => send()}>
+                                {sendTxLoading && ( <i className="fa fa-spinner fa-spin"></i>)}
                                 Send SCW to EOA
                             </button>
                             <p>TxHash : {txhash}</p>

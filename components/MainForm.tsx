@@ -135,9 +135,7 @@ export default function MainForm() {
         }
         if (_amountIn) {
             let amountInByDecimals = bg(_amountIn)
-            amountInByDecimals = amountInByDecimals.multipliedBy(
-                bg(10).pow(tokenInDecimals)
-            )
+            amountInByDecimals = amountInByDecimals.multipliedBy(bg(10).pow(tokenInDecimals))
             if (amountInByDecimals.eq(0)) {
                 setAmountIn(_amountIn)
             } else {
@@ -193,8 +191,7 @@ export default function MainForm() {
             if (!smartAccount) return
             if (!toChainId) return
             const provider = smartAccount.provider
-            let {abi, amountFieldIndex, contractName}: any =
-                await fetchContractDetails(provider, contractAddress, toChainId)
+            let {abi, amountFieldIndex, contractName}: any = await fetchContractDetails(provider, contractAddress, toChainId)
             console.log("abi: ", abi)
             setAbi(abi)
             setContractName(contractName)
@@ -241,22 +238,14 @@ export default function MainForm() {
             const abi = ethers.utils.defaultAbiCoder
             const provider = await ethers.getDefaultProvider()
             const signer: Signer = new ethers.VoidSigner(smartAccount, provider)
-            const USDT = await new ethers.Contract(
-                tokenIn,
-                IERC20,
-                smartAccount.provider
-            )
-
+            const USDT = await new ethers.Contract(tokenIn, IERC20, smartAccount.provider)
             const balance = await USDT.balanceOf(smartAccount.address)
             if (BigNumber.from(balance).lt(BigNumber.from(amountIn))) {
                 alert("You don't have enough balance")
                 throw "You don't have enough balance"
             }
 
-            const approveData = await USDT.populateTransaction.approve(
-                polygonStargateRouter,
-                amountIn
-            )
+            const approveData = await USDT.populateTransaction.approve(polygonStargateRouter, amountIn)
             const approveTx = {to: approveData.to, data: approveData.data}
             console.log("approveTx", approveTx)
 
@@ -273,32 +262,15 @@ export default function MainForm() {
             params[funcIndex][isThisAmount] = amountAfterSlippage.toString()
             console.log("params2", params[funcIndex])
 
-            let abiInterfaceForDestDefiProtocol = new ethers.utils.Interface(
-                currentAbi
-            )
-            const destChainExecData =
-                abiInterfaceForDestDefiProtocol.encodeFunctionData(
-                    currentFunc,
-                    params[funcIndex]
-                )
-            const destChainExecTx = {
-                to: contractAddress,
-                data: destChainExecData,
-            }
+            let abiInterfaceForDestDefiProtocol = new ethers.utils.Interface(currentAbi)
+            const destChainExecData = abiInterfaceForDestDefiProtocol.encodeFunctionData(currentFunc, params[funcIndex])
+            const destChainExecTx = {to: contractAddress, data: destChainExecData,}
             const data = abi.encode(
                 ["uint256", "address", "address", "bytes"],
-                [
-                    BigNumber.from("0"),
-                    contractAddress,
-                    smartAccount.address,
-                    destChainExecTx.data,
-                ]
+                [BigNumber.from("0"), contractAddress, smartAccount.address, destChainExecTx.data,]
             )
 
-            const srcAddress = ethers.utils.solidityPack(
-                ["address"],
-                [smartAccount.address]
-            )
+            const srcAddress = ethers.utils.solidityPack(["address"], [smartAccount.address])
             let abiInterfaceForChainPing = new ethers.utils.Interface(ChainPing)
             const stargateParams = [
                 fromChainId,
@@ -308,18 +280,11 @@ export default function MainForm() {
                 amountAfterSlippage,
                 data,
             ]
-            const encodedDataForChainPing =
-                abiInterfaceForChainPing.encodeFunctionData(
-                    "sgReceive",
-                    stargateParams
-                )
+            const encodedDataForChainPing = abiInterfaceForChainPing.encodeFunctionData("sgReceive", stargateParams)
             const erc20Interface = new ethers.utils.Interface([
                 "function transfer(address _account, uint256 _value)",
             ])
-            const dummmyTranferToCheckData = erc20Interface.encodeFunctionData(
-                "transfer",
-                [toAddress, amountAfterSlippage]
-            )
+            const dummmyTranferToCheckData = erc20Interface.encodeFunctionData("transfer", [toAddress, amountAfterSlippage])
             const simulation = await batch(
                 userAddress,
                 avaxUSDCAddress,
@@ -394,27 +359,14 @@ export default function MainForm() {
             const abi = ethers.utils.defaultAbiCoder
             // const provider = await ethers.getDefaultProvider()
             // const signer = new ethers.VoidSigner(currentAddress, provider)
-            const USDT = await new ethers.Contract(
-                tokenIn,
-                IERC20,
-                smartAccount.provider
-            )
-
-            console.log("USDT", USDT)
-            console.log("currentAddress", smartAccount.address)
-
+            const USDT = await new ethers.Contract(tokenIn, IERC20, smartAccount.provider)
             const balance = await USDT.balanceOf(smartAccount.address)
-            console.log("balance", balance)
-
             if (BigNumber.from(balance).lt(BigNumber.from(amountIn))) {
                 alert("You don't have enough balance")
                 throw "You don't have enough balance"
             }
 
-            const approveData = await USDT.populateTransaction.approve(
-                polygonStargateRouter,
-                amountIn
-            )
+            const approveData = await USDT.populateTransaction.approve(polygonStargateRouter,amountIn)
             const approveTx = {to: approveData.to, data: approveData.data}
             console.log("approveTx", approveTx)
 
@@ -431,32 +383,15 @@ export default function MainForm() {
             params[funcIndex][isThisAmount] = amountAfterSlippage.toString()
             console.log("params2", params[funcIndex])
 
-            let abiInterfaceForDestDefiProtocol = new ethers.utils.Interface(
-                currentAbi
-            )
-            const destChainExecData =
-                abiInterfaceForDestDefiProtocol.encodeFunctionData(
-                    currentFunc,
-                    params[funcIndex]
-                )
-            const destChainExecTx = {
-                to: contractAddress,
-                data: destChainExecData,
-            }
+            let abiInterfaceForDestDefiProtocol = new ethers.utils.Interface(currentAbi)
+            const destChainExecData = abiInterfaceForDestDefiProtocol.encodeFunctionData(currentFunc, params[funcIndex])
+            const destChainExecTx = {to: contractAddress, data: destChainExecData,}
             const data = abi.encode(
                 ["uint256", "address", "address", "bytes"],
-                [
-                    BigNumber.from("0"),
-                    contractAddress,
-                    smartAccount.address,
-                    destChainExecTx.data,
-                ]
+                [BigNumber.from("0"), contractAddress, smartAccount.address, destChainExecTx.data,]
             )
 
-            const srcAddress = ethers.utils.solidityPack(
-                ["address"],
-                [smartAccount.address]
-            )
+            const srcAddress = ethers.utils.solidityPack(["address"],[smartAccount.address])
             let abiInterfaceForChainPing = new ethers.utils.Interface(ChainPing)
             const stargateParams = [
                 fromChainId,
@@ -466,18 +401,11 @@ export default function MainForm() {
                 amountAfterSlippage,
                 data,
             ]
-            const encodedDataForChainPing =
-                abiInterfaceForChainPing.encodeFunctionData(
-                    "sgReceive",
-                    stargateParams
-                )
+            const encodedDataForChainPing = abiInterfaceForChainPing.encodeFunctionData("sgReceive",stargateParams)
             const erc20Interface = new ethers.utils.Interface([
                 "function transfer(address _account, uint256 _value)",
             ])
-            const dummmyTranferToCheckData = erc20Interface.encodeFunctionData(
-                "transfer",
-                [toAddress, amountAfterSlippage]
-            )
+            const dummmyTranferToCheckData = erc20Interface.encodeFunctionData("transfer", [toAddress, amountAfterSlippage])
             const gasUsed = await batch(
                 userAddress,
                 avaxUSDCAddress,
@@ -489,20 +417,9 @@ export default function MainForm() {
             )
             console.log("gasUsed: ", gasUsed)
 
-            const stargateRouter = await new ethers.Contract(
-                polygonStargateRouter,
-                IStarGateRouter,
-                smartAccount.provider
-            )
-            const lzParams = {
-                dstGasForCall: gasUsed,
-                dstNativeAmount: 0,
-                dstNativeAddr: "0x",
-            }
-            const packedToAddress = ethers.utils.solidityPack(
-                ["address"],
-                [toAddress]
-            )
+            const stargateRouter = await new ethers.Contract(polygonStargateRouter, IStarGateRouter, smartAccount.provider)
+            const lzParams = {dstGasForCall: gasUsed, dstNativeAmount: 0, dstNativeAddr: "0x",}
+            const packedToAddress = ethers.utils.solidityPack(["address"], [toAddress])
             let quoteData = await stargateRouter.quoteLayerZeroFee(
                 toChainId,
                 _functionType,
@@ -523,24 +440,11 @@ export default function MainForm() {
                 lzParams,
                 packedToAddress,
                 data,
-                {
-                    value: quoteData[0],
-                }
+                {value: quoteData[0]}
             )
             console.log("stargateTx", stargateTx)
-
-            const sendTx = {
-                to: stargateTx.to,
-                data: stargateTx.data,
-                value: stargateTx.value,
-            }
-
-            console.log("smartAccount", smartAccount)
-
-            const txResponseOfBiconomyAA =
-                await smartAccount?.sendTransactionBatch({
-                    transactions: [approveTx, sendTx],
-                })
+            const sendTx = {to: stargateTx.to, data: stargateTx.data, value: stargateTx.value,}
+            const txResponseOfBiconomyAA = await smartAccount?.sendTransactionBatch({transactions: [approveTx, sendTx],})
             const txReciept = await txResponseOfBiconomyAA?.wait()
             console.log("userOp hash", txResponseOfBiconomyAA?.hash)
             console.log("Tx hash", txReciept?.transactionHash)
@@ -569,9 +473,7 @@ export default function MainForm() {
                             style={{width: "50%", padding: "10px"}}
                             name="networks"
                             id="networks"
-                            onChange={(e: any) =>
-                                onChangeFromNetwork(e.target.value)
-                            }
+                            onChange={(e: any) => onChangeFromNetwork(e.target.value)}
                         >
                             <option value="109">Polygon</option>
                         </select>
@@ -579,9 +481,7 @@ export default function MainForm() {
                             style={{width: "50%", padding: "10px"}}
                             name="networks"
                             id="networks"
-                            onChange={(e: any) =>
-                                onChangeTokenIn(e.target.value)
-                            }
+                            onChange={(e: any) => onChangeTokenIn(e.target.value)}
                         >
                             {/* <option value="usdt">USDT</option> */}
                             <option value="usdc">USDC</option>
@@ -599,18 +499,10 @@ export default function MainForm() {
                                     marginBottom: "2%",
                                 }}
                                 placeholder="AmountIn"
-                                value={
-                                    amountIn != 0
-                                        ? bg(amountIn)
-                                              .dividedBy(
-                                                  bg(10).pow(tokenInDecimals)
-                                              )
-                                              .toString()
-                                        : amountIn
-                                }
-                                onChange={(e: any) =>
-                                    handleAmountIn(e.target.value)
-                                }
+                                value={amountIn != 0
+                                        ? bg(amountIn).dividedBy(bg(10).pow(tokenInDecimals)).toString()
+                                        : amountIn}
+                                onChange={(e: any) => handleAmountIn(e.target.value)}
                             />
                         </div>
                     </div>
@@ -621,9 +513,7 @@ export default function MainForm() {
                             style={{width: "50%", padding: "10px"}}
                             name="networks"
                             id="networks"
-                            onChange={(e: any) =>
-                                onChangeToNetwork(e.target.value)
-                            }
+                            onChange={(e: any) => onChangeToNetwork(e.target.value)}
                         >
                             <option value="106">Avalanche</option>
                             {/* <option value="109">Polygon</option>
@@ -637,30 +527,21 @@ export default function MainForm() {
                                 style={{width: "50%", padding: "10px"}}
                                 name="contractAddresses"
                                 id="contractAddresses"
-                                onChange={(e: any) =>
-                                    handleContractAddress(e.target.value)
-                                }
+                                onChange={(e: any) => handleContractAddress(e.target.value)}
                             >
                                 <option value="">-</option>
-                                {avaxContracts.length > 0 &&
-                                    avaxContracts.map(
-                                        (
-                                            contractDetails: any,
-                                            contractIndex: any
-                                        ) => (
-                                            <option
-                                                value={
-                                                    contractDetails.contractAddress
-                                                }
-                                            >
-                                                {contractDetails.contractName}
-                                            </option>
-                                        )
-                                    )}
+                                {avaxContracts.length > 0 && avaxContracts.map((
+                                    contractDetails: any, contractIndex: any
+                                ) => (
+                                    <option value={contractDetails.contractAddress}>
+                                        {contractDetails.contractName}
+                                    </option>
+                                ))}
                             </select>
                         </div>
                         {contractName && <h4>ContractName: {contractName}</h4>}
                     </div>
+
                     <div className={box1}>
                         {contractName && <h3>ContractName: {contractName}</h3>}
                         <h4>Select function name from below:</h4>
@@ -668,58 +549,37 @@ export default function MainForm() {
                             style={{width: "50%", padding: "10px"}}
                             name="funcNames"
                             id="funcNames"
-                            onChange={(e: any) =>
-                                onChangeFunctions(e.target.value)
-                            }
+                            onChange={(e: any) => onChangeFunctions(e.target.value)}
                         >
                             {/* <option value={-1}>-</option> */}
-                            {funcArray.length > 0 &&
-                                funcArray.map(
-                                    (funcName: any, funcIndex: any) => (
-                                        <option value={funcIndex}>
-                                            {funcName.name}
-                                        </option>
-                                    )
-                                )}
+                            {funcArray.length > 0 && funcArray.map((funcName: any, funcIndex: any) => (
+                                <option value={funcIndex}>
+                                    {funcName.name}
+                                </option>
+                            ))}
                         </select>
                     </div>
 
                     <div className={box1}>
                         {currentFunc && (
                             <>
-                                <h2 style={{marginTop: "10px"}}>
-                                    Selected Method and its Params
-                                </h2>
+                                <h2 style={{marginTop: "10px"}}>Selected Method and its Params</h2>
                                 <h3 style={{marginTop: "10px"}}>
-                                    MethodName:{" "}
-                                    {funcArray.length > 0 &&
-                                        funcArray[currentFuncIndex].name}
+                                    MethodName:{" "} {funcArray.length > 0 && funcArray[currentFuncIndex].name}
                                 </h3>
                             </>
                         )}
-                        {currentFunc &&
-                            currentFuncIndex >= 0 &&
-                            funcArray.length > 0 &&
+                        {currentFunc && currentFuncIndex >= 0 && funcArray.length > 0 &&
                             funcArray[currentFuncIndex].inputs.map(
                                 (input: any, inputIndex: any) => (
                                     <>
                                         <label>
-                                            {amountFieldIndexes[
-                                                currentFuncIndex
-                                            ] == inputIndex &&
-                                            input.type == "uint256" ? (
+                                            {amountFieldIndexes[currentFuncIndex] == inputIndex
+                                                && input.type == "uint256" ? (
                                                 <>
                                                     <button
-                                                        style={{
-                                                            backgroundColor:
-                                                                "blue",
-                                                            color: "white",
-                                                        }}
-                                                        onClick={(e: any) =>
-                                                            isThisFieldAmount(
-                                                                inputIndex
-                                                            )
-                                                        }
+                                                        style={{backgroundColor: "blue", color: "white",}}
+                                                        onClick={(e: any) => isThisFieldAmount(inputIndex)}
                                                     >
                                                         isThisAmountField
                                                     </button>
@@ -731,49 +591,17 @@ export default function MainForm() {
                                                             marginBottom: "2%",
                                                             width: "50%",
                                                         }}
-                                                        placeholder={
-                                                            input.name +
-                                                            " " +
-                                                            input.type
-                                                        }
+                                                        placeholder={input.name + " " + input.type}
                                                         value={
-                                                            params[
-                                                                currentFuncIndex
-                                                            ] &&
-                                                            params[
-                                                                currentFuncIndex
-                                                            ][inputIndex] != ""
-                                                                ? bg(
-                                                                      params[
-                                                                          currentFuncIndex
-                                                                      ][
-                                                                          inputIndex
-                                                                      ]
-                                                                  )
-                                                                      .dividedBy(
-                                                                          bg(
-                                                                              10
-                                                                          ).pow(
-                                                                              tokenInDecimals
-                                                                          )
-                                                                      )
-                                                                      .toString()
+                                                            params[currentFuncIndex] &&
+                                                            params[currentFuncIndex][inputIndex] != "" ?
+                                                                bg(params[currentFuncIndex][inputIndex]).
+                                                                dividedBy(bg(10).pow(tokenInDecimals)).toString()
                                                                 : bg(amountIn)
-                                                                      .dividedBy(
-                                                                          bg(
-                                                                              10
-                                                                          ).pow(
-                                                                              tokenInDecimals
-                                                                          )
-                                                                      )
-                                                                      .toString()
+                                                                    .dividedBy(bg(10).pow(tokenInDecimals)).toString()
                                                         }
                                                         onChange={(e: any) =>
-                                                            onChangeInput(
-                                                                currentFuncIndex,
-                                                                inputIndex,
-                                                                e.target.value
-                                                            )
+                                                            onChangeInput(currentFuncIndex, inputIndex,e.target.value)
                                                         }
                                                     />
                                                 </>
@@ -786,29 +614,13 @@ export default function MainForm() {
                                                         marginBottom: "2%",
                                                         width: "50%",
                                                     }}
-                                                    placeholder={
-                                                        input.name +
-                                                        " " +
-                                                        input.type
-                                                    }
-                                                    value={
-                                                        params[
-                                                            currentFuncIndex
-                                                        ] &&
-                                                        params[
-                                                            currentFuncIndex
-                                                        ][inputIndex] != ""
-                                                            ? params[
-                                                                  currentFuncIndex
-                                                              ][inputIndex]
-                                                            : ""
-                                                    }
+                                                    placeholder={input.name + " " + input.type}
+                                                    value={params[currentFuncIndex] &&
+                                                            params[currentFuncIndex][inputIndex] != ""
+                                                            ? params[currentFuncIndex][inputIndex]
+                                                            : ""}
                                                     onChange={(e: any) =>
-                                                        onChangeInput(
-                                                            currentFuncIndex,
-                                                            inputIndex,
-                                                            e.target.value
-                                                        )
+                                                        onChangeInput(currentFuncIndex, inputIndex, e.target.value)
                                                     }
                                                 />
                                             )}
@@ -818,9 +630,7 @@ export default function MainForm() {
                             )}
 
                         {simulation != undefined && (
-                            <h5>
-                                Simulation: {simulation ? "Success" : "failed"}
-                            </h5>
+                            <h5>Simulation: {simulation ? "Success" : "failed"}</h5>
                         )}
                         {simulation != undefined && (
                             <h5>MethodName: sgReceive</h5>
@@ -829,13 +639,7 @@ export default function MainForm() {
                             <h5>Gas will use in gwei: {gasUsed}</h5>
                         )}
                         {simulation != undefined && (
-                            <h5
-                                style={{
-                                    width: "100%",
-                                    wordWrap: "break-word",
-                                    display: "inline-block",
-                                }}
-                            >
+                            <h5 style={{width: "100%", wordWrap: "break-word", display: "inline-block",}}>
                                 Destination Calldata: {inputData}
                             </h5>
                         )}
@@ -844,24 +648,16 @@ export default function MainForm() {
                             <div>
                                 <button
                                     className={buttonload}
-                                    onClick={(e: any) =>
-                                        simulate(currentFuncIndex)
-                                    }
+                                    onClick={(e: any) => simulate(currentFuncIndex)}
                                 >
-                                    {simulateLoading && (
-                                        <i className="fa fa-spinner fa-spin"></i>
-                                    )}
+                                    {simulateLoading && (<i className="fa fa-spinner fa-spin"></i>)}
                                     simulate
                                 </button>
                                 <button
                                     className={buttonload}
-                                    onClick={(e: any) =>
-                                        sendTx(currentFuncIndex)
-                                    }
+                                    onClick={(e: any) => sendTx(currentFuncIndex)}
                                 >
-                                    {sendTxLoading && (
-                                        <i className="fa fa-spinner fa-spin"></i>
-                                    )}
+                                    {sendTxLoading && (<i className="fa fa-spinner fa-spin"></i>)}
                                     sendTx
                                 </button>
                                 <p>TxHash : {txhash}</p>

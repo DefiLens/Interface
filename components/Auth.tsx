@@ -7,13 +7,11 @@ import {css} from "@emotion/css"
 import {Biconomy_AA_Key} from "../utils/keys"
 import {useAppStore} from "../store/appStore"
 import {
-    ConnectWallet,
     metamaskWallet,
     useAddress,
     useConnect,
     useNetwork,
     useNetworkMismatch,
-    useSwitchChain,
 } from "@thirdweb-dev/react"
 
 export default function Home() {
@@ -131,13 +129,11 @@ export default function Home() {
                         ) : (
                             smartAccount && (
                                 <>
-                                    <p style={{color: "white"}}>
-                                        {smartAccount && smartAccount.address}
-                                    </p>
+                                    <p style={{color: "white"}}>{smartAccount && smartAccount.address}</p>
                                     <button className="bg-[#000000] py-2  w-full text-center rounded-lg  mt-4">
-                                        SCW Wallet:{" "}
-                                        {smartAccount && smartAccount.address}
+                                        SCW Wallet:{" "} {smartAccount && smartAccount.address}
                                     </button>
+
                                     <p style={{color: "white"}}>{address}</p>
                                     <button className="bg-[#000000] py-2  w-full text-center rounded-lg  mt-4 mb-4">
                                         EOA Wallet: {address}

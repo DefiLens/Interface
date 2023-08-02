@@ -1,8 +1,5 @@
 import axios from "axios"
-import {
-    getImplementationAddress,
-    getImplementationAddressFromProxy,
-} from "@openzeppelin/upgrades-core"
+import {getImplementationAddress,} from "@openzeppelin/upgrades-core"
 import {
     AVAX_ETHERSCAN_API_KEY,
     ETHERSCAN_API_KEY,
@@ -13,7 +10,6 @@ import {
     TENDERLY_USER,
 } from "./keys"
 import {BigNumber, ethers} from "ethers"
-import IStarGateBridge from "../abis/IStarGateBridge.json"
 import IStarGateFactory from "../abis/IStarGateFactory.json"
 import IStarGateFeeLibrary from "../abis/IStarGateFeeLibrary.json"
 import IStarGatePool from "../abis/IStarGatePool.json"
@@ -21,8 +17,7 @@ import IStarGateRouter from "../abis/IStarGateRouter.json"
 import {Provider} from "web3/providers"
 
 const avaxRPCUrl = `https://avalanche-mainnet.infura.io/v3/${MAINNET_INFURA}`
-const implementation_slot =
-    "0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc"
+const implementation_slot = "0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc"
 
 const contractDataByNetwork = [
     {
@@ -92,53 +87,33 @@ export const fetchContractDetails = async (
         const result = checkChainIdIndex(toChainId)
         if (result != null) {
             let chainIdIndex: number = result
-            const contractMetaData =
-                contractDataByNetwork[chainIdIndex][toChainId][contractAddress]
+            const contractMetaData = contractDataByNetwork[chainIdIndex][toChainId][contractAddress]
             const methodNames = contractMetaData["methodNames"]
             const amountFieldIndex = contractMetaData["amountFieldIndex"]
             const contractName = contractMetaData["contractName"]
             console.log("fetchdetails-methodNames: ", methodNames)
 
-            let contractAbis = await getAbiUsingExplorereUrl(
-                toChainId,
-                contractAddress
-            )
+            let contractAbis = await getAbiUsingExplorereUrl(toChainId, contractAddress)
             let abi = JSON.parse(contractAbis.ABI)
 
-            const {isProxy, currentImplAddress}: any =
-                await checkIfContractIsProxy(abi, contractAddress, provider)
+            const {isProxy, currentImplAddress}: any = await checkIfContractIsProxy(abi, contractAddress, provider)
             if (isProxy) {
                 console.log("isProxy", isProxy)
-                const avaxProvider = new ethers.providers.JsonRpcProvider(
-                    avaxRPCUrl
-                )
-                let implementation = await avaxProvider.getStorageAt(
-                    contractAddress,
-                    implementation_slot
-                )
+                const avaxProvider = new ethers.providers.JsonRpcProvider(avaxRPCUrl)
+                let implementation = await avaxProvider.getStorageAt(contractAddress, implementation_slot)
                 implementation = "0x" + implementation.slice(26, 66)
-                contractAbis = await getAbiUsingExplorereUrl(
-                    toChainId,
-                    implementation
-                )
+                contractAbis = await getAbiUsingExplorereUrl(toChainId, implementation)
                 abi = JSON.parse(contractAbis.ABI)
             }
 
             // Find the selected functions
             const selectedFunctions = findSelectedFunctions(abi, methodNames)
-
             // Create the updated ABI
             abi = createUpdatedABI(selectedFunctions)
-
             console.log("Updated ABI:")
             console.log(abi)
-
             console.log("fetchdetails-data: ", abi)
-            return {
-                abi,
-                amountFieldIndex,
-                contractName,
-            }
+            return {abi, amountFieldIndex, contractName,}
         }
     } catch (error) {
         console.log("fetchdetails-error: ", error)
@@ -178,25 +153,15 @@ export const checkIfContractIsProxy = async (
         let currentImplAddress
         let isProxy: boolean = false
 
-        if (
-            abi.filter(function (e: any) {
-                return e.name === "upgradeTo"
-            }).length > 0
-        ) {
-            currentImplAddress = await getImplementationAddress(
-                provider,
-                contratAddress
-            )
+        if (abi.filter(function (e: any) {return e.name === "upgradeTo"}).length > 0) {
+            currentImplAddress = await getImplementationAddress(provider, contratAddress)
             isProxy = true
         } else {
             currentImplAddress = contratAddress
             isProxy = false
         }
         console.log("currentImplAddress: ", currentImplAddress)
-        return {
-            isProxy: isProxy,
-            currentImplAddress: currentImplAddress,
-        }
+        return {isProxy: isProxy, currentImplAddress: currentImplAddress,}
     } catch (error) {
         console.log("IfContractProxy-Error: ", error)
     }
@@ -212,32 +177,16 @@ export const calculateFees = async (
     provider: any
 ) => {
     try {
-        const stargateRouterInstance = await new ethers.Contract(
-            stargateRouter,
-            IStarGateRouter,
-            provider
-        )
+        const stargateRouterInstance = await new ethers.Contract(stargateRouter, IStarGateRouter, provider)
         const factory = await stargateRouterInstance.factory()
 
-        const factoryInstance = await new ethers.Contract(
-            factory,
-            IStarGateFactory,
-            provider
-        )
+        const factoryInstance = await new ethers.Contract(factory, IStarGateFactory, provider)
         const pool = await factoryInstance.getPool(2)
 
-        const poolInstance = await new ethers.Contract(
-            pool,
-            IStarGatePool,
-            provider
-        )
+        const poolInstance = await new ethers.Contract(pool, IStarGatePool, provider)
         const feeLibrary = await poolInstance.feeLibrary()
 
-        const feeLibraryInstance = await new ethers.Contract(
-            feeLibrary,
-            IStarGateFeeLibrary,
-            provider
-        )
+        const feeLibraryInstance = await new ethers.Contract(feeLibrary, IStarGateFeeLibrary, provider)
         const fees = await feeLibraryInstance.getFees(
             srcPoolId,
             destPoolId,
@@ -245,11 +194,7 @@ export const calculateFees = async (
             userAddress,
             amountIn
         )
-
-        amountIn = BigNumber.from(amountIn)
-            .sub(fees.eqFee)
-            .sub(fees.protocolFee)
-            .sub(fees.lpFee)
+        amountIn = BigNumber.from(amountIn).sub(fees.eqFee).sub(fees.protocolFee).sub(fees.lpFee)
         return amountIn
     } catch (error) {
         console.log("calculateFees-error: ", error)
@@ -288,23 +233,14 @@ export const batch = async (
                 })),
             },
             {
-                headers: {
-                    "X-Access-Key": TENDERLY_ACCESS_KEY as string,
-                },
+                headers: { "X-Access-Key": TENDERLY_ACCESS_KEY as string,},
             }
         )
     ).data
     console.log("simulate: ", simulate.simulation_results)
-    console.log(
-        "Gas Estimation: ",
-        simulate.simulation_results[0].transaction.gas_used
-    )
-    console.log(
-        "Gas Estimation: ",
-        simulate.simulation_results[1].transaction.gas_used
-    )
+    console.log("Gas Estimation: ", simulate.simulation_results[0].transaction.gas_used)
+    console.log("Gas Estimation: ", simulate.simulation_results[1].transaction.gas_used)
     console.timeEnd("Batch Simulation")
-    // console.log(JSON.stringify(simulate, null, 2));
     if (isSimulate) {
         return simulate.simulation_results[1]
     } else {
