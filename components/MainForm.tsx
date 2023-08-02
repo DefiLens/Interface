@@ -661,11 +661,6 @@ export default function MainForm() {
                         </div>
                         {contractName && <h4>ContractName: {contractName}</h4>}
                     </div>
-
-                    <h6>0x794a61358D6845594F94dc1DB02A252b5b4814aD</h6>
-                    <h6>0xb50685c25485CA8C520F5286Bbbf1d3F216D6989</h6>
-                    <h6>0x2DF6fc68709AB8414b27b3bc4a972B3AE352274F</h6>
-                    <h6>0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E</h6>
                     <div className={box1}>
                         {contractName && <h3>ContractName: {contractName}</h3>}
                         <h4>Select function name from below:</h4>
