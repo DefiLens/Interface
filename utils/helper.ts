@@ -38,6 +38,13 @@ const contractDataByNetwork = [
     },
 ]
 
+export const avaxContracts = [
+    {
+        contractName: "AAVE Lending POOL-V3",
+        contractAddress: "0x794a61358D6845594F94dc1DB02A252b5b4814aD",
+    },
+]
+
 interface FunctionABI {
     name: string
     inputs: Array<{name: string; type: string}>

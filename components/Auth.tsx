@@ -131,14 +131,16 @@ export default function Home() {
                         ) : (
                             smartAccount && (
                                 <>
-                                    <p>{smartAccount && smartAccount.address}</p>
+                                    <p style={{color: "white"}}>
+                                        {smartAccount && smartAccount.address}
+                                    </p>
                                     <button className="bg-[#000000] py-2  w-full text-center rounded-lg  mt-4">
                                         SCW Wallet:{" "}
-                                        {(smartAccount && smartAccount.address)}
+                                        {smartAccount && smartAccount.address}
                                     </button>
-                                    <p>{address}</p>
+                                    <p style={{color: "white"}}>{address}</p>
                                     <button className="bg-[#000000] py-2  w-full text-center rounded-lg  mt-4 mb-4">
-                                        EOA Wallet: {(address)}
+                                        EOA Wallet: {address}
                                     </button>
                                 </>
                             )

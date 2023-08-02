@@ -13,6 +13,7 @@ import {
     batch,
     calculateFees,
     fetchContractDetails,
+    avaxContracts,
 } from "../utils/helper"
 import {MAINNET_INFURA} from "../utils/keys"
 import {useAddress, useSigner} from "@thirdweb-dev/react"
@@ -34,27 +35,12 @@ export default function MainForm() {
     const avaxUSDCAddress = "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E"
     const polygonStargateRouter = "0x45A01E4e04F14f7A4a6702c74187c5F6222033cd"
     const toAddress = "0x6FE8e3E0c47043f136640dF7972C1e3F144B807F"
-    const {
-        // contractAddress, setContractAddress,
-        // amountIn, setAmountIn,
-        // funcArray, setFunctionArray,
-        // params, setParams,
-        // currentAbi, setAbi,
-        // currentFunc, setCurrentFunc,
-        // currentFuncIndex, setCurrentFuncIndex,
-        // contractName, setContractName,
-        // isThisAmount, setIsThisFieldAmount,
-        smartAccount,
-        setCurrentSigner,
-        currentSigner,
-        setCurrentAddress,
-        currentAddress,
-    }: any = useAppStore((state) => state)
+    const {smartAccount}: any = useAppStore((state) => state)
 
     const [fromChainId, setFromChainId] = useState<any>("109")
     const [toChainId, setToChainId] = useState<any>("106")
-    const [srcPoolId, setSrcPoolId] = useState<any>(2)
-    const [destPoolId, setDestPoolId] = useState<any>(2)
+    const [srcPoolId, setSrcPoolId] = useState<any>(1)
+    const [destPoolId, setDestPoolId] = useState<any>(1)
     const [contractAddress, setContractAddress] = useState<any>()
     const [amountIn, setAmountIn] = useState<any>()
     const [funcArray, setFunctionArray] = useState<any[]>([])
@@ -70,27 +56,9 @@ export default function MainForm() {
     const [simulation, setSimulation] = useState<any>()
     const [gasUsed, setGasUsed] = useState<any>()
     const [inputData, setInputData] = useState<any>()
-    const [isSCW, swtIsSCW] = useState<any>("SCW")
-
-    const onOptionChange = async (e) => {
-        swtIsSCW(e.target.value)
-        if (e.target.value == "SCW") {
-            console.log("e.target.value-scw", e.target.value)
-            setCurrentSigner(smartAccount)
-            setCurrentAddress(smartAccount.address)
-        } else {
-            console.log("e.target.value-eoa", e.target.value)
-            setCurrentSigner(signer)
-            setCurrentAddress(signer._address)
-        }
-    }
-
-    useEffect(() => {
-        if (!currentSigner && smartAccount) {
-            setCurrentSigner(smartAccount)
-            setCurrentAddress(smartAccount.address)
-        }
-    }, [smartAccount])
+    const [simulateLoading, setSimulationLoading] = useState<any>(false)
+    const [sendTxLoading, setSendtxLoading] = useState<any>(false)
+    const [txhash, setTxHash] = useState<any>(false)
 
     useEffect(() => {
         setTokenIn(polygonUSDCAddress)
@@ -108,7 +76,7 @@ export default function MainForm() {
             resetField()
             generateAbis()
         }
-    }, [contractAddress, currentSigner])
+    }, [contractAddress, smartAccount])
 
     const resetField = async () => {
         setFunctionArray([])
@@ -131,7 +99,7 @@ export default function MainForm() {
     }
 
     const handleContractAddress = async (_contractAddress) => {
-        if (!currentSigner) {
+        if (!smartAccount) {
             alert("You need to biconomy login")
             return
         }
@@ -161,7 +129,7 @@ export default function MainForm() {
 
     // for e.g 0 -> 1000
     const handleAmountIn = async (_amountIn) => {
-        if (!currentSigner) {
+        if (!smartAccount) {
             alert("You need to biconomy login")
             return
         }
@@ -222,7 +190,7 @@ export default function MainForm() {
     const generateAbis = async () => {
         try {
             if (!contractAddress) return
-            if (!currentSigner) return
+            if (!smartAccount) return
             if (!toChainId) return
             const provider = smartAccount.provider
             let {abi, amountFieldIndex, contractName}: any =
@@ -247,181 +215,136 @@ export default function MainForm() {
         }
     }
 
-    // const generateAbis = async () => {
-    //     try {
-    //         if (!contractAddress) return
-    //         if (!smartAccount) return
-    //         if (!toChainId) return
-    //         const provider = smartAccount.provider
-
-    //         let contractData = await getAbiUsingExplorereUrl(
-    //             toChainId,
-    //             contractAddress
-    //         )
-    //         let abi = JSON.parse(contractData.ABI)
-    //         const {isProxy, currentImplAddress}: any =
-    //             await checkIfContractIsProxy(abi, contractAddress, provider)
-    //         if (isProxy) {
-    //             console.log("isProxy", isProxy)
-    //             const avaxProvider = new ethers.providers.JsonRpcProvider(
-    //                 avaxRPCUrl
-    //             )
-    //             let implementation_contract_address =
-    //                 await avaxProvider.getStorageAt(
-    //                     contractAddress,
-    //                     implementation_slot
-    //                 )
-    //             implementation_contract_address =
-    //                 "0x" + implementation_contract_address.slice(26, 66)
-    //             contractData = await getAbiUsingExplorereUrl(
-    //                 toChainId,
-    //                 implementation_contract_address
-    //             )
-    //             abi = JSON.parse(contractData.ABI)
-    //         }
-    //         // let {abi, amountFieldIndex, contractName}: any = await fetchContractDetails(
-    //         //     smartAccount.provider,
-    //         //     contractAddress
-    //         // )
-    //         console.log("abi: ", abi)
-    //         setAbi(abi)
-    //         // setContractName(contractName)
-    //         // setAmountFieldIndexes(amountFieldIndex)
-    //         setContractName(contractData.ContractName)
-
-    //         for (let i = 0; i < abi.length; i++) {
-    //             if (abi[i].stateMutability != "view") {
-    //                 if (abi[i].type == "fallback") {
-    //                     console.log("fallback")
-    //                 } else if (abi[i].type != "event") {
-    //                     console.log("abi[i]: ", abi[i].name)
-    //                     setFunctionArray((funcArray) => [...funcArray, abi[i]])
-    //                 }
-    //             }
-    //         }
-    //     } catch (error) {
-    //         console.log("callCrossChain-error", error)
-    //     }
-    // }
-
     const simulate = async (funcIndex: any) => {
-        setGasUsed(undefined)
-        setInputData(undefined)
-        setSimulation(undefined)
-        if (!currentSigner) {
-            alert("You need to login")
-            return
-        }
-        if (contractAddress == "") {
-            alert("enter contractAddress field")
-            return
-        }
-        if (amountIn == "") {
-            alert("enter amountIn field")
-            return
-        }
-        if (isThisAmount < 0) {
-            alert("select amount field")
-            return
-        }
+        try {
+            setSimulationLoading(true)
+            setGasUsed(undefined)
+            setInputData(undefined)
+            setSimulation(undefined)
+            if (!smartAccount) {
+                alert("You need to login")
+                throw "You need to login"
+            }
+            if (contractAddress == "") {
+                alert("enter contractAddress field")
+                throw "enter contractAddress field"
+            }
+            if (amountIn == "") {
+                alert("enter amountIn field")
+                throw "enter amountIn field"
+            }
+            if (isThisAmount < 0) {
+                alert("select amount field")
+                throw "select amount field"
+            }
 
-        const abi = ethers.utils.defaultAbiCoder
-        const provider = await ethers.getDefaultProvider()
-        const signer: Signer = new ethers.VoidSigner(currentAddress, provider)
-        const USDT = await new ethers.Contract(
-            tokenIn,
-            IERC20,
-            currentSigner.provider
-        )
-
-        const balance = await USDT.balanceOf(currentAddress)
-        if (BigNumber.from(balance).lt(BigNumber.from(amountIn))) {
-            alert("You don't have enough balance")
-            return
-        }
-
-        const approveData = await USDT.populateTransaction.approve(
-            polygonStargateRouter,
-            amountIn
-        )
-        const approveTx = {to: approveData.to, data: approveData.data}
-        console.log("approveTx", approveTx)
-
-        console.log("params1", params[funcIndex])
-        const amountAfterSlippage = await calculateFees(
-            userAddress,
-            amountIn,
-            srcPoolId,
-            destPoolId,
-            toChainId,
-            polygonStargateRouter,
-            currentSigner.provider
-        )
-        params[funcIndex][isThisAmount] = amountAfterSlippage.toString()
-        console.log("params2", params[funcIndex])
-
-        let abiInterfaceForDestDefiProtocol = new ethers.utils.Interface(
-            currentAbi
-        )
-        const destChainExecData =
-            abiInterfaceForDestDefiProtocol.encodeFunctionData(
-                currentFunc,
-                params[funcIndex]
+            const abi = ethers.utils.defaultAbiCoder
+            const provider = await ethers.getDefaultProvider()
+            const signer: Signer = new ethers.VoidSigner(smartAccount, provider)
+            const USDT = await new ethers.Contract(
+                tokenIn,
+                IERC20,
+                smartAccount.provider
             )
-        const destChainExecTx = {to: contractAddress, data: destChainExecData}
-        const data = abi.encode(
-            ["uint256", "address", "address", "bytes"],
-            [
-                BigNumber.from("0"),
-                contractAddress,
-                currentAddress,
-                destChainExecTx.data,
+
+            const balance = await USDT.balanceOf(smartAccount.address)
+            if (BigNumber.from(balance).lt(BigNumber.from(amountIn))) {
+                alert("You don't have enough balance")
+                throw "You don't have enough balance"
+            }
+
+            const approveData = await USDT.populateTransaction.approve(
+                polygonStargateRouter,
+                amountIn
+            )
+            const approveTx = {to: approveData.to, data: approveData.data}
+            console.log("approveTx", approveTx)
+
+            console.log("params1", params[funcIndex])
+            const amountAfterSlippage = await calculateFees(
+                userAddress,
+                amountIn,
+                srcPoolId,
+                destPoolId,
+                toChainId,
+                polygonStargateRouter,
+                smartAccount.provider
+            )
+            params[funcIndex][isThisAmount] = amountAfterSlippage.toString()
+            console.log("params2", params[funcIndex])
+
+            let abiInterfaceForDestDefiProtocol = new ethers.utils.Interface(
+                currentAbi
+            )
+            const destChainExecData =
+                abiInterfaceForDestDefiProtocol.encodeFunctionData(
+                    currentFunc,
+                    params[funcIndex]
+                )
+            const destChainExecTx = {
+                to: contractAddress,
+                data: destChainExecData,
+            }
+            const data = abi.encode(
+                ["uint256", "address", "address", "bytes"],
+                [
+                    BigNumber.from("0"),
+                    contractAddress,
+                    smartAccount.address,
+                    destChainExecTx.data,
+                ]
+            )
+
+            const srcAddress = ethers.utils.solidityPack(
+                ["address"],
+                [smartAccount.address]
+            )
+            let abiInterfaceForChainPing = new ethers.utils.Interface(ChainPing)
+            const stargateParams = [
+                fromChainId,
+                srcAddress,
+                _nonce,
+                avaxUSDCAddress,
+                amountAfterSlippage,
+                data,
             ]
-        )
-
-        const srcAddress = ethers.utils.solidityPack(
-            ["address"],
-            [currentAddress]
-        )
-        let abiInterfaceForChainPing = new ethers.utils.Interface(ChainPing)
-        const stargateParams = [
-            fromChainId,
-            srcAddress,
-            _nonce,
-            avaxUSDCAddress,
-            amountAfterSlippage,
-            data,
-        ]
-        const encodedDataForChainPing =
-            abiInterfaceForChainPing.encodeFunctionData(
-                "sgReceive",
-                stargateParams
+            const encodedDataForChainPing =
+                abiInterfaceForChainPing.encodeFunctionData(
+                    "sgReceive",
+                    stargateParams
+                )
+            const erc20Interface = new ethers.utils.Interface([
+                "function transfer(address _account, uint256 _value)",
+            ])
+            const dummmyTranferToCheckData = erc20Interface.encodeFunctionData(
+                "transfer",
+                [toAddress, amountAfterSlippage]
             )
-        const erc20Interface = new ethers.utils.Interface([
-            "function transfer(address _account, uint256 _value)",
-        ])
-        const dummmyTranferToCheckData = erc20Interface.encodeFunctionData(
-            "transfer",
-            [toAddress, amountAfterSlippage]
-        )
-        const simulation = await batch(
-            userAddress,
-            avaxUSDCAddress,
-            toAddress,
-            dummmyTranferToCheckData,
-            encodedDataForChainPing,
-            true,
-            chooseChianId(toChainId)
-        )
+            const simulation = await batch(
+                userAddress,
+                avaxUSDCAddress,
+                toAddress,
+                dummmyTranferToCheckData,
+                encodedDataForChainPing,
+                true,
+                chooseChianId(toChainId)
+            )
 
-        setGasUsed(simulation.simulation.gas_used)
-        setInputData(simulation.simulation.input)
-        setSimulation(simulation.simulation.status)
+            setGasUsed(simulation.simulation.gas_used)
+            setInputData(simulation.simulation.input)
+            setSimulation(simulation.simulation.status)
+            setSimulationLoading(false)
 
-        console.log("simulation-status: ", simulation.simulation.status)
-        console.log("simulation-input: ", simulation.simulation.input)
-        console.log("simulation-method: ", simulation.simulation.method)
-        console.log("simulation-gasused: ", simulation.simulation.gas_used)
+            console.log("simulation-status: ", simulation.simulation.status)
+            console.log("simulation-input: ", simulation.simulation.input)
+            console.log("simulation-method: ", simulation.simulation.method)
+            console.log("simulation-gasused: ", simulation.simulation.gas_used)
+        } catch (error) {
+            setSimulationLoading(false)
+            console.log("simulate-error: ", error)
+            alert("Simulation Failed")
+            return
+        }
     }
 
     const chooseChianId = (stargateChainId: any) => {
@@ -441,358 +364,193 @@ export default function MainForm() {
     }
 
     const sendTx = async (funcIndex: any) => {
-        if (!currentSigner) {
-            alert("You need to login")
-            return
-        }
-        if (!simulation) {
-            alert("simulation failed")
-            return
-        }
-        if (contractAddress == "") {
-            alert("enter contractAddress field")
-            return
-        }
-        if (amountIn == "") {
-            alert("enter amountIn field")
-            return
-        }
-        if (isThisAmount < 0) {
-            alert("select amount field")
-            return
-        }
-        const abi = ethers.utils.defaultAbiCoder
-        const provider = await ethers.getDefaultProvider()
-        const signer = new ethers.VoidSigner(currentAddress, provider)
-        const USDT = await new ethers.Contract(
-            tokenIn,
-            IERC20,
-            currentSigner.provider
-        )
-
-        const balance = await USDT.balanceOf(currentAddress)
-        if (BigNumber.from(balance).lt(BigNumber.from(amountIn))) {
-            alert("You don't have enough balance")
-            return
-        }
-
-        const approveData = await USDT.populateTransaction.approve(
-            polygonStargateRouter,
-            amountIn
-        )
-        const approveTx = {to: approveData.to, data: approveData.data}
-        console.log("approveTx", approveTx)
-
-        console.log("params1", params[funcIndex])
-        const amountAfterSlippage = await calculateFees(
-            userAddress,
-            amountIn,
-            srcPoolId,
-            destPoolId,
-            toChainId,
-            polygonStargateRouter,
-            currentSigner.provider
-        )
-        params[funcIndex][isThisAmount] = amountAfterSlippage.toString()
-        console.log("params2", params[funcIndex])
-
-        let abiInterfaceForDestDefiProtocol = new ethers.utils.Interface(
-            currentAbi
-        )
-        const destChainExecData =
-            abiInterfaceForDestDefiProtocol.encodeFunctionData(
-                currentFunc,
-                params[funcIndex]
-            )
-        const destChainExecTx = {to: contractAddress, data: destChainExecData}
-        const data = abi.encode(
-            ["uint256", "address", "address", "bytes"],
-            [
-                BigNumber.from("0"),
-                contractAddress,
-                currentAddress,
-                destChainExecTx.data,
-            ]
-        )
-
-        const srcAddress = ethers.utils.solidityPack(
-            ["address"],
-            [currentAddress]
-        )
-        let abiInterfaceForChainPing = new ethers.utils.Interface(ChainPing)
-        const stargateParams = [
-            fromChainId,
-            srcAddress,
-            _nonce,
-            avaxUSDCAddress,
-            amountAfterSlippage,
-            data,
-        ]
-        const encodedDataForChainPing =
-            abiInterfaceForChainPing.encodeFunctionData(
-                "sgReceive",
-                stargateParams
-            )
-        const erc20Interface = new ethers.utils.Interface([
-            "function transfer(address _account, uint256 _value)",
-        ])
-        const dummmyTranferToCheckData = erc20Interface.encodeFunctionData(
-            "transfer",
-            [toAddress, amountAfterSlippage]
-        )
-        const gasUsed = await batch(
-            userAddress,
-            avaxUSDCAddress,
-            toAddress,
-            dummmyTranferToCheckData,
-            encodedDataForChainPing,
-            false,
-            chooseChianId(toChainId)
-        )
-        console.log("gasUsed: ", gasUsed)
-
-        const stargateRouter = await new ethers.Contract(
-            polygonStargateRouter,
-            IStarGateRouter,
-            currentSigner.provider
-        )
-        const lzParams = {
-            dstGasForCall: gasUsed,
-            dstNativeAmount: 0,
-            dstNativeAddr: "0x",
-        }
-        const packedToAddress = ethers.utils.solidityPack(
-            ["address"],
-            [toAddress]
-        )
-        let quoteData = await stargateRouter.quoteLayerZeroFee(
-            toChainId,
-            _functionType,
-            packedToAddress,
-            data,
-            lzParams
-        )
-        console.log("quoteData", quoteData.toString(), amountIn)
-        console.log("srcPoolId-destPoolId", srcPoolId, destPoolId)
-
-        let stargateTx = await stargateRouter.populateTransaction.swap(
-            toChainId,
-            srcPoolId,
-            destPoolId,
-            currentAddress,
-            amountIn,
-            0,
-            lzParams,
-            packedToAddress,
-            data,
-            {
-                value: quoteData[0],
-            }
-        )
-        console.log("stargateTx", stargateTx)
-
-        const sendTx = {
-            to: stargateTx.to,
-            data: stargateTx.data,
-            value: stargateTx.value,
-        }
-        const txResponseOfBiconomyAA = await smartAccount?.sendTransactionBatch(
-            {transactions: [approveTx, sendTx]}
-        )
-        const txReciept = await txResponseOfBiconomyAA?.wait()
-        console.log("userOp hash", txResponseOfBiconomyAA?.hash)
-        console.log("Tx hash", txReciept?.transactionHash)
-    }
-
-    // const sendTxByEOA = async (funcIndex: any) => {
-    //     if (!currentSigner) {
-    //         alert("You need to login")
-    //         return
-    //     }
-    //     if (!simulation) {
-    //         alert("simulation failed")
-    //         return
-    //     }
-    //     if (contractAddress == "") {
-    //         alert("enter contractAddress field")
-    //         return
-    //     }
-    //     if (amountIn == "") {
-    //         alert("enter amountIn field")
-    //         return
-    //     }
-    //     if (isThisAmount < 0) {
-    //         alert("select amount field")
-    //         return
-    //     }
-    //     const abi = ethers.utils.defaultAbiCoder
-    //     const USDT = await new ethers.Contract(
-    //         tokenIn,
-    //         IERC20,
-    //         currentSigner.provider
-    //     )
-
-    //     const balance = await USDT.balanceOf(currentAddress)
-    //     if (BigNumber.from(balance).lt(BigNumber.from(amountIn))) {
-    //         alert("You don't have enough balance")
-    //         return
-    //     }
-
-    //     const approveData = await USDT.populateTransaction.approve(
-    //         polygonStargateRouter,
-    //         amountIn
-    //     )
-    //     const approveTx = {to: approveData.to, data: approveData.data}
-    //     console.log("approveTx", approveTx)
-
-    //     console.log("params1", params[funcIndex])
-    //     const amountAfterSlippage = await calculateFees(
-    //         userAddress,
-    //         amountIn,
-    //         srcPoolId,
-    //         destPoolId,
-    //         toChainId,
-    //         polygonStargateRouter,
-    //         currentSigner.provider
-    //     )
-    //     params[funcIndex][isThisAmount] = amountAfterSlippage.toString()
-    //     console.log("params2", params[funcIndex])
-
-    //     let abiInterfaceForDestDefiProtocol = new ethers.utils.Interface(
-    //         currentAbi
-    //     )
-    //     const destChainExecData =
-    //         abiInterfaceForDestDefiProtocol.encodeFunctionData(
-    //             currentFunc,
-    //             params[funcIndex]
-    //         )
-    //     const destChainExecTx = {to: contractAddress, data: destChainExecData}
-    //     const data = abi.encode(
-    //         ["uint256", "address", "address", "bytes"],
-    //         [
-    //             BigNumber.from("0"),
-    //             contractAddress,
-    //             currentAddress,
-    //             destChainExecTx.data,
-    //         ]
-    //     )
-
-    //     const srcAddress = ethers.utils.solidityPack(
-    //         ["address"],
-    //         [currentAddress]
-    //     )
-    //     let abiInterfaceForChainPing = new ethers.utils.Interface(ChainPing)
-    //     const stargateParams = [
-    //         fromChainId,
-    //         srcAddress,
-    //         _nonce,
-    //         avaxUSDCAddress,
-    //         amountAfterSlippage,
-    //         data,
-    //     ]
-    //     const encodedDataForChainPing =
-    //         abiInterfaceForChainPing.encodeFunctionData(
-    //             "sgReceive",
-    //             stargateParams
-    //         )
-    //     const erc20Interface = new ethers.utils.Interface([
-    //         "function transfer(address _account, uint256 _value)",
-    //     ])
-    //     const dummmyTranferToCheckData = erc20Interface.encodeFunctionData(
-    //         "transfer",
-    //         [toAddress, amountAfterSlippage]
-    //     )
-    //     const gasUsed = await batch(
-    //         userAddress,
-    //         avaxUSDCAddress,
-    //         toAddress,
-    //         dummmyTranferToCheckData,
-    //         encodedDataForChainPing,
-    //         false,
-    //         chooseChianId(toChainId)
-    //     )
-    //     console.log("gasUsed: ", gasUsed)
-
-    //     const stargateRouter = await new ethers.Contract(
-    //         polygonStargateRouter,
-    //         IStarGateRouter,
-    //         currentSigner.provider
-    //     )
-    //     const lzParams = {
-    //         dstGasForCall: gasUsed,
-    //         dstNativeAmount: 0,
-    //         dstNativeAddr: "0x",
-    //     }
-    //     const packedToAddress = ethers.utils.solidityPack(
-    //         ["address"],
-    //         [toAddress]
-    //     )
-    //     let quoteData = await stargateRouter.quoteLayerZeroFee(
-    //         toChainId,
-    //         _functionType,
-    //         packedToAddress,
-    //         data,
-    //         lzParams
-    //     )
-    //     console.log("quoteData", quoteData.toString(), amountIn)
-    //     console.log("srcPoolId-destPoolId", srcPoolId, destPoolId)
-
-    //     let stargateTx = await stargateRouter.populateTransaction.swap(
-    //         toChainId,
-    //         srcPoolId,
-    //         destPoolId,
-    //         currentAddress,
-    //         amountIn,
-    //         0,
-    //         lzParams,
-    //         packedToAddress,
-    //         data,
-    //         {
-    //             value: quoteData[0],
-    //         }
-    //     )
-    //     console.log("stargateTx", stargateTx)
-
-    //     const sendTx = {
-    //         to: stargateTx.to,
-    //         data: stargateTx.data,
-    //         value: stargateTx.value,
-    //     }
-
-    //     const tx1 = await currentSigner?.sendTransaction({
-    //         to: approveTx.to,
-    //         data: approveTx.data,
-    //     })
-    //     await tx1?.wait()
-    //     console.log("tx1", tx1)
-
-    //     const tx2 = await currentSigner?.sendTransaction({
-    //         to: sendTx.to,
-    //         data: sendTx.data,
-    //         value: sendTx.value,
-    //     })
-    //     await tx2?.wait()
-    //     console.log("tx2", tx2)
-    // }
-
-    // const sendTraditionalTx = async () => {
-    //     let provider = await new ethers.providers.Web3Provider(
-    //         web3.givenProvider
-    //     )
-    //     if (!provider) return
-    //     const signer = await provider.getSigner()
-    //     console.log("signer", signer)
-    // }
-
-    const fetchdetails = async () => {
         try {
-            await fetchContractDetails(
-                smartAccount.provider,
-                "0x794a61358D6845594F94dc1DB02A252b5b4814aD",
-                "106"
+            setSendtxLoading(true)
+            if (!smartAccount.address) {
+                alert("You need to login")
+                throw "You need to login"
+            }
+            if (!smartAccount) {
+                alert("You need to login2")
+                throw "You need to login2"
+            }
+            if (!simulation) {
+                alert("simulation failed")
+                throw "simulation failed"
+            }
+            if (contractAddress == "") {
+                alert("enter contractAddress field")
+                throw "enter contractAddress field"
+            }
+            if (amountIn == "") {
+                alert("enter amountIn field")
+                throw "enter amountIn field"
+            }
+            if (isThisAmount < 0) {
+                alert("select amount field")
+                throw "select amount field"
+            }
+            setTxHash("")
+            const abi = ethers.utils.defaultAbiCoder
+            // const provider = await ethers.getDefaultProvider()
+            // const signer = new ethers.VoidSigner(currentAddress, provider)
+            const USDT = await new ethers.Contract(
+                tokenIn,
+                IERC20,
+                smartAccount.provider
             )
+
+            console.log("USDT", USDT)
+            console.log("currentAddress", smartAccount.address)
+
+            const balance = await USDT.balanceOf(smartAccount.address)
+            console.log("balance", balance)
+
+            if (BigNumber.from(balance).lt(BigNumber.from(amountIn))) {
+                alert("You don't have enough balance")
+                throw "You don't have enough balance"
+            }
+
+            const approveData = await USDT.populateTransaction.approve(
+                polygonStargateRouter,
+                amountIn
+            )
+            const approveTx = {to: approveData.to, data: approveData.data}
+            console.log("approveTx", approveTx)
+
+            console.log("params1", params[funcIndex])
+            const amountAfterSlippage = await calculateFees(
+                userAddress,
+                amountIn,
+                srcPoolId,
+                destPoolId,
+                toChainId,
+                polygonStargateRouter,
+                smartAccount.provider
+            )
+            params[funcIndex][isThisAmount] = amountAfterSlippage.toString()
+            console.log("params2", params[funcIndex])
+
+            let abiInterfaceForDestDefiProtocol = new ethers.utils.Interface(
+                currentAbi
+            )
+            const destChainExecData =
+                abiInterfaceForDestDefiProtocol.encodeFunctionData(
+                    currentFunc,
+                    params[funcIndex]
+                )
+            const destChainExecTx = {
+                to: contractAddress,
+                data: destChainExecData,
+            }
+            const data = abi.encode(
+                ["uint256", "address", "address", "bytes"],
+                [
+                    BigNumber.from("0"),
+                    contractAddress,
+                    smartAccount.address,
+                    destChainExecTx.data,
+                ]
+            )
+
+            const srcAddress = ethers.utils.solidityPack(
+                ["address"],
+                [smartAccount.address]
+            )
+            let abiInterfaceForChainPing = new ethers.utils.Interface(ChainPing)
+            const stargateParams = [
+                fromChainId,
+                srcAddress,
+                _nonce,
+                avaxUSDCAddress,
+                amountAfterSlippage,
+                data,
+            ]
+            const encodedDataForChainPing =
+                abiInterfaceForChainPing.encodeFunctionData(
+                    "sgReceive",
+                    stargateParams
+                )
+            const erc20Interface = new ethers.utils.Interface([
+                "function transfer(address _account, uint256 _value)",
+            ])
+            const dummmyTranferToCheckData = erc20Interface.encodeFunctionData(
+                "transfer",
+                [toAddress, amountAfterSlippage]
+            )
+            const gasUsed = await batch(
+                userAddress,
+                avaxUSDCAddress,
+                toAddress,
+                dummmyTranferToCheckData,
+                encodedDataForChainPing,
+                false,
+                chooseChianId(toChainId)
+            )
+            console.log("gasUsed: ", gasUsed)
+
+            const stargateRouter = await new ethers.Contract(
+                polygonStargateRouter,
+                IStarGateRouter,
+                smartAccount.provider
+            )
+            const lzParams = {
+                dstGasForCall: gasUsed,
+                dstNativeAmount: 0,
+                dstNativeAddr: "0x",
+            }
+            const packedToAddress = ethers.utils.solidityPack(
+                ["address"],
+                [toAddress]
+            )
+            let quoteData = await stargateRouter.quoteLayerZeroFee(
+                toChainId,
+                _functionType,
+                packedToAddress,
+                data,
+                lzParams
+            )
+            console.log("quoteData", quoteData.toString(), amountIn)
+            console.log("srcPoolId-destPoolId", srcPoolId, destPoolId)
+
+            let stargateTx = await stargateRouter.populateTransaction.swap(
+                toChainId,
+                srcPoolId,
+                destPoolId,
+                smartAccount.address,
+                amountIn,
+                0,
+                lzParams,
+                packedToAddress,
+                data,
+                {
+                    value: quoteData[0],
+                }
+            )
+            console.log("stargateTx", stargateTx)
+
+            const sendTx = {
+                to: stargateTx.to,
+                data: stargateTx.data,
+                value: stargateTx.value,
+            }
+
+            console.log("smartAccount", smartAccount)
+
+            const txResponseOfBiconomyAA =
+                await smartAccount?.sendTransactionBatch({
+                    transactions: [approveTx, sendTx],
+                })
+            const txReciept = await txResponseOfBiconomyAA?.wait()
+            console.log("userOp hash", txResponseOfBiconomyAA?.hash)
+            console.log("Tx hash", txReciept?.transactionHash)
+            setTxHash(txReciept?.transactionHash)
+            setSendtxLoading(false)
         } catch (error) {
-            console.log("fetchdetails-error: ", error)
+            setSendtxLoading(false)
+            console.log("sendTx-error: ", error)
+            alert("Transaction Failed")
+            return
         }
     }
 
@@ -805,40 +563,6 @@ export default function MainForm() {
             )}
             {smartAccount && (
                 <div className={center}>
-                    <button
-                        style={{
-                            backgroundColor: "black",
-                            color: "white",
-                            padding: "20px",
-                        }}
-                        onClick={(e: any) => fetchdetails()}
-                    >
-                        Fetch Contract Details
-                    </button>
-                    <div className={box1}>
-                        <div style={{marginTop: "2%"}}>
-                            <input
-                                type="radio"
-                                name="topping"
-                                value="SCW"
-                                id="scw"
-                                checked={isSCW === "SCW"}
-                                onChange={onOptionChange}
-                            />
-                            <label htmlFor="scw">SCW Transaction</label>
-
-                            <input
-                                type="radio"
-                                name="topping"
-                                value="EOA"
-                                id="eoa"
-                                checked={isSCW === "EOA"}
-                                onChange={onOptionChange}
-                            />
-                            <label htmlFor="eoa">EOA Transaction</label>
-                        </div>
-                    </div>
-
                     <div className={box1}>
                         <h3>From Network: </h3>
                         <select
@@ -903,27 +627,37 @@ export default function MainForm() {
                         >
                             <option value="106">Avalanche</option>
                             {/* <option value="109">Polygon</option>
-                        <option value="110">Arbitrum</option>
-                        <option value="111">Optimism</option>
-                        <option value="101">Mainnet</option> */}
+                            <option value="110">Arbitrum</option>
+                            <option value="111">Optimism</option>
+                            <option value="101">Mainnet</option> */}
                         </select>
                         <div style={{marginTop: "2%"}}>
                             <h3>Contract Address: </h3>
-                            <input
-                                style={{
-                                    width: "50%",
-                                    height: "50%",
-                                    padding: "10px",
-                                    marginLeft: "20%",
-                                    marginRight: "20%",
-                                    marginBottom: "2%",
-                                }}
-                                placeholder="Contract Address"
-                                value={contractAddress}
+                            <select
+                                style={{width: "50%", padding: "10px"}}
+                                name="contractAddresses"
+                                id="contractAddresses"
                                 onChange={(e: any) =>
                                     handleContractAddress(e.target.value)
                                 }
-                            />
+                            >
+                                <option value="">-</option>
+                                {avaxContracts.length > 0 &&
+                                    avaxContracts.map(
+                                        (
+                                            contractDetails: any,
+                                            contractIndex: any
+                                        ) => (
+                                            <option
+                                                value={
+                                                    contractDetails.contractAddress
+                                                }
+                                            >
+                                                {contractDetails.contractName}
+                                            </option>
+                                        )
+                                    )}
+                            </select>
                         </div>
                         {contractName && <h4>ContractName: {contractName}</h4>}
                     </div>
@@ -978,7 +712,8 @@ export default function MainForm() {
                                             {amountFieldIndexes[
                                                 currentFuncIndex
                                             ] == inputIndex &&
-                                                input.type == "uint256" && (
+                                            input.type == "uint256" ? (
+                                                <>
                                                     <button
                                                         style={{
                                                             backgroundColor:
@@ -993,34 +728,95 @@ export default function MainForm() {
                                                     >
                                                         isThisAmountField
                                                     </button>
-                                                )}
-                                            <input
-                                                style={{
-                                                    padding: "10px",
-                                                    marginLeft: "20%",
-                                                    marginRight: "20%",
-                                                    marginBottom: "2%",
-                                                    width: "50%",
-                                                }}
-                                                placeholder={input.type}
-                                                value={
-                                                    params[currentFuncIndex] &&
-                                                    params[currentFuncIndex][
-                                                        inputIndex
-                                                    ] != ""
-                                                        ? params[
-                                                              currentFuncIndex
-                                                          ][inputIndex]
-                                                        : ""
-                                                }
-                                                onChange={(e: any) =>
-                                                    onChangeInput(
-                                                        currentFuncIndex,
-                                                        inputIndex,
-                                                        e.target.value
-                                                    )
-                                                }
-                                            />
+                                                    <input
+                                                        style={{
+                                                            padding: "10px",
+                                                            marginLeft: "20%",
+                                                            marginRight: "20%",
+                                                            marginBottom: "2%",
+                                                            width: "50%",
+                                                        }}
+                                                        placeholder={
+                                                            input.name +
+                                                            " " +
+                                                            input.type
+                                                        }
+                                                        value={
+                                                            params[
+                                                                currentFuncIndex
+                                                            ] &&
+                                                            params[
+                                                                currentFuncIndex
+                                                            ][inputIndex] != ""
+                                                                ? bg(
+                                                                      params[
+                                                                          currentFuncIndex
+                                                                      ][
+                                                                          inputIndex
+                                                                      ]
+                                                                  )
+                                                                      .dividedBy(
+                                                                          bg(
+                                                                              10
+                                                                          ).pow(
+                                                                              tokenInDecimals
+                                                                          )
+                                                                      )
+                                                                      .toString()
+                                                                : bg(amountIn)
+                                                                      .dividedBy(
+                                                                          bg(
+                                                                              10
+                                                                          ).pow(
+                                                                              tokenInDecimals
+                                                                          )
+                                                                      )
+                                                                      .toString()
+                                                        }
+                                                        onChange={(e: any) =>
+                                                            onChangeInput(
+                                                                currentFuncIndex,
+                                                                inputIndex,
+                                                                e.target.value
+                                                            )
+                                                        }
+                                                    />
+                                                </>
+                                            ) : (
+                                                <input
+                                                    style={{
+                                                        padding: "10px",
+                                                        marginLeft: "20%",
+                                                        marginRight: "20%",
+                                                        marginBottom: "2%",
+                                                        width: "50%",
+                                                    }}
+                                                    placeholder={
+                                                        input.name +
+                                                        " " +
+                                                        input.type
+                                                    }
+                                                    value={
+                                                        params[
+                                                            currentFuncIndex
+                                                        ] &&
+                                                        params[
+                                                            currentFuncIndex
+                                                        ][inputIndex] != ""
+                                                            ? params[
+                                                                  currentFuncIndex
+                                                              ][inputIndex]
+                                                            : ""
+                                                    }
+                                                    onChange={(e: any) =>
+                                                        onChangeInput(
+                                                            currentFuncIndex,
+                                                            inputIndex,
+                                                            e.target.value
+                                                        )
+                                                    }
+                                                />
+                                            )}
                                         </label>
                                     </>
                                 )
@@ -1052,21 +848,28 @@ export default function MainForm() {
                         {currentFunc && (
                             <div>
                                 <button
-                                    className={sendTxcss}
+                                    className={buttonload}
                                     onClick={(e: any) =>
                                         simulate(currentFuncIndex)
                                     }
                                 >
+                                    {simulateLoading && (
+                                        <i className="fa fa-spinner fa-spin"></i>
+                                    )}
                                     simulate
                                 </button>
                                 <button
-                                    className={sendTxcss}
+                                    className={buttonload}
                                     onClick={(e: any) =>
                                         sendTx(currentFuncIndex)
                                     }
                                 >
+                                    {sendTxLoading && (
+                                        <i className="fa fa-spinner fa-spin"></i>
+                                    )}
                                     sendTx
                                 </button>
+                                <p>TxHash : {txhash}</p>
                             </div>
                         )}
                     </div>
@@ -1113,4 +916,18 @@ const gridItem = css`
     padding: 20px;
     font-size: 30px;
     text-align: center;
+`
+const buttonload = css`
+    background-color: #04aa6d; /* Green background */
+    border: none; /* Remove borders */
+    color: white; /* White text */
+    padding: 12px 24px; /* Some padding */
+    font-size: 16px; /* Set a font-size */
+    margin: 5px;
+`
+
+/* Add a right margin to each icon */
+const fa = css`
+    margin-left: -12px;
+    margin-right: 8px;
 `
