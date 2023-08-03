@@ -103,14 +103,6 @@ export default function Home() {
         await login()
     }
 
-    const shorten = (text: any) => {
-        return (
-            text.substring(0, 6) +
-            "..." +
-            text.substring(text.length - 4, text.length)
-        )
-    }
-
     return (
         <div>
             <ul>

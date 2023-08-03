@@ -1,6 +1,5 @@
 import {useEffect, useState} from "react"
 import {css} from "@emotion/css"
-import web3 from "web3"
 import {BigNumber, Signer, ethers} from "ethers"
 import {BigNumber as bg} from "bignumber.js"
 import IStarGateRouter from "../abis/IStarGateRouter.json"
@@ -8,53 +7,55 @@ import IERC20 from "../abis/IERC20.json"
 import ChainPing from "../abis/ChainPing.json"
 import {useAppStore} from "../store/appStore"
 import {
-    checkIfContractIsProxy,
-    getAbiUsingExplorereUrl,
     batch,
     calculateFees,
     fetchContractDetails,
-    avaxContracts,
+    shorten,
 } from "../utils/helper"
-import {MAINNET_INFURA} from "../utils/keys"
 import {useAddress, useSigner} from "@thirdweb-dev/react"
+import {
+    ChainPingToContractAddress,
+    _functionType,
+    _nonce,
+    avaxContracts,
+    avaxUSDCAddress,
+    polygonDAIAddress,
+    polygonStargateRouter,
+    polygonUSDCAddress,
+    polygonUSDTAddress
+} from "../utils/constants"
 
 export default function MainForm() {
     const address = useAddress() // Detect the connected address
     const signer: any = useSigner() // Detect the connected address
 
-    const _functionType = 1
-    const _nonce = 1
-    const userAddress = "0xb50685c25485CA8C520F5286Bbbf1d3F216D6989"
-    const polygonUSDTAddress = "0xc2132D05D31c914a87C6611C10748AEb04B58e8F"
-    const polygonUSDCAddress = "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174"
-    const polygonDAIAddress = "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063"
-    const avaxUSDTAddress = "0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7" // avax mainnet usdt
-    const avaxUSDCAddress = "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E"
-    const polygonStargateRouter = "0x45A01E4e04F14f7A4a6702c74187c5F6222033cd"
-    const toAddress = "0x6FE8e3E0c47043f136640dF7972C1e3F144B807F"
     const {smartAccount}: any = useAppStore((state) => state)
-
     const [fromChainId, setFromChainId] = useState<any>("109")
     const [toChainId, setToChainId] = useState<any>("106")
     const [srcPoolId, setSrcPoolId] = useState<any>(1)
     const [destPoolId, setDestPoolId] = useState<any>(1)
+
+    const [tokenIn, setTokenIn] = useState<any>(polygonUSDCAddress)
+    const [tokenInDecimals, setTokenInDecimals] = useState<any>(6)
     const [contractAddress, setContractAddress] = useState<any>()
     const [amountIn, setAmountIn] = useState<any>()
+
     const [funcArray, setFunctionArray] = useState<any[]>([])
     const [params, setParams] = useState<any>([[]])
     const [currentAbi, setAbi] = useState<any>()
-    const [amountFieldIndexes, setAmountFieldIndexes] = useState<any>()
     const [currentFunc, setCurrentFunc] = useState<any>()
     const [currentFuncIndex, setCurrentFuncIndex] = useState<any>(0)
     const [contractName, setContractName] = useState<any>()
+
+    const [amountFieldIndexes, setAmountFieldIndexes] = useState<any>()
     const [isThisAmount, setIsThisFieldAmount] = useState<any>()
-    const [tokenIn, setTokenIn] = useState<any>(polygonUSDCAddress)
-    const [tokenInDecimals, setTokenInDecimals] = useState<any>(6)
+
     const [simulation, setSimulation] = useState<any>()
     const [gasUsed, setGasUsed] = useState<any>()
-    const [inputData, setInputData] = useState<any>()
+    const [simulateInputData, setSimulateInputData] = useState<any>()
     const [simulateLoading, setSimulationLoading] = useState<any>(false)
     const [sendTxLoading, setSendtxLoading] = useState<any>(false)
+
     const [txhash, setTxHash] = useState<any>(false)
 
     useEffect(() => {
@@ -83,7 +84,7 @@ export default function MainForm() {
         setIsThisFieldAmount(-1)
 
         setGasUsed(undefined)
-        setInputData(undefined)
+        setSimulateInputData(undefined)
         setSimulation(undefined)
     }
 
@@ -151,7 +152,7 @@ export default function MainForm() {
         setIsThisFieldAmount(amountFieldIndexes[funcIndex])
 
         setGasUsed(undefined)
-        setInputData(undefined)
+        setSimulateInputData(undefined)
         setSimulation(undefined)
     }
 
@@ -213,34 +214,20 @@ export default function MainForm() {
         try {
             setSimulationLoading(true)
             setGasUsed(undefined)
-            setInputData(undefined)
+            setSimulateInputData(undefined)
             setSimulation(undefined)
-            if (!smartAccount) {
-                alert("You need to login")
-                throw "You need to login"
-            }
-            if (contractAddress == "") {
-                alert("enter contractAddress field")
-                throw "enter contractAddress field"
-            }
-            if (amountIn == "") {
-                alert("enter amountIn field")
-                throw "enter amountIn field"
-            }
-            if (isThisAmount < 0) {
-                alert("select amount field")
-                throw "select amount field"
-            }
+            if (!smartAccount) throw "You need to login"
+            if (contractAddress == "") throw "Enter contractAddress field"
+            if (amountIn == "") throw "Enter amountIn field"
+            if (isThisAmount < 0) throw "Select amount field"
 
             const abi = ethers.utils.defaultAbiCoder
             const provider = await ethers.getDefaultProvider()
             const signer: Signer = new ethers.VoidSigner(smartAccount, provider)
             const USDT = await new ethers.Contract(tokenIn, IERC20, smartAccount.provider)
             const balance = await USDT.balanceOf(smartAccount.address)
-            if (BigNumber.from(balance).lt(BigNumber.from(amountIn))) {
-                alert("You don't have enough balance")
-                throw "You don't have enough balance"
-            }
+
+            if (BigNumber.from(balance).lt(BigNumber.from(amountIn))) throw "You don't have enough balance"
 
             const approveData = await USDT.populateTransaction.approve(polygonStargateRouter, amountIn)
             const approveTx = {to: approveData.to, data: approveData.data}
@@ -248,7 +235,7 @@ export default function MainForm() {
 
             console.log("params1", params[funcIndex])
             const amountAfterSlippage = await calculateFees(
-                userAddress,
+                address,
                 amountIn,
                 srcPoolId,
                 destPoolId,
@@ -281,11 +268,11 @@ export default function MainForm() {
             const erc20Interface = new ethers.utils.Interface([
                 "function transfer(address _account, uint256 _value)",
             ])
-            const dummmyTranferToCheckData = erc20Interface.encodeFunctionData("transfer", [toAddress, amountAfterSlippage])
+            const dummmyTranferToCheckData = erc20Interface.encodeFunctionData("transfer", [ChainPingToContractAddress, amountAfterSlippage])
             const simulation = await batch(
-                userAddress,
+                address,
                 avaxUSDCAddress,
-                toAddress,
+                ChainPingToContractAddress,
                 dummmyTranferToCheckData,
                 encodedDataForChainPing,
                 true,
@@ -293,7 +280,7 @@ export default function MainForm() {
             )
 
             setGasUsed(simulation.simulation.gas_used)
-            setInputData(simulation.simulation.input)
+            setSimulateInputData(simulation.simulation.input)
             setSimulation(simulation.simulation.status)
             setSimulationLoading(false)
 
@@ -303,8 +290,8 @@ export default function MainForm() {
             console.log("simulation-gasused: ", simulation.simulation.gas_used)
         } catch (error) {
             setSimulationLoading(false)
-            console.log("simulate-error: ", error)
-            alert("Simulation Failed")
+            console.log("Simulation Failed: "+ error)
+            alert("Simulation Failed: "+ error)
             return
         }
     }
@@ -328,40 +315,19 @@ export default function MainForm() {
     const sendTx = async (funcIndex: any) => {
         try {
             setSendtxLoading(true)
-            if (!smartAccount.address) {
-                alert("You need to login")
-                throw "You need to login"
-            }
-            if (!smartAccount) {
-                alert("You need to login2")
-                throw "You need to login2"
-            }
-            if (!simulation) {
-                alert("simulation failed")
-                throw "simulation failed"
-            }
-            if (contractAddress == "") {
-                alert("enter contractAddress field")
-                throw "enter contractAddress field"
-            }
-            if (amountIn == "") {
-                alert("enter amountIn field")
-                throw "enter amountIn field"
-            }
-            if (isThisAmount < 0) {
-                alert("select amount field")
-                throw "select amount field"
-            }
+            if (!smartAccount) throw "You need to login"
+            if (!simulation) throw "Simulation failed"
+            if (contractAddress == "") throw "Enter contractAddress field"
+            if (amountIn == "") throw "Enter amountIn field"
+            if (isThisAmount < 0) throw "Select amount field"
+
             setTxHash("")
             const abi = ethers.utils.defaultAbiCoder
             // const provider = await ethers.getDefaultProvider()
             // const signer = new ethers.VoidSigner(currentAddress, provider)
             const USDT = await new ethers.Contract(tokenIn, IERC20, smartAccount.provider)
             const balance = await USDT.balanceOf(smartAccount.address)
-            if (BigNumber.from(balance).lt(BigNumber.from(amountIn))) {
-                alert("You don't have enough balance")
-                throw "You don't have enough balance"
-            }
+            if (BigNumber.from(balance).lt(BigNumber.from(amountIn))) throw "You don't have enough balance"
 
             const approveData = await USDT.populateTransaction.approve(polygonStargateRouter,amountIn)
             const approveTx = {to: approveData.to, data: approveData.data}
@@ -369,7 +335,7 @@ export default function MainForm() {
 
             console.log("params1", params[funcIndex])
             const amountAfterSlippage = await calculateFees(
-                userAddress,
+                address,
                 amountIn,
                 srcPoolId,
                 destPoolId,
@@ -402,11 +368,11 @@ export default function MainForm() {
             const erc20Interface = new ethers.utils.Interface([
                 "function transfer(address _account, uint256 _value)",
             ])
-            const dummmyTranferToCheckData = erc20Interface.encodeFunctionData("transfer", [toAddress, amountAfterSlippage])
+            const dummmyTranferToCheckData = erc20Interface.encodeFunctionData("transfer", [ChainPingToContractAddress, amountAfterSlippage])
             const gasUsed = await batch(
-                userAddress,
+                address,
                 avaxUSDCAddress,
-                toAddress,
+                ChainPingToContractAddress,
                 dummmyTranferToCheckData,
                 encodedDataForChainPing,
                 false,
@@ -416,7 +382,7 @@ export default function MainForm() {
 
             const stargateRouter = await new ethers.Contract(polygonStargateRouter, IStarGateRouter, smartAccount.provider)
             const lzParams = {dstGasForCall: gasUsed, dstNativeAmount: 0, dstNativeAddr: "0x",}
-            const packedToAddress = ethers.utils.solidityPack(["address"], [toAddress])
+            const packedToAddress = ethers.utils.solidityPack(["address"], [ChainPingToContractAddress])
             let quoteData = await stargateRouter.quoteLayerZeroFee(
                 toChainId,
                 _functionType,
@@ -450,7 +416,7 @@ export default function MainForm() {
         } catch (error) {
             setSendtxLoading(false)
             console.log("sendTx-error: ", error)
-            alert("Transaction Failed")
+            alert("Transaction Failed: " + error)
             return
         }
     }
@@ -485,7 +451,7 @@ export default function MainForm() {
                             {/* <option value="dai">DAI</option> */}
                         </select>
                         <div style={{marginTop: "2%"}}>
-                            <h3>AmountIn USDT: </h3>
+                            <h3>AmountIn USD: </h3>
                             <input
                                 style={{
                                     width: "50%",
@@ -538,6 +504,11 @@ export default function MainForm() {
                         </div>
                         {contractName && <h4>ContractName: {contractName}</h4>}
                     </div>
+
+                    <h6>0x794a61358D6845594F94dc1DB02A252b5b4814aD</h6>
+                    <h6>0xb50685c25485CA8C520F5286Bbbf1d3F216D6989</h6>
+                    <h6>0x2DF6fc68709AB8414b27b3bc4a972B3AE352274F</h6>
+                    <h6>0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E</h6>
 
                     <div className={box1}>
                         {contractName && <h3>ContractName: {contractName}</h3>}
@@ -637,7 +608,7 @@ export default function MainForm() {
                         )}
                         {simulation != undefined && (
                             <h5 style={{width: "100%", wordWrap: "break-word", display: "inline-block",}}>
-                                Destination Calldata: {inputData}
+                                Destination Calldata: {simulateInputData}
                             </h5>
                         )}
 
@@ -657,7 +628,16 @@ export default function MainForm() {
                                     {sendTxLoading && (<i className="fa fa-spinner fa-spin"></i>)}
                                     sendTx
                                 </button>
-                                <p>TxHash : {txhash}</p>
+                                {txhash && (
+                                    <p>
+                                        <a
+                                            target="_blank"
+                                            href={`https://socketscan.io/tx/${txhash}`} style={{color: "blue"}}
+                                        >
+                                            TxHash : {shorten("txhash")}
+                                        </a>
+                                    </p>
+                                )}
                             </div>
                         )}
                     </div>
