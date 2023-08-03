@@ -1,8 +1,10 @@
 import axios from "axios"
 import {getImplementationAddress,} from "@openzeppelin/upgrades-core"
 import {
+    ARBITRUM_ETHERSCAN_API_KEY,
     AVAX_ETHERSCAN_API_KEY,
     ETHERSCAN_API_KEY,
+    OPTIMISM_ETHERSCAN_API_KEY,
     POLYGON_ETHERSCAN_API_KEY,
     TENDERLY_ACCESS_KEY,
     TENDERLY_PROJECT,
@@ -14,7 +16,7 @@ import IStarGateFeeLibrary from "../abis/IStarGateFeeLibrary.json"
 import IStarGatePool from "../abis/IStarGatePool.json"
 import IStarGateRouter from "../abis/IStarGateRouter.json"
 import {Provider} from "web3/providers"
-import { avaxRPCUrl, contractDataByNetwork, implementation_slot } from "./constants"
+import { contractDataByNetwork, contractsDetails, implementation_slot } from "./constants"
 
 interface FunctionABI {
     name: string
@@ -32,7 +34,12 @@ function findSelectedFunctions(
     abi: FunctionABI[],
     selectedFunctions: string[]
 ): FunctionABI[] {
-    return abi.filter((func) => selectedFunctions.includes(func.name))
+    return abi.filter((func) =>
+        // const check =
+        selectedFunctions.includes(func.name) && func.inputs.length > 1
+        // console.log('findSelectedFunctions', check, func)
+
+    )
 }
 
 function createUpdatedABI(selectedFunctions: FunctionABI[]): object[] {
@@ -48,7 +55,15 @@ function createUpdatedABI(selectedFunctions: FunctionABI[]): object[] {
 
 function checkChainIdIndex(toChainId: string): number | null {
     if (toChainId == "106") {
-        return 0
+        return 0 // Avalanche
+    } else if (toChainId == "110") {
+        return 1 // Arbitrum
+    } else if (toChainId == "111") {
+        return 2 // Optimism
+    } else if (toChainId == "101") {
+        return 3 // Ethereum
+    } else if (toChainId == "109") {
+        return 4 // Polygon
     }
     return null
 }
@@ -71,14 +86,17 @@ export const fetchContractDetails = async (
 
             let contractAbis = await getAbiUsingExplorereUrl(toChainId, contractAddress)
             let abi = JSON.parse(contractAbis.ABI)
+            console.log("fetchdetails-abi: ", abi)
 
             const {isProxy, currentImplAddress}: any = await checkIfContractIsProxy(abi, contractAddress, provider)
             if (isProxy) {
                 console.log("isProxy", isProxy)
-                const avaxProvider = new ethers.providers.JsonRpcProvider(avaxRPCUrl)
-                let implementation = await avaxProvider.getStorageAt(contractAddress, implementation_slot)
+                const provider = new ethers.providers.JsonRpcProvider(contractsDetails[toChainId].rpcURL)
+                let implementation = await provider.getStorageAt(contractAddress, implementation_slot)
                 implementation = "0x" + implementation.slice(26, 66)
+                console.log("implementation", implementation, toChainId)
                 contractAbis = await getAbiUsingExplorereUrl(toChainId, implementation)
+                console.log("contractAbis", contractAbis)
                 abi = JSON.parse(contractAbis.ABI)
             }
 
@@ -109,7 +127,12 @@ export const getAbiUsingExplorereUrl = async (
             URL = `https://api.polygonscan.com/api?module=contract&action=getsourcecode&address=${toAddress}&apikey=${POLYGON_ETHERSCAN_API_KEY}`
         } else if (network === "106") {
             URL = `https://api.snowtrace.io/api?module=contract&action=getsourcecode&address=${toAddress}&apikey=${AVAX_ETHERSCAN_API_KEY}`
+        } else if (network === "110") {
+            URL = `https://api.arbiscan.io/api?module=contract&action=getsourcecode&address=${toAddress}&apikey=${ARBITRUM_ETHERSCAN_API_KEY}`
+        } else if (network === "111") {
+            URL = `https://api-optimistic.etherscan.io/api?module=contract&action=getsourcecode&address=${toAddress}&apikey=${OPTIMISM_ETHERSCAN_API_KEY}`
         }
+
         console.log("URL:", URL)
         if (!URL) return
         const resABI = await axios.get(URL)

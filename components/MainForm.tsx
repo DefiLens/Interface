@@ -14,20 +14,16 @@ import {
 } from "../utils/helper"
 import {useAddress, useSigner} from "@thirdweb-dev/react"
 import {
-    ChainPingToContractAddress,
     _functionType,
     _nonce,
-    avaxContracts,
-    avaxUSDCAddress,
-    polygonDAIAddress,
-    polygonStargateRouter,
-    polygonUSDCAddress,
-    polygonUSDTAddress
+    contractsDetails
 } from "../utils/constants"
 
 export default function MainForm() {
     const address = useAddress() // Detect the connected address
     const signer: any = useSigner() // Detect the connected address
+
+    const polygonContractDetails: any = contractsDetails['109']
 
     const {smartAccount}: any = useAppStore((state) => state)
     const [fromChainId, setFromChainId] = useState<any>("109")
@@ -35,7 +31,7 @@ export default function MainForm() {
     const [srcPoolId, setSrcPoolId] = useState<any>(1)
     const [destPoolId, setDestPoolId] = useState<any>(1)
 
-    const [tokenIn, setTokenIn] = useState<any>(polygonUSDCAddress)
+    const [tokenIn, setTokenIn] = useState<any>(polygonContractDetails?.USDC)
     const [tokenInDecimals, setTokenInDecimals] = useState<any>(6)
     const [contractAddress, setContractAddress] = useState<any>()
     const [amountIn, setAmountIn] = useState<any>()
@@ -59,7 +55,7 @@ export default function MainForm() {
     const [txhash, setTxHash] = useState<any>(false)
 
     useEffect(() => {
-        setTokenIn(polygonUSDCAddress)
+        setTokenIn(polygonContractDetails.USDC)
         setTokenInDecimals(6)
         setAmountIn("")
     }, [fromChainId])
@@ -107,21 +103,22 @@ export default function MainForm() {
     // for e.g usdt -> usdc
     const onChangeTokenIn = async (tokenIn: any) => {
         if (tokenIn == "usdc") {
-            setTokenIn(polygonUSDCAddress)
+            setTokenIn(polygonContractDetails.USDC)
             setTokenInDecimals(6)
             setSrcPoolId(1)
             setDestPoolId(1)
-        } else if (tokenIn == "usdt") {
-            setTokenIn(polygonUSDTAddress)
-            setTokenInDecimals(6)
-            setSrcPoolId(2)
-            setDestPoolId(2)
-        } else if (tokenIn == "dai") {
-            setTokenIn(polygonDAIAddress)
-            setTokenInDecimals(18)
-            setSrcPoolId(3)
-            setDestPoolId(3)
         }
+        // else if (tokenIn == "usdt") {
+        //     setTokenIn(polygonUSDTAddress)
+        //     setTokenInDecimals(6)
+        //     setSrcPoolId(2)
+        //     setDestPoolId(2)
+        // } else if (tokenIn == "dai") {
+        //     setTokenIn(polygonDAIAddress)
+        //     setTokenInDecimals(18)
+        //     setSrcPoolId(3)
+        //     setDestPoolId(3)
+        // }
         setAmountIn("")
     }
 
@@ -221,6 +218,9 @@ export default function MainForm() {
             if (amountIn == "") throw "Enter amountIn field"
             if (isThisAmount < 0) throw "Select amount field"
 
+            const fromContractData = contractsDetails[fromChainId]
+            const toContractData = contractsDetails[toChainId]
+
             const abi = ethers.utils.defaultAbiCoder
             const provider = await ethers.getDefaultProvider()
             const signer: Signer = new ethers.VoidSigner(smartAccount, provider)
@@ -229,7 +229,7 @@ export default function MainForm() {
 
             if (BigNumber.from(balance).lt(BigNumber.from(amountIn))) throw "You don't have enough balance"
 
-            const approveData = await USDT.populateTransaction.approve(polygonStargateRouter, amountIn)
+            const approveData = await USDT.populateTransaction.approve(fromContractData.stargateRouter, amountIn)
             const approveTx = {to: approveData.to, data: approveData.data}
             console.log("approveTx", approveTx)
 
@@ -240,19 +240,32 @@ export default function MainForm() {
                 srcPoolId,
                 destPoolId,
                 toChainId,
-                polygonStargateRouter,
+                fromContractData.stargateRouter,
                 smartAccount.provider
             )
             params[funcIndex][isThisAmount] = amountAfterSlippage.toString()
             console.log("params2", params[funcIndex])
 
             let abiInterfaceForDestDefiProtocol = new ethers.utils.Interface(currentAbi)
+            console.log("abiInterfaceForDestDefiProtocol", abiInterfaceForDestDefiProtocol, currentFunc)
+
             const destChainExecData = abiInterfaceForDestDefiProtocol.encodeFunctionData(currentFunc, params[funcIndex])
+            console.log("destChainExecData", destChainExecData)
+
             const destChainExecTx = {to: contractAddress, data: destChainExecData,}
-            const data = abi.encode(
-                ["uint256", "address", "address", "bytes"],
-                [BigNumber.from("0"), contractAddress, smartAccount.address, destChainExecTx.data,]
-            )
+            let data
+            if (toChainId == '106') {
+                data = abi.encode(
+                    ["uint256", "address", "address", "bytes"],
+                    [BigNumber.from("0"), contractAddress, smartAccount.address, destChainExecTx.data,]
+                )
+            } else {
+                data = abi.encode(
+                    ["uint256", "uint256", "address", "address", "bytes"],
+                    [BigNumber.from("0"), amountAfterSlippage, contractAddress, smartAccount.address, destChainExecTx.data,]
+                )
+            }
+
 
             const srcAddress = ethers.utils.solidityPack(["address"], [smartAccount.address])
             let abiInterfaceForChainPing = new ethers.utils.Interface(ChainPing)
@@ -260,7 +273,7 @@ export default function MainForm() {
                 fromChainId,
                 srcAddress,
                 _nonce,
-                avaxUSDCAddress,
+                toContractData.USDC,
                 amountAfterSlippage,
                 data,
             ]
@@ -268,11 +281,11 @@ export default function MainForm() {
             const erc20Interface = new ethers.utils.Interface([
                 "function transfer(address _account, uint256 _value)",
             ])
-            const dummmyTranferToCheckData = erc20Interface.encodeFunctionData("transfer", [ChainPingToContractAddress, amountAfterSlippage])
+            const dummmyTranferToCheckData = erc20Interface.encodeFunctionData("transfer", [toContractData.ChainPing, amountAfterSlippage])
             const simulation = await batch(
                 address,
-                avaxUSDCAddress,
-                ChainPingToContractAddress,
+                toContractData.USDC,
+                toContractData.ChainPing,
                 dummmyTranferToCheckData,
                 encodedDataForChainPing,
                 true,
@@ -321,6 +334,9 @@ export default function MainForm() {
             if (amountIn == "") throw "Enter amountIn field"
             if (isThisAmount < 0) throw "Select amount field"
 
+            const fromContractData = contractsDetails[fromChainId]
+            const toContractData = contractsDetails[toChainId]
+
             setTxHash("")
             const abi = ethers.utils.defaultAbiCoder
             // const provider = await ethers.getDefaultProvider()
@@ -329,7 +345,7 @@ export default function MainForm() {
             const balance = await USDT.balanceOf(smartAccount.address)
             if (BigNumber.from(balance).lt(BigNumber.from(amountIn))) throw "You don't have enough balance"
 
-            const approveData = await USDT.populateTransaction.approve(polygonStargateRouter,amountIn)
+            const approveData = await USDT.populateTransaction.approve(fromContractData.stargateRouter,amountIn)
             const approveTx = {to: approveData.to, data: approveData.data}
             console.log("approveTx", approveTx)
 
@@ -340,7 +356,7 @@ export default function MainForm() {
                 srcPoolId,
                 destPoolId,
                 toChainId,
-                polygonStargateRouter,
+                fromContractData.stargateRouter,
                 smartAccount.provider
             )
             params[funcIndex][isThisAmount] = amountAfterSlippage.toString()
@@ -349,10 +365,18 @@ export default function MainForm() {
             let abiInterfaceForDestDefiProtocol = new ethers.utils.Interface(currentAbi)
             const destChainExecData = abiInterfaceForDestDefiProtocol.encodeFunctionData(currentFunc, params[funcIndex])
             const destChainExecTx = {to: contractAddress, data: destChainExecData,}
-            const data = abi.encode(
-                ["uint256", "address", "address", "bytes"],
-                [BigNumber.from("0"), contractAddress, smartAccount.address, destChainExecTx.data,]
-            )
+            let data
+            if (toChainId == '106') {
+                data = abi.encode(
+                    ["uint256", "address", "address", "bytes"],
+                    [BigNumber.from("0"), contractAddress, smartAccount.address, destChainExecTx.data,]
+                )
+            } else {
+                data = abi.encode(
+                    ["uint256", "uint256", "address", "address", "bytes"],
+                    [BigNumber.from("0"), amountAfterSlippage, contractAddress, smartAccount.address, destChainExecTx.data,]
+                )
+            }
 
             const srcAddress = ethers.utils.solidityPack(["address"],[smartAccount.address])
             let abiInterfaceForChainPing = new ethers.utils.Interface(ChainPing)
@@ -360,7 +384,7 @@ export default function MainForm() {
                 fromChainId,
                 srcAddress,
                 _nonce,
-                avaxUSDCAddress,
+                toContractData.USDC,
                 amountAfterSlippage,
                 data,
             ]
@@ -368,11 +392,11 @@ export default function MainForm() {
             const erc20Interface = new ethers.utils.Interface([
                 "function transfer(address _account, uint256 _value)",
             ])
-            const dummmyTranferToCheckData = erc20Interface.encodeFunctionData("transfer", [ChainPingToContractAddress, amountAfterSlippage])
+            const dummmyTranferToCheckData = erc20Interface.encodeFunctionData("transfer", [toContractData.ChainPing, amountAfterSlippage])
             const gasUsed = await batch(
                 address,
-                avaxUSDCAddress,
-                ChainPingToContractAddress,
+                toContractData.USDC,
+                toContractData.ChainPing,
                 dummmyTranferToCheckData,
                 encodedDataForChainPing,
                 false,
@@ -380,9 +404,9 @@ export default function MainForm() {
             )
             console.log("gasUsed: ", gasUsed)
 
-            const stargateRouter = await new ethers.Contract(polygonStargateRouter, IStarGateRouter, smartAccount.provider)
+            const stargateRouter = await new ethers.Contract(fromContractData.stargateRouter, IStarGateRouter, smartAccount.provider)
             const lzParams = {dstGasForCall: gasUsed, dstNativeAmount: 0, dstNativeAddr: "0x",}
-            const packedToAddress = ethers.utils.solidityPack(["address"], [ChainPingToContractAddress])
+            const packedToAddress = ethers.utils.solidityPack(["address"], [toContractData.ChainPing])
             let quoteData = await stargateRouter.quoteLayerZeroFee(
                 toChainId,
                 _functionType,
@@ -479,10 +503,10 @@ export default function MainForm() {
                             onChange={(e: any) => onChangeToNetwork(e.target.value)}
                         >
                             <option value="106">Avalanche</option>
-                            {/* <option value="109">Polygon</option>
                             <option value="110">Arbitrum</option>
                             <option value="111">Optimism</option>
-                            <option value="101">Mainnet</option> */}
+                            {/* <option value="101">Mainnet</option> */}
+                            {/* <option value="109">Polygon</option> */}
                         </select>
                         <div style={{marginTop: "2%"}}>
                             <h3>Contract Address: </h3>
@@ -493,7 +517,9 @@ export default function MainForm() {
                                 onChange={(e: any) => handleContractAddress(e.target.value)}
                             >
                                 <option value="">-</option>
-                                {avaxContracts.length > 0 && avaxContracts.map((
+                                {
+                                    contractsDetails[toChainId].contractAddresses.length > 0 &&
+                                    contractsDetails[toChainId].contractAddresses.map((
                                     contractDetails: any, contractIndex: any
                                 ) => (
                                     <option value={contractDetails.contractAddress}>
@@ -509,6 +535,8 @@ export default function MainForm() {
                     <h6>0xb50685c25485CA8C520F5286Bbbf1d3F216D6989</h6>
                     <h6>0x2DF6fc68709AB8414b27b3bc4a972B3AE352274F</h6>
                     <h6>0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E</h6>
+
+                    <h6>0xaf88d065e77c8cC2239327C5EDb3A432268e5831</h6>
 
                     <div className={box1}>
                         {contractName && <h3>ContractName: {contractName}</h3>}
@@ -634,7 +662,7 @@ export default function MainForm() {
                                             target="_blank"
                                             href={`https://socketscan.io/tx/${txhash}`} style={{color: "blue"}}
                                         >
-                                            TxHash : {shorten("txhash")}
+                                            TxHash : {shorten(txhash)}
                                         </a>
                                     </p>
                                 )}

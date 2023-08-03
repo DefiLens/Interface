@@ -24,7 +24,6 @@ export default function MainFormForAvax() {
     const _nonce = 1
     const implementation_slot =
         "0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc"
-    // const avaxRPCUrl = `https://avalanche-mainnet.infura.io/v3/${MAINNET_INFURA}`
     const polygonRPCUrl = `https://polygon-mainnet.infura.io/v3/${MAINNET_INFURA}`
     const userAddress = "0xb50685c25485CA8C520F5286Bbbf1d3F216D6989"
     const polygonUSDTAddress = "0xc2132D05D31c914a87C6611C10748AEb04B58e8F"
