@@ -109,6 +109,7 @@ export default function MainForm() {
         const scwNativeBalance = await smartAccount.provider.getBalance(smartAccount.address)
         console.log("scwNativeBalance", scwNativeBalance.toString())
         setToChainId(_toNetwork)
+        setContractName("")
     }
 
     const handleContractAddress = async (_contractAddress) => {
@@ -592,7 +593,7 @@ export default function MainForm() {
                                 ))}
                             </select>
                         </div>
-                        {contractName && <h4>ContractName: {contractName}</h4>}
+                        {/* {contractName && <h4>ContractName: {contractName}</h4>} */}
                     </div>
 
                     <div className={box1}>
