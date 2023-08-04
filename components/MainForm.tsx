@@ -301,12 +301,12 @@ export default function MainForm() {
             if (toChainId == '106') {
                 data = abi.encode(
                     ["uint256", "address", "address", "bytes"],
-                    [BigNumber.from("0"), contractAddress, smartAccount.address, destChainExecTx.data,]
+                    [BigNumber.from("0"), contractAddress, address, destChainExecTx.data,]
                 )
             } else {
                 data = abi.encode(
                     ["uint256", "uint256", "address", "address", "bytes"],
-                    [BigNumber.from("0"), amountAfterSlippage, contractAddress, smartAccount.address, destChainExecTx.data,]
+                    [BigNumber.from("0"), amountAfterSlippage, contractAddress, address, destChainExecTx.data,]
                 )
             }
 
@@ -422,12 +422,12 @@ export default function MainForm() {
             if (toChainId == '106') {
                 data = abi.encode(
                     ["uint256", "address", "address", "bytes"],
-                    [BigNumber.from("0"), contractAddress, smartAccount.address, destChainExecTx.data,]
+                    [BigNumber.from("0"), contractAddress, address, destChainExecTx.data,]
                 )
             } else {
                 data = abi.encode(
                     ["uint256", "uint256", "address", "address", "bytes"],
-                    [BigNumber.from("0"), amountAfterSlippage, contractAddress, smartAccount.address, destChainExecTx.data,]
+                    [BigNumber.from("0"), amountAfterSlippage, contractAddress, address, destChainExecTx.data,]
                 )
             }
 

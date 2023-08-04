@@ -107,7 +107,7 @@ export default function Home() {
         <div>
             <ul>
                 <li>
-                    <a href="#">DefiLens</a>
+                    <a href="#">ChainPing</a>
                 </li>
                 <li style={{float: "right", padding: "5px"}}>
                     <div>
