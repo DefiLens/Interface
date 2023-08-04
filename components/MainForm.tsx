@@ -1,3 +1,4 @@
+import * as React from 'react';
 import {useEffect, useState} from "react"
 import {css} from "@emotion/css"
 import {BigNumber, Signer, ethers} from "ethers"
@@ -18,6 +19,7 @@ import {
     _nonce,
     contractsDetails
 } from "../utils/constants"
+import { parseEther } from 'ethers/lib/utils';
 
 export default function MainForm() {
     const address = useAddress() // Detect the connected address
@@ -55,6 +57,26 @@ export default function MainForm() {
     const [txhash, setTxHash] = useState<any>(false)
 
     useEffect(() => {
+        console.log('smartAccount-started', smartAccount)
+        setContractAddress("")
+    }, [])
+
+    useEffect(() => {
+        if (currentFuncIndex) {
+            let _params: any = []
+            const toContractData = contractsDetails[toChainId]
+            _params[0] = toContractData.USDC
+            _params[1] = amountIn
+            _params[2] = address
+            _params[3] = "0"
+            let _func = [...params]
+            _func[currentFuncIndex] = _params
+            setParams(_func)
+        }
+    }, [amountIn])
+
+
+    useEffect(() => {
         setTokenIn(polygonContractDetails.USDC)
         setTokenInDecimals(6)
         setAmountIn("")
@@ -89,6 +111,8 @@ export default function MainForm() {
     }
 
     const onChangeToNetwork = async (_toNetwork: any) => {
+        const scwNativeBalance = await smartAccount.provider.getBalance(smartAccount.address)
+        console.log("scwNativeBalance", scwNativeBalance.toString())
         setToChainId(_toNetwork)
     }
 
@@ -148,6 +172,16 @@ export default function MainForm() {
         setCurrentFuncIndex(funcIndex)
         setIsThisFieldAmount(amountFieldIndexes[funcIndex])
 
+        let _params: any = []
+        const toContractData = contractsDetails[toChainId]
+        _params[0] = toContractData.USDC
+        _params[1] = amountIn
+        _params[2] = address
+        _params[3] = "0"
+        let _func = [...params]
+        _func[funcIndex] = _params
+        setParams(_func)
+
         setGasUsed(undefined)
         setSimulateInputData(undefined)
         setSimulation(undefined)
@@ -158,18 +192,24 @@ export default function MainForm() {
         inputIndex: any,
         inputValue: any
     ) => {
-        setCurrentFunc(funcArray[funcIndex].name)
-        let _params: any = []
+        try {
+            if (!amountIn) throw ("Enter amountIn field above")
+            setCurrentFunc(funcArray[funcIndex].name)
+            let _params: any = []
 
-        if (params[funcIndex] != undefined) {
-            _params = [...params[funcIndex]]
-            _params[inputIndex] = inputValue
-        } else {
-            _params[inputIndex] = inputValue
+            if (params[funcIndex] != undefined) {
+                _params = [...params[funcIndex]]
+                _params[inputIndex] = inputValue
+            } else {
+                _params[inputIndex] = inputValue
+            }
+
+            let _func = [...params]
+            _func[funcIndex] = _params
+            setParams(_func)
+        } catch (error) {
+            alert('InputError: '+ error)
         }
-        let _func = [...params]
-        _func[funcIndex] = _params
-        setParams(_func)
     }
 
     const isThisFieldAmount = async (index: any) => {
@@ -222,8 +262,8 @@ export default function MainForm() {
             const toContractData = contractsDetails[toChainId]
 
             const abi = ethers.utils.defaultAbiCoder
-            const provider = await ethers.getDefaultProvider()
-            const signer: Signer = new ethers.VoidSigner(smartAccount, provider)
+            // const provider = await ethers.getDefaultProvider()
+            // const signer: Signer = new ethers.VoidSigner(smartAccount, provider)
             const USDT = await new ethers.Contract(tokenIn, IERC20, smartAccount.provider)
             const balance = await USDT.balanceOf(smartAccount.address)
 
@@ -249,7 +289,11 @@ export default function MainForm() {
             let abiInterfaceForDestDefiProtocol = new ethers.utils.Interface(currentAbi)
             console.log("abiInterfaceForDestDefiProtocol", abiInterfaceForDestDefiProtocol, currentFunc)
 
-            const destChainExecData = abiInterfaceForDestDefiProtocol.encodeFunctionData(currentFunc, params[funcIndex])
+            // const destChainExecData = abiInterfaceForDestDefiProtocol.encodeFunctionData(currentFunc, params[funcIndex])
+            const destChainExecData = abiInterfaceForDestDefiProtocol.encodeFunctionData(
+                currentFunc,
+                [toContractData.USDC, params[funcIndex][1], address, 0]
+            )
             console.log("destChainExecData", destChainExecData)
 
             const destChainExecTx = {to: contractAddress, data: destChainExecData,}
@@ -265,7 +309,6 @@ export default function MainForm() {
                     [BigNumber.from("0"), amountAfterSlippage, contractAddress, smartAccount.address, destChainExecTx.data,]
                 )
             }
-
 
             const srcAddress = ethers.utils.solidityPack(["address"], [smartAccount.address])
             let abiInterfaceForChainPing = new ethers.utils.Interface(ChainPing)
@@ -329,18 +372,24 @@ export default function MainForm() {
         try {
             setSendtxLoading(true)
             if (!smartAccount) throw "You need to login"
-            if (!simulation) throw "Simulation failed"
+            if (!simulation) throw "First simulate then send Tx"
             if (contractAddress == "") throw "Enter contractAddress field"
             if (amountIn == "") throw "Enter amountIn field"
             if (isThisAmount < 0) throw "Select amount field"
+
+            // const scwNativeBalance = await smartAccount.get
 
             const fromContractData = contractsDetails[fromChainId]
             const toContractData = contractsDetails[toChainId]
 
             setTxHash("")
             const abi = ethers.utils.defaultAbiCoder
+
             // const provider = await ethers.getDefaultProvider()
-            // const signer = new ethers.VoidSigner(currentAddress, provider)
+            // const signer = new ethers.VoidSigner(smartAccount.address, provider)
+            // const scwNativeBalance = await signer.getBalance()
+            // console.log("scwNativeBalance", scwNativeBalance)
+
             const USDT = await new ethers.Contract(tokenIn, IERC20, smartAccount.provider)
             const balance = await USDT.balanceOf(smartAccount.address)
             if (BigNumber.from(balance).lt(BigNumber.from(amountIn))) throw "You don't have enough balance"
@@ -363,7 +412,11 @@ export default function MainForm() {
             console.log("params2", params[funcIndex])
 
             let abiInterfaceForDestDefiProtocol = new ethers.utils.Interface(currentAbi)
-            const destChainExecData = abiInterfaceForDestDefiProtocol.encodeFunctionData(currentFunc, params[funcIndex])
+            // const destChainExecData = abiInterfaceForDestDefiProtocol.encodeFunctionData(currentFunc, params[funcIndex])
+            const destChainExecData = abiInterfaceForDestDefiProtocol.encodeFunctionData(
+                currentFunc,
+                [toContractData.USDC, params[funcIndex][1], address, 0]
+            )
             const destChainExecTx = {to: contractAddress, data: destChainExecData,}
             let data
             if (toChainId == '106') {
@@ -429,6 +482,16 @@ export default function MainForm() {
                 data,
                 {value: quoteData[0]}
             )
+
+            const scwNativeBalance = await smartAccount.provider.getBalance(smartAccount.address)
+            console.log("scwNativeBalance", scwNativeBalance.toString(), quoteData[0].toString())
+            const shouldBeBalance = BigNumber.from(scwNativeBalance)
+            const shouldBeBalanceMsg = bg(shouldBeBalance.toString()).plus(parseEther('5').toString()).dividedBy(bg(10).pow(18)).toString()
+            console.log("shouldBeBalanceMsg", shouldBeBalanceMsg.toString())
+
+            // Extra 1e18 should more as of now
+            if (!shouldBeBalance.gt(quoteData[0].add(parseEther('1')))) throw (`Not Enough Balance, You should have at least ${shouldBeBalanceMsg.toString()} polygon in your SCW wallet`)
+
             console.log("stargateTx", stargateTx)
             const sendTx = {to: stargateTx.to, data: stargateTx.data, value: stargateTx.value,}
             const txResponseOfBiconomyAA = await smartAccount?.sendTransactionBatch({transactions: [approveTx, sendTx],})
@@ -440,7 +503,11 @@ export default function MainForm() {
         } catch (error) {
             setSendtxLoading(false)
             console.log("sendTx-error: ", error)
-            alert("Transaction Failed: " + error)
+            alert("Transaction Error: " + error)
+            // if (error == "Not enough gas fee in your SCW Wallet"){
+            //     alert("Not enough gas fee in your SCW Walle")
+            //     alert("You shoul")
+            // }
             return
         }
     }
@@ -515,6 +582,7 @@ export default function MainForm() {
                                 name="contractAddresses"
                                 id="contractAddresses"
                                 onChange={(e: any) => handleContractAddress(e.target.value)}
+                                value={contractAddress}
                             >
                                 <option value="">-</option>
                                 {
@@ -531,13 +599,6 @@ export default function MainForm() {
                         {contractName && <h4>ContractName: {contractName}</h4>}
                     </div>
 
-                    <h6>0x794a61358D6845594F94dc1DB02A252b5b4814aD</h6>
-                    <h6>0xb50685c25485CA8C520F5286Bbbf1d3F216D6989</h6>
-                    <h6>0x2DF6fc68709AB8414b27b3bc4a972B3AE352274F</h6>
-                    <h6>0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E</h6>
-
-                    <h6>0xaf88d065e77c8cC2239327C5EDb3A432268e5831</h6>
-
                     <div className={box1}>
                         {contractName && <h3>ContractName: {contractName}</h3>}
                         <h4>Select function name from below:</h4>
@@ -547,7 +608,7 @@ export default function MainForm() {
                             id="funcNames"
                             onChange={(e: any) => onChangeFunctions(e.target.value)}
                         >
-                            {/* <option value={-1}>-</option> */}
+                            <option value="">-</option>
                             {funcArray.length > 0 && funcArray.map((funcName: any, funcIndex: any) => (
                                 <option value={funcIndex}>
                                     {funcName.name}
@@ -563,6 +624,7 @@ export default function MainForm() {
                                 <h3 style={{marginTop: "10px"}}>
                                     MethodName:{" "} {funcArray.length > 0 && funcArray[currentFuncIndex].name}
                                 </h3>
+                                <h4>{bg(amountIn).dividedBy(bg(10).pow(tokenInDecimals)).toString()} USDC will bridge from {contractsDetails[fromChainId].network} to {contractsDetails[toChainId].network} and call {funcArray[currentFuncIndex].name} method and deposit into aave.</h4>
                             </>
                         )}
                         {currentFunc && currentFuncIndex >= 0 && funcArray.length > 0 &&
@@ -572,7 +634,8 @@ export default function MainForm() {
                                         <label>
                                             {amountFieldIndexes[currentFuncIndex] == inputIndex
                                                 && input.type == "uint256" ? (
-                                                <>
+                                                <div style={{marginTop: "10px"}}>
+                                                <p>{input.name}</p>
                                                     <button
                                                         style={{backgroundColor: "blue", color: "white",}}
                                                         onClick={(e: any) => isThisFieldAmount(inputIndex)}
@@ -587,6 +650,7 @@ export default function MainForm() {
                                                             marginBottom: "2%",
                                                             width: "50%",
                                                         }}
+                                                        disabled
                                                         placeholder={input.name + " " + input.type}
                                                         value={
                                                             params[currentFuncIndex] &&
@@ -600,8 +664,10 @@ export default function MainForm() {
                                                             onChangeInput(currentFuncIndex, inputIndex,e.target.value)
                                                         }
                                                     />
-                                                </>
+                                                </div>
                                             ) : (
+                                                <div style={{marginTop: "10px"}}>
+                                                <p>{input.name}</p>
                                                 <input
                                                     style={{
                                                         padding: "10px",
@@ -610,15 +676,18 @@ export default function MainForm() {
                                                         marginBottom: "2%",
                                                         width: "50%",
                                                     }}
+                                                    disabled
                                                     placeholder={input.name + " " + input.type}
-                                                    value={params[currentFuncIndex] &&
-                                                            params[currentFuncIndex][inputIndex] != ""
-                                                            ? params[currentFuncIndex][inputIndex]
-                                                            : ""}
+                                                    value = {
+                                                        params[currentFuncIndex] &&
+                                                        params[currentFuncIndex][inputIndex] != ""
+                                                            ? params[currentFuncIndex][inputIndex] : ""
+                                                    }
                                                     onChange={(e: any) =>
                                                         onChangeInput(currentFuncIndex, inputIndex, e.target.value)
                                                     }
                                                 />
+                                                </div>
                                             )}
                                         </label>
                                     </>

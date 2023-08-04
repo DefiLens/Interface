@@ -1,3 +1,4 @@
+import * as React from 'react';
 import dynamic from "next/dynamic"
 import {Suspense} from "react"
 import MainForm from "../components/MainForm"

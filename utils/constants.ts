@@ -20,8 +20,8 @@ export const contractDataByNetwork = [
         // avax stargate chainId
         106: {
             "0x794a61358D6845594F94dc1DB02A252b5b4814aD": {
-                methodNames: ["repay", "supply"],
-                amountFieldIndex: [1, 1],
+                methodNames: ["supply"],
+                amountFieldIndex: [1],
                 contractName: "AAVE Lending POOL-V3",
                 network: "Avalanche",
             },
@@ -30,8 +30,10 @@ export const contractDataByNetwork = [
     {
         110: {
             "0x794a61358D6845594F94dc1DB02A252b5b4814aD": {
-                methodNames: ["repay", "repay", "supply", "supply",],
-                amountFieldIndex: [-1, 1, 1, -1],
+                methodNames: ["supply", "supply"],
+                amountFieldIndex: [1, -1],
+                // methodNames: ["repay", "repay", "supply", "supply",],
+                // amountFieldIndex: [-1, 1, 1, -1],
                 contractName: "AAVE Lending POOL-V3",
                 network: "Arbitrum",
             },
@@ -40,8 +42,10 @@ export const contractDataByNetwork = [
     {
         111: {
             "0x794a61358D6845594F94dc1DB02A252b5b4814aD": {
-                methodNames: ["repay", "repay", "supply", "supply",],
-                amountFieldIndex: [-1, 1, 1, -1],
+                methodNames: ["supply", "supply"],
+                amountFieldIndex: [1, -1],
+                // methodNames: ["repay", "repay", "supply", "supply",],
+                // amountFieldIndex: [-1, 1, 1, -1],
                 contractName: "AAVE Lending POOL-V3",
                 network: "Optimism",
             },
@@ -50,8 +54,10 @@ export const contractDataByNetwork = [
     {
         101: {
             "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2": {
-                methodNames: ["repay", "supply"],
-                amountFieldIndex: [1, 1],
+                methodNames: ["supply"],
+                amountFieldIndex: [1],
+                // methodNames: ["repay", "supply"],
+                // amountFieldIndex: [1, 1],
                 contractName: "AAVE Lending POOL-V3",
                 network: "Ethereum",
             },
@@ -60,8 +66,9 @@ export const contractDataByNetwork = [
     {
         109: {
             "0x794a61358D6845594F94dc1DB02A252b5b4814aD": {
-                methodNames: ["repay", "supply",],
-                amountFieldIndex: [1, 1],
+                methodNames: ["supply",],
+                // methodNames: ["repay", "supply",],
+                amountFieldIndex: [1],
                 contractName: "AAVE Lending POOL-V3",
                 network: "Polygon",
             },
@@ -79,7 +86,8 @@ export const contractsDetails = {
         ],
         USDC: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
         stargateRouter: "0x45A01E4e04F14f7A4a6702c74187c5F6222033cd",
-        rpcURL: `https://polygon-mainnet.infura.io/v3/${MAINNET_INFURA}`
+        rpcURL: `https://polygon-mainnet.infura.io/v3/${MAINNET_INFURA}`,
+        network: "Polygon"
     },
     '106': { // Avalanche
         contractAddresses: [
@@ -91,7 +99,8 @@ export const contractsDetails = {
         USDC: "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E",
         ChainPing: "0x6FE8e3E0c47043f136640dF7972C1e3F144B807F",
         stargateRouter: "0x45A01E4e04F14f7A4a6702c74187c5F6222033cd",
-        rpcURL: `https://avalanche-mainnet.infura.io/v3/${MAINNET_INFURA}`
+        rpcURL: `https://avalanche-mainnet.infura.io/v3/${MAINNET_INFURA}`,
+        network: "Avalanche"
     },
     '110': { // Arbitrum
         contractAddresses: [
@@ -100,10 +109,11 @@ export const contractsDetails = {
                 contractAddress: "0x794a61358D6845594F94dc1DB02A252b5b4814aD",
             }
         ],
-        USDC: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
+        USDC: "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8",
         ChainPing: "0xBA821135197bB2614F5Bd8943b5d1607288DC60d",
         stargateRouter: "0x53Bf833A5d6c4ddA888F69c22C88C9f356a41614",
-        rpcURL: `https://arbitrum-mainnet.infura.io/v3/${MAINNET_INFURA}`
+        rpcURL: `https://arbitrum-mainnet.infura.io/v3/${MAINNET_INFURA}`,
+        network: "Arbitrum"
     },
     '111': { // Optimism
         contractAddresses: [
@@ -115,9 +125,10 @@ export const contractsDetails = {
         USDC: "0x7F5c764cBc14f9669B88837ca1490cCa17c31607",
         ChainPing: "0x934E5421D4ce678ae4c4B136306Fbee91bfDBbC8",
         stargateRouter: "0xB0D502E938ed5f4df2E681fE6E419ff29631d62b",
-        rpcURL: `https://optimism-mainnet.infura.io/v3/${MAINNET_INFURA}`
+        rpcURL: `https://optimism-mainnet.infura.io/v3/${MAINNET_INFURA}`,
+        network: "Optimism"
     },
-    '101': { // ETHERTEUM
+    '101': { // Ethereum
         contractAddresses: [
             {
                 contractName: "AAVE Lending POOL-V3",
@@ -127,6 +138,7 @@ export const contractsDetails = {
         USDC: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
         // ChainPing: "0xBA821135197bB2614F5Bd8943b5d1607288DC60d",
         stargateRouter: "0x8731d54E9D02c286767d56ac03e8037C07e01e98",
-        rpcURL: `https://mainnet.infura.io/v3/${MAINNET_INFURA}`
+        rpcURL: `https://mainnet.infura.io/v3/${MAINNET_INFURA}`,
+        network: "Ethereum"
     }
 }

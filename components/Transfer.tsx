@@ -1,3 +1,4 @@
+import * as React from 'react';
 import {useState} from "react"
 import {css} from "@emotion/css"
 import web3 from "web3"
