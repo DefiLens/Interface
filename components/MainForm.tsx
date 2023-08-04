@@ -59,7 +59,7 @@ export default function MainForm() {
     useEffect(() => {
         console.log('smartAccount-started', smartAccount)
         setContractAddress("")
-    }, [])
+    })
 
     useEffect(() => {
         if (currentFuncIndex) {
@@ -584,13 +584,13 @@ export default function MainForm() {
                                 onChange={(e: any) => handleContractAddress(e.target.value)}
                                 value={contractAddress}
                             >
-                                <option value="">-</option>
+                                <option key={-1} value="">-</option>
                                 {
                                     contractsDetails[toChainId].contractAddresses.length > 0 &&
                                     contractsDetails[toChainId].contractAddresses.map((
                                     contractDetails: any, contractIndex: any
                                 ) => (
-                                    <option value={contractDetails.contractAddress}>
+                                    <option key={contractIndex} value={contractDetails.contractAddress}>
                                         {contractDetails.contractName}
                                     </option>
                                 ))}
@@ -608,9 +608,9 @@ export default function MainForm() {
                             id="funcNames"
                             onChange={(e: any) => onChangeFunctions(e.target.value)}
                         >
-                            <option value="">-</option>
+                            <option key={-1} value="">-</option>
                             {funcArray.length > 0 && funcArray.map((funcName: any, funcIndex: any) => (
-                                <option value={funcIndex}>
+                                <option key={funcIndex} value={funcIndex}>
                                     {funcName.name}
                                 </option>
                             ))}
