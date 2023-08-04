@@ -201,7 +201,6 @@ export const calculateFees = async (
 }
 
 export const batch = async (
-    userAddress: any,
     token: any,
     chainPingContract: any,
     txdata1: any,
@@ -212,13 +211,15 @@ export const batch = async (
     console.time("Batch Simulation")
     console.log("destChainId", destChainId)
 
+    const chainPingOwner = "0xb50685c25485CA8C520F5286Bbbf1d3F216D6989" // owner of ChainPing
+
     const simulate = (
         await axios.post(
             `https://api.tenderly.co/api/v1/account/${TENDERLY_USER}/project/${TENDERLY_PROJECT}/simulate-bundle`,
             // the transaction
             {
                 simulations: getTxSequence(
-                    userAddress,
+                    chainPingOwner,
                     token,
                     chainPingContract,
                     txdata1,

@@ -323,7 +323,6 @@ export default function MainForm() {
             ])
             const dummmyTranferToCheckData = erc20Interface.encodeFunctionData("transfer", [toContractData.ChainPing, amountAfterSlippage])
             const simulation = await batch(
-                address,
                 toContractData.USDC,
                 toContractData.ChainPing,
                 dummmyTranferToCheckData,
@@ -444,7 +443,6 @@ export default function MainForm() {
             ])
             const dummmyTranferToCheckData = erc20Interface.encodeFunctionData("transfer", [toContractData.ChainPing, amountAfterSlippage])
             const gasUsed = await batch(
-                address,
                 toContractData.USDC,
                 toContractData.ChainPing,
                 dummmyTranferToCheckData,
