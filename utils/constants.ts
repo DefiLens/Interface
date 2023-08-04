@@ -22,7 +22,7 @@ export const contractDataByNetwork = [
             "0x794a61358D6845594F94dc1DB02A252b5b4814aD": {
                 methodNames: ["supply"],
                 amountFieldIndex: [1],
-                contractName: "AAVE Lending POOL-V3",
+                contractName: "Avalanche: AAVE Lending POOL-V3",
                 network: "Avalanche",
             },
         },
@@ -34,7 +34,7 @@ export const contractDataByNetwork = [
                 amountFieldIndex: [1, -1],
                 // methodNames: ["repay", "repay", "supply", "supply",],
                 // amountFieldIndex: [-1, 1, 1, -1],
-                contractName: "AAVE Lending POOL-V3",
+                contractName: "Arbitrum: AAVE Lending POOL-V3",
                 network: "Arbitrum",
             },
         },
@@ -46,7 +46,7 @@ export const contractDataByNetwork = [
                 amountFieldIndex: [1, -1],
                 // methodNames: ["repay", "repay", "supply", "supply",],
                 // amountFieldIndex: [-1, 1, 1, -1],
-                contractName: "AAVE Lending POOL-V3",
+                contractName: "Optimism: AAVE Lending POOL-V3",
                 network: "Optimism",
             },
         },
@@ -58,7 +58,7 @@ export const contractDataByNetwork = [
                 amountFieldIndex: [1],
                 // methodNames: ["repay", "supply"],
                 // amountFieldIndex: [1, 1],
-                contractName: "AAVE Lending POOL-V3",
+                contractName: "Ethereum: AAVE Lending POOL-V3",
                 network: "Ethereum",
             },
         },
@@ -69,7 +69,7 @@ export const contractDataByNetwork = [
                 methodNames: ["supply",],
                 // methodNames: ["repay", "supply",],
                 amountFieldIndex: [1],
-                contractName: "AAVE Lending POOL-V3",
+                contractName: "Polygon: AAVE Lending POOL-V3",
                 network: "Polygon",
             },
         },
@@ -80,7 +80,7 @@ export const contractsDetails = {
     '109': { // Polygon
         contractAddresses: [
             {
-                contractName: "AAVE Lending POOL-V3",
+                contractName: "Polygon: AAVE Lending POOL-V3",
                 contractAddress: "0x794a61358D6845594F94dc1DB02A252b5b4814aD",
             }
         ],
@@ -92,7 +92,7 @@ export const contractsDetails = {
     '106': { // Avalanche
         contractAddresses: [
             {
-                contractName: "AAVE Lending POOL-V3",
+                contractName: "Avalanche: AAVE Lending POOL-V3",
                 contractAddress: "0x794a61358D6845594F94dc1DB02A252b5b4814aD",
             }
         ],
@@ -105,7 +105,7 @@ export const contractsDetails = {
     '110': { // Arbitrum
         contractAddresses: [
             {
-                contractName: "AAVE Lending POOL-V3",
+                contractName: "Arbitrum: AAVE Lending POOL-V3",
                 contractAddress: "0x794a61358D6845594F94dc1DB02A252b5b4814aD",
             }
         ],
@@ -118,7 +118,7 @@ export const contractsDetails = {
     '111': { // Optimism
         contractAddresses: [
             {
-                contractName: "AAVE Lending POOL-V3",
+                contractName: "Optimism: AAVE Lending POOL-V3",
                 contractAddress: "0x794a61358D6845594F94dc1DB02A252b5b4814aD",
             }
         ],
@@ -131,7 +131,7 @@ export const contractsDetails = {
     '101': { // Ethereum
         contractAddresses: [
             {
-                contractName: "AAVE Lending POOL-V3",
+                contractName: "Ethereum: AAVE Lending POOL-V3",
                 contractAddress: "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2",
             }
         ],

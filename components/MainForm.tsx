@@ -57,11 +57,6 @@ export default function MainForm() {
     const [txhash, setTxHash] = useState<any>(false)
 
     useEffect(() => {
-        console.log('smartAccount-started', smartAccount)
-        setContractAddress("")
-    })
-
-    useEffect(() => {
         if (currentFuncIndex) {
             let _params: any = []
             const toContractData = contractsDetails[toChainId]
@@ -117,6 +112,7 @@ export default function MainForm() {
     }
 
     const handleContractAddress = async (_contractAddress) => {
+        console.log('--_contractAddress', _contractAddress)
         if (!smartAccount) {
             alert("You need to biconomy login")
             return
@@ -584,13 +580,13 @@ export default function MainForm() {
                                 onChange={(e: any) => handleContractAddress(e.target.value)}
                                 value={contractAddress}
                             >
-                                <option key={-1} value="">-</option>
+                                <option key={"0x"} value="">-</option>
                                 {
                                     contractsDetails[toChainId].contractAddresses.length > 0 &&
                                     contractsDetails[toChainId].contractAddresses.map((
                                     contractDetails: any, contractIndex: any
                                 ) => (
-                                    <option key={contractIndex} value={contractDetails.contractAddress}>
+                                    <option key={contractDetails.contractAddress} value={contractDetails.contractAddress}>
                                         {contractDetails.contractName}
                                     </option>
                                 ))}
