@@ -37,6 +37,10 @@ export default function Home() {
         }
     }, [interval])
 
+    useEffect(() => {
+        login()
+    }, [address])
+
     async function login() {
         if (!sdkRef.current) {
             const socialLoginSDK = new SocialLogin()
@@ -119,7 +123,7 @@ export default function Home() {
                                 Switch Network
                             </button>
                         ) : (
-                            smartAccount && (
+                            smartAccount && !loading && (
                                 <>
                                     <p style={{color: "white"}}>{smartAccount && smartAccount.address}</p>
                                     <button className="bg-[#000000] py-2  w-full text-center rounded-lg  mt-4">
