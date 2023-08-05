@@ -37,9 +37,9 @@ export default function Home() {
         }
     }, [interval])
 
-    useEffect(() => {
-        login()
-    }, [address])
+    // useEffect(() => {
+    //     login()
+    // }, [address])
 
     async function login() {
         if (!sdkRef.current) {
