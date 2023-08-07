@@ -135,8 +135,8 @@ export default function Transfer() {
   return (
     <>
       {!smartAccount && (
-        <div className="flex justify-center items-center border-2 border-gray-800 shadow-sm shadow-[#080829] rounded-lg cursor-pointer">
-          <h3 className="font-semibold text-lg md:text-2xl text-[#080829] py-4 bg-transparent">
+        <div className="flex justify-center items-center border-2 border-secondary-800 shadow-sm shadow-primary-950 rounded-lg cursor-pointer">
+          <h3 className="font-semibold text-lg md:text-2xl text-primary-950 py-4 bg-transparent">
             Login First!
           </h3>
         </div>

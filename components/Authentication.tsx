@@ -120,11 +120,11 @@ export default function Home() {
   };
 
   const buttonStyle =
-    "bg-indigo-600 hover:bg-indigo-700 py-3 px-8 rounded-lg text-indigo-100 font-medium border-b-4 border-indigo-800 hover:border-indigo-900 transition duration-300";
+    "bg-primary-600 hover:bg-primary-700 py-3 px-8 rounded-lg text-primary-100 font-medium border-b-4 border-primary-800 hover:border-primary-900 transition duration-300";
 
   return (
     <div>
-      <ul className="bg-[#080829] p-2 shadow-md shadow-gray-500">
+      <ul className="bg-primary-950 p-2 shadow-md shadow-secondary-500">
         <li>
           <a href="#" className="font-bold text-2xl hover:bg-transparent">
             ChainPing
@@ -134,7 +134,7 @@ export default function Home() {
           <div>
             {isOnWrongNetwork ? (
               <button
-                className="bg-red-600 hover:bg-red-700 py-3 px-8 rounded-lg text-red-100 font-medium border-b-4 border-red-800 hover:border-red-900 transition duration-300 mx-2"
+                className="bg-error-600 hover:bg-error-700 py-3 px-8 rounded-lg text-error-100 font-medium border-b-4 border-error-800 hover:border-error-900 transition duration-300 mx-2"
                 onClick={() => switchNetwork?.(137)}
               >
                 Switch Network
@@ -172,7 +172,25 @@ export default function Home() {
             )}
             {!smartAccount && !loading && (
               <li>
-                <button className={buttonStyle} onClick={handleConnect}>
+                <button
+                  className={`${buttonStyle} flex justify-center items-center gap-2`}
+                  onClick={handleConnect}
+                >
+                  <svg
+                    className="h-4 w-4 text-light"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    stroke-width="2"
+                    stroke="currentColor"
+                    fill="none"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path stroke="none" d="M0 0h24v24H0z" />{" "}
+                    <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />{" "}
+                    <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+                  </svg>
                   Connect
                 </button>
               </li>

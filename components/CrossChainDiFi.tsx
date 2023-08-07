@@ -6,7 +6,6 @@ import { BigNumber as bg } from "bignumber.js";
 import { Signer, ethers, BigNumber } from "ethers";
 
 import { parseEther } from "ethers/lib/utils";
-import { TbArrowsSort } from "react-icons/tb";
 import { BiSolidDownArrow } from "react-icons/bi";
 import { ImSpinner9, ImSpinner } from "react-icons/im";
 import { BsArrowRightCircleFill } from "react-icons/bs";
@@ -625,28 +624,28 @@ export default function CrossChainDiFi() {
     "w-full relative float-label-input shadow-md rounded-md";
 
   const inputBoxStyle =
-    "w-full bg-white focus:outline-none focus:shadow-outline border-2  rounded-md p-2 block appearance-none leading-normal focus:border-[#080829]";
+    "w-full bg-white focus:outline-none focus:shadow-outline border-2  rounded-md p-2 block appearance-none leading-normal focus:border-primary-950";
 
   const inputLabelStyle =
-    "absolute top-2 left-0 text-gray-800 text-md pointer-events-none rounded-full transition duration-200 ease-in-outbg-white px-3";
+    "absolute top-2 left-0 text-secondary-800 text-md pointer-events-none rounded-full transition duration-200 ease-in-outbg-white px-3";
 
   const selectContainer =
-    "w-full relative border-2 border-gray-300 text-gray-800 bg-white shadow-md rounded-md";
+    "w-full relative border-2 border-secondary-300 text-secondary-800 bg-white shadow-md rounded-md";
 
   const selectBoxStyle = "appearance-none w-full p-2 bg-white rounded-md";
   const selectAppearanceStyle =
-    "pointer-events-none absolute right-0 top-0 bottom-0 flex items-center px-3 text-gray-500 border-l-2";
+    "pointer-events-none absolute right-0 top-0 bottom-0 flex items-center px-3 text-secondary-500 border-l-2";
   return (
     <>
       {!smartAccount && (
-        <div className="flex justify-center items-center border-2 border-gray-800 shadow-sm shadow-[#080829] rounded-lg cursor-pointer">
-          <h3 className="font-semibold text-lg md:text-2xl text-[#080829] py-4 bg-transparent ">
+        <div className="flex justify-center items-center border-2 border-secondary-800 shadow-sm shadow-primary-950 rounded-lg cursor-pointer">
+          <h3 className="font-semibold text-lg md:text-2xl text-primary-950 py-4 bg-transparent ">
             Login First!
           </h3>
         </div>
       )}
       {smartAccount && (
-        <div className="h-full flex flex-col justify-center items-center gap-5 border-2 border-gray-800 shadow-sm shadow-[#080829] rounded-lg cursor-pointer p-10">
+        <div className="h-full flex flex-col justify-center items-center gap-5 border-2 border-secondary-800 shadow-sm shadow-primary-950 rounded-lg cursor-pointer p-10">
           <div className="w-full flex justify-center items-center gap-3">
             <div className={selectContainer}>
               <label htmlFor="fromNetwork" className="sr-only">
@@ -714,7 +713,21 @@ export default function CrossChainDiFi() {
           </div>
 
           <div className="rounded-full my-5">
-            <TbArrowsSort size={25} />
+            <svg
+              className="h-8 w-8 text-primary-950"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              stroke-width="2"
+              stroke="currentColor"
+              fill="none"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path stroke="none" d="M0 0h24v24H0z" />{" "}
+              <path d="M3 9l4-4l4 4m-4 -4v14" />{" "}
+              <path d="M21 15l-4 4l-4-4m4 4v-14" />
+            </svg>
           </div>
 
           <div className="w-full flex justify-center items-center gap-3">
@@ -796,15 +809,14 @@ export default function CrossChainDiFi() {
       )}
 
       {/* ------------- Simulation Model START ------------- */}
-
       {isSimulationOpen && contractName && funcArray && (
         <div className="fixed top-0 right-0 left-0 z-50 backdrop-blur-sm  w-full flex justify-center items-center p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[100vh] max-h-full">
-          <div className="relative w-full max-w-4xl max-h-full rounded-lg shadow dark:bg-gray-700">
-            <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
+          <div className="relative w-full max-w-4xl max-h-full rounded-lg shadow-lg bg-secondary-700 ">
+            <div className="relative  rounded-lg shadow-lg bg-secondary-700">
               <div className="flex items-start justify-between p-4 rounded-t">
                 <button
                   type="button"
-                  className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                  className="text-secondary-400 bg-transparent rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center hover:bg-secondary-600 hover:text-white"
                   onClick={() => setIsSimulationOpen(false)}
                 >
                   <svg
@@ -825,7 +837,7 @@ export default function CrossChainDiFi() {
                   <span className="sr-only">Close modal</span>
                 </button>
               </div>
-              <div className="py-3 px-6 text-white border-y-2 border-gray-600">
+              <div className="py-3 px-6 text-white border-y-2 border-secondary-600">
                 {contractName && (
                   <h3 className="font-semibold text-lg">
                     Contract Detail :
@@ -836,7 +848,7 @@ export default function CrossChainDiFi() {
                 )}
               </div>
 
-              <div className="h-96 flex justify-center items-start text-white rounded-lg border-2 border-gray-600 m-3 ">
+              <div className="h-96 flex justify-center items-start text-white rounded-lg border-2 border-secondary-600 m-3 ">
                 <div className="w-[50%] h-full flex justify-center items-start px-5 py-3">
                   <div className={`${selectContainer}`}>
                     <label htmlFor="funcNames" className="sr-only">
@@ -865,7 +877,7 @@ export default function CrossChainDiFi() {
                   </div>
                 </div>
 
-                <div className="w-[50%] h-full flex flex-col justify-end items-center gap-3 border-l-2 border-l-gray-600 p-3">
+                <div className="w-[50%] h-full flex flex-col justify-end items-center gap-3 border-l-2 border-l-secondary-600 p-3">
                   {currentFunc &&
                     currentFuncIndex >= 0 &&
                     funcArray.length > 0 &&
@@ -884,7 +896,7 @@ export default function CrossChainDiFi() {
                                   onClick={(e: any) =>
                                     isThisFieldAmount(inputIndex)
                                   }
-                                  className="py-1 px-3 text-xs font-normal bg-indigo-600 rounded-lg"
+                                  className="py-1 px-3 text-xs font-normal bg-primary-600 rounded-lg"
                                 >
                                   isThisAmountField
                                 </button>
@@ -912,7 +924,7 @@ export default function CrossChainDiFi() {
                                   //     e.target.value
                                   //   )
                                   // }
-                                  className="w-full text-black text-sm rounded-md bg-gray-50 py-1 px-3 outline-none drop-shadow-sm transition-all duration-200 ease-in-out"
+                                  className="w-full text-dark text-sm rounded-md bg-secondary-50 py-1 px-3 outline-none drop-shadow-sm transition-all duration-200 ease-in-out"
                                 />
                               </div>
                             ) : (
@@ -936,7 +948,7 @@ export default function CrossChainDiFi() {
                                   //     e.target.value
                                   //   )
                                   // }
-                                  className="w-full text-black text-sm rounded-md bg-gray-50 py-1 px-3 outline-none drop-shadow-sm transition-all duration-200 ease-in-out"
+                                  className="w-full text-dark text-sm rounded-md bg-secondary-50 py-1 px-3 outline-none drop-shadow-sm transition-all duration-200 ease-in-out"
                                 />
                               </div>
                             )}
@@ -949,7 +961,7 @@ export default function CrossChainDiFi() {
                     <button
                       type="button"
                       onClick={(e: any) => simulate(currentFuncIndex)}
-                      className="flex justify-center items-center gap-2 bg-green-600 hover:bg-green-700 py-2 px-5 rounded-lg text-white font-medium border-b-4 border-green-800 hover:border-green-900 transition duration-300"
+                      className="flex justify-center items-center gap-2 bg-success-600 hover:bg-success-700 py-2 px-5 rounded-lg text-white font-medium border-b-4 border-success-800 hover:border-success-900 transition duration-300"
                     >
                       {simulateLoading && (
                         <ImSpinner className="animate-spin h-5 w-5" />
@@ -963,14 +975,13 @@ export default function CrossChainDiFi() {
           </div>
         </div>
       )}
-
       {/* ------------- Simulation Model END ------------- */}
 
       {/* ------------- Simulation Success Model START ------------- */}
       {isSimulationSuccessOpen && simulation != undefined && (
         <div className="fixed top-0 right-0 left-0 z-50 backdrop-blur-sm  w-full flex justify-center items-center p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[100vh] max-h-full">
-          <div className="relative w-full max-w-4xl max-h-full rounded-lg shadow dark:bg-gray-700">
-            <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
+          <div className="relative w-full max-w-4xl max-h-full rounded-lg shadow-lg bg-secondary-700">
+            <div className="relative  rounded-lg shadow-lg bg-secondary-700">
               <div className="flex items-center justify-between p-4 rounded-t">
                 <h1 className="flex justify-center items-center gap-3 text-white font-semibold text-xl">
                   <svg
@@ -989,7 +1000,7 @@ export default function CrossChainDiFi() {
                 </h1>
                 <button
                   type="button"
-                  className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                  className="text-secondary-400 bg-transparent rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center hover:bg-secondary-600 hover:text-white"
                   onClick={() => setIsSimulationSuccessOpen(false)}
                 >
                   <svg
@@ -1010,29 +1021,39 @@ export default function CrossChainDiFi() {
                   <span className="sr-only">Close modal</span>
                 </button>
               </div>
-              <div className="py-3 px-6 text-white border-t-2 border-gray-600">
-                <h3 className="font-medium text-lg my-2">
-                  Method :
-                  <span className="font-normal text-base px-3">
+              <div className="py-3 px-6 text-white border-t-2 border-secondary-600">
+                <div className="w-full flex justify-start items-center gap-1 my-2">
+                  <h3 className="w-[125px] font-medium text-lg">Method :</h3>
+                  <h5 className="w-full font-normal text-base break-all">
                     {funcArray.length > 0 && funcArray[currentFuncIndex].name}
-                  </span>
-                </h3>
-                <h3 className="font-medium text-lg my-2">
-                  Network :
-                  <span className="font-normal text-base px-3">
+                  </h5>
+                </div>
+                <div className="w-full flex justify-start items-center gap-1 my-2">
+                  <h3 className="w-[125px] font-medium text-lg">Method :</h3>
+                  <h5 className="w-full font-normal text-base break-all">
+                    {funcArray.length > 0 && funcArray[currentFuncIndex].name}
+                  </h5>
+                </div>
+                <div className="w-full flex justify-start items-center gap-1 my-2">
+                  <h3 className="w-[125px] font-medium text-lg break-all">
+                    Network :
+                  </h3>
+                  <h5 className="w-full font-normal text-base break-all">
                     {contractsDetails[toChainId].network}
-                  </span>
-                </h3>
-                <h3 className="font-medium text-lg my-2">
-                  Gas :
-                  <span className="font-normal text-base px-3">{gasUsed}</span>
-                </h3>
-                <h3 className="font-medium text-lg my-2">
-                  Call Data :
-                  <span className="font-normal text-base px-3">
+                  </h5>
+                </div>
+                <div className="w-full flex justify-start items-center gap-1 my-2">
+                  <h3 className="w-[125px] font-medium text-lg">Gas :</h3>
+                  <h5 className="w-full font-normal text-base break-all">
+                    {gasUsed}
+                  </h5>
+                </div>
+                <div className="w-full flex justify-start items-start gap-1 my-2">
+                  <h3 className="w-[125px] font-medium text-lg">Call Data :</h3>
+                  <h5 className="w-full font-normal text-sm break-all">
                     {simulateInputData}
-                  </span>
-                </h3>
+                  </h5>
+                </div>
               </div>
 
               {currentFunc && (
@@ -1040,7 +1061,7 @@ export default function CrossChainDiFi() {
                   <button
                     type="button"
                     onClick={(e: any) => sendTx(currentFuncIndex)}
-                    className="bg-green-600 hover:bg-green-700 py-2 px-5 rounded-lg text-white font-medium border-b-4 border-green-800 hover:border-green-900 transition duration-300"
+                    className="flex justify-center items-center gap-2 bg-success-600 hover:bg-success-700 py-2 px-5 rounded-lg text-white font-medium border-b-4 border-success-800 hover:border-success-900 transition duration-300"
                   >
                     {sendTxLoading && (
                       <ImSpinner className="animate-spin h-5 w-5" />
@@ -1058,8 +1079,8 @@ export default function CrossChainDiFi() {
       {/* ------------- Simulation Error Model START ------------- */}
       {isSimulationErrorOpen && (
         <div className="fixed top-0 right-0 left-0 z-50 backdrop-blur-sm  w-full flex justify-center items-center p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[100vh] max-h-full">
-          <div className="relative w-full max-w-4xl max-h-full rounded-lg shadow dark:bg-gray-700">
-            <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
+          <div className="relative w-full max-w-4xl max-h-full rounded-lg shadow-lg bg-secondary-700">
+            <div className="relativ rounded-lg shadow-lg bg-secondary-700">
               <div className="flex items-center justify-between p-4 rounded-t">
                 <h1 className="flex justify-center items-center gap-3 text-white font-semibold text-xl">
                   <svg
@@ -1079,7 +1100,7 @@ export default function CrossChainDiFi() {
                 </h1>
                 <button
                   type="button"
-                  className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                  className="text-secondary-400 bg-transparent  rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center hover:bg-secondary-600 hover:text-white"
                   onClick={() => setIsSimulationErrorOpen(false)}
                 >
                   <svg
@@ -1100,28 +1121,29 @@ export default function CrossChainDiFi() {
                   <span className="sr-only">Close modal</span>
                 </button>
               </div>
-              <div className="py-3 px-6 text-white border-t-2 border-gray-600">
+              <div className="py-3 px-6 text-white border-t-2 border-secondary-600">
                 {currentFunc && (
-                  <h3 className="font-medium text-lg my-2">
-                    Method :
-                    <span className="font-normal text-base px-3">
+                  <div className="w-full flex justify-start items-center gap-1 my-2">
+                    <h3 className="w-[125px] font-medium text-lg">Method :</h3>
+                    <h5 className="w-full font-normal text-base break-all">
                       {funcArray.length > 0 && funcArray[currentFuncIndex].name}
-                    </span>
-                  </h3>
+                    </h5>
+                  </div>
                 )}
-                <h3 className="font-medium text-lg my-2">
-                  Error :
-                  <span className="font-normal text-base px-3">
+
+                <div className="w-full flex justify-start items-center gap-1 my-2">
+                  <h3 className="w-[125px] font-medium text-lg">Error :</h3>
+                  <h5 className="w-full font-normal text-base break-all">
                     {simulationErrorMsg}
-                  </span>
-                </h3>
+                  </h5>
+                </div>
               </div>
 
               <div className="flex justify-center items-center gap-3 py-5">
                 <button
                   type="button"
                   onClick={(e: any) => setIsSimulationErrorOpen(false)}
-                  className="bg-green-600 hover:bg-green-700 py-2 px-5 rounded-lg text-white font-medium border-b-4 border-green-800 hover:border-green-900 transition duration-300"
+                  className="bg-success-600 hover:bg-success-700 py-2 px-5 rounded-lg text-white font-medium border-b-4 border-success-800 hover:border-success-900 transition duration-300"
                 >
                   Try Again
                 </button>

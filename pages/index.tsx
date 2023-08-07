@@ -43,13 +43,13 @@ const Index = () => {
         <SocialLoginDynamic />
 
         <div className="w-[100vw] h-[89vh] flex justify-center items-start">
-          <div className="w-[250px] h-full flex flex-col justify-start items-center gap-5 p-5 pt-10 text-lg text-white bg-gray-800 shadow-lg shadow-gray-500">
+          <div className="w-[250px] h-full flex flex-col justify-start items-center gap-5 p-5 pt-10 text-lg text-light bg-secondary-800 shadow-lg shadow-secondary-500">
             {TabList.length > 0 &&
               TabList?.map((item) => (
                 <div
                   key={item.title}
-                  className={`cursor-pointer px-4 py-2 rounded-md hover:bg-gray-600 transition duration-300 ${
-                    activeTab === item.title ? "bg-gray-500" : ""
+                  className={`cursor-pointer px-4 py-2 rounded-md hover:bg-secondary-600 transition duration-300 ${
+                    activeTab === item.title ? "bg-secondary-500" : ""
                   } `}
                   onClick={() => setActiveTab(item.title)}
                 >
