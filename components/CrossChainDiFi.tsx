@@ -386,7 +386,10 @@ export default function CrossChainDiFi() {
       setSimulationLoading(false);
       setIsSimulationOpen(false);
       setIsSimulationSuccessOpen(true);
+      setIsSimulationErrorOpen(!simulation.simulation.status);
+      setsimulationErrorMsg(simulation.simulation.error);
 
+      console.log("simulation-error: ", simulation.simulation.error);
       console.log("simulation-status: ", simulation.simulation.status);
       console.log("simulation-input: ", simulation.simulation.input);
       console.log("simulation-method: ", simulation.simulation.method);
@@ -395,7 +398,8 @@ export default function CrossChainDiFi() {
       setSimulationLoading(false);
       setIsSimulationOpen(false);
       setIsSimulationErrorOpen(true);
-      setsimulationErrorMsg(error);
+      setsimulationErrorMsg("Simulation Failed");
+
       console.log("Simulation Failed: " + error);
       toast.error(error);
       // alert("Simulation Failed: " + error);
@@ -611,11 +615,11 @@ export default function CrossChainDiFi() {
       setSendtxLoading(false);
       console.log("sendTx-error: ", error);
       // alert("Transaction Error: " + error);
-      toast.error(error);
-      // if (error == "Not enough gas fee in your SCW Wallet"){
-      //     alert("Not enough gas fee in your SCW Walle")
-      //     alert("You shoul")
-      // }
+      if (error.message) {
+        toast.error(error.message);
+      } else {
+        toast.error(error);
+      }
       return;
     }
   };
@@ -1022,16 +1026,16 @@ export default function CrossChainDiFi() {
                 </button>
               </div>
               <div className="py-3 px-6 text-white border-t-2 border-secondary-600">
-                <div className="w-full flex justify-start items-center gap-1 my-2">
+                {/* <div className="w-full flex justify-start items-center gap-1 my-2">
                   <h3 className="w-[125px] font-medium text-lg">Method :</h3>
                   <h5 className="w-full font-normal text-base break-all">
                     {funcArray.length > 0 && funcArray[currentFuncIndex].name}
                   </h5>
-                </div>
+                </div> */}
                 <div className="w-full flex justify-start items-center gap-1 my-2">
                   <h3 className="w-[125px] font-medium text-lg">Method :</h3>
                   <h5 className="w-full font-normal text-base break-all">
-                    {funcArray.length > 0 && funcArray[currentFuncIndex].name}
+                    sgReceive
                   </h5>
                 </div>
                 <div className="w-full flex justify-start items-center gap-1 my-2">
@@ -1057,6 +1061,7 @@ export default function CrossChainDiFi() {
               </div>
 
               {currentFunc && (
+                <>
                 <div className="flex justify-center items-center gap-3 py-5">
                   <button
                     type="button"
@@ -1069,6 +1074,20 @@ export default function CrossChainDiFi() {
                     sendTx
                   </button>
                 </div>
+                <div className="flex justify-center items-center gap-3 py-5">
+                  {txhash && (
+                    <p>
+                      <a
+                        target="_blank"
+                        href={`https://socketscan.io/tx/${txhash}`}
+                        style={{ color: "blue" }}
+                      >
+                        TxHash : {shorten(txhash)}
+                      </a>
+                    </p>
+                  )}
+                </div>
+                </>
               )}
             </div>
           </div>
@@ -1126,7 +1145,8 @@ export default function CrossChainDiFi() {
                   <div className="w-full flex justify-start items-center gap-1 my-2">
                     <h3 className="w-[125px] font-medium text-lg">Method :</h3>
                     <h5 className="w-full font-normal text-base break-all">
-                      {funcArray.length > 0 && funcArray[currentFuncIndex].name}
+                      {/* {funcArray.length > 0 && funcArray[currentFuncIndex].name} */}
+                      sgReceive
                     </h5>
                   </div>
                 )}
