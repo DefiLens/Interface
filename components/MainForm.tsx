@@ -15,19 +15,59 @@ import IERC20 from "../abis/IERC20.json";
 import ChainPing from "../abis/ChainPing.json";
 import { useAppStore } from "../store/appStore";
 import IStarGateRouter from "../abis/IStarGateRouter.json";
-import { contractsDetails, _nonce, _functionType } from "../utils/constants";
 import {
-  shorten,
-  fetchContractDetails,
-  calculateFees,
   batch,
-} from "../utils/helper";
+  calculateFees,
+  chooseChianId,
+  fetchContractDetails,
+  shorten,
+} from "../utils/helper"
+import {
+  NetworkNameByChainId,
+  _functionType,
+  _nonce,
+  methodWithApi,
+  tokensByNetwork,
+} from "../utils/constants"
+import axios from 'axios';
+import { fetchMethodParams, getNetworkAndContractData } from '../utils/apis';
+
+interface Contract {
+  contractName: string;
+  contractAddress: string;
+}
+
+interface ContractMetaData {
+  methodNames: string[];
+  amountFieldIndex: number[];
+}
+
+interface Tokens {
+  [tokenName: string]: string;
+}
+
+interface ChainPing {
+  [network: string]: string;
+}
+
+interface StarGateRouter {
+  [network: string]: string;
+}
+
+interface ApiResponse {
+  contracts: Contract[];
+  contractMetaData: Record<string, ContractMetaData>;
+  tokens: Tokens;
+  chainPing: ChainPing;
+  starGateRouter: StarGateRouter;
+}
+
 
 export default function MainForm() {
   const address = useAddress(); // Detect the connected address
   const signer: any = useSigner(); // Detect the connected address
 
-  const polygonContractDetails: any = contractsDetails["109"];
+  const polygonUSDC: any = tokensByNetwork['109'].usdc
 
   const {
     smartAccount,
@@ -45,19 +85,18 @@ export default function MainForm() {
   const [srcPoolId, setSrcPoolId] = useState<any>(1);
   const [destPoolId, setDestPoolId] = useState<any>(1);
 
-  const [tokenIn, setTokenIn] = useState<any>(polygonContractDetails?.USDC);
+  const [tokenIn, setTokenIn] = useState<any>(polygonUSDC)
   const [tokenInDecimals, setTokenInDecimals] = useState<any>(6);
-  const [contractAddress, setContractAddress] = useState<any>();
   const [amountIn, setAmountIn] = useState<any>();
 
   const [funcArray, setFunctionArray] = useState<any[]>([]);
   const [params, setParams] = useState<any>([[]]);
+  const [fixParams, setFixParams] = useState<any>([[]])
+
   const [currentAbi, setAbi] = useState<any>();
   const [currentFunc, setCurrentFunc] = useState<any>();
   const [currentFuncIndex, setCurrentFuncIndex] = useState<any>(0);
-  const [contractName, setContractName] = useState<any>();
 
-  const [amountFieldIndexes, setAmountFieldIndexes] = useState<any>();
   const [isThisAmount, setIsThisFieldAmount] = useState<any>();
 
   const [simulation, setSimulation] = useState<any>();
@@ -68,79 +107,96 @@ export default function MainForm() {
 
   const [txhash, setTxHash] = useState<any>(false);
 
+  const [allNetworkData, setData] = useState<ApiResponse | null>(null);
+  const [contractIndex, setContractIndex] = useState<any>()
+
   useEffect(() => {
-    if (currentFuncIndex) {
-      let _params: any = [];
-      const toContractData = contractsDetails[toChainId];
-      _params[0] = toContractData.USDC;
-      _params[1] = amountIn;
-      _params[2] = address;
-      _params[3] = "0";
-      let _func = [...params];
-      _func[currentFuncIndex] = _params;
-      setParams(_func);
+    async function updateParams() {
+        if (currentFuncIndex) {
+            setParams("")
+            setFixParams("")
+            const contractAddress = allNetworkData?.contracts[contractIndex].contractAddress
+            const apiName = methodWithApi[toChainId][contractAddress][funcArray[currentFuncIndex].name]
+            console.log('apiName', apiName)
+
+            const response = await fetchMethodParams(fromChainId, toChainId, funcArray, amountIn, smartAccount, address, currentFuncIndex, currentFunc, apiName)
+            if (!response.data) throw ("api error")
+            let _func = [...params]
+            _func[currentFuncIndex] = response.data.params
+            setParams(_func)
+            setFixParams(response.data.fixParams)
+        }
     }
-  }, [amountIn]);
+    updateParams()
+}, [amountIn])
 
   useEffect(() => {
-    setTokenIn(polygonContractDetails.USDC);
-    setTokenInDecimals(6);
-    setAmountIn("");
-  }, [fromChainId]);
+    setTokenIn(polygonUSDC)
+    setTokenInDecimals(6)
+    setAmountIn("")
+    setContractIndex("")
+    resetField()
+  }, [fromChainId])
 
   useEffect(() => {
-    setContractAddress("");
-    resetField();
-  }, [toChainId]);
+    setContractIndex("")
+    resetField()
+  }, [toChainId])
 
   useEffect(() => {
-    if (contractAddress) {
-      resetField();
-      generateAbis();
+    if (contractIndex) {
+        resetField()
+        generateAbis()
     }
-  }, [contractAddress, smartAccount]);
+  }, [contractIndex, smartAccount])
 
   const resetField = async () => {
-    setFunctionArray([]);
-    setParams("");
-    setCurrentFunc("");
-    setCurrentFuncIndex(0);
-    setIsThisFieldAmount(-1);
+    setFunctionArray([])
+    setParams("")
+    setFixParams("")
+    setCurrentFunc("")
+    setCurrentFuncIndex(0)
+    setIsThisFieldAmount(-1)
 
-    setGasUsed(undefined);
-    setSimulateInputData(undefined);
-    setSimulation(undefined);
-  };
+    setGasUsed(undefined)
+    setSimulateInputData(undefined)
+    setSimulation(undefined)
+}
 
-  const onChangeFromNetwork = async (_fromNetwork: any) => {
-    setFromChainId(_fromNetwork);
-  };
+const onChangeFromNetwork = async (_fromNetwork: any) => {
+    setFromChainId(_fromNetwork)
+}
 
-  const onChangeToNetwork = async (_toNetwork: any) => {
-    const scwNativeBalance = await smartAccount.provider.getBalance(
-      smartAccount.address
-    );
-    console.log("scwNativeBalance", scwNativeBalance.toString());
-    setToChainId(_toNetwork);
-    setContractName("");
-  };
-
-  const handleContractAddress = async (_contractAddress) => {
-    console.log("--_contractAddress", _contractAddress);
-    if (!smartAccount) {
-      alert("You need to biconomy login");
-      return;
+const onChangeToNetwork = async (toNetwork: any) => {
+    try {
+        setData(null)
+        setToChainId(toNetwork)
+        const response: any = await getNetworkAndContractData(fromChainId, toNetwork)
+        if (response.data) {
+            setData(response.data);
+        }
+    } catch (error) {
+        console.error('API Error:', error);
     }
-    setContractAddress(_contractAddress);
-  };
 
-  // for e.g usdt -> usdc
-  const onChangeTokenIn = async (tokenIn: any) => {
+}
+
+const handleContractAddress = async (_contractIndex) => {
+    if (!smartAccount) {
+        alert("You need to biconomy login")
+        return
+    }
+    setContractIndex(_contractIndex)
+}
+
+// for e.g usdt -> usdc
+const onChangeTokenIn = async (tokenIn: any) => {
+    const token = tokensByNetwork[fromChainId]
     if (tokenIn == "usdc") {
-      setTokenIn(polygonContractDetails.USDC);
-      setTokenInDecimals(6);
-      setSrcPoolId(1);
-      setDestPoolId(1);
+        setTokenIn(token.usdc)
+        setTokenInDecimals(6)
+        setSrcPoolId(1)
+        setDestPoolId(1)
     }
     // else if (tokenIn == "usdt") {
     //     setTokenIn(polygonUSDTAddress)
@@ -153,237 +209,213 @@ export default function MainForm() {
     //     setSrcPoolId(3)
     //     setDestPoolId(3)
     // }
-    setAmountIn("");
-  };
+    setAmountIn("")
+}
 
-  // for e.g 0 -> 1000
-  const handleAmountIn = async (_amountIn) => {
+// for e.g 0 -> 1000
+const handleAmountIn = async (_amountIn) => {
     if (!smartAccount) {
-      alert("You need to biconomy login");
-      return;
+        alert("You need to biconomy login")
+        return
     }
     if (_amountIn) {
-      let amountInByDecimals = bg(_amountIn);
-      amountInByDecimals = amountInByDecimals.multipliedBy(
-        bg(10).pow(tokenInDecimals)
-      );
-      if (amountInByDecimals.eq(0)) {
-        setAmountIn(_amountIn);
-      } else {
-        setAmountIn(amountInByDecimals.toString());
-      }
+        let amountInByDecimals = bg(_amountIn)
+        amountInByDecimals = amountInByDecimals.multipliedBy(bg(10).pow(tokenInDecimals))
+        if (amountInByDecimals.eq(0)) {
+            setAmountIn(_amountIn)
+        } else {
+            setAmountIn(amountInByDecimals.toString())
+        }
     } else {
-      setAmountIn("");
+        setAmountIn("")
     }
-  };
+}
 
-  const onChangeFunctions = async (funcIndex: any) => {
-    console.log("funcIndex: ", funcIndex);
-    setParams("");
-    setCurrentFunc(funcArray[funcIndex].name);
-    setCurrentFuncIndex(funcIndex);
-    setIsThisFieldAmount(amountFieldIndexes[funcIndex]);
+const onChangeFunctions = async (funcIndex: any) => {
+    try {
+        setParams("")
+        setFixParams("")
 
-    let _params: any = [];
-    const toContractData = contractsDetails[toChainId];
-    _params[0] = toContractData.USDC;
-    _params[1] = amountIn;
-    _params[2] = address;
-    _params[3] = "0";
-    let _func = [...params];
-    _func[funcIndex] = _params;
-    setParams(_func);
+        const contractAddress = allNetworkData?.contracts[contractIndex].contractAddress
+        const apiName = methodWithApi[toChainId][contractAddress][funcArray[funcIndex].name]
+        console.log('apiName', apiName)
 
-    setGasUsed(undefined);
-    setSimulateInputData(undefined);
-    setSimulation(undefined);
-  };
+        const response = await fetchMethodParams(fromChainId, toChainId, funcArray, amountIn, smartAccount, address, funcIndex, funcArray[funcIndex].name, apiName)
+        if (!response.data) throw ("api error")
+        let _func = [...params]
+        _func[funcIndex] = response.data.params
+        setParams(_func)
+        setFixParams(response.data.fixParams)
+        setCurrentFunc(funcArray[funcIndex].name)
+        setCurrentFuncIndex(funcIndex)
+        setIsThisFieldAmount(response.data.amountFieldIndex)
+        setGasUsed(undefined)
+        setSimulateInputData(undefined)
+        setSimulation(undefined)
+    } catch (error) {
+      console.log("onChangeFunctions---error", error);
+    }
+}
 
   const onChangeInput = async (
-    funcIndex: any,
-    inputIndex: any,
-    inputValue: any
+      funcIndex: any,
+      inputIndex: any,
+      inputValue: any
   ) => {
-    try {
-      if (!amountIn) throw "Enter amountIn field above";
-      setCurrentFunc(funcArray[funcIndex].name);
-      let _params: any = [];
+      try {
+          if (!amountIn) throw ("Enter amountIn field above")
+          setCurrentFunc(funcArray[funcIndex].name)
+          let _params: any = []
 
-      if (params[funcIndex] != undefined) {
-        _params = [...params[funcIndex]];
-        _params[inputIndex] = inputValue;
-      } else {
-        _params[inputIndex] = inputValue;
+          if (params[funcIndex] != undefined) {
+              _params = [...params[funcIndex]]
+              _params[inputIndex] = inputValue
+          } else {
+              _params[inputIndex] = inputValue
+          }
+
+          let _func = [...params]
+          _func[funcIndex] = _params
+          setParams(_func)
+      } catch (error) {
+          alert('InputError: '+ error)
       }
-
-      let _func = [...params];
-      _func[funcIndex] = _params;
-      setParams(_func);
-    } catch (error) {
-      alert("InputError: " + error);
-    }
-  };
+  }
 
   const isThisFieldAmount = async (index: any) => {
-    if (index >= 0) {
-      setIsThisFieldAmount(index);
-    } else {
-      alert("Somethig gets wrong");
-    }
-  };
+      if (index >= 0) {
+          setIsThisFieldAmount(index)
+      } else {
+          alert("Somethig gets wrong")
+      }
+  }
 
   const generateAbis = async () => {
-    try {
-      if (!contractAddress) return;
-      if (!smartAccount) return;
-      if (!toChainId) return;
-      const provider = smartAccount.provider;
-      let { abi, amountFieldIndex, contractName }: any =
-        await fetchContractDetails(provider, contractAddress, toChainId);
-      console.log("abi: ", abi);
-      setAbi(abi);
-      setContractName(contractName);
-      setAmountFieldIndexes(amountFieldIndex);
+      try {
+          if (!contractIndex) return
+          if (!smartAccount) return
+          if (!toChainId) return
+          const provider = smartAccount.provider
+          const contractAddress: any = allNetworkData?.contracts[contractIndex].contractAddress
+          const methodNames: any = allNetworkData?.contractMetaData[contractAddress].methodNames
 
-      for (let i = 0; i < abi.length; i++) {
-        if (abi[i].stateMutability != "view") {
-          if (abi[i].type == "fallback") {
-            console.log("fallback");
-          } else if (abi[i].type != "event") {
-            console.log("abi[i]: ", abi[i].name);
-            setFunctionArray((funcArray) => [...funcArray, abi[i]]);
+          let abi: any = await fetchContractDetails(provider, contractAddress, toChainId, methodNames)
+          console.log("abi: ", abi)
+          setAbi(abi)
+
+          for (let i = 0; i < abi.length; i++) {
+              if (abi[i].stateMutability != "view") {
+                  if (abi[i].type == "fallback") {
+                      console.log("fallback")
+                  } else if (abi[i].type != "event") {
+                      console.log("abi[i]: ", abi[i].name)
+                      setFunctionArray((funcArray) => [...funcArray, abi[i]])
+                  }
+              }
           }
-        }
+      } catch (error) {
+          console.log("callCrossChain-error", error)
       }
-    } catch (error) {
-      console.log("callCrossChain-error", error);
-    }
-  };
+  }
 
   const simulate = async (funcIndex: any) => {
     try {
-      setSimulationLoading(true);
-      setGasUsed(undefined);
-      setSimulateInputData(undefined);
-      setSimulation(undefined);
-      if (!smartAccount) throw "You need to login";
-      if (contractAddress == "") throw "Enter contractAddress field";
-      if (amountIn == "") throw "Enter amountIn field";
-      if (isThisAmount < 0) throw "Select amount field";
+      setSimulationLoading(true)
+      setGasUsed(undefined)
+      setSimulateInputData(undefined)
+      setSimulation(undefined)
+      if (!smartAccount) throw "You need to login"
+      if (contractIndex == "") throw "Enter contractIndex field"
+      if (amountIn == "") throw "Enter amountIn field"
+      if (isThisAmount < 0) throw "Select amount field"
+      if(!allNetworkData) throw "a need to fetch"
 
-      const fromContractData = contractsDetails[fromChainId];
-      const toContractData = contractsDetails[toChainId];
+      const fromStarGateRouter = allNetworkData.starGateRouter
+      const toUsdc = allNetworkData.tokens.usdc
+      const toChainPing = allNetworkData.chainPing
 
-      const abi = ethers.utils.defaultAbiCoder;
+      const abi = ethers.utils.defaultAbiCoder
       // const provider = await ethers.getDefaultProvider()
       // const signer: Signer = new ethers.VoidSigner(smartAccount, provider)
-      const USDT = await new ethers.Contract(
-        tokenIn,
-        IERC20,
-        smartAccount.provider
-      );
-      const balance = await USDT.balanceOf(smartAccount.address);
+      const USDT = await new ethers.Contract(tokenIn, IERC20, smartAccount.provider)
+      const balance = await USDT.balanceOf(smartAccount.address)
 
-      if (BigNumber.from(balance).lt(BigNumber.from(amountIn)))
-        throw "You don't have enough balance";
+      if (BigNumber.from(balance).lt(BigNumber.from(amountIn))) throw "You don't have enough balance"
 
-      const approveData = await USDT.populateTransaction.approve(
-        fromContractData.stargateRouter,
-        amountIn
-      );
-      const approveTx = { to: approveData.to, data: approveData.data };
-      console.log("approveTx", approveTx);
+      const approveData = await USDT.populateTransaction.approve(fromStarGateRouter, amountIn)
+      const approveTx = {to: approveData.to, data: approveData.data}
+      console.log("approveTx", approveTx)
 
-      console.log("params1", params[funcIndex]);
+      console.log("params1", params[funcIndex])
       const amountAfterSlippage = await calculateFees(
-        address,
-        amountIn,
-        srcPoolId,
-        destPoolId,
-        toChainId,
-        fromContractData.stargateRouter,
-        smartAccount.provider
-      );
-      params[funcIndex][isThisAmount] = amountAfterSlippage.toString();
-      console.log("params2", params[funcIndex]);
+          address,
+          amountIn,
+          srcPoolId,
+          destPoolId,
+          toChainId,
+          fromStarGateRouter,
+          smartAccount.provider
+      )
+      params[funcIndex][isThisAmount] = amountAfterSlippage.toString()
+      console.log("params2", params[funcIndex], currentFunc)
+      console.log('params3: ', [toUsdc, params[funcIndex][1], address, 0])
 
-      let abiInterfaceForDestDefiProtocol = new ethers.utils.Interface(
-        currentAbi
-      );
-      console.log(
-        "abiInterfaceForDestDefiProtocol",
-        abiInterfaceForDestDefiProtocol,
-        currentFunc
-      );
+      let abiInterfaceForDestDefiProtocol = new ethers.utils.Interface(currentAbi)
+      console.log("abiInterfaceForDestDefiProtocol", abiInterfaceForDestDefiProtocol, currentFunc)
 
       // const destChainExecData = abiInterfaceForDestDefiProtocol.encodeFunctionData(currentFunc, params[funcIndex])
-      const destChainExecData =
-        abiInterfaceForDestDefiProtocol.encodeFunctionData(currentFunc, [
-          toContractData.USDC,
-          params[funcIndex][1],
-          address,
-          0,
-        ]);
-      console.log("destChainExecData", destChainExecData);
+      const destChainExecData = abiInterfaceForDestDefiProtocol.encodeFunctionData(
+          currentFunc,
+          params[funcIndex]
+      )
+      console.log("destChainExecData", destChainExecData)
 
-      const destChainExecTx = { to: contractAddress, data: destChainExecData };
-      let data;
-      if (toChainId == "106") {
-        data = abi.encode(
-          ["uint256", "address", "address", "bytes"],
-          [BigNumber.from("0"), contractAddress, address, destChainExecTx.data]
-        );
+      const contractAddress = allNetworkData?.contracts[contractIndex].contractAddress
+      console.log("contractAddress", contractAddress)
+
+      const destChainExecTx = {to: contractAddress, data: destChainExecData,}
+      let data
+      if (toChainId == '106') {
+          data = abi.encode(
+              ["uint256", "address", "address", "bytes"],
+              [BigNumber.from("0"), contractAddress, address, destChainExecTx.data,]
+          )
       } else {
-        data = abi.encode(
-          ["uint256", "uint256", "address", "address", "bytes"],
-          [
-            BigNumber.from("0"),
-            amountAfterSlippage,
-            contractAddress,
-            address,
-            destChainExecTx.data,
-          ]
-        );
+          data = abi.encode(
+              ["uint256", "uint256", "address", "address", "bytes"],
+              [BigNumber.from("0"), amountAfterSlippage, contractAddress, address, destChainExecTx.data,]
+          )
       }
 
-      const srcAddress = ethers.utils.solidityPack(
-        ["address"],
-        [smartAccount.address]
-      );
-      let abiInterfaceForChainPing = new ethers.utils.Interface(ChainPing);
+      const srcAddress = ethers.utils.solidityPack(["address"], [smartAccount.address])
+      let abiInterfaceForChainPing = new ethers.utils.Interface(ChainPing)
       const stargateParams = [
-        fromChainId,
-        srcAddress,
-        _nonce,
-        toContractData.USDC,
-        amountAfterSlippage,
-        data,
-      ];
-      const encodedDataForChainPing =
-        abiInterfaceForChainPing.encodeFunctionData(
-          "sgReceive",
-          stargateParams
-        );
+          fromChainId,
+          srcAddress,
+          _nonce,
+          toUsdc,
+          amountAfterSlippage,
+          data,
+      ]
+      const encodedDataForChainPing = abiInterfaceForChainPing.encodeFunctionData("sgReceive", stargateParams)
       const erc20Interface = new ethers.utils.Interface([
-        "function transfer(address _account, uint256 _value)",
-      ]);
-      const dummmyTranferToCheckData = erc20Interface.encodeFunctionData(
-        "transfer",
-        [toContractData.ChainPing, amountAfterSlippage]
-      );
+          "function transfer(address _account, uint256 _value)",
+      ])
+      const dummmyTranferToCheckData = erc20Interface.encodeFunctionData("transfer", [toChainPing, amountAfterSlippage])
       const simulation = await batch(
-        toContractData.USDC,
-        toContractData.ChainPing,
-        dummmyTranferToCheckData,
-        encodedDataForChainPing,
-        true,
-        chooseChianId(toChainId)
-      );
+          toUsdc,
+          toChainPing,
+          dummmyTranferToCheckData,
+          encodedDataForChainPing,
+          true,
+          chooseChianId(toChainId)
+      )
 
       setGasUsed(simulation.simulation.gas_used);
       setSimulateInputData(simulation.simulation.input);
       setSimulation(simulation.simulation.status);
       setSimulationLoading(false);
+
       setIsSimulationOpen(false);
       setIsSimulationSuccessOpen(true);
       setIsSimulationErrorOpen(!simulation.simulation.status);
@@ -399,43 +431,25 @@ export default function MainForm() {
       setIsSimulationOpen(false);
       setIsSimulationErrorOpen(true);
       setsimulationErrorMsg("Simulation Failed");
-
       console.log("Simulation Failed: " + error);
       toast.error(error);
-      // alert("Simulation Failed: " + error);
       return;
     }
   };
 
-  const chooseChianId = (stargateChainId: any) => {
-    let realChainId = "0";
-    if (stargateChainId == "106") {
-      realChainId = "43114";
-    } else if (stargateChainId == "109") {
-      realChainId = "137";
-    } else if (stargateChainId == "110") {
-      realChainId = "42161";
-    } else if (stargateChainId == "111") {
-      realChainId = "10";
-    } else if (stargateChainId == "101") {
-      realChainId = "1";
-    }
-    return realChainId;
-  };
-
   const sendTx = async (funcIndex: any) => {
     try {
-      setSendtxLoading(true);
-      if (!smartAccount) throw "You need to login";
-      if (!simulation) throw "First simulate then send Tx";
-      if (contractAddress == "") throw "Enter contractAddress field";
-      if (amountIn == "") throw "Enter amountIn field";
-      if (isThisAmount < 0) throw "Select amount field";
+      setSendtxLoading(true)
+      if (!smartAccount) throw "You need to login"
+      if (!simulation) throw "First simulate then send Tx"
+      if (contractIndex == "") throw "Enter contractIndex field"
+      if (amountIn == "") throw "Enter amountIn field"
+      if (isThisAmount < 0) throw "Select amount field"
+      if(!allNetworkData) throw "a need to fetch"
 
-      // const scwNativeBalance = await smartAccount.get
-
-      const fromContractData = contractsDetails[fromChainId];
-      const toContractData = contractsDetails[toChainId];
+      const fromStarGateRouter: any = allNetworkData.starGateRouter
+      const toUsdc = allNetworkData.tokens.usdc
+      const toChainPing = allNetworkData.chainPing
 
       setTxHash("");
       const abi = ethers.utils.defaultAbiCoder;
@@ -445,172 +459,118 @@ export default function MainForm() {
       // const scwNativeBalance = await signer.getBalance()
       // console.log("scwNativeBalance", scwNativeBalance)
 
-      const USDT = await new ethers.Contract(
-        tokenIn,
-        IERC20,
-        smartAccount.provider
-      );
-      const balance = await USDT.balanceOf(smartAccount.address);
-      if (BigNumber.from(balance).lt(BigNumber.from(amountIn)))
-        throw "You don't have enough balance";
+      const USDT = await new ethers.Contract(tokenIn, IERC20, smartAccount.provider)
+      const balance = await USDT.balanceOf(smartAccount.address)
+      if (BigNumber.from(balance).lt(BigNumber.from(amountIn))) throw "You don't have enough balance"
 
-      const approveData = await USDT.populateTransaction.approve(
-        fromContractData.stargateRouter,
-        amountIn
-      );
-      const approveTx = { to: approveData.to, data: approveData.data };
-      console.log("approveTx", approveTx);
+      const approveData = await USDT.populateTransaction.approve(fromStarGateRouter, amountIn)
+      const approveTx = {to: approveData.to, data: approveData.data}
+      console.log("approveTx", approveTx)
 
-      console.log("params1", params[funcIndex]);
+      console.log("params1", params[funcIndex])
       const amountAfterSlippage = await calculateFees(
-        address,
-        amountIn,
-        srcPoolId,
-        destPoolId,
-        toChainId,
-        fromContractData.stargateRouter,
-        smartAccount.provider
-      );
-      params[funcIndex][isThisAmount] = amountAfterSlippage.toString();
-      console.log("params2", params[funcIndex]);
-
-      let abiInterfaceForDestDefiProtocol = new ethers.utils.Interface(
-        currentAbi
-      );
-      // const destChainExecData = abiInterfaceForDestDefiProtocol.encodeFunctionData(currentFunc, params[funcIndex])
-      const destChainExecData =
-        abiInterfaceForDestDefiProtocol.encodeFunctionData(currentFunc, [
-          toContractData.USDC,
-          params[funcIndex][1],
           address,
-          0,
-        ]);
-      const destChainExecTx = { to: contractAddress, data: destChainExecData };
-      let data;
-      if (toChainId == "106") {
-        data = abi.encode(
-          ["uint256", "address", "address", "bytes"],
-          [BigNumber.from("0"), contractAddress, address, destChainExecTx.data]
-        );
+          amountIn,
+          srcPoolId,
+          destPoolId,
+          toChainId,
+          fromStarGateRouter,
+          smartAccount.provider
+      )
+      params[funcIndex][isThisAmount] = amountAfterSlippage.toString()
+      console.log("params2", params[funcIndex], currentFunc)
+
+      let abiInterfaceForDestDefiProtocol = new ethers.utils.Interface(currentAbi)
+      // const destChainExecData = abiInterfaceForDestDefiProtocol.encodeFunctionData(currentFunc, params[funcIndex])
+      const destChainExecData = abiInterfaceForDestDefiProtocol.encodeFunctionData(
+          currentFunc,
+          params[funcIndex]
+      )
+
+      const contractAddress = allNetworkData?.contracts[contractIndex].contractAddress
+      alert('contractAddress: '+contractAddress)
+      const destChainExecTx = {to: contractAddress, data: destChainExecData,}
+      let data
+      if (toChainId == '106') {
+          data = abi.encode(
+              ["uint256", "address", "address", "bytes"],
+              [BigNumber.from("0"), contractAddress, address, destChainExecTx.data,]
+          )
       } else {
-        data = abi.encode(
-          ["uint256", "uint256", "address", "address", "bytes"],
-          [
-            BigNumber.from("0"),
-            amountAfterSlippage,
-            contractAddress,
-            address,
-            destChainExecTx.data,
-          ]
-        );
+          data = abi.encode(
+              ["uint256", "uint256", "address", "address", "bytes"],
+              [BigNumber.from("0"), amountAfterSlippage, contractAddress, address, destChainExecTx.data,]
+          )
       }
 
-      const srcAddress = ethers.utils.solidityPack(
-        ["address"],
-        [smartAccount.address]
-      );
-      let abiInterfaceForChainPing = new ethers.utils.Interface(ChainPing);
+      const srcAddress = ethers.utils.solidityPack(["address"],[smartAccount.address])
+      let abiInterfaceForChainPing = new ethers.utils.Interface(ChainPing)
       const stargateParams = [
-        fromChainId,
-        srcAddress,
-        _nonce,
-        toContractData.USDC,
-        amountAfterSlippage,
-        data,
-      ];
-      const encodedDataForChainPing =
-        abiInterfaceForChainPing.encodeFunctionData(
-          "sgReceive",
-          stargateParams
-        );
+          fromChainId,
+          srcAddress,
+          _nonce,
+          toUsdc,
+          amountAfterSlippage,
+          data,
+      ]
+      const encodedDataForChainPing = abiInterfaceForChainPing.encodeFunctionData("sgReceive", stargateParams)
       const erc20Interface = new ethers.utils.Interface([
-        "function transfer(address _account, uint256 _value)",
-      ]);
-      const dummmyTranferToCheckData = erc20Interface.encodeFunctionData(
-        "transfer",
-        [toContractData.ChainPing, amountAfterSlippage]
-      );
+          "function transfer(address _account, uint256 _value)",
+      ])
+      const dummmyTranferToCheckData = erc20Interface.encodeFunctionData("transfer", [toChainPing, amountAfterSlippage])
       const gasUsed = await batch(
-        toContractData.USDC,
-        toContractData.ChainPing,
-        dummmyTranferToCheckData,
-        encodedDataForChainPing,
-        false,
-        chooseChianId(toChainId)
-      );
-      console.log("gasUsed: ", gasUsed);
+          toUsdc,
+          toChainPing,
+          dummmyTranferToCheckData,
+          encodedDataForChainPing,
+          false,
+          chooseChianId(toChainId)
+      )
+      console.log("gasUsed: ", gasUsed)
 
-      const stargateRouter = await new ethers.Contract(
-        fromContractData.stargateRouter,
-        IStarGateRouter,
-        smartAccount.provider
-      );
-      const lzParams = {
-        dstGasForCall: gasUsed,
-        dstNativeAmount: 0,
-        dstNativeAddr: "0x",
-      };
-      const packedToAddress = ethers.utils.solidityPack(
-        ["address"],
-        [toContractData.ChainPing]
-      );
+      const stargateRouter = await new ethers.Contract(fromStarGateRouter, IStarGateRouter, smartAccount.provider)
+      const lzParams = {dstGasForCall: gasUsed, dstNativeAmount: 0, dstNativeAddr: "0x",}
+      const packedToAddress = ethers.utils.solidityPack(["address"], [toChainPing])
       let quoteData = await stargateRouter.quoteLayerZeroFee(
-        toChainId,
-        _functionType,
-        packedToAddress,
-        data,
-        lzParams
-      );
-      console.log("quoteData", quoteData.toString(), amountIn);
-      console.log("srcPoolId-destPoolId", srcPoolId, destPoolId);
+          toChainId,
+          _functionType,
+          packedToAddress,
+          data,
+          lzParams
+      )
+      console.log("quoteData", quoteData.toString(), amountIn)
+      console.log("srcPoolId-destPoolId", srcPoolId, destPoolId)
 
       let stargateTx = await stargateRouter.populateTransaction.swap(
-        toChainId,
-        srcPoolId,
-        destPoolId,
-        smartAccount.address,
-        amountIn,
-        0,
-        lzParams,
-        packedToAddress,
-        data,
-        { value: quoteData[0] }
-      );
+          toChainId,
+          srcPoolId,
+          destPoolId,
+          smartAccount.address,
+          amountIn,
+          0,
+          lzParams,
+          packedToAddress,
+          data,
+          {value: quoteData[0]}
+      )
 
-      const scwNativeBalance = await smartAccount.provider.getBalance(
-        smartAccount.address
-      );
-      console.log(
-        "scwNativeBalance",
-        scwNativeBalance.toString(),
-        quoteData[0].toString()
-      );
-      const shouldBeBalance = BigNumber.from(scwNativeBalance);
-      const shouldBeBalanceMsg = bg(shouldBeBalance.toString())
-        .plus(parseEther("5").toString())
-        .dividedBy(bg(10).pow(18))
-        .toString();
-      console.log("shouldBeBalanceMsg", shouldBeBalanceMsg.toString());
+      const scwNativeBalance = await smartAccount.provider.getBalance(smartAccount.address)
+      console.log("scwNativeBalance", scwNativeBalance.toString(), quoteData[0].toString())
+      const shouldBeBalance = BigNumber.from(scwNativeBalance)
+      const shouldBeBalanceMsg = bg(shouldBeBalance.toString()).plus(parseEther('5').toString()).dividedBy(bg(10).pow(18)).toString()
+      console.log("shouldBeBalanceMsg", shouldBeBalanceMsg.toString())
 
       // Extra 1e18 should more as of now
-      if (!shouldBeBalance.gt(quoteData[0].add(parseEther("1"))))
-        throw `Not Enough Balance, You should have at least ${shouldBeBalanceMsg.toString()} polygon in your SCW wallet`;
+      if (!shouldBeBalance.gt(quoteData[0].add(parseEther('1')))) throw (`Not Enough Balance, You should have at least ${shouldBeBalanceMsg.toString()} polygon in your SCW wallet`)
 
-      console.log("stargateTx", stargateTx);
-      const sendTx = {
-        to: stargateTx.to,
-        data: stargateTx.data,
-        value: stargateTx.value,
-      };
-      const txResponseOfBiconomyAA = await smartAccount?.sendTransactionBatch({
-        transactions: [approveTx, sendTx],
-      });
-      const txReciept = await txResponseOfBiconomyAA?.wait();
-      console.log("userOp hash", txResponseOfBiconomyAA?.hash);
-      console.log("Tx hash", txReciept?.transactionHash);
-      setTxHash(txReciept?.transactionHash);
-      setSendtxLoading(false);
-      toast.success(txReciept?.transactionHash);
+      console.log("stargateTx", stargateTx)
+      const sendTx = {to: stargateTx.to, data: stargateTx.data, value: stargateTx.value,}
+      const txResponseOfBiconomyAA = await smartAccount?.sendTransactionBatch({transactions: [approveTx, sendTx],})
+      const txReciept = await txResponseOfBiconomyAA?.wait()
+      console.log("userOp hash", txResponseOfBiconomyAA?.hash)
+      console.log("Tx hash", txReciept?.transactionHash)
+      setTxHash(txReciept?.transactionHash)
+      setSendtxLoading(false)
     } catch (error: any) {
       setSendtxLoading(false);
       console.log("sendTx-error: ", error);
@@ -770,22 +730,21 @@ export default function MainForm() {
                 name="contractAddresses"
                 id="contractAddresses"
                 onChange={(e: any) => handleContractAddress(e.target.value)}
-                value={contractAddress}
-              >
-                <option key={"0x"} value="" disabled selected>
-                  Contract Address
-                </option>
-                {contractsDetails[toChainId].contractAddresses.length > 0 &&
-                  contractsDetails[toChainId].contractAddresses.map(
-                    (contractDetails: any, contractIndex: any) => (
-                      <option
-                        key={contractDetails.contractAddress}
-                        value={contractDetails.contractAddress}
-                      >
-                        {contractDetails.contractName}
+                value={contractIndex}
+                >
+                  <option key={"0x"} value="" disabled selected>
+                    Contract Address
+                  </option>
+                  {
+                      allNetworkData &&
+                      allNetworkData.contracts.length > 0 &&
+                      allNetworkData.contracts.map((
+                      contractDetails: any, contractIndex: any
+                  ) => (
+                      <option key={contractIndex} value={contractIndex}>
+                          {contractDetails.contractName}
                       </option>
-                    )
-                  )}
+                  ))}
               </select>
               <div className={selectAppearanceStyle}>
                 <BiSolidDownArrow size="15px" />
@@ -794,7 +753,7 @@ export default function MainForm() {
             {/* {contractName && <h4>ContractName: {contractName}</h4>} */}
           </div>
 
-          {isSimulationOpen && !contractName ? (
+          {isSimulationOpen && !allNetworkData ? (
             <div
               onClick={() => setIsSimulationOpen(false)}
               className="animate-spin mt-8 rounded-full"
@@ -813,11 +772,15 @@ export default function MainForm() {
       )}
 
       {/* ------------- Simulation Model START ------------- */}
-      {isSimulationOpen && contractName && funcArray && (
+      {isSimulationOpen && allNetworkData && funcArray && (
         <div className="fixed top-0 right-0 left-0 z-50 backdrop-blur-sm  w-full flex justify-center items-center p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[100vh] max-h-full">
           <div className="relative w-full max-w-4xl max-h-full rounded-lg shadow-lg bg-secondary-700 ">
             <div className="relative  rounded-lg shadow-lg bg-secondary-700">
               <div className="flex items-start justify-between p-4 rounded-t">
+                <h3 className="font-semibold text-lg text-white">
+                    Build Destination Chain's Method/Calldata to execute after bridge funds
+                  </h3>
+
                 <button
                   type="button"
                   className="text-secondary-400 bg-transparent rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center hover:bg-secondary-600 hover:text-white"
@@ -842,11 +805,11 @@ export default function MainForm() {
                 </button>
               </div>
               <div className="py-3 px-6 text-white border-y-2 border-secondary-600">
-                {contractName && (
+                {allNetworkData && (
                   <h3 className="font-semibold text-lg">
                     Contract Detail :
                     <span className="font-normal text-base px-2">
-                      {contractName}
+                      {allNetworkData.contracts[contractIndex]?.contractName}
                     </span>
                   </h3>
                 )}
@@ -889,7 +852,7 @@ export default function MainForm() {
                       (input: any, inputIndex: any) => (
                         <>
                           <label className="w-full">
-                            {amountFieldIndexes[currentFuncIndex] ==
+                            {isThisAmount ==
                               inputIndex && input.type == "uint256" ? (
                               <div className="w-full flex flex-col justify-center items-center gap-1">
                                 <p className="text-sm font-normal">
@@ -1038,14 +1001,14 @@ export default function MainForm() {
                     sgReceive
                   </h5>
                 </div>
-                <div className="w-full flex justify-start items-center gap-1 my-2">
+                {/* <div className="w-full flex justify-start items-center gap-1 my-2">
                   <h3 className="w-[125px] font-medium text-lg break-all">
                     Network :
                   </h3>
                   <h5 className="w-full font-normal text-base break-all">
                     {contractsDetails[toChainId].network}
                   </h5>
-                </div>
+                </div> */}
                 <div className="w-full flex justify-start items-center gap-1 my-2">
                   <h3 className="w-[125px] font-medium text-lg">Gas :</h3>
                   <h5 className="w-full font-normal text-base break-all">

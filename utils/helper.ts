@@ -16,7 +16,7 @@ import IStarGateFeeLibrary from "../abis/IStarGateFeeLibrary.json"
 import IStarGatePool from "../abis/IStarGatePool.json"
 import IStarGateRouter from "../abis/IStarGateRouter.json"
 import {Provider} from "web3/providers"
-import { contractDataByNetwork, contractsDetails, implementation_slot } from "./constants"
+import { implementation_slot, rpscURLS } from "./constants"
 
 interface FunctionABI {
     name: string
@@ -34,9 +34,14 @@ function findSelectedFunctions(
     abi: FunctionABI[],
     selectedFunctions: string[]
 ): FunctionABI[] {
+
+    const data = abi.filter((func) => {
+        console.log('funcfuncfunc', func)
+    })
+
     return abi.filter((func) =>
         // const check =
-        selectedFunctions.includes(func.name) && func.inputs.length > 1
+        selectedFunctions.includes(func.name) && func.inputs[0].type != "bytes32"
         // console.log('findSelectedFunctions', check, func)
 
     )
@@ -53,62 +58,57 @@ function createUpdatedABI(selectedFunctions: FunctionABI[]): object[] {
     }))
 }
 
-function checkChainIdIndex(toChainId: string): number | null {
-    if (toChainId == "106") {
-        return 0 // Avalanche
-    } else if (toChainId == "110") {
-        return 1 // Arbitrum
-    } else if (toChainId == "111") {
-        return 2 // Optimism
-    } else if (toChainId == "101") {
-        return 3 // Ethereum
-    } else if (toChainId == "109") {
-        return 4 // Polygon
+export const chooseChianId = (stargateChainId: any) => {
+    let realChainId = "0"
+    if (stargateChainId == "106") {
+        realChainId = "43114"
+    } else if (stargateChainId == "109") {
+        realChainId = "137"
+    } else if (stargateChainId == "110") {
+        realChainId = "42161"
+    } else if (stargateChainId == "111") {
+        realChainId = "10"
+    } else if (stargateChainId == "101") {
+        realChainId = "1"
     }
-    return null
+    return realChainId
 }
+
 
 export const fetchContractDetails = async (
     provider: Provider,
     contractAddress: string,
-    toChainId: string
+    toChainId: string,
+    methodNames: any
 ) => {
     try {
-        console.log("fetchdetails: ", contractDataByNetwork)
-        const result = checkChainIdIndex(toChainId)
-        if (result != null) {
-            let chainIdIndex: number = result
-            const contractMetaData = contractDataByNetwork[chainIdIndex][toChainId][contractAddress]
-            const methodNames = contractMetaData["methodNames"]
-            const amountFieldIndex = contractMetaData["amountFieldIndex"]
-            const contractName = contractMetaData["contractName"]
-            console.log("fetchdetails-methodNames: ", methodNames)
+        let contractAbis = await getAbiUsingExplorereUrl(toChainId, contractAddress)
+        let abi = JSON.parse(contractAbis.ABI)
+        console.log("fetchdetails-abi: ", abi, methodNames)
+        const newprovider = new ethers.providers.JsonRpcProvider(rpscURLS[toChainId])
 
-            let contractAbis = await getAbiUsingExplorereUrl(toChainId, contractAddress)
-            let abi = JSON.parse(contractAbis.ABI)
-            console.log("fetchdetails-abi: ", abi)
-
-            const {isProxy, currentImplAddress}: any = await checkIfContractIsProxy(abi, contractAddress, provider)
-            if (isProxy) {
-                console.log("isProxy", isProxy)
-                const provider = new ethers.providers.JsonRpcProvider(contractsDetails[toChainId].rpcURL)
-                let implementation = await provider.getStorageAt(contractAddress, implementation_slot)
-                implementation = "0x" + implementation.slice(26, 66)
-                console.log("implementation", implementation, toChainId)
-                contractAbis = await getAbiUsingExplorereUrl(toChainId, implementation)
-                console.log("contractAbis", contractAbis)
-                abi = JSON.parse(contractAbis.ABI)
-            }
-
-            // Find the selected functions
-            const selectedFunctions = findSelectedFunctions(abi, methodNames)
-            // Create the updated ABI
-            abi = createUpdatedABI(selectedFunctions)
-            console.log("Updated ABI:")
-            console.log(abi)
-            console.log("fetchdetails-data: ", abi)
-            return {abi, amountFieldIndex, contractName,}
+        const {isProxy, currentImplAddress}: any = await checkIfContractIsProxy(abi, contractAddress, newprovider)
+        console.log('isProxy--', isProxy, currentImplAddress)
+        if (isProxy) {
+            console.log("isProxy", isProxy)
+            const provider = new ethers.providers.JsonRpcProvider(rpscURLS[toChainId])
+            let implementation = await provider.getStorageAt(contractAddress, implementation_slot)
+            console.log("implementation", implementation, toChainId)
+            implementation = "0x" + implementation.slice(26, 66)
+            console.log("implementation", implementation, toChainId)
+            contractAbis = await getAbiUsingExplorereUrl(toChainId, implementation)
+            console.log("contractAbis", contractAbis)
+            abi = JSON.parse(contractAbis.ABI)
         }
+
+        // Find the selected functions
+        const selectedFunctions = findSelectedFunctions(abi, methodNames)
+        // Create the updated ABI
+        abi = createUpdatedABI(selectedFunctions)
+        console.log("Updated ABI:")
+        console.log(abi)
+        console.log("fetchdetails-data: ", abi)
+        return abi
     } catch (error) {
         console.log("fetchdetails-error: ", error)
     }
@@ -176,14 +176,19 @@ export const calculateFees = async (
     provider: any
 ) => {
     try {
+        console.log('calculateFees')
+        console.log('stargateRouter: ', stargateRouter)
         const stargateRouterInstance = await new ethers.Contract(stargateRouter, IStarGateRouter, provider)
         const factory = await stargateRouterInstance.factory()
+        console.log('factory: ', factory)
 
         const factoryInstance = await new ethers.Contract(factory, IStarGateFactory, provider)
         const pool = await factoryInstance.getPool(2)
+        console.log('pool: ', pool)
 
         const poolInstance = await new ethers.Contract(pool, IStarGatePool, provider)
         const feeLibrary = await poolInstance.feeLibrary()
+        console.log('feeLibrary: ', feeLibrary)
 
         const feeLibraryInstance = await new ethers.Contract(feeLibrary, IStarGateFeeLibrary, provider)
         const fees = await feeLibraryInstance.getFees(
@@ -193,7 +198,12 @@ export const calculateFees = async (
             userAddress,
             amountIn
         )
-        amountIn = BigNumber.from(amountIn).sub(fees.eqFee).sub(fees.protocolFee).sub(fees.lpFee)
+        console.log('fees: ', fees.toString())
+
+        const ChainPingFees = '65' // will deposit into dest eoa if stargate do not take much slippage
+        amountIn = BigNumber.from(amountIn).sub(fees.eqFee).sub(fees.protocolFee).sub(fees.lpFee).sub(ChainPingFees)
+        console.log('amountIn: ', amountIn.toString())
+
         return amountIn
     } catch (error) {
         console.log("calculateFees-error: ", error)
