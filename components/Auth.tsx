@@ -1,18 +1,23 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+
+import { ethers } from "ethers";
+import { toast } from "react-hot-toast";
+
+import { FiCopy } from "react-icons/fi";
+import { ImSpinner } from "react-icons/im";
 import SocialLogin from "@biconomy/web3-auth";
 import { ChainId } from "@biconomy/core-types";
-import { ethers } from "ethers";
 import SmartAccount from "@biconomy/smart-account";
-import { css } from "@emotion/css";
+import {
+  useNetworkMismatch,
+  useNetwork,
+  useConnect,
+  useAddress,
+  metamaskWallet,
+} from "@thirdweb-dev/react";
+
 import { Biconomy_AA_Key } from "../utils/keys";
 import { useAppStore } from "../store/appStore";
-import {
-  metamaskWallet,
-  useAddress,
-  useConnect,
-  useNetwork,
-  useNetworkMismatch,
-} from "@thirdweb-dev/react";
 
 export default function Home() {
   const { setSmartAccount, smartAccount }: any = useAppStore((state) => state);
@@ -107,17 +112,29 @@ export default function Home() {
     await login();
   };
 
+  const copyToClipboard = (id: any) => {
+    navigator.clipboard.writeText(id);
+
+    // Alert the copied text
+    toast.success("Wallet address Copied");
+  };
+
+  const buttonStyle =
+    "bg-primary-600 hover:bg-primary-700 py-3 px-8 rounded-lg text-primary-100 font-medium border-b-4 border-primary-800 hover:border-primary-900 transition duration-300";
+
   return (
     <div>
-      <ul>
+      <ul className="bg-primary-950 p-2 shadow-md shadow-secondary-500">
         <li>
-          <a href="#">ChainPing</a>
+          <a href="#" className="font-bold text-2xl hover:bg-transparent">
+            ChainPing
+          </a>
         </li>
         <li style={{ float: "right", padding: "5px" }}>
           <div>
             {isOnWrongNetwork ? (
               <button
-                className="rounded-lg bg-[#FF0000] text-[#ffffff] p-3"
+                className="bg-error-600 hover:bg-error-700 py-3 px-8 rounded-lg text-error-100 font-medium border-b-4 border-error-800 hover:border-error-900 transition duration-300 mx-2"
                 onClick={() => switchNetwork?.(137)}
               >
                 Switch Network
@@ -125,30 +142,66 @@ export default function Home() {
             ) : (
               smartAccount &&
               !loading && (
-                <>
-                  <p style={{ color: "white" }}>
-                    {smartAccount && smartAccount.address}
-                  </p>
-                  <button className="bg-[#000000] py-2  w-full text-center rounded-lg  mt-4">
-                    SCW Wallet: {smartAccount && smartAccount.address}
+                <div className="flex flex-wrap justify-start items-center gap-3 text-base">
+                  <button
+                    className={`${buttonStyle} flex justify-center items-center gap-2`}
+                  >
+                    SCW :{" "}
+                    <span className="text-sm font-medium">
+                      {smartAccount &&
+                        smartAccount.address.slice(0, 4) +
+                          ".." +
+                          smartAccount.address.slice(-3)}
+                    </span>
+                    <FiCopy
+                      onClick={() => copyToClipboard(smartAccount.address)}
+                    />
                   </button>
 
-                  <p style={{ color: "white" }}>{address}</p>
-                  <button className="bg-[#000000] py-2  w-full text-center rounded-lg  mt-4 mb-4">
-                    EOA Wallet: {address}
+                  <button
+                    className={`${buttonStyle} flex justify-center items-center gap-2`}
+                  >
+                    EOA :
+                    <span className="text-sm font-medium">
+                      {address?.slice(0, 4) + ".." + address?.slice(-3)}
+                    </span>
+                    <FiCopy onClick={() => copyToClipboard(address)} />
                   </button>
-                </>
+                </div>
               )
             )}
             {!smartAccount && !loading && (
               <li>
-                <a onClick={handleConnect}>Login</a>
+                <button
+                  className={`${buttonStyle} flex justify-center items-center gap-2`}
+                  onClick={handleConnect}
+                >
+                  <svg
+                    className="h-4 w-4 text-light"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    stroke-width="2"
+                    stroke="currentColor"
+                    fill="none"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path stroke="none" d="M0 0h24v24H0z" />{" "}
+                    <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />{" "}
+                    <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+                  </svg>
+                  Connect
+                </button>
               </li>
             )}
             {loading && (
-              <li>
-                <a>Loading account details...</a>
-              </li>
+              <button
+                className={`${buttonStyle} flex justify-center items-center gap-2`}
+              >
+                <ImSpinner className="animate-spin h-5 w-5" />
+                Loading account details...
+              </button>
             )}
           </div>
         </li>
@@ -156,37 +209,3 @@ export default function Home() {
     </div>
   );
 }
-
-const detailsContainerStyle = css`
-  margin-top: 10px;
-`;
-
-// &:hover {
-//   background-color: rgba(0, 0, 0, 0.2);
-// };
-const buttonStyle = css`
-  padding: 14px;
-  width: 300px;
-  border: none;
-  cursor: pointer;
-  border-radius: 999px;
-  outline: none;
-  margin-top: 20px;
-  transition: all 0.25s;
-  &:hover {
-    background-color: rgba(0, 0, 0, 0.2);
-  }
-`;
-
-const headerStyle = css`
-  font-size: 44px;
-`;
-
-const containerStyle = css`
-  width: 900px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  padding-top: 100px;
-`;

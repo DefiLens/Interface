@@ -5,8 +5,7 @@ import { Toaster } from "react-hot-toast";
 
 import dynamic from "next/dynamic";
 
-// import MainForm from "../components/MainForm";
-import MainForm from "../components/CrossChainDiFi";
+import MainForm from "../components/MainForm";
 import Transfer from "../components/Transfer";
 
 const Index = () => {
@@ -17,7 +16,7 @@ const Index = () => {
   // )
 
   const SocialLoginDynamic = dynamic(
-    () => import("../components/Authentication").then((res) => res.default),
+    () => import("../components/Auth").then((res) => res.default),
     {
       ssr: false,
     }
