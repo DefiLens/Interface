@@ -119,7 +119,7 @@ export default function MainForm() {
             const apiName = methodWithApi[toChainId][contractAddress][funcArray[currentFuncIndex].name]
             console.log('apiName', apiName)
 
-            const response = await fetchMethodParams(fromChainId, toChainId, funcArray, amountIn, smartAccount, address, currentFuncIndex, currentFunc, apiName)
+            const response: any = await fetchMethodParams(fromChainId, toChainId, funcArray, amountIn, smartAccount, address, currentFuncIndex, currentFunc, apiName)
             if (!response.data) throw ("api error")
             let _func = [...params]
             _func[currentFuncIndex] = response.data.params
@@ -240,7 +240,7 @@ const onChangeFunctions = async (funcIndex: any) => {
         const apiName = methodWithApi[toChainId][contractAddress][funcArray[funcIndex].name]
         console.log('apiName', apiName)
 
-        const response = await fetchMethodParams(fromChainId, toChainId, funcArray, amountIn, smartAccount, address, funcIndex, funcArray[funcIndex].name, apiName)
+        const response: any = await fetchMethodParams(fromChainId, toChainId, funcArray, amountIn, smartAccount, address, funcIndex, funcArray[funcIndex].name, apiName)
         if (!response.data) throw ("api error")
         let _func = [...params]
         _func[funcIndex] = response.data.params
@@ -778,7 +778,7 @@ const onChangeFunctions = async (funcIndex: any) => {
             <div className="relative  rounded-lg shadow-lg bg-secondary-700">
               <div className="flex items-start justify-between p-4 rounded-t">
                 <h3 className="font-semibold text-lg text-white">
-                    Build Destination Chain's Method/Calldata to execute after bridge funds
+                    Build DestinationChain Method/Calldata to execute after bridge funds
                   </h3>
 
                 <button
