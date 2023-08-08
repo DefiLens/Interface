@@ -15,4 +15,4 @@ export const TENDERLY_PROJECT = process.env.NEXT_PUBLIC_TENDERLY_PROJECT
 export const PIMLICO_API_KEY = process.env.NEXT_PUBLUC_PIMLICO_API_KEY
 
 // export const NETLIFY_NODE_URL = "http://localhost:8888/.netlify/functions/server" //process.env.NEXT_PUBLUC_NETLIFY_NODE_URL
-export const NETLIFY_NODE_URL = "https://resplendent-peony-b82d3c.netlify.app/.netlify/functions/server"
+export const NETLIFY_NODE_URL = "https://apichainping.defilens.tech/.netlify/functions/server"
