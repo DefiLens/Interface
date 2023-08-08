@@ -128,7 +128,7 @@ export const getAbiUsingExplorereUrl = async (
             URL = `https://api-optimistic.etherscan.io/api?module=contract&action=getsourcecode&address=${toAddress}&apikey=${OPTIMISM_ETHERSCAN_API_KEY}`
         }
 
-        console.log("URL:", URL)
+        // console.log("URL:", URL)
         if (!URL) return
         const resABI = await axios.get(URL)
         console.log(resABI.data.result[0].ContractName)

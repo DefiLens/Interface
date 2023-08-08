@@ -118,7 +118,7 @@ export default function MainForm() {
             setFixParams("")
             const contractAddress = allNetworkData?.contracts[contractIndex].contractAddress
             const apiName = methodWithApi[toChainId][contractAddress][funcArray[currentFuncIndex].name]
-            console.log('apiName', apiName)
+            // console.log('apiName', apiName)
 
             const response: any = await fetchMethodParams(fromChainId, toChainId, funcArray, amountIn, smartAccount, address, currentFuncIndex, currentFunc, apiName)
             if (!response.data) throw ("api error")
@@ -239,7 +239,7 @@ const onChangeFunctions = async (funcIndex: any) => {
 
         const contractAddress = allNetworkData?.contracts[contractIndex].contractAddress
         const apiName = methodWithApi[toChainId][contractAddress][funcArray[funcIndex].name]
-        console.log('apiName', apiName)
+        // console.log('apiName', apiName)
 
         const response: any = await fetchMethodParams(fromChainId, toChainId, funcArray, amountIn, smartAccount, address, funcIndex, funcArray[funcIndex].name, apiName)
         if (!response.data) throw ("api error")
