@@ -1,5 +1,5 @@
 import axios from "axios";
-import { nodeLocalUrl, tokensByNetwork } from "./constants";
+import { netlifyNodeURL, tokensByNetwork } from "./constants";
 
 interface Contract {
     contractName: string;
@@ -32,7 +32,8 @@ interface ApiResponse {
 }
 
 export const getNetworkAndContractData = async (fromNetwork: any, toNetwork: any)=> {
-    return await axios.get<ApiResponse>(`${nodeLocalUrl}/common/getNetworkAndContractData/${fromNetwork}/${toNetwork}`)
+    console.log('netlifyNodeURL', netlifyNodeURL)
+    return await axios.get<ApiResponse>(`${netlifyNodeURL}/common/getNetworkAndContractData/${fromNetwork}/${toNetwork}`)
     .then((response) => {
         console.log('response', response)
         return response
@@ -54,12 +55,13 @@ export const fetchMethodParams = async (
     methodName: any,
     apiName: any
 ) => {
+    console.log('netlifyNodeURL', netlifyNodeURL)
     try {
         const fromToken = tokensByNetwork[fromChainId]
         const toToken = tokensByNetwork[toChainId]
         const response = await axios.get(
-            // `${nodeLocalUrl}/aavev3/aavev3/${methodName}`,
-            // `${nodeLocalUrl}/aavev3/vectorFinance/deposit`,
+            // `${netlifyNodeURL}/aavev3/aavev3/${methodName}`,
+            // `${netlifyNodeURL}/aavev3/vectorFinance/deposit`,
             apiName,
             {
               params: {

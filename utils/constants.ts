@@ -1,57 +1,58 @@
-import { MAINNET_INFURA } from "./keys"
+import { MAINNET_INFURA, NETLIFY_NODE_URL } from "./keys"
 
 export const implementation_slot = "0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc"
 
 export const _functionType = 1
 export const _nonce = 1
-export const nodeLocalUrl = "http://localhost:3000"
+// export const netlifyNodeURL = "http://localhost:3000"
+export const netlifyNodeURL = NETLIFY_NODE_URL
 
 interface Tokens {
     [tokenName: string]: string;
 }
 
-export const fetchNetworkDataURL = `${nodeLocalUrl}/common/getNetworkAndContractData`
-export const fetchContractMetadataURL = `${nodeLocalUrl}/common/getContractMetaData`
+export const fetchNetworkDataURL = `${netlifyNodeURL}/common/getNetworkAndContractData`
+export const fetchContractMetadataURL = `${netlifyNodeURL}/common/getContractMetaData`
 
 export const methodWithApi = {
     '109': {
         "0x794a61358D6845594F94dc1DB02A252b5b4814aD" : {
-            'supply': `${nodeLocalUrl}/aave/aavev3/supply`
+            'supply': `${netlifyNodeURL}/aave/aavev3/supply`
         },
         "0xF25212E676D1F7F89Cd72fFEe66158f541246445" : {
-            'supply': `${nodeLocalUrl}/compound/109/compound/supply`
+            'supply': `${netlifyNodeURL}/compound/109/compound/supply`
         },
     },
     '106': {
         "0x794a61358D6845594F94dc1DB02A252b5b4814aD" : {
-            'supply': `${nodeLocalUrl}/aave/aavev3/supply`
+            'supply': `${netlifyNodeURL}/aave/aavev3/supply`
         },
         "0x8F9b2A7Ae089AA01636996eBAf276f48feFDb916" : {
-            'deposit': `${nodeLocalUrl}/vector/106/vectorFinance/deposit`
+            'deposit': `${netlifyNodeURL}/vector/106/vectorFinance/deposit`
         },
         "0xB715808a78F6041E46d61Cb123C9B4A27056AE9C" : {
-            'mint': `${nodeLocalUrl}/benqi/106/benqi/mint`
+            'mint': `${netlifyNodeURL}/benqi/106/benqi/mint`
         }
     },
     '110': {
         "0x794a61358D6845594F94dc1DB02A252b5b4814aD" : {
-            'supply': `${nodeLocalUrl}/aave/aavev3/supply`
+            'supply': `${netlifyNodeURL}/aave/aavev3/supply`
         },
     },
     '111': {
         "0x794a61358D6845594F94dc1DB02A252b5b4814aD" : {
-            'supply': `${nodeLocalUrl}/aave/aavev3/supply`
+            'supply': `${netlifyNodeURL}/aave/aavev3/supply`
         },
         "0xEC8FEa79026FfEd168cCf5C627c7f486D77b765F" : {
-            'mint': `${nodeLocalUrl}/sonne/111/sonneFinance/mint`
+            'mint': `${netlifyNodeURL}/sonne/111/sonneFinance/mint`
         },
         "0x81C9A7B55A4df39A9B7B5F781ec0e53539694873" : {
-            'deposit': `${nodeLocalUrl}/exactly/111/exactly/deposit`
+            'deposit': `${netlifyNodeURL}/exactly/111/exactly/deposit`
         },
     },
     '101': {
         "0x794a61358D6845594F94dc1DB02A252b5b4814aD" : {
-            'supply': `${nodeLocalUrl}/aave/aavev3/supply`
+            'supply': `${netlifyNodeURL}/aave/aavev3/supply`
         },
     },
 }

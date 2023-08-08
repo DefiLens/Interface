@@ -13,3 +13,5 @@ export const TENDERLY_USER = process.env.NEXT_PUBLIC_TENDERLY_USER
 export const TENDERLY_PROJECT = process.env.NEXT_PUBLIC_TENDERLY_PROJECT
 
 export const PIMLICO_API_KEY = process.env.NEXT_PUBLUC_PIMLICO_API_KEY
+
+export const NETLIFY_NODE_URL = process.env.NEXT_PUBLUC_NETLIFY_NODE_URL
