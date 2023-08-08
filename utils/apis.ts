@@ -32,10 +32,10 @@ interface ApiResponse {
 }
 
 export const getNetworkAndContractData = async (fromNetwork: any, toNetwork: any)=> {
-    console.log('netlifyNodeURL', netlifyNodeURL)
+    console.log('netlifyNodeURL-getNetworkAndContractData', netlifyNodeURL)
     return await axios.get<ApiResponse>(`${netlifyNodeURL}/common/getNetworkAndContractData/${fromNetwork}/${toNetwork}`)
     .then((response) => {
-        console.log('response', response)
+        console.log('response+++', response)
         return response
     })
     .catch((error) => {

@@ -35,6 +35,7 @@ import { fetchMethodParams, getNetworkAndContractData } from '../utils/apis';
 interface Contract {
   contractName: string;
   contractAddress: string;
+  extraOrShareToken?: string;
 }
 
 interface ContractMetaData {
@@ -371,15 +372,16 @@ const onChangeFunctions = async (funcIndex: any) => {
       console.log("destChainExecData", destChainExecData)
 
       const contractAddress = allNetworkData?.contracts[contractIndex].contractAddress
+      const extraOrShareToken = allNetworkData?.contracts[contractIndex].extraOrShareToken
       console.log("contractAddress", contractAddress)
 
       const destChainExecTx = {to: contractAddress, data: destChainExecData,}
       let data
-      if (toChainId == '106') {
-          data = abi.encode(
-              ["uint256", "address", "address", "bytes"],
-              [BigNumber.from("0"), contractAddress, address, destChainExecTx.data,]
-          )
+      if (toChainId == '106' || toChainId == '111') {
+        data = abi.encode(
+          ["uint256", "uint256", "address", "address", "address", "bytes"],
+          [BigNumber.from("0"), amountAfterSlippage, contractAddress, address, extraOrShareToken, destChainExecTx.data,]
+        )
       } else {
           data = abi.encode(
               ["uint256", "uint256", "address", "address", "bytes"],
@@ -488,13 +490,13 @@ const onChangeFunctions = async (funcIndex: any) => {
       )
 
       const contractAddress = allNetworkData?.contracts[contractIndex].contractAddress
-      alert('contractAddress: '+contractAddress)
+      const extraOrShareToken = allNetworkData?.contracts[contractIndex].extraOrShareToken
       const destChainExecTx = {to: contractAddress, data: destChainExecData,}
       let data
-      if (toChainId == '106') {
+      if (toChainId == '106' || toChainId == '111') {
           data = abi.encode(
-              ["uint256", "address", "address", "bytes"],
-              [BigNumber.from("0"), contractAddress, address, destChainExecTx.data,]
+              ["uint256", "uint256", "address", "address", "address", "bytes"],
+              [BigNumber.from("0"), amountAfterSlippage, contractAddress, address, extraOrShareToken, destChainExecTx.data,]
           )
       } else {
           data = abi.encode(
@@ -872,7 +874,7 @@ const onChangeFunctions = async (funcIndex: any) => {
                                   placeholder={input.name + " " + input.type}
                                   value={
                                     params[currentFuncIndex] &&
-                                    params[currentFuncIndex][inputIndex] != ""
+                                    params[currentFuncIndex][inputIndex] != undefined
                                       ? bg(params[currentFuncIndex][inputIndex])
                                           .dividedBy(
                                             bg(10).pow(tokenInDecimals)
@@ -904,7 +906,7 @@ const onChangeFunctions = async (funcIndex: any) => {
                                   placeholder={input.name + " " + input.type}
                                   value={
                                     params[currentFuncIndex] &&
-                                    params[currentFuncIndex][inputIndex] != ""
+                                    params[currentFuncIndex][inputIndex] != undefined
                                       ? params[currentFuncIndex][inputIndex]
                                       : ""
                                   }

@@ -42,10 +42,6 @@ export default function Home() {
     }
   }, [interval]);
 
-  // useEffect(() => {
-  //     login()
-  // }, [address])
-
   async function login() {
     if (!sdkRef.current) {
       const socialLoginSDK = new SocialLogin();
@@ -107,7 +103,6 @@ export default function Home() {
   };
 
   const handleConnect = async () => {
-    alert("Metamask Connect");
     await connect(metamaskConfig, {});
     await login();
   };

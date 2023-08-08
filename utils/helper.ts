@@ -35,15 +35,10 @@ function findSelectedFunctions(
     selectedFunctions: string[]
 ): FunctionABI[] {
 
-    const data = abi.filter((func) => {
-        console.log('funcfuncfunc', func)
-    })
-
     return abi.filter((func) =>
         // const check =
         selectedFunctions.includes(func.name) && func.inputs[0].type != "bytes32"
         // console.log('findSelectedFunctions', check, func)
-
     )
 }
 

@@ -4,7 +4,7 @@ export const implementation_slot = "0x360894a13ba1a3210667c828492db98dca3e2076cc
 
 export const _functionType = 1
 export const _nonce = 1
-// export const netlifyNodeURL = "http://localhost:3000"
+// export const netlifyNodeURL = "http://localhost:8888/.netlify/functions/server"
 export const netlifyNodeURL = NETLIFY_NODE_URL
 
 interface Tokens {
