@@ -117,10 +117,9 @@ export default function MainForm() {
             setParams("")
             setFixParams("")
             const contractAddress = allNetworkData?.contracts[contractIndex].contractAddress
-            const apiName = methodWithApi[toChainId][contractAddress][funcArray[currentFuncIndex].name]
-            // console.log('apiName', apiName)
+            const apiUrl = methodWithApi[toChainId][contractAddress][funcArray[currentFuncIndex].name]
 
-            const response: any = await fetchMethodParams(fromChainId, toChainId, funcArray, amountIn, smartAccount, address, currentFuncIndex, currentFunc, apiName)
+            const response: any = await fetchMethodParams(fromChainId, toChainId, funcArray, amountIn, smartAccount, address, currentFuncIndex, currentFunc, apiUrl)
             if (!response.data) throw ("api error")
             let _func = [...params]
             _func[currentFuncIndex] = response.data.params
@@ -238,10 +237,8 @@ const onChangeFunctions = async (funcIndex: any) => {
         setFixParams("")
 
         const contractAddress = allNetworkData?.contracts[contractIndex].contractAddress
-        const apiName = methodWithApi[toChainId][contractAddress][funcArray[funcIndex].name]
-        // console.log('apiName', apiName)
-
-        const response: any = await fetchMethodParams(fromChainId, toChainId, funcArray, amountIn, smartAccount, address, funcIndex, funcArray[funcIndex].name, apiName)
+        const apiUrl = methodWithApi[toChainId][contractAddress][funcArray[funcIndex].name]
+        const response: any = await fetchMethodParams(fromChainId, toChainId, funcArray, amountIn, smartAccount, address, funcIndex, funcArray[funcIndex].name, apiUrl)
         if (!response.data) throw ("api error")
         let _func = [...params]
         _func[funcIndex] = response.data.params
@@ -373,11 +370,11 @@ const onChangeFunctions = async (funcIndex: any) => {
 
       const contractAddress = allNetworkData?.contracts[contractIndex].contractAddress
       const extraOrShareToken = allNetworkData?.contracts[contractIndex].extraOrShareToken
-      console.log("contractAddress", contractAddress)
+      console.log("contractAddress", contractAddress, extraOrShareToken, amountAfterSlippage)
 
       const destChainExecTx = {to: contractAddress, data: destChainExecData,}
       let data
-      if (toChainId == '106' || toChainId == '111') {
+      if (toChainId == '106' || toChainId == '111' || toChainId == "184") {
         data = abi.encode(
           ["uint256", "uint256", "address", "address", "address", "bytes"],
           [BigNumber.from("0"), amountAfterSlippage, contractAddress, address, extraOrShareToken, destChainExecTx.data,]
@@ -558,12 +555,14 @@ const onChangeFunctions = async (funcIndex: any) => {
 
       const scwNativeBalance = await smartAccount.provider.getBalance(smartAccount.address)
       console.log("scwNativeBalance", scwNativeBalance.toString(), quoteData[0].toString())
-      const shouldBeBalance = BigNumber.from(scwNativeBalance)
-      const shouldBeBalanceMsg = bg(shouldBeBalance.toString()).plus(parseEther('5').toString()).dividedBy(bg(10).pow(18)).toString()
-      console.log("shouldBeBalanceMsg", shouldBeBalanceMsg.toString())
+      const currentBalance = BigNumber.from(scwNativeBalance)
+      const minimumBalanceRequired = bg(currentBalance.toString()).plus(parseEther('1').toString()).dividedBy(bg(10).pow(18)).toString()
+      console.log("minimumBalanceRequired", minimumBalanceRequired.toString())
 
       // Extra 1e18 should more as of now
-      if (!shouldBeBalance.gt(quoteData[0].add(parseEther('1')))) throw (`Not Enough Balance, You should have at least ${shouldBeBalanceMsg.toString()} polygon in your SCW wallet`)
+      if (!currentBalance.gt(quoteData[0].add(parseEther('1')))) {
+        throw (`Not Enough Balance, You should have at least ${minimumBalanceRequired.toString()} polygon in your SCW wallet`)
+      }
 
       console.log("stargateTx", stargateTx)
       const sendTx = {to: stargateTx.to, data: stargateTx.data, value: stargateTx.value,}
@@ -714,6 +713,7 @@ const onChangeFunctions = async (funcIndex: any) => {
                 <option value="106">Avalanche</option>
                 <option value="110">Arbitrum</option>
                 <option value="111">Optimism</option>
+                <option value="184">Base</option>
                 {/* <option value="101">Mainnet</option> */}
                 {/* <option value="109">Polygon</option> */}
               </select>

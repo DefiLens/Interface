@@ -3,6 +3,7 @@ import {getImplementationAddress,} from "@openzeppelin/upgrades-core"
 import {
     ARBITRUM_ETHERSCAN_API_KEY,
     AVAX_ETHERSCAN_API_KEY,
+    BASE_ETHERSCAN_API_KEY,
     ETHERSCAN_API_KEY,
     OPTIMISM_ETHERSCAN_API_KEY,
     POLYGON_ETHERSCAN_API_KEY,
@@ -65,6 +66,8 @@ export const chooseChianId = (stargateChainId: any) => {
         realChainId = "10"
     } else if (stargateChainId == "101") {
         realChainId = "1"
+    } else if (stargateChainId == "184") {
+        realChainId = "8453"
     }
     return realChainId
 }
@@ -77,6 +80,10 @@ export const fetchContractDetails = async (
     methodNames: any
 ) => {
     try {
+        if (contractAddress == "0x8184285DfaB372201AFb8B5d6D4718467179E33d") {
+            const swirllendABi = require("../abis/swirllendUSDC.json")
+            return swirllendABi
+        }
         let contractAbis = await getAbiUsingExplorereUrl(toChainId, contractAddress)
         let abi = JSON.parse(contractAbis.ABI)
         console.log("fetchdetails-abi: ", abi, methodNames)
@@ -126,9 +133,11 @@ export const getAbiUsingExplorereUrl = async (
             URL = `https://api.arbiscan.io/api?module=contract&action=getsourcecode&address=${toAddress}&apikey=${ARBITRUM_ETHERSCAN_API_KEY}`
         } else if (network === "111") {
             URL = `https://api-optimistic.etherscan.io/api?module=contract&action=getsourcecode&address=${toAddress}&apikey=${OPTIMISM_ETHERSCAN_API_KEY}`
+        } else if (network === "184") {
+            URL = `https://api.basescan.org/api?module=contract&action=getsourcecode&address=${toAddress}&apikey=${BASE_ETHERSCAN_API_KEY}`
         }
 
-        // console.log("URL:", URL)
+        console.log("URL:", URL)
         if (!URL) return
         const resABI = await axios.get(URL)
         console.log(resABI.data.result[0].ContractName)

@@ -55,6 +55,11 @@ export const methodWithApi = {
             'supply': `${netlifyNodeURL}/aave/aavev3/supply`
         },
     },
+    '184': {
+        "0x8184285DfaB372201AFb8B5d6D4718467179E33d" : {
+            'mint': `${netlifyNodeURL}/swirllend/184/swirllend/mint/`
+        },
+    },
 }
 
 export const rpscURLS = {
@@ -63,6 +68,7 @@ export const rpscURLS = {
     '110': `https://arbitrum-mainnet.infura.io/v3/${MAINNET_INFURA}`,
     '111': `https://optimism-mainnet.infura.io/v3/${MAINNET_INFURA}`,
     '101': `https://mainnet.infura.io/v3/${MAINNET_INFURA}`,
+    '184': `https://mainnet.base.org/`
 }
 
 export const NetworkNameByChainId = {
@@ -70,7 +76,8 @@ export const NetworkNameByChainId = {
     '106': 'Avalanche',
     '110': 'Arbitrum',
     '111': 'Optimism',
-    '101': 'Ethereum'
+    '101': 'Ethereum',
+    '184': 'Base'
 }
 
 export const tokensByNetwork: Record<string, Tokens> = {
@@ -88,8 +95,10 @@ export const tokensByNetwork: Record<string, Tokens> = {
     },
     '101':  {
         usdc: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
+    },
+    '184':  {
+        usdc: '0xd9aAEc86B65D86f6A7B5B1b0c42FFA531710b6CA',
     }
-
 }
 
 // export const contractDataByNetwork = [
