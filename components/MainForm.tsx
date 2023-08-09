@@ -490,7 +490,7 @@ const onChangeFunctions = async (funcIndex: any) => {
       const extraOrShareToken = allNetworkData?.contracts[contractIndex].extraOrShareToken
       const destChainExecTx = {to: contractAddress, data: destChainExecData,}
       let data
-      if (toChainId == '106' || toChainId == '111') {
+      if (toChainId == '106' || toChainId == '111' || toChainId == "184") {
           data = abi.encode(
               ["uint256", "uint256", "address", "address", "address", "bytes"],
               [BigNumber.from("0"), amountAfterSlippage, contractAddress, address, extraOrShareToken, destChainExecTx.data,]
