@@ -528,7 +528,7 @@ const onChangeFunctions = async (funcIndex: any) => {
       console.log("gasUsed: ", gasUsed)
 
       const stargateRouter = await new ethers.Contract(fromStarGateRouter, IStarGateRouter, smartAccount.provider)
-      const lzParams = {dstGasForCall: gasUsed, dstNativeAmount: 0, dstNativeAddr: "0x",}
+      const lzParams = {dstGasForCall: BigNumber.from(gasUsed).add(BigNumber.from('30000')), dstNativeAmount: 0, dstNativeAddr: "0x",}
       const packedToAddress = ethers.utils.solidityPack(["address"], [toChainPing])
       let quoteData = await stargateRouter.quoteLayerZeroFee(
           toChainId,
