@@ -38,6 +38,8 @@ interface AppState {
   smartAccount: SmartAccount | null;
   currentSigner: any;
   currentAddress: any;
+  scwBalance: any;
+  eoaBalance: any;
 
   currentProvider: string;
 
@@ -77,6 +79,8 @@ interface AppState {
   setSmartAccount: (smartAccount: any) => void;
   setCurrentSigner: (currentSigner: any) => void;
   setCurrentAddress: (currentAddress: any) => void;
+  setScwBalance: (scwBalance: any) => void;
+  setEoaBalance: (eoaBalance: any) => void;
 
   setCurrentProvider: (currentProvider: any) => void;
 
@@ -120,6 +124,8 @@ export const useAppStore = create<AppState>((set) => ({
   smartAccount: null,
   currentSigner: "",
   currentAddress: "",
+  scwBalance: "",
+  eoaBalance: "",
 
   currentProvider: "",
 
@@ -159,6 +165,8 @@ export const useAppStore = create<AppState>((set) => ({
   setSmartAccount: (smartAccount) => set(() => ({ smartAccount })),
   setCurrentSigner: (currentSigner) => set(() => ({ currentSigner })),
   setCurrentAddress: (currentAddress) => set(() => ({ currentAddress })),
+  setScwBalance: (scwBalance) => set(() => ({ scwBalance })),
+  setEoaBalance: (eoaBalance) => set(() => ({ eoaBalance })),
 
   setCurrentProvider: (currentProvider) => set(() => ({ currentProvider })),
 

@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 
 import { ethers } from "ethers";
 import { toast } from "react-hot-toast";
+import { BigNumber as bg } from "bignumber.js";
 
 import { FiCopy } from "react-icons/fi";
 import { ImSpinner } from "react-icons/im";
@@ -14,13 +15,18 @@ import {
   useConnect,
   useAddress,
   metamaskWallet,
+  useSigner,
 } from "@thirdweb-dev/react";
 
 import { Biconomy_AA_Key } from "../utils/keys";
 import { useAppStore } from "../store/appStore";
+bg.config({ DECIMAL_PLACES: 5 })
 
 export default function Home() {
-  const { setSmartAccount, smartAccount, setCurrentProvider }: any = useAppStore((state) => state);
+  const {
+    setSmartAccount, smartAccount, setCurrentProvider,
+    scwBalance, eoaBalance, setScwBalance, setEoaBalance
+  }: any = useAppStore((state) => state);
   const [interval, enableInterval] = useState(false);
   const sdkRef = useRef<SocialLogin | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -28,7 +34,8 @@ export default function Home() {
   const [, switchNetwork] = useNetwork();
   const metamaskConfig = metamaskWallet();
   const connect = useConnect();
-  const address = useAddress(); // Detect the connected address
+  const address: any = useAddress(); // Detect the connected address
+  const signer: any = useSigner(); // Detect the connected address
 
   useEffect(() => {
     let configureLogin;
@@ -87,6 +94,18 @@ export default function Home() {
       setSmartAccount(smartAccount);
       setLoading(false);
       setCurrentProvider("Biconomy");
+
+      let _scwBalance: any = await smartAccount.provider.getBalance(smartAccount.address)
+      console.log('_scwBalance', _scwBalance, smartAccount, address)
+
+      _scwBalance = bg(_scwBalance.toString()).dividedBy(bg(10).pow(18))
+      // _eoabalance = bg(_eoabalance.toString()).dividedBy(bg(10).pow(18))
+      console.log('_scwBalance', _scwBalance)
+      // console.log('_eoabalance', _eoabalance)
+
+      setScwBalance(_scwBalance.toString())
+      // setEoaBalance(_eoabalance)
+
     } catch (err) {
       console.log("error setting up smart account... ", err);
     }
@@ -106,6 +125,11 @@ export default function Home() {
   const handleConnect = async () => {
     await connect(metamaskConfig, {});
     await login();
+    let _eoabalance: any = await ethers.getDefaultProvider().getBalance(address)
+    console.log('_eoabalance', _eoabalance)
+    _eoabalance = bg(_eoabalance.toString()).dividedBy(bg(10).pow(18))
+    console.log('_eoabalance', _eoabalance)
+    setEoaBalance(_eoabalance.toString())
   };
 
   const copyToClipboard = (id: any) => {
@@ -147,7 +171,7 @@ export default function Home() {
                       {smartAccount &&
                         smartAccount.address.slice(0, 4) +
                           ".." +
-                          smartAccount.address.slice(-3)}
+                          smartAccount.address.slice(-3) + " : (" + scwBalance + " Polygon)" }
                     </span>
                     <FiCopy
                       onClick={() => copyToClipboard(smartAccount.address)}
@@ -159,7 +183,7 @@ export default function Home() {
                   >
                     EOA :
                     <span className="text-sm font-medium">
-                      {address?.slice(0, 4) + ".." + address?.slice(-3)}
+                      {smartAccount && address?.slice(0, 4) + ".." + address?.slice(-3) + " : (" + eoaBalance + " Polygon) "}
                     </span>
                     <FiCopy onClick={() => copyToClipboard(address)} />
                   </button>
