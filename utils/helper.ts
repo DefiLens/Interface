@@ -136,7 +136,7 @@ export const getAbiUsingExplorereUrl = async (
             URL = `https://api.basescan.org/api?module=contract&action=getsourcecode&address=${toAddress}&apikey=${BASE_ETHERSCAN_API_KEY}`
         }
 
-        console.log("URL:", URL)
+        // console.log("URL:", URL)
         if (!URL) return
         const resABI = await axios.get(URL)
         console.log(resABI.data.result[0].ContractName)
