@@ -20,6 +20,7 @@ import {
 
 import { Biconomy_AA_Key } from "../utils/keys";
 import { useAppStore } from "../store/appStore";
+import { rpscURLS } from "../utils/constants";
 bg.config({ DECIMAL_PLACES: 5 })
 
 export default function Home() {
@@ -125,7 +126,8 @@ export default function Home() {
   const handleConnect = async () => {
     await connect(metamaskConfig, {});
     await login();
-    let _eoabalance: any = await ethers.getDefaultProvider().getBalance(address)
+    const provider = new ethers.providers.JsonRpcProvider(rpscURLS['109'])
+    let _eoabalance: any = await provider.getBalance(address)
     console.log('_eoabalance', _eoabalance)
     _eoabalance = bg(_eoabalance.toString()).dividedBy(bg(10).pow(18))
     console.log('_eoabalance', _eoabalance)
