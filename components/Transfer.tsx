@@ -6,21 +6,30 @@ import { BigNumber, ethers } from "ethers";
 import { BigNumber as bg } from "bignumber.js";
 import IERC20 from "../abis/IERC20.json";
 import { useAppStore } from "../store/appStore";
-import { useAddress } from "@thirdweb-dev/react";
+import { useAddress, useSigner } from "@thirdweb-dev/react";
+import { toast } from "react-hot-toast";
+import { shorten } from "../utils/helper";
 
 export default function Transfer() {
   const { smartAccount }: any = useAppStore((state) => state);
   const address = useAddress(); // Detect the connected address
+  const signer: any = useSigner(); // Detect the connected address
   const [tokenAddress, setTokenAddress] = useState<any>();
   const [amountIn, setAmountIn] = useState<any>(0);
   const [amountInDecimals, setAmountInDecimals] = useState<any>(0);
   const [isNative, setIsnative] = useState<any>("Native");
+  const [isSCW, setIsSCW] = useState<any>("SCW");
   const [sendTxLoading, setSendtxLoading] = useState<any>(false);
   const [txhash, setTxHash] = useState<any>(false);
 
   const onOptionChange = (e) => {
     setIsnative(e.target.value);
   };
+
+  const onOptionChangeForWallet = (e) => {
+    setIsSCW(e.target.value);
+  };
+
   const handleTokenAddress = async (_tokenAddress) => {
     try {
       setAmountIn(0);
@@ -117,14 +126,28 @@ export default function Transfer() {
         tx = { to: tokenAddress, data: data.data };
         console.log("tx", tx);
       }
-      const txResponseOfBiconomyAA = await smartAccount?.sendTransactionBatch({
-        transactions: [tx],
-      });
-      const txReciept = await txResponseOfBiconomyAA?.wait();
-      console.log("userOp hash", txResponseOfBiconomyAA?.hash);
-      console.log("Tx hash", txReciept?.transactionHash);
-      setTxHash(txReciept?.transactionHash);
-      setSendtxLoading(false);
+
+      if (isSCW == "SCW") {
+        const txResponseOfBiconomyAA = await smartAccount?.sendTransactionBatch({
+          transactions: [tx],
+        });
+        const txReciept = await txResponseOfBiconomyAA?.wait();
+        console.log("userOp hash", txResponseOfBiconomyAA?.hash);
+        console.log("Tx hash", txReciept?.transactionHash);
+        setTxHash(txReciept?.transactionHash);
+        setSendtxLoading(false);
+        toast.success(`Tx Succefully done: ${txReciept?.transactionHash}`);
+      } else {
+        if (!signer) {
+          alert("Please connect wallet or refresh it!")
+        }
+        const txReciept = await signer.sendTransaction(tx);
+        await txReciept?.wait();
+        setTxHash(txReciept?.hash);
+        setSendtxLoading(false);
+        toast.success(`Tx Succefully done: ${txReciept?.hash}`);
+      }
+
     } catch (error) {
       console.log("send-error: ", error);
       alert("Transaction Failed");
@@ -144,35 +167,69 @@ export default function Transfer() {
       {smartAccount && (
         <div className={center}>
           <div className={box1}>
-            <div style={{ marginTop: "2%" }}>
+          <div style={{ marginTop: "2%" }}>
               <input
                 type="radio"
-                name="topping"
-                value="Native"
-                id="regular"
-                checked={isNative === "Native"}
-                onChange={onOptionChange}
+                name="wallet"
+                value="SCW"
+                id="scw"
+                checked={isSCW === "SCW"}
+                onChange={onOptionChangeForWallet}
               />
-              <label htmlFor="regular">Native Token transfer</label>
+              <label htmlFor="scw">SCW to EOA</label>
 
               <input
                 type="radio"
-                name="topping"
+                name="wallet"
+                value="EOA"
+                id="eoa"
+                checked={isSCW === "EOA"}
+                onChange={onOptionChangeForWallet}
+              />
+              <label htmlFor="eoa">EOA to SCW</label>
+            </div>
+            <div style={{ marginTop: "2%" }}>
+              <input
+                type="radio"
+                name="tokens"
+                value="Native"
+                id="native"
+                checked={isNative === "Native"}
+                onChange={onOptionChange}
+              />
+              <label htmlFor="native">Native Token transfer</label>
+
+              <input
+                type="radio"
+                name="tokens"
                 value="ERC20"
-                id="medium"
+                id="erc20"
                 checked={isNative === "ERC20"}
                 onChange={onOptionChange}
               />
-              <label htmlFor="medium">ERC20 Token Transfer</label>
+              <label htmlFor="erc20">ERC20 Token Transfer</label>
             </div>
             <div className={box1}>
-              <h3>From SCW Address</h3>
-              <h6 style={{ marginBottom: "2%" }}>{smartAccount.address}</h6>
-              <h3>To EOA Address</h3>
-              <h6 style={{ marginBottom: "2%" }}>{address}</h6>
+
+              {isSCW == "SCW" ? (
+                <>
+                  <h3>From SCW Address</h3>
+                  <h6 style={{ marginBottom: "2%" }}>{shorten(smartAccount.address)}</h6>
+                  <h3>To EOA Address</h3>
+                  <h6 style={{ marginBottom: "2%" }}>{shorten(address)}</h6>
+                </>
+                ):(
+                <>
+                  <h3>From EOA Address</h3>
+                  <h6 style={{ marginBottom: "2%" }}>{shorten(address)}</h6>
+                  <h3>To SCW Address</h3>
+                  <h6 style={{ marginBottom: "2%" }}>{shorten(smartAccount.address)}</h6>
+                </>
+              )}
+
               {isNative != "Native" ? (
                 <>
-                  <h3>Token: </h3>
+                  <h3>Token Address: </h3>
                   <input
                     style={{
                       width: "50%",
@@ -182,7 +239,7 @@ export default function Transfer() {
                       marginRight: "20%",
                       marginBottom: "2%",
                     }}
-                    placeholder="Token"
+                    placeholder="Token Address"
                     value={tokenAddress}
                     onChange={(e: any) => handleTokenAddress(e.target.value)}
                   />
@@ -192,6 +249,7 @@ export default function Transfer() {
               )}
               <h3>Amount: </h3>
               <input
+                type="number"
                 style={{
                   width: "50%",
                   height: "50%",
@@ -206,9 +264,9 @@ export default function Transfer() {
               />
               <button className={buttonload} onClick={(e: any) => send()}>
                 {sendTxLoading && <i className="fa fa-spinner fa-spin"></i>}
-                Send SCW to EOA
+                {isSCW == "SCW" ? "Send SCW to EOA" : "Send EOA to SCW"}
               </button>
-              <p>TxHash : {txhash}</p>
+              {txhash && (<p>TxHash : {txhash}</p>)}
             </div>
           </div>
         </div>
