@@ -14,6 +14,7 @@ import { useSimulate } from "../hooks/useSimulate";
 import { useGenerateAbis } from "../hooks/useGenerateAbis";
 import { Presets, Client } from "userop";
 import { STACKUP_POLYGON_MAINNET_RPC_NODE_URL } from "../utils/keys";
+import { useOnChangeFunctions, useOnChangeInput, useOnChangeTokenIn } from "../hooks/useOnChangeMainForm";
 
 export default function MainForm() {
   const address = useAddress(); // Detect the connected address
@@ -21,6 +22,9 @@ export default function MainForm() {
   const { mutateAsync: sendTxToChain } = useSendTx();
   const { mutateAsync: simulateTx } = useSimulate();
   const { mutateAsync: generateAbisForContract } = useGenerateAbis();
+  const { mutateAsync: onChangeTokenInHook } = useOnChangeTokenIn();
+  const { mutateAsync: onChangeFunctionsHook } = useOnChangeFunctions();
+  const { mutateAsync: onChangeInputHook } = useOnChangeInput();
 
   const polygonUSDC: any = tokensByNetwork['109'].usdc
 
@@ -141,25 +145,7 @@ export default function MainForm() {
 
   // for e.g usdt -> usdc
   const onChangeTokenIn = async (tokenIn: any) => {
-      const token = tokensByNetwork[fromChainId]
-      if (tokenIn == "usdc") {
-          setTokenIn(token.usdc)
-          setTokenInDecimals(6)
-          setSrcPoolId(1)
-          setDestPoolId(1)
-      }
-      // else if (tokenIn == "usdt") {
-      //     setTokenIn(polygonUSDTAddress)
-      //     setTokenInDecimals(6)
-      //     setSrcPoolId(2)
-      //     setDestPoolId(2)
-      // } else if (tokenIn == "dai") {
-      //     setTokenIn(polygonDAIAddress)
-      //     setTokenInDecimals(18)
-      //     setSrcPoolId(3)
-      //     setDestPoolId(3)
-      // }
-      setAmountIn("")
+    await onChangeTokenInHook({fromChainId, tokenIn})
   }
 
   // for e.g 0 -> 1000
@@ -182,35 +168,7 @@ export default function MainForm() {
   }
 
   const onChangeFunctions = async (funcIndex: any) => {
-      try {
-          setParams("")
-          setFixParams("")
-
-          const contractAddress = allNetworkData?.contracts[contractIndex].contractAddress
-          const apiUrl = methodWithApi[toChainId][contractAddress][funcArray[funcIndex].name]
-          const response: any = await fetchMethodParams(fromChainId, toChainId, funcArray, amountIn, smartAccount, address, funcIndex, funcArray[funcIndex].name, apiUrl)
-          if (!response.data) throw ("api error")
-
-          let _func = [...params]
-          _func[funcIndex] = response.data.params
-          setParams(_func)
-          setFixParams(response.data.fixParams)
-          setCurrentFunc(funcArray[funcIndex].name)
-          setCurrentFuncIndex(funcIndex)
-          setIsThisFieldAmount(response.data.amountFieldIndex)
-
-          setGasUsed(undefined)
-          setSimulateInputData(undefined)
-          setSimulation(undefined)
-
-          // setIsSimulationOpen(undefined);
-          setIsSimulationSuccessOpen(undefined);
-          setIsSimulationErrorOpen(undefined);
-          setsimulationErrorMsg("");
-
-      } catch (error) {
-        console.log("onChangeFunctions---error", error);
-      }
+    await onChangeFunctionsHook({funcIndex, address})
   }
 
   const onChangeInput = async (
@@ -218,24 +176,7 @@ export default function MainForm() {
       inputIndex: any,
       inputValue: any
   ) => {
-      try {
-          if (!amountIn) throw ("Enter amountIn field above")
-          setCurrentFunc(funcArray[funcIndex].name)
-          let _params: any = []
-
-          if (params[funcIndex] != undefined) {
-              _params = [...params[funcIndex]]
-              _params[inputIndex] = inputValue
-          } else {
-              _params[inputIndex] = inputValue
-          }
-
-          let _func = [...params]
-          _func[funcIndex] = _params
-          setParams(_func)
-      } catch (error) {
-          alert('InputError: '+ error)
-      }
+    await onChangeInputHook({funcIndex, inputIndex, inputValue})
   }
 
   const isThisFieldAmount = async (index: any) => {

@@ -39,6 +39,8 @@ interface AppState {
   currentSigner: any;
   currentAddress: any;
 
+  currentProvider: string;
+
   fromChainId: any;
   toChainId: any;
   srcPoolId: any;
@@ -74,6 +76,8 @@ interface AppState {
   setSmartAccount: (smartAccount: any) => void;
   setCurrentSigner: (currentSigner: any) => void;
   setCurrentAddress: (currentAddress: any) => void;
+
+  setCurrentProvider: (currentProvider: any) => void;
 
   setFromChainId: (fromChainId: any) => void;
   setToChainId: (toChainId: any) => void;
@@ -114,6 +118,8 @@ export const useAppStore = create<AppState>((set) => ({
   currentSigner: "",
   currentAddress: "",
 
+  currentProvider: "",
+
   fromChainId: "109",
   toChainId: "106",
   srcPoolId: 1,
@@ -149,6 +155,8 @@ export const useAppStore = create<AppState>((set) => ({
   setSmartAccount: (smartAccount) => set(() => ({ smartAccount })),
   setCurrentSigner: (currentSigner) => set(() => ({ currentSigner })),
   setCurrentAddress: (currentAddress) => set(() => ({ currentAddress })),
+
+  setCurrentProvider: (currentProvider) => set(() => ({ currentProvider })),
 
   setFromChainId: (fromChainId) => set(() => ({ fromChainId })),
   setToChainId: (toChainId) => set(() => ({ toChainId })),

@@ -20,7 +20,7 @@ import { Biconomy_AA_Key } from "../utils/keys";
 import { useAppStore } from "../store/appStore";
 
 export default function Home() {
-  const { setSmartAccount, smartAccount }: any = useAppStore((state) => state);
+  const { setSmartAccount, smartAccount, setCurrentProvider }: any = useAppStore((state) => state);
   const [interval, enableInterval] = useState(false);
   const sdkRef = useRef<SocialLogin | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -86,6 +86,7 @@ export default function Home() {
       await smartAccount.init();
       setSmartAccount(smartAccount);
       setLoading(false);
+      setCurrentProvider("Biconomy");
     } catch (err) {
       console.log("error setting up smart account... ", err);
     }

@@ -10,6 +10,7 @@ import IERC20 from "../abis/IERC20.json";
 import IStarGateRouter from "../abis/IStarGateRouter.json";
 import ChainPing from "../abis/ChainPing.json";
 import { toast } from 'react-hot-toast';
+import { useBiconomyProvider } from './aaProvider.ts/useBiconomyProvider';
 
 export function useSendTx() {
     const {
@@ -29,7 +30,10 @@ export function useSendTx() {
         simulation,
         setSendtxLoading,
         setTxHash,
+        currentProvider
     }: any = useAppStore((state) => state);
+
+    const {mutateAsync: sendToBiconomy} = useBiconomyProvider();
 
     async function sendTxToChain({funcIndex, address}) {
         try {
@@ -159,12 +163,11 @@ export function useSendTx() {
 
             console.log("stargateTx", stargateTx)
             const sendTx = {to: stargateTx.to, data: stargateTx.data, value: stargateTx.value,}
-            const txResponseOfBiconomyAA = await smartAccount?.sendTransactionBatch({transactions: [approveTx, sendTx],})
-            const txReciept = await txResponseOfBiconomyAA?.wait()
-            console.log("userOp hash", txResponseOfBiconomyAA?.hash)
-            console.log("Tx hash", txReciept?.transactionHash)
-            setTxHash(txReciept?.transactionHash)
-            setSendtxLoading(false)
+            if (currentProvider == "Biconomy") {
+                await sendToBiconomy([approveTx, sendTx])
+            } else {
+                toast.error("Choose Wallet Provider first");
+            }
           } catch (error: any) {
             setSendtxLoading(false);
             console.log("sendTx-error: ", error);
@@ -177,5 +180,4 @@ export function useSendTx() {
         }
     }
     return useMutation(sendTxToChain);
-
 }
