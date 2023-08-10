@@ -16,7 +16,7 @@ export const getContractInstance = async (address, abi, provider) : Promise<ethe
         const instance = await new ethers.Contract(address, abi, provider)
         return instance
     } catch (error) {
-        console.log("getContract-error", error)
+        console.log("getContractInstance-error", error)
         return
     }
 }
@@ -25,15 +25,24 @@ export const getErc20Balanceof = async (erc20, address): Promise<BigNumber | und
     try {
         return await erc20.balanceOf(address)
     } catch (error) {
-        console.log("getProvider-error", error)
+        console.log("getErc20Balanceof-error", error)
         return
     }
 }
 
-export const getProvider3 = async () => {
+export const getErc20Allownace = async (erc20, from, spender): Promise<BigNumber | undefined> => {
     try {
-
+        return await erc20.allowance(from, spender)
     } catch (error) {
-        console.log("getProvider-error", error)
+        console.log("getErc20Allownace-error", error)
+        return
     }
 }
+
+// export const getProvider3 = async () => {
+//     try {
+
+//     } catch (error) {
+//         console.log("getProvider3-error", error)
+//     }
+// }

@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
 import { useAppStore } from '../store/appStore';
-import { getContractInstance, getErc20Balanceof } from '../utils/web3Libs/ethers';
+import { getContractInstance, getErc20Allownace, getErc20Balanceof } from '../utils/web3Libs/ethers';
 import { BigNumber, ethers } from 'ethers';
 import { BigNumber as bg } from "bignumber.js";
 import { batch, calculateFees, chooseChianId } from '../utils/helper';
@@ -11,6 +11,7 @@ import IStarGateRouter from "../abis/IStarGateRouter.json";
 import ChainPing from "../abis/ChainPing.json";
 import { toast } from 'react-hot-toast';
 import { useBiconomyProvider } from './aaProvider.ts/useBiconomyProvider';
+import { useEoaProvider } from './aaProvider.ts/useEOAProvider';
 
 export function useSendTx() {
     const {
@@ -29,22 +30,39 @@ export function useSendTx() {
         params,
         simulation,
         setSendtxLoading,
+        setSendtxLoadingForEoa,
         setTxHash,
         currentProvider
     }: any = useAppStore((state) => state);
 
     const {mutateAsync: sendToBiconomy} = useBiconomyProvider();
+    const {mutateAsync: sendTxTrditionally} = useEoaProvider();
 
-    async function sendTxToChain({funcIndex, address}) {
+    async function sendTxToChain({funcIndex, address, isSCW}) {
         try {
             console.log('sendTxToChain++++++')
-            setSendtxLoading(true)
+            if (isSCW) {
+                setSendtxLoading(true)
+            } else {
+                setSendtxLoadingForEoa(true)
+            }
+            if(!address) throw "Connect a wallet or refresh it"
             if (!smartAccount) throw "You need to login"
             if (!simulation) throw "First simulate then send Tx"
             if (contractIndex == "") throw "Enter contractIndex field"
             if (amountIn == "") throw "Enter amountIn field"
             if (isThisAmount < 0) throw "Select amount field"
             if(!allNetworkData) throw "a need to fetch"
+
+            let _currentAddress;
+            let _currentProvider;
+            if (isSCW) {
+                _currentAddress = smartAccount.address
+                _currentProvider = smartAccount.provider
+            } else {
+                _currentAddress = address
+                _currentProvider = smartAccount.provider
+            }
 
             const fromStarGateRouter: any = allNetworkData.starGateRouter
             const toUsdc = allNetworkData.tokens.usdc
@@ -53,14 +71,19 @@ export function useSendTx() {
             setTxHash("");
             const abi = ethers.utils.defaultAbiCoder;
 
-            const USDT = await getContractInstance(tokenIn, IERC20, smartAccount.provider)
+            const USDT = await getContractInstance(tokenIn, IERC20, _currentProvider)
             if (!USDT) return
-            const balance = await getErc20Balanceof(USDT, smartAccount.address)
+            const balance = await getErc20Balanceof(USDT, _currentAddress)
             if (BigNumber.from(balance).lt(BigNumber.from(amountIn))) throw "You don't have enough balance"
 
-            const approveData = await USDT.populateTransaction.approve(fromStarGateRouter, amountIn)
-            const approveTx = {to: approveData.to, data: approveData.data}
+            let approveTx
+            const allowance = await getErc20Allownace(USDT, _currentAddress, fromStarGateRouter)
+            if (!BigNumber.from(allowance).gte(BigNumber.from(amountIn))) {
+                const approveData = await USDT.populateTransaction.approve(fromStarGateRouter, amountIn)
+                approveTx = {to: approveData.to, data: approveData.data}
+            }
             console.log("approveTx", approveTx)
+
 
             console.log("params1", params[funcIndex])
             const amountAfterSlippage = await calculateFees(
@@ -70,7 +93,7 @@ export function useSendTx() {
                 destPoolId,
                 toChainId,
                 fromStarGateRouter,
-                smartAccount.provider
+                _currentProvider
             )
             params[funcIndex][isThisAmount] = amountAfterSlippage.toString()
             console.log("params2", params[funcIndex], currentFunc)
@@ -98,7 +121,7 @@ export function useSendTx() {
                 )
             }
 
-            const srcAddress = ethers.utils.solidityPack(["address"],[smartAccount.address])
+            const srcAddress = ethers.utils.solidityPack(["address"],[_currentAddress])
             let abiInterfaceForChainPing = new ethers.utils.Interface(ChainPing)
             const stargateParams = [
                 fromChainId,
@@ -123,7 +146,7 @@ export function useSendTx() {
             )
             console.log("gasUsed: ", gasUsed)
 
-            const stargateRouter = await getContractInstance(fromStarGateRouter, IStarGateRouter, smartAccount.provider)
+            const stargateRouter = await getContractInstance(fromStarGateRouter, IStarGateRouter, _currentProvider)
             if (!stargateRouter) return
             const lzParams = {dstGasForCall: BigNumber.from(gasUsed).add(BigNumber.from('30000')), dstNativeAmount: 0, dstNativeAddr: "0x",}
             const packedToAddress = ethers.utils.solidityPack(["address"], [toChainPing])
@@ -141,7 +164,7 @@ export function useSendTx() {
                 toChainId,
                 srcPoolId,
                 destPoolId,
-                smartAccount.address,
+                _currentAddress,
                 amountIn,
                 0,
                 lzParams,
@@ -150,9 +173,9 @@ export function useSendTx() {
                 {value: quoteData[0]}
             )
 
-            const scwNativeBalance = await smartAccount.provider.getBalance(smartAccount.address)
-            console.log("scwNativeBalance", scwNativeBalance.toString(), quoteData[0].toString())
-            const currentBalance = BigNumber.from(scwNativeBalance)
+            const scwOrEoaNativeBalance = await _currentProvider.getBalance(_currentAddress)
+            console.log("scwOrEoaNativeBalance", scwOrEoaNativeBalance.toString(), quoteData[0].toString())
+            const currentBalance = BigNumber.from(scwOrEoaNativeBalance)
             const minimumBalanceRequired = bg(currentBalance.toString()).plus(parseEther('1').toString()).dividedBy(bg(10).pow(18)).toString()
             console.log("minimumBalanceRequired", minimumBalanceRequired.toString())
 
@@ -163,13 +186,29 @@ export function useSendTx() {
 
             console.log("stargateTx", stargateTx)
             const sendTx = {to: stargateTx.to, data: stargateTx.data, value: stargateTx.value,}
-            if (currentProvider == "Biconomy") {
-                await sendToBiconomy([approveTx, sendTx])
+
+            if (approveTx) {
+                console.log('1')
+                if (isSCW) {
+                    console.log('2')
+                    await sendToBiconomy([approveTx, sendTx])
+                } else {
+                    console.log('3')
+                    await sendTxTrditionally([approveTx, sendTx])
+                }
             } else {
-                toast.error("Choose Wallet Provider first");
+                console.log('4')
+                if (isSCW) {
+                    console.log('5')
+                    await sendToBiconomy([sendTx])
+                } else {
+                    console.log('6')
+                    await sendTxTrditionally([sendTx])
+                }
             }
           } catch (error: any) {
             setSendtxLoading(false);
+            setSendtxLoadingForEoa(false)
             console.log("sendTx-error: ", error);
             if (error.message) {
               toast.error(error.message);

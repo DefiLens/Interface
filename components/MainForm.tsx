@@ -60,8 +60,9 @@ export default function MainForm() {
     simulateInputData, setSimulateInputData,
     simulateLoading, setSimulationLoading,
 
-    sendTxLoading, setSendtxLoading,
-    txhash, setTxHash,
+    sendTxLoading,
+    sendTxLoadingForEoa,
+    txhash,
 
   }: any = useAppStore((state) => state);
 
@@ -195,8 +196,8 @@ export default function MainForm() {
     simulateTx({funcIndex, address})
   };
 
-  const sendTx = async (funcIndex: any) => {
-      await sendTxToChain({funcIndex, address})
+  const sendTx = async (funcIndex: any, isSCW: any) => {
+      await sendTxToChain({funcIndex, address, isSCW})
   };
 
   // const checkStackUp = async () => {
@@ -662,13 +663,23 @@ export default function MainForm() {
                 <div className="flex justify-center items-center gap-3 py-5">
                   <button
                     type="button"
-                    onClick={(e: any) => sendTx(currentFuncIndex)}
+                    onClick={(e: any) => sendTx(currentFuncIndex, true)}
                     className="flex justify-center items-center gap-2 bg-success-600 hover:bg-success-700 py-2 px-5 rounded-lg text-white font-medium border-b-4 border-success-800 hover:border-success-900 transition duration-300"
                   >
                     {sendTxLoading && (
                       <ImSpinner className="animate-spin h-5 w-5" />
                     )}
-                    sendTx
+                    sendTx via SCW
+                  </button>
+                  <button
+                    type="button"
+                    onClick={(e: any) => sendTx(currentFuncIndex, false)}
+                    className="flex justify-center items-center gap-2 bg-success-600 hover:bg-success-700 py-2 px-5 rounded-lg text-white font-medium border-b-4 border-success-800 hover:border-success-900 transition duration-300"
+                  >
+                    {sendTxLoadingForEoa && (
+                      <ImSpinner className="animate-spin h-5 w-5" />
+                    )}
+                    sendTx via EOA
                   </button>
                 </div>
                 <div className="flex justify-center items-center gap-3 py-5">
@@ -677,7 +688,7 @@ export default function MainForm() {
                       <a
                         target="_blank"
                         href={`https://socketscan.io/tx/${txhash}`}
-                        style={{ color: "blue" }}
+                        style={{ color: "white" }}
                       >
                         TxHash : {shorten(txhash)}
                       </a>

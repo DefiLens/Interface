@@ -71,6 +71,7 @@ interface AppState {
   simulateLoading: any;
 
   sendTxLoading: any;
+  sendTxLoadingForEoa: any;
   txhash: any;
 
   setSmartAccount: (smartAccount: any) => void;
@@ -109,6 +110,8 @@ interface AppState {
   setSimulationLoading: (simulateLoading: any) => void;
 
   setSendtxLoading: (sendTxLoading: any) => void;
+  setSendtxLoadingForEoa: (sendTxLoadingForEoa: any) => void;
+
   setTxHash: (txhash: any) => void;
 
 }
@@ -150,6 +153,7 @@ export const useAppStore = create<AppState>((set) => ({
   simulateLoading: false,
 
   sendTxLoading: false,
+  sendTxLoadingForEoa: false,
   txhash: false,
 
   setSmartAccount: (smartAccount) => set(() => ({ smartAccount })),
@@ -188,5 +192,6 @@ export const useAppStore = create<AppState>((set) => ({
   setSimulationLoading: (simulateLoading) => set(() => ({ simulateLoading })),
 
   setSendtxLoading: (sendTxLoading) => set(() => ({ sendTxLoading })),
+  setSendtxLoadingForEoa: (sendTxLoadingForEoa) => set(() => ({ sendTxLoadingForEoa })),
   setTxHash: (txhash) => set(() => ({ txhash })),
 }));

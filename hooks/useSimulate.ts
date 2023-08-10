@@ -32,16 +32,20 @@ export function useSimulate() {
         setIsSimulationSuccessOpen,
         setIsSimulationErrorOpen,
         setsimulationErrorMsg,
-        setSendtxLoading
+        setSendtxLoading,
+        setSendtxLoadingForEoa,
+        setTxHash
     }: any = useAppStore((state) => state);
 
     async function simulateTx({funcIndex, address}) {
         try {
             setSendtxLoading(false)
+            setSendtxLoadingForEoa(false)
             setSimulationLoading(true)
             setGasUsed(undefined)
             setSimulateInputData(undefined)
             setSimulation(undefined)
+            setTxHash("")
 
             if (!smartAccount) throw "You need to login"
             if (contractIndex == "") throw "Enter contractIndex field"
