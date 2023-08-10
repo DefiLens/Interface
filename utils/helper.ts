@@ -18,6 +18,7 @@ import IStarGatePool from "../abis/IStarGatePool.json"
 import IStarGateRouter from "../abis/IStarGateRouter.json"
 import {Provider} from "web3/providers"
 import { implementation_slot, rpscURLS } from "./constants"
+import { getContractInstance, getProvider } from "./web3Libs/ethers"
 
 interface FunctionABI {
     name: string
@@ -37,9 +38,7 @@ function findSelectedFunctions(
 ): FunctionABI[] {
 
     return abi.filter((func) =>
-        // const check =
         selectedFunctions.includes(func.name) && func.inputs[0].type != "bytes32"
-        // console.log('findSelectedFunctions', check, func)
     )
 }
 
@@ -87,7 +86,7 @@ export const fetchContractDetails = async (
         let contractAbis = await getAbiUsingExplorereUrl(toChainId, contractAddress)
         let abi = JSON.parse(contractAbis.ABI)
         console.log("fetchdetails-abi: ", abi, methodNames)
-        const newprovider = new ethers.providers.JsonRpcProvider(rpscURLS[toChainId])
+        const newprovider = await getProvider(toChainId)
 
         const {isProxy, currentImplAddress}: any = await checkIfContractIsProxy(abi, contractAddress, newprovider)
         console.log('isProxy--', isProxy, currentImplAddress)
@@ -180,21 +179,20 @@ export const calculateFees = async (
     provider: any
 ) => {
     try {
-        console.log('calculateFees')
-        console.log('stargateRouter: ', stargateRouter)
-        const stargateRouterInstance = await new ethers.Contract(stargateRouter, IStarGateRouter, provider)
+        const stargateRouterInstance = await getContractInstance(stargateRouter, IStarGateRouter, provider)
+        if (!stargateRouterInstance) return
         const factory = await stargateRouterInstance.factory()
-        console.log('factory: ', factory)
 
-        const factoryInstance = await new ethers.Contract(factory, IStarGateFactory, provider)
+        const factoryInstance = await getContractInstance(factory, IStarGateFactory, provider)
+        if (!factoryInstance) return
         const pool = await factoryInstance.getPool(2)
-        console.log('pool: ', pool)
 
-        const poolInstance = await new ethers.Contract(pool, IStarGatePool, provider)
+        const poolInstance = await getContractInstance(pool, IStarGatePool, provider)
+        if (!poolInstance) return
         const feeLibrary = await poolInstance.feeLibrary()
-        console.log('feeLibrary: ', feeLibrary)
 
-        const feeLibraryInstance = await new ethers.Contract(feeLibrary, IStarGateFeeLibrary, provider)
+        const feeLibraryInstance = await getContractInstance(feeLibrary, IStarGateFeeLibrary, provider)
+        if (!feeLibraryInstance) return
         const fees = await feeLibraryInstance.getFees(
             srcPoolId,
             destPoolId,
@@ -203,11 +201,9 @@ export const calculateFees = async (
             amountIn
         )
         console.log('fees: ', fees.toString())
-
         const ChainPingFees = '65' // will deposit into dest eoa if stargate do not take much slippage
         amountIn = BigNumber.from(amountIn).sub(fees.eqFee).sub(fees.protocolFee).sub(fees.lpFee).sub(ChainPingFees)
         console.log('amountIn: ', amountIn.toString())
-
         return amountIn
     } catch (error) {
         console.log("calculateFees-error: ", error)

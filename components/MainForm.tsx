@@ -1,115 +1,65 @@
 import * as React from "react";
-import { useState, useEffect } from "react";
-
-import { toast } from "react-hot-toast";
+import { useEffect } from "react";
 import { BigNumber as bg } from "bignumber.js";
-import { Signer, ethers, BigNumber } from "ethers";
-
-import { parseEther } from "ethers/lib/utils";
 import { BiSolidDownArrow } from "react-icons/bi";
 import { ImSpinner9, ImSpinner } from "react-icons/im";
 import { BsArrowRightCircleFill } from "react-icons/bs";
 import { useSigner, useAddress } from "@thirdweb-dev/react";
-
-import IERC20 from "../abis/IERC20.json";
-import ChainPing from "../abis/ChainPing.json";
 import { useAppStore } from "../store/appStore";
-import IStarGateRouter from "../abis/IStarGateRouter.json";
-import {
-  batch,
-  calculateFees,
-  chooseChianId,
-  fetchContractDetails,
-  shorten,
-} from "../utils/helper"
-import {
-  NetworkNameByChainId,
-  _functionType,
-  _nonce,
-  methodWithApi,
-  tokensByNetwork,
-} from "../utils/constants"
-import axios from 'axios';
+import { shorten } from "../utils/helper"
+import { _functionType, _nonce, methodWithApi, tokensByNetwork } from "../utils/constants"
 import { fetchMethodParams, getNetworkAndContractData } from '../utils/apis';
-
-interface Contract {
-  contractName: string;
-  contractAddress: string;
-  extraOrShareToken?: string;
-}
-
-interface ContractMetaData {
-  methodNames: string[];
-  amountFieldIndex: number[];
-}
-
-interface Tokens {
-  [tokenName: string]: string;
-}
-
-interface ChainPing {
-  [network: string]: string;
-}
-
-interface StarGateRouter {
-  [network: string]: string;
-}
-
-interface ApiResponse {
-  contracts: Contract[];
-  contractMetaData: Record<string, ContractMetaData>;
-  tokens: Tokens;
-  chainPing: ChainPing;
-  starGateRouter: StarGateRouter;
-}
-
+import { useSendTx } from "../hooks/useSendTx";
+import { useSimulate } from "../hooks/useSimulate";
+import { useGenerateAbis } from "../hooks/useGenerateAbis";
+import { Presets, Client } from "userop";
+import { STACKUP_POLYGON_MAINNET_RPC_NODE_URL } from "../utils/keys";
 
 export default function MainForm() {
   const address = useAddress(); // Detect the connected address
   const signer: any = useSigner(); // Detect the connected address
+  const { mutateAsync: sendTxToChain } = useSendTx();
+  const { mutateAsync: simulateTx } = useSimulate();
+  const { mutateAsync: generateAbisForContract } = useGenerateAbis();
 
   const polygonUSDC: any = tokensByNetwork['109'].usdc
 
   const {
     smartAccount,
-    isSimulationOpen,
-    setIsSimulationOpen,
-    isSimulationSuccessOpen,
-    setIsSimulationSuccessOpen,
-    isSimulationErrorOpen,
-    setIsSimulationErrorOpen,
-    simulationErrorMsg,
-    setsimulationErrorMsg,
+
+    fromChainId, setFromChainId,
+    toChainId, setToChainId,
+    srcPoolId, setSrcPoolId,
+    destPoolId, setDestPoolId,
+
+    tokenIn, setTokenIn,
+    tokenInDecimals, setTokenInDecimals,
+    amountIn, setAmountIn,
+    isThisAmount, setIsThisFieldAmount,
+
+    contractIndex, setContractIndex,
+    allNetworkData, setData,
+    currentAbi, setAbi,
+    currentFunc, setCurrentFunc,
+    currentFuncIndex, setCurrentFuncIndex,
+
+    funcArray, setFunctionArray,
+    params, setParams,
+    fixParams, setFixParams,
+
+    isSimulationOpen, setIsSimulationOpen,
+    isSimulationSuccessOpen, setIsSimulationSuccessOpen,
+    isSimulationErrorOpen, setIsSimulationErrorOpen,
+    simulationErrorMsg, setsimulationErrorMsg,
+    simulation, setSimulation,
+    gasUsed, setGasUsed,
+    simulateInputData, setSimulateInputData,
+    simulateLoading, setSimulationLoading,
+
+    sendTxLoading, setSendtxLoading,
+    txhash, setTxHash,
+
   }: any = useAppStore((state) => state);
-  const [fromChainId, setFromChainId] = useState<any>("109");
-  const [toChainId, setToChainId] = useState<any>("106");
-  const [srcPoolId, setSrcPoolId] = useState<any>(1);
-  const [destPoolId, setDestPoolId] = useState<any>(1);
-
-  const [tokenIn, setTokenIn] = useState<any>(polygonUSDC)
-  const [tokenInDecimals, setTokenInDecimals] = useState<any>(6);
-  const [amountIn, setAmountIn] = useState<any>();
-
-  const [funcArray, setFunctionArray] = useState<any[]>([]);
-  const [params, setParams] = useState<any>([[]]);
-  const [fixParams, setFixParams] = useState<any>([[]])
-
-  const [currentAbi, setAbi] = useState<any>();
-  const [currentFunc, setCurrentFunc] = useState<any>();
-  const [currentFuncIndex, setCurrentFuncIndex] = useState<any>(0);
-
-  const [isThisAmount, setIsThisFieldAmount] = useState<any>();
-
-  const [simulation, setSimulation] = useState<any>();
-  const [gasUsed, setGasUsed] = useState<any>();
-  const [simulateInputData, setSimulateInputData] = useState<any>();
-  const [simulateLoading, setSimulationLoading] = useState<any>(false);
-  const [sendTxLoading, setSendtxLoading] = useState<any>(false);
-
-  const [txhash, setTxHash] = useState<any>(false);
-
-  const [allNetworkData, setData] = useState<ApiResponse | null>(null);
-  const [contractIndex, setContractIndex] = useState<any>()
 
   useEffect(() => {
     async function updateParams() {
@@ -161,99 +111,107 @@ export default function MainForm() {
     setGasUsed(undefined)
     setSimulateInputData(undefined)
     setSimulation(undefined)
-}
+  }
 
-const onChangeFromNetwork = async (_fromNetwork: any) => {
-    setFromChainId(_fromNetwork)
-}
+  const onChangeFromNetwork = async (_fromNetwork: any) => {
+      setFromChainId(_fromNetwork)
+  }
 
-const onChangeToNetwork = async (toNetwork: any) => {
-    try {
-        setData(null)
-        setToChainId(toNetwork)
-        const response: any = await getNetworkAndContractData(fromChainId, toNetwork)
-        if (response.data) {
-            setData(response.data);
-        }
-    } catch (error) {
-        console.error('API Error:', error);
-    }
+  const onChangeToNetwork = async (toNetwork: any) => {
+      try {
+          setData(null)
+          setToChainId(toNetwork)
+          const response: any = await getNetworkAndContractData(fromChainId, toNetwork)
+          if (response.data) {
+              setData(response.data);
+          }
+      } catch (error) {
+          console.error('API Error:', error);
+      }
 
-}
+  }
 
-const handleContractAddress = async (_contractIndex) => {
-    if (!smartAccount) {
-        alert("You need to biconomy login")
-        return
-    }
-    setContractIndex(_contractIndex)
-}
+  const handleContractAddress = async (_contractIndex) => {
+      if (!smartAccount) {
+          alert("You need to biconomy login")
+          return
+      }
+      setContractIndex(_contractIndex)
+  }
 
-// for e.g usdt -> usdc
-const onChangeTokenIn = async (tokenIn: any) => {
-    const token = tokensByNetwork[fromChainId]
-    if (tokenIn == "usdc") {
-        setTokenIn(token.usdc)
-        setTokenInDecimals(6)
-        setSrcPoolId(1)
-        setDestPoolId(1)
-    }
-    // else if (tokenIn == "usdt") {
-    //     setTokenIn(polygonUSDTAddress)
-    //     setTokenInDecimals(6)
-    //     setSrcPoolId(2)
-    //     setDestPoolId(2)
-    // } else if (tokenIn == "dai") {
-    //     setTokenIn(polygonDAIAddress)
-    //     setTokenInDecimals(18)
-    //     setSrcPoolId(3)
-    //     setDestPoolId(3)
-    // }
-    setAmountIn("")
-}
+  // for e.g usdt -> usdc
+  const onChangeTokenIn = async (tokenIn: any) => {
+      const token = tokensByNetwork[fromChainId]
+      if (tokenIn == "usdc") {
+          setTokenIn(token.usdc)
+          setTokenInDecimals(6)
+          setSrcPoolId(1)
+          setDestPoolId(1)
+      }
+      // else if (tokenIn == "usdt") {
+      //     setTokenIn(polygonUSDTAddress)
+      //     setTokenInDecimals(6)
+      //     setSrcPoolId(2)
+      //     setDestPoolId(2)
+      // } else if (tokenIn == "dai") {
+      //     setTokenIn(polygonDAIAddress)
+      //     setTokenInDecimals(18)
+      //     setSrcPoolId(3)
+      //     setDestPoolId(3)
+      // }
+      setAmountIn("")
+  }
 
-// for e.g 0 -> 1000
-const handleAmountIn = async (_amountIn) => {
-    if (!smartAccount) {
-        alert("You need to biconomy login")
-        return
-    }
-    if (_amountIn) {
-        let amountInByDecimals = bg(_amountIn)
-        amountInByDecimals = amountInByDecimals.multipliedBy(bg(10).pow(tokenInDecimals))
-        if (amountInByDecimals.eq(0)) {
-            setAmountIn(_amountIn)
-        } else {
-            setAmountIn(amountInByDecimals.toString())
-        }
-    } else {
-        setAmountIn("")
-    }
-}
+  // for e.g 0 -> 1000
+  const handleAmountIn = async (_amountIn) => {
+      if (!smartAccount) {
+          alert("You need to biconomy login")
+          return
+      }
+      if (_amountIn) {
+          let amountInByDecimals = bg(_amountIn)
+          amountInByDecimals = amountInByDecimals.multipliedBy(bg(10).pow(tokenInDecimals))
+          if (amountInByDecimals.eq(0)) {
+              setAmountIn(_amountIn)
+          } else {
+              setAmountIn(amountInByDecimals.toString())
+          }
+      } else {
+          setAmountIn("")
+      }
+  }
 
-const onChangeFunctions = async (funcIndex: any) => {
-    try {
-        setParams("")
-        setFixParams("")
+  const onChangeFunctions = async (funcIndex: any) => {
+      try {
+          setParams("")
+          setFixParams("")
 
-        const contractAddress = allNetworkData?.contracts[contractIndex].contractAddress
-        const apiUrl = methodWithApi[toChainId][contractAddress][funcArray[funcIndex].name]
-        const response: any = await fetchMethodParams(fromChainId, toChainId, funcArray, amountIn, smartAccount, address, funcIndex, funcArray[funcIndex].name, apiUrl)
-        if (!response.data) throw ("api error")
-        let _func = [...params]
-        _func[funcIndex] = response.data.params
-        setParams(_func)
-        setFixParams(response.data.fixParams)
-        setCurrentFunc(funcArray[funcIndex].name)
-        setCurrentFuncIndex(funcIndex)
-        setIsThisFieldAmount(response.data.amountFieldIndex)
-        setGasUsed(undefined)
-        setSimulateInputData(undefined)
-        setSimulation(undefined)
-    } catch (error) {
-      console.log("onChangeFunctions---error", error);
-    }
-}
+          const contractAddress = allNetworkData?.contracts[contractIndex].contractAddress
+          const apiUrl = methodWithApi[toChainId][contractAddress][funcArray[funcIndex].name]
+          const response: any = await fetchMethodParams(fromChainId, toChainId, funcArray, amountIn, smartAccount, address, funcIndex, funcArray[funcIndex].name, apiUrl)
+          if (!response.data) throw ("api error")
+
+          let _func = [...params]
+          _func[funcIndex] = response.data.params
+          setParams(_func)
+          setFixParams(response.data.fixParams)
+          setCurrentFunc(funcArray[funcIndex].name)
+          setCurrentFuncIndex(funcIndex)
+          setIsThisFieldAmount(response.data.amountFieldIndex)
+
+          setGasUsed(undefined)
+          setSimulateInputData(undefined)
+          setSimulation(undefined)
+
+          // setIsSimulationOpen(undefined);
+          setIsSimulationSuccessOpen(undefined);
+          setIsSimulationErrorOpen(undefined);
+          setsimulationErrorMsg("");
+
+      } catch (error) {
+        console.log("onChangeFunctions---error", error);
+      }
+  }
 
   const onChangeInput = async (
       funcIndex: any,
@@ -289,301 +247,27 @@ const onChangeFunctions = async (funcIndex: any) => {
   }
 
   const generateAbis = async () => {
-      try {
-          if (!contractIndex) return
-          if (!smartAccount) return
-          if (!toChainId) return
-          const provider = smartAccount.provider
-          const contractAddress: any = allNetworkData?.contracts[contractIndex].contractAddress
-          const methodNames: any = allNetworkData?.contractMetaData[contractAddress].methodNames
-
-          let abi: any = await fetchContractDetails(provider, contractAddress, toChainId, methodNames)
-          console.log("abi: ", abi)
-          setAbi(abi)
-
-          for (let i = 0; i < abi.length; i++) {
-              if (abi[i].stateMutability != "view") {
-                  if (abi[i].type == "fallback") {
-                      console.log("fallback")
-                  } else if (abi[i].type != "event") {
-                      console.log("abi[i]: ", abi[i].name)
-                      setFunctionArray((funcArray) => [...funcArray, abi[i]])
-                  }
-              }
-          }
-      } catch (error) {
-          console.log("callCrossChain-error", error)
-      }
+    await generateAbisForContract()
   }
 
   const simulate = async (funcIndex: any) => {
-    try {
-      setSimulationLoading(true)
-      setGasUsed(undefined)
-      setSimulateInputData(undefined)
-      setSimulation(undefined)
-      if (!smartAccount) throw "You need to login"
-      if (contractIndex == "") throw "Enter contractIndex field"
-      if (amountIn == "") throw "Enter amountIn field"
-      if (isThisAmount < 0) throw "Select amount field"
-      if(!allNetworkData) throw "a need to fetch"
-
-      const fromStarGateRouter = allNetworkData.starGateRouter
-      const toUsdc = allNetworkData.tokens.usdc
-      const toChainPing = allNetworkData.chainPing
-
-      const abi = ethers.utils.defaultAbiCoder
-      // const provider = await ethers.getDefaultProvider()
-      // const signer: Signer = new ethers.VoidSigner(smartAccount, provider)
-      const USDT = await new ethers.Contract(tokenIn, IERC20, smartAccount.provider)
-      const balance = await USDT.balanceOf(smartAccount.address)
-
-      if (BigNumber.from(balance).lt(BigNumber.from(amountIn))) throw "You don't have enough balance"
-
-      const approveData = await USDT.populateTransaction.approve(fromStarGateRouter, amountIn)
-      const approveTx = {to: approveData.to, data: approveData.data}
-      console.log("approveTx", approveTx)
-
-      console.log("params1", params[funcIndex])
-      const amountAfterSlippage = await calculateFees(
-          address,
-          amountIn,
-          srcPoolId,
-          destPoolId,
-          toChainId,
-          fromStarGateRouter,
-          smartAccount.provider
-      )
-      params[funcIndex][isThisAmount] = amountAfterSlippage.toString()
-      console.log("params2", params[funcIndex], currentFunc)
-      console.log('params3: ', [toUsdc, params[funcIndex][1], address, 0])
-
-      let abiInterfaceForDestDefiProtocol = new ethers.utils.Interface(currentAbi)
-      console.log("abiInterfaceForDestDefiProtocol", abiInterfaceForDestDefiProtocol, currentFunc)
-
-      // const destChainExecData = abiInterfaceForDestDefiProtocol.encodeFunctionData(currentFunc, params[funcIndex])
-      const destChainExecData = abiInterfaceForDestDefiProtocol.encodeFunctionData(
-          currentFunc,
-          params[funcIndex]
-      )
-      console.log("destChainExecData", destChainExecData)
-
-      const contractAddress = allNetworkData?.contracts[contractIndex].contractAddress
-      const extraOrShareToken = allNetworkData?.contracts[contractIndex].extraOrShareToken
-      console.log("contractAddress", contractAddress, extraOrShareToken, amountAfterSlippage)
-
-      const destChainExecTx = {to: contractAddress, data: destChainExecData,}
-      let data
-      if (toChainId == '106' || toChainId == '111' || toChainId == "184") {
-        data = abi.encode(
-          ["uint256", "uint256", "address", "address", "address", "bytes"],
-          [BigNumber.from("0"), amountAfterSlippage, contractAddress, address, extraOrShareToken, destChainExecTx.data,]
-        )
-      } else {
-          data = abi.encode(
-              ["uint256", "uint256", "address", "address", "bytes"],
-              [BigNumber.from("0"), amountAfterSlippage, contractAddress, address, destChainExecTx.data,]
-          )
-      }
-
-      const srcAddress = ethers.utils.solidityPack(["address"], [smartAccount.address])
-      let abiInterfaceForChainPing = new ethers.utils.Interface(ChainPing)
-      const stargateParams = [
-          fromChainId,
-          srcAddress,
-          _nonce,
-          toUsdc,
-          amountAfterSlippage,
-          data,
-      ]
-      const encodedDataForChainPing = abiInterfaceForChainPing.encodeFunctionData("sgReceive", stargateParams)
-      const erc20Interface = new ethers.utils.Interface([
-          "function transfer(address _account, uint256 _value)",
-      ])
-      const dummmyTranferToCheckData = erc20Interface.encodeFunctionData("transfer", [toChainPing, amountAfterSlippage])
-      const simulation = await batch(
-          toUsdc,
-          toChainPing,
-          dummmyTranferToCheckData,
-          encodedDataForChainPing,
-          true,
-          chooseChianId(toChainId)
-      )
-
-      setGasUsed(simulation.simulation.gas_used);
-      setSimulateInputData(simulation.simulation.input);
-      setSimulation(simulation.simulation.status);
-      setSimulationLoading(false);
-
-      setIsSimulationOpen(false);
-      setIsSimulationSuccessOpen(true);
-      setIsSimulationErrorOpen(!simulation.simulation.status);
-      setsimulationErrorMsg(simulation.simulation.error);
-
-      console.log("simulation-error: ", simulation.simulation.error);
-      console.log("simulation-status: ", simulation.simulation.status);
-      console.log("simulation-input: ", simulation.simulation.input);
-      console.log("simulation-method: ", simulation.simulation.method);
-      console.log("simulation-gasused: ", simulation.simulation.gas_used);
-    } catch (error: any) {
-      setSimulationLoading(false);
-      setIsSimulationOpen(false);
-      setIsSimulationErrorOpen(true);
-      setsimulationErrorMsg("Simulation Failed");
-      console.log("Simulation Failed: " + error);
-      toast.error(error);
-      return;
-    }
+    simulateTx({funcIndex, address})
   };
 
   const sendTx = async (funcIndex: any) => {
-    try {
-      setSendtxLoading(true)
-      if (!smartAccount) throw "You need to login"
-      if (!simulation) throw "First simulate then send Tx"
-      if (contractIndex == "") throw "Enter contractIndex field"
-      if (amountIn == "") throw "Enter amountIn field"
-      if (isThisAmount < 0) throw "Select amount field"
-      if(!allNetworkData) throw "a need to fetch"
-
-      const fromStarGateRouter: any = allNetworkData.starGateRouter
-      const toUsdc = allNetworkData.tokens.usdc
-      const toChainPing = allNetworkData.chainPing
-
-      setTxHash("");
-      const abi = ethers.utils.defaultAbiCoder;
-
-      // const provider = await ethers.getDefaultProvider()
-      // const signer = new ethers.VoidSigner(smartAccount.address, provider)
-      // const scwNativeBalance = await signer.getBalance()
-      // console.log("scwNativeBalance", scwNativeBalance)
-
-      const USDT = await new ethers.Contract(tokenIn, IERC20, smartAccount.provider)
-      const balance = await USDT.balanceOf(smartAccount.address)
-      if (BigNumber.from(balance).lt(BigNumber.from(amountIn))) throw "You don't have enough balance"
-
-      const approveData = await USDT.populateTransaction.approve(fromStarGateRouter, amountIn)
-      const approveTx = {to: approveData.to, data: approveData.data}
-      console.log("approveTx", approveTx)
-
-      console.log("params1", params[funcIndex])
-      const amountAfterSlippage = await calculateFees(
-          address,
-          amountIn,
-          srcPoolId,
-          destPoolId,
-          toChainId,
-          fromStarGateRouter,
-          smartAccount.provider
-      )
-      params[funcIndex][isThisAmount] = amountAfterSlippage.toString()
-      console.log("params2", params[funcIndex], currentFunc)
-
-      let abiInterfaceForDestDefiProtocol = new ethers.utils.Interface(currentAbi)
-      // const destChainExecData = abiInterfaceForDestDefiProtocol.encodeFunctionData(currentFunc, params[funcIndex])
-      const destChainExecData = abiInterfaceForDestDefiProtocol.encodeFunctionData(
-          currentFunc,
-          params[funcIndex]
-      )
-
-      const contractAddress = allNetworkData?.contracts[contractIndex].contractAddress
-      const extraOrShareToken = allNetworkData?.contracts[contractIndex].extraOrShareToken
-      const destChainExecTx = {to: contractAddress, data: destChainExecData,}
-      let data
-      if (toChainId == '106' || toChainId == '111' || toChainId == "184") {
-          data = abi.encode(
-              ["uint256", "uint256", "address", "address", "address", "bytes"],
-              [BigNumber.from("0"), amountAfterSlippage, contractAddress, address, extraOrShareToken, destChainExecTx.data,]
-          )
-      } else {
-          data = abi.encode(
-              ["uint256", "uint256", "address", "address", "bytes"],
-              [BigNumber.from("0"), amountAfterSlippage, contractAddress, address, destChainExecTx.data,]
-          )
-      }
-
-      const srcAddress = ethers.utils.solidityPack(["address"],[smartAccount.address])
-      let abiInterfaceForChainPing = new ethers.utils.Interface(ChainPing)
-      const stargateParams = [
-          fromChainId,
-          srcAddress,
-          _nonce,
-          toUsdc,
-          amountAfterSlippage,
-          data,
-      ]
-      const encodedDataForChainPing = abiInterfaceForChainPing.encodeFunctionData("sgReceive", stargateParams)
-      const erc20Interface = new ethers.utils.Interface([
-          "function transfer(address _account, uint256 _value)",
-      ])
-      const dummmyTranferToCheckData = erc20Interface.encodeFunctionData("transfer", [toChainPing, amountAfterSlippage])
-      const gasUsed = await batch(
-          toUsdc,
-          toChainPing,
-          dummmyTranferToCheckData,
-          encodedDataForChainPing,
-          false,
-          chooseChianId(toChainId)
-      )
-      console.log("gasUsed: ", gasUsed)
-
-      const stargateRouter = await new ethers.Contract(fromStarGateRouter, IStarGateRouter, smartAccount.provider)
-      const lzParams = {dstGasForCall: BigNumber.from(gasUsed).add(BigNumber.from('30000')), dstNativeAmount: 0, dstNativeAddr: "0x",}
-      const packedToAddress = ethers.utils.solidityPack(["address"], [toChainPing])
-      let quoteData = await stargateRouter.quoteLayerZeroFee(
-          toChainId,
-          _functionType,
-          packedToAddress,
-          data,
-          lzParams
-      )
-      console.log("quoteData", quoteData.toString(), amountIn)
-      console.log("srcPoolId-destPoolId", srcPoolId, destPoolId)
-
-      let stargateTx = await stargateRouter.populateTransaction.swap(
-          toChainId,
-          srcPoolId,
-          destPoolId,
-          smartAccount.address,
-          amountIn,
-          0,
-          lzParams,
-          packedToAddress,
-          data,
-          {value: quoteData[0]}
-      )
-
-      const scwNativeBalance = await smartAccount.provider.getBalance(smartAccount.address)
-      console.log("scwNativeBalance", scwNativeBalance.toString(), quoteData[0].toString())
-      const currentBalance = BigNumber.from(scwNativeBalance)
-      const minimumBalanceRequired = bg(currentBalance.toString()).plus(parseEther('1').toString()).dividedBy(bg(10).pow(18)).toString()
-      console.log("minimumBalanceRequired", minimumBalanceRequired.toString())
-
-      // Extra 1e18 should more as of now
-      if (!currentBalance.gt(quoteData[0].add(parseEther('1')))) {
-        throw (`Not Enough Balance, You should have at least ${minimumBalanceRequired.toString()} polygon in your SCW wallet`)
-      }
-
-      console.log("stargateTx", stargateTx)
-      const sendTx = {to: stargateTx.to, data: stargateTx.data, value: stargateTx.value,}
-      const txResponseOfBiconomyAA = await smartAccount?.sendTransactionBatch({transactions: [approveTx, sendTx],})
-      const txReciept = await txResponseOfBiconomyAA?.wait()
-      console.log("userOp hash", txResponseOfBiconomyAA?.hash)
-      console.log("Tx hash", txReciept?.transactionHash)
-      setTxHash(txReciept?.transactionHash)
-      setSendtxLoading(false)
-    } catch (error: any) {
-      setSendtxLoading(false);
-      console.log("sendTx-error: ", error);
-      // alert("Transaction Error: " + error);
-      if (error.message) {
-        toast.error(error.message);
-      } else {
-        toast.error(error);
-      }
-      return;
-    }
+      await sendTxToChain({funcIndex, address})
   };
+
+  // const checkStackUp = async () => {
+  //   try {
+  //     console.log('funcArray-', funcArray)
+  //     // const builder = await Presets.Builder.Kernel.init(signer, STACKUP_POLYGON_MAINNET_RPC_NODE_URL)
+  //     // const address = await builder.getSender()
+  //     // console.log('address-', address)
+  //   } catch (error) {
+  //     console.log('checkStackUp-error', error)
+  //   }
+  // }
 
   const inputContainer =
     "w-full relative float-label-input shadow-md rounded-md";
@@ -602,6 +286,13 @@ const onChangeFunctions = async (funcIndex: any) => {
     "pointer-events-none absolute right-0 top-0 bottom-0 flex items-center px-3 text-secondary-500 border-l-2";
   return (
     <>
+      {/* <button
+        type="button"
+        className="text-secondary-400 bg-transparent rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center hover:bg-secondary-600 hover:text-white"
+        onClick={() => checkStackUp()}
+      >
+        Check
+      </button> */}
       {!smartAccount && (
         <div className="flex justify-center items-center border-2 border-secondary-800 shadow-sm shadow-primary-950 rounded-lg cursor-pointer">
           <h3 className="font-semibold text-lg md:text-2xl text-primary-950 py-4 bg-transparent ">
@@ -658,7 +349,7 @@ const onChangeFunctions = async (funcIndex: any) => {
 
             <div className={inputContainer}>
               <input
-                type="text"
+                type="number"
                 id="amountIn"
                 placeholder=" "
                 className={inputBoxStyle}

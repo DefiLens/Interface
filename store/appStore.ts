@@ -1,78 +1,184 @@
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 import SmartAccount from "@biconomy/smart-account";
+import { tokensByNetwork } from "../utils/constants";
+
+interface Contract {
+  contractName: string;
+  contractAddress: string;
+  extraOrShareToken?: string;
+}
+
+interface ContractMetaData {
+  methodNames: string[];
+  amountFieldIndex: number[];
+}
+
+interface Tokens {
+  [tokenName: string]: string;
+}
+
+interface ChainPing {
+  [network: string]: string;
+}
+
+interface StarGateRouter {
+  [network: string]: string;
+}
+
+interface ApiResponse {
+  contracts: Contract[];
+  contractMetaData: Record<string, ContractMetaData>;
+  tokens: Tokens;
+  chainPing: ChainPing;
+  starGateRouter: StarGateRouter;
+}
 
 interface AppState {
-  contractAddress: any;
-  amountIn: any;
-  funcArray: any[];
-  params: any;
-  currentAbi: any;
-  currentFunc: any;
-  currentFuncIndex: any;
-  contractName: any;
-  isThisAmount: any;
   smartAccount: SmartAccount | null;
   currentSigner: any;
   currentAddress: any;
+
+  fromChainId: any;
+  toChainId: any;
+  srcPoolId: any;
+  destPoolId: any;
+
+  tokenIn: any;
+  tokenInDecimals: any;
+  amountIn: any;
+  isThisAmount: any;
+
+  contractIndex: any;
+  allNetworkData: ApiResponse | null;
+  currentAbi: any;
+  currentFunc: any;
+  currentFuncIndex: any;
+
+  funcArray: any[];
+  params: any;
+  fixParams: any;
+
   isSimulationOpen: any;
   isSimulationSuccessOpen: any;
   isSimulationErrorOpen: any;
   simulationErrorMsg: any;
+  simulation: any;
+  gasUsed: any;
+  simulateInputData: any;
+  simulateLoading: any;
 
-  setContractAddress: (contractAddress: any) => void;
-  setAmountIn: (amountIn: any) => void;
-  setFunctionArray: (funcArray: any) => void;
-  setParams: (params: any) => void;
-  setAbi: (currentAbi: any) => void;
-  setCurrentFunc: (currentFunc: any) => void;
-  setCurrentFuncIndex: (currentFuncIndex: any) => void;
-  setContractName: (contractName: any) => void;
-  setIsThisFieldAmount: (isThisAmount: any) => void;
+  sendTxLoading: any;
+  txhash: any;
+
   setSmartAccount: (smartAccount: any) => void;
   setCurrentSigner: (currentSigner: any) => void;
   setCurrentAddress: (currentAddress: any) => void;
+
+  setFromChainId: (fromChainId: any) => void;
+  setToChainId: (toChainId: any) => void;
+  setSrcPoolId: (srcPoolId: any) => void;
+  setDestPoolId: (destPoolId: any) => void;
+
+  setTokenIn: (tokenIn: any) => void;
+  setTokenInDecimals: (tokenInDecimals: any) => void;
+  setAmountIn: (amountIn: any) => void;
+  setIsThisFieldAmount: (isThisAmount: any) => void;
+
+  setContractIndex: (contractIndex: any) => void;
+  setData: (allNetworkData: ApiResponse | null) => void;
+  setAbi: (currentAbi: any) => void;
+  setCurrentFunc: (currentFunc: any) => void;
+  setCurrentFuncIndex: (currentFuncIndex: any) => void;
+
+  setFunctionArray: (funcArray: any[]) => void;
+  setParams: (params: any) => void;
+  setFixParams: (fixParams: any) => void;
+
   setIsSimulationOpen: (isSimulationOpen: any) => void;
   setIsSimulationSuccessOpen: (isSimulationSuccessOpen: any) => void;
   setIsSimulationErrorOpen: (isSimulationErrorOpen: any) => void;
   setsimulationErrorMsg: (simulationErrorMsg: any) => void;
+  setSimulation: (simulation: any) => void;
+  setGasUsed: (gasUsed: any) => void;
+  setSimulateInputData: (simulateInputData: any) => void;
+  setSimulationLoading: (simulateLoading: any) => void;
+
+  setSendtxLoading: (sendTxLoading: any) => void;
+  setTxHash: (txhash: any) => void;
+
 }
 
 export const useAppStore = create<AppState>((set) => ({
-  contractAddress: "0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7",
-  amountIn: "100000",
-  funcArray: [],
-  params: [[]],
-  currentAbi: "",
-  currentFunc: "",
-  currentFuncIndex: 0,
-  contractName: 0,
-  isThisAmount: "",
   smartAccount: null,
   currentSigner: "",
   currentAddress: "",
+
+  fromChainId: "109",
+  toChainId: "106",
+  srcPoolId: 1,
+  destPoolId: 1,
+
+  tokenIn: tokensByNetwork['109'].usdc,
+  tokenInDecimals: 6,
+  amountIn: "100000",
+  isThisAmount: "",
+
+  contractIndex: "",
+  allNetworkData: null,
+  currentAbi: "",
+  currentFunc: "",
+  currentFuncIndex: 0,
+
+  funcArray: [],
+  params: [[]],
+  fixParams: [[]],
+
   isSimulationOpen: false,
   isSimulationSuccessOpen: false,
   isSimulationErrorOpen: false,
   simulationErrorMsg: "",
+  simulation: "",
+  gasUsed: "",
+  simulateInputData: "",
+  simulateLoading: false,
 
-  setContractAddress: (contractAddress) => set(() => ({ contractAddress })),
-  setAmountIn: (amountIn) => set(() => ({ amountIn })),
-  setFunctionArray: (funcArray) => set(() => ({ funcArray })),
-  setParams: (params) => set(() => ({ params })),
-  setAbi: (currentAbi) => set(() => ({ currentAbi })),
-  setCurrentFunc: (currentFunc) => set(() => ({ currentFunc })),
-  setCurrentFuncIndex: (currentFuncIndex) => set(() => ({ currentFuncIndex })),
-  setContractName: (contractName) => set(() => ({ contractName })),
-  setIsThisFieldAmount: (isThisAmount) => set(() => ({ isThisAmount })),
+  sendTxLoading: false,
+  txhash: false,
+
   setSmartAccount: (smartAccount) => set(() => ({ smartAccount })),
   setCurrentSigner: (currentSigner) => set(() => ({ currentSigner })),
   setCurrentAddress: (currentAddress) => set(() => ({ currentAddress })),
+
+  setFromChainId: (fromChainId) => set(() => ({ fromChainId })),
+  setToChainId: (toChainId) => set(() => ({ toChainId })),
+  setSrcPoolId:(srcPoolId) => set(() => ({ srcPoolId })),
+  setDestPoolId:(destPoolId) => set(() => ({ destPoolId })),
+
+  setTokenIn: (tokenIn) => set(() => ({ tokenIn })),
+  setTokenInDecimals: (tokenInDecimals) => set(() => ({ tokenInDecimals })),
+  setAmountIn: (amountIn) => set(() => ({ amountIn })),
+  setIsThisFieldAmount: (isThisAmount) => set(() => ({ isThisAmount })),
+
+  setData: (allNetworkData) => set(() => ({ allNetworkData })),
+  setContractIndex: (contractIndex) => set(() => ({ contractIndex })),
+  setAbi: (currentAbi) => set(() => ({ currentAbi })),
+  setCurrentFunc: (currentFunc) => set(() => ({ currentFunc })),
+  setCurrentFuncIndex: (currentFuncIndex) => set(() => ({ currentFuncIndex })),
+
+  setFunctionArray: (funcArray) => set(() => ({ funcArray })),
+  setParams: (params) => set(() => ({ params })),
+  setFixParams: (fixParams) => set(() => ({ fixParams })),
+
   setIsSimulationOpen: (isSimulationOpen) => set(() => ({ isSimulationOpen })),
-  setIsSimulationSuccessOpen: (isSimulationSuccessOpen) =>
-    set(() => ({ isSimulationSuccessOpen })),
-  setIsSimulationErrorOpen: (isSimulationErrorOpen) =>
-    set(() => ({ isSimulationErrorOpen })),
-  setsimulationErrorMsg: (simulationErrorMsg) =>
-    set(() => ({ simulationErrorMsg })),
+  setIsSimulationSuccessOpen: (isSimulationSuccessOpen) => set(() => ({ isSimulationSuccessOpen })),
+  setIsSimulationErrorOpen: (isSimulationErrorOpen) => set(() => ({ isSimulationErrorOpen })),
+  setsimulationErrorMsg: (simulationErrorMsg) =>  set(() => ({ simulationErrorMsg })),
+  setSimulation: (simulation) => set(() => ({ simulation })),
+  setGasUsed: (gasUsed) => set(() => ({ gasUsed })),
+  setSimulateInputData: (simulateInputData) => set(() => ({ simulateInputData })),
+  setSimulationLoading: (simulateLoading) => set(() => ({ simulateLoading })),
+
+  setSendtxLoading: (sendTxLoading) => set(() => ({ sendTxLoading })),
+  setTxHash: (txhash) => set(() => ({ txhash })),
 }));
