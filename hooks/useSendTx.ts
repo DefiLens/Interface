@@ -10,8 +10,8 @@ import IERC20 from "../abis/IERC20.json";
 import IStarGateRouter from "../abis/IStarGateRouter.json";
 import ChainPing from "../abis/ChainPing.json";
 import { toast } from 'react-hot-toast';
-import { useBiconomyProvider } from './aaProvider.ts/useBiconomyProvider';
-import { useEoaProvider } from './aaProvider.ts/useEOAProvider';
+import { useBiconomyProvider } from './aaProvider/useBiconomyProvider';
+import { useEoaProvider } from './aaProvider/useEoaProvider';
 
 export function useSendTx() {
     const {
