@@ -101,6 +101,11 @@ export const tokensByNetwork: Record<string, Tokens> = {
     }
 }
 
+// Dex
+export const UniversalRouter = '0x4C60051384bd2d3C01bfc845Cf5F4b44bcbE9de5'; // polygon
+export const V3_SWAP_ROUTER_ADDRESS =
+  '0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45';
+
 // export const contractDataByNetwork = [
 //     {
 //         109: {

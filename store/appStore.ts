@@ -203,3 +203,30 @@ export const useAppStore = create<AppState>((set) => ({
   setSendtxLoadingForEoa: (sendTxLoadingForEoa) => set(() => ({ sendTxLoadingForEoa })),
   setTxHash: (txhash) => set(() => ({ txhash })),
 }));
+
+
+interface SwapAppState {
+  tokenIn: any;
+  tokenOut: any;
+  amountIn: any;
+  amountOut: any;
+  slippage: number;
+  setTokenIn: (tokenIn: any) => void;
+  setTokenOut: (tokenOut: any) => void;
+  setAmountIn: (amountIn: any) => void;
+  setAmountOut: (amountOut: any) => void;
+  setSlippage: (slippage: any) => void;
+}
+
+export const useSwapAppStore = create<SwapAppState>((set) => ({
+  tokenIn: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
+  tokenOut: '0xc2132D05D31c914a87C6611C10748AEb04B58e8F',
+  amountIn: '',
+  amountOut: '',
+  slippage: 0,
+  setTokenIn: (tokenIn) => set(() => ({ tokenIn })),
+  setTokenOut: (tokenOut) => set(() => ({ tokenOut })),
+  setAmountIn: (amountIn) => set(() => ({ amountIn })),
+  setAmountOut: (amountOut) => set(() => ({ amountOut })),
+  setSlippage: (slippage) => set(() => ({ slippage })),
+}))
