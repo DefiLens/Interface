@@ -7,6 +7,7 @@ import dynamic from "next/dynamic";
 
 import MainForm from "../components/MainForm";
 import Transfer from "../components/Transfer";
+import Swap from "../components/Swap";
 
 const Index = () => {
   // const SocialLoginDynamic = dynamic(
@@ -26,6 +27,10 @@ const Index = () => {
     {
       title: "Cross Chain Defi",
       component: <MainForm />,
+    },
+    {
+      title: "Swap",
+      component: <Swap />,
     },
     {
       title: "Transfer Funds",
