@@ -484,8 +484,8 @@ export default function MainForm() {
                                 <option value="110">Arbitrum</option>
                                 <option value="111">Optimism</option>
                                 <option value="184">Base</option>
-                                {/* <option value="101">Mainnet</option> */}
-                                {/* <option value="109">Polygon</option> */}
+                                <option value="101">Mainnet</option>
+                                <option value="109">Polygon</option>
                             </select>
                             <div className={selectAppearanceStyle}>
                                 <BiSolidDownArrow size="15px" />
