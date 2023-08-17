@@ -106,17 +106,21 @@ export default function Transfer() {
                 throw "Enter valid Amount"
             }
             let tx
+            const _fromAddress = isSCW == "SCW" ? smartAccount.address : address
+            const _toAdress = isSCW == "SCW" ? address : smartAccount.address
             if (isNative == "Native") {
                 let provider = await new ethers.providers.Web3Provider(
                     web3.givenProvider
                 )
                 if (!provider) throw "no provider"
-                const balance = await provider.getBalance(smartAccount.address)
+
+                const balance = await provider.getBalance(_fromAddress)
+                console.log("balance", balance.toString())
                 if (!BigNumber.from(balance).gte(amountIn)) {
-                    alert("Not native enough balance")
+                    alert("Not native enough balance-")
                     throw "Not native enough balance"
                 }
-                tx = {to: address, value: amountIn, data: "0x"}
+                tx = {to: _toAdress, value: amountIn, data: "0x"}
                 console.log("tx", tx)
             } else {
                 const contract = await getContract(tokenAddress)
@@ -124,14 +128,14 @@ export default function Transfer() {
                     alert("add valid Token address first")
                     throw "add valid Token address first"
                 }
-                const balance = await contract.balanceOf(smartAccount.address)
+                const balance = await contract.balanceOf(_fromAddress)
                 if (!BigNumber.from(balance).gte(amountIn)) {
                     alert("Not erc20 enough balance")
                     throw "Not erc20 enough balance"
                 }
                 console.log("erc20", address, amountIn.toString())
                 const data = await contract.populateTransaction.transfer(
-                    address,
+                    _toAdress,
                     amountIn
                 )
                 tx = {to: tokenAddress, data: data.data}
