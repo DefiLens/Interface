@@ -16,7 +16,6 @@ import IStarGateFactory from "../abis/IStarGateFactory.json";
 import IStarGateFeeLibrary from "../abis/IStarGateFeeLibrary.json";
 import IStarGatePool from "../abis/IStarGatePool.json";
 import IStarGateRouter from "../abis/IStarGateRouter.json";
-import { Provider } from "web3/providers";
 import { implementation_slot, rpscURLS } from "./constants";
 import { getContractInstance, getProvider } from "./web3Libs/ethers";
 
@@ -66,7 +65,7 @@ export const chooseChianId = (stargateChainId: any) => {
 };
 
 export const fetchContractDetails = async (
-    provider: Provider,
+    provider: any,
     contractAddress: string,
     toChainId: string,
     methodNames: any

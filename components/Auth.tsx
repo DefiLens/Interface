@@ -226,7 +226,7 @@ export default function Home() {
                             <button
                                 disabled
                                 className="bg-error-600 hover:bg-error-700 py-3 px-8 rounded-lg text-error-100 font-medium border-b-4 border-error-800 hover:border-error-900 transition duration-300 mx-2"
-                                onClick={() => switchOnSpecificChain("polygon")}
+                                // onClick={() => switchOnSpecificChain("polygon")}
                             >
                                 Wrong Network
                             </button>

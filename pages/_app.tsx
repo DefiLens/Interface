@@ -26,6 +26,8 @@ export default function App({Component, pageProps}: AppProps) {
     })
 
     return (
+        <>
+        {/* @ts-ignore */}
         <ChainContext.Provider value={{ selectedChain, setSelectedChain }}>
             <ThirdwebProvider
                 supportedWallets={[metamaskConfig]}
@@ -36,5 +38,6 @@ export default function App({Component, pageProps}: AppProps) {
                 </QueryClientProvider>
             </ThirdwebProvider>
         </ChainContext.Provider>
+        </>
     )
 }
