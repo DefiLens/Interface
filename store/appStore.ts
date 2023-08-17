@@ -35,6 +35,7 @@ interface ApiResponse {
 }
 
 interface AppState {
+    connected: boolean;
     loading: boolean;
     smartAccount: BiconomySmartAccount | null;
     currentSigner: any;
@@ -77,6 +78,7 @@ interface AppState {
     sendTxLoadingForEoa: any;
     txhash: any;
 
+    setConnected: (connected: any) => void;
     setLoading: (loading: any) => void;
     setSmartAccount: (smartAccount: any) => void;
     setCurrentSigner: (currentSigner: any) => void;
@@ -122,6 +124,7 @@ interface AppState {
 }
 
 export const useAppStore = create<AppState>((set) => ({
+    connected: false,
     loading: false,
     smartAccount: null,
     currentSigner: "",
@@ -164,6 +167,7 @@ export const useAppStore = create<AppState>((set) => ({
     sendTxLoadingForEoa: false,
     txhash: false,
 
+    setConnected: (connected) => set(() => ({ connected })),
     setLoading: (loading) => set(() => ({ loading })),
     setSmartAccount: (smartAccount) => set(() => ({ smartAccount })),
     setCurrentSigner: (currentSigner) => set(() => ({ currentSigner })),

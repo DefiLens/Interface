@@ -55,6 +55,7 @@ export default function MainForm() {
     const { selectedChain, setSelectedChain, selectedChainId, setSelectedChainId } = React.useContext(ChainContext);
     const { setScwBalance, setEoaBalance }: any = useAppStore((state) => state);
     const {
+        connected,
         smartAccount,
         setSmartAccount,
         setCurrentProvider,
@@ -192,37 +193,33 @@ export default function MainForm() {
 
     const onChangeFromNetwork = async (_fromNetwork: any) => {
         try {
+            if (!connected) {
+                alert("Please connect to metamask");
+                return;
+            }
             setLoading(true);
             setTokenIn("");
             setToChainId("");
-            setData("")
+            setData("");
             const realChainID = await chooseChianId(_fromNetwork);
             setFromChainId(_fromNetwork);
             setSelectedChain?.(NetworkNameByChainId[realChainID]);
             setSelectedChainId?.(realChainID);
-            switchChain(Number(realChainID))
+
+            await switchChain(Number(realChainID))
                 .then(async () => {
-                    connect(metamaskConfig, {})
-                        .then(async () => {
-                            const smartAccount: any = await createAccount(realChainID);
-                            console.log("smartAccount: ", smartAccount);
-                            // await calcBalanceOfEoa(realChainID, address);
-                            // await calcBalanceOfScw(realChainID, smartAccount.address);
-                            await fetchNativeBalance({
-                                chainId: realChainID,
-                                eoaAddress: address,
-                                scwAddress: smartAccount?.address,
-                            });
-                            setSmartAccount(smartAccount);
-                            setLoading(false);
-                        })
-                        .catch((error) => {
-                            console.log("connect:catch:error", error);
-                            setLoading(false);
-                        });
+                    const smartAccount: any = await createAccount(realChainID);
+                    console.log("smartAccount: ", smartAccount);
+                    await fetchNativeBalance({
+                        chainId: realChainID,
+                        eoaAddress: address,
+                        scwAddress: smartAccount?.address,
+                    });
+                    setSmartAccount(smartAccount);
+                    setLoading(false);
                 })
                 .catch((error) => {
-                    console.log("switchChain:catch:error", error);
+                    console.log("connect:catch:error", error);
                     setLoading(false);
                 });
         } catch (error) {

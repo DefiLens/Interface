@@ -36,6 +36,8 @@ export default function Home() {
         eoaBalance,
         loading,
         setLoading,
+        connected,
+        setConnected
     }: any = useAppStore((state) => state);
     const { mutateAsync: fetchNativeBalance } = useCalculatebalance();
     const [interval, enableInterval] = useState(false);
@@ -180,6 +182,17 @@ export default function Home() {
     //     }
     // }
 
+    const handleConnect = async () => {
+        connect(metamaskConfig, {}).then(() => {
+            setConnected(true)
+        }).catch(
+            setConnected(false)
+        )
+        // if (chain?.chainId) {
+        //   await login(chain?.chainId);
+        // }
+      };
+
     const buttonStyle =
         "bg-primary-600 hover:bg-primary-700 py-3 px-8 rounded-lg text-primary-100 font-medium border-b-4 border-primary-800 hover:border-primary-900 transition duration-300";
 
@@ -220,9 +233,11 @@ export default function Home() {
                         Arbitrum
                     </option>
                 </select> */}
+
                 <li style={{ float: "right", padding: "5px" }}>
+
                     <div>
-                        {!chainIds.includes(chain?.chainId as number) && !loading ? (
+                        {/* {!chainIds.includes(chain?.chainId as number) && !loading ? (
                             <button
                                 disabled
                                 className="bg-error-600 hover:bg-error-700 py-3 px-8 rounded-lg text-error-100 font-medium border-b-4 border-error-800 hover:border-error-900 transition duration-300 mx-2"
@@ -230,9 +245,8 @@ export default function Home() {
                             >
                                 Wrong Network
                             </button>
-                        ) : (
-                            smartAccount &&
-                            !loading && (
+                        ) : ( */}
+                            { smartAccount && !loading && (
                                 <div className="flex flex-wrap justify-start items-center gap-3 text-base">
                                     <button className={`${buttonStyle} flex justify-center items-center gap-2`}>
                                         Current Network: {chain?.name}
@@ -269,9 +283,63 @@ export default function Home() {
                                         <FiCopy onClick={() => copyToClipboard(address)} />
                                     </button>
                                 </div>
-                            )
-                        )}
-                        {loading && (
+                                )}
+                            {/* // ) */}
+                        {/* )} */}
+
+            {!smartAccount && !loading && !connected && (
+              <li>
+                <button
+                  className={`${buttonStyle} flex justify-center items-center gap-2`}
+                  onClick={handleConnect}
+                >
+                  <svg
+                    className="h-4 w-4 text-light"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    stroke-width="2"
+                    stroke="currentColor"
+                    fill="none"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path stroke="none" d="M0 0h24v24H0z" />{" "}
+                    <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />{" "}
+                    <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+                  </svg>
+                  Connect
+                </button>
+              </li>
+            )}
+
+            {connected && !smartAccount && !loading && (
+              <li>
+                <button
+                  className={`${buttonStyle} flex justify-center items-center gap-2`}
+                //   onClick={handleConnect}
+                >
+                  <svg
+                    className="h-4 w-4 text-light"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    stroke-width="2"
+                    stroke="currentColor"
+                    fill="none"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path stroke="none" d="M0 0h24v24H0z" />{" "}
+                    <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />{" "}
+                    <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+                  </svg>
+                  Connected To Metamask
+                </button>
+              </li>
+            )}
+
+            {loading && (
                             <button className={`${buttonStyle} flex justify-center items-center gap-2`}>
                                 <ImSpinner className="animate-spin h-5 w-5" />
                                 Loading account details...
