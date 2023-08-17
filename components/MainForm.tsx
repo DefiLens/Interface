@@ -206,7 +206,11 @@ export default function MainForm() {
                             console.log("smartAccount: ", smartAccount);
                             // await calcBalanceOfEoa(realChainID, address);
                             // await calcBalanceOfScw(realChainID, smartAccount.address);
-                            await fetchNativeBalance({chainId: realChainID, eoaAddress: address, scwAddress: smartAccount?.address})
+                            await fetchNativeBalance({
+                                chainId: realChainID,
+                                eoaAddress: address,
+                                scwAddress: smartAccount?.address,
+                            });
                             setSmartAccount(smartAccount);
                             setLoading(false);
                         })
@@ -392,6 +396,9 @@ export default function MainForm() {
                                 <option value="109">Polygon</option>
                                 <option value="110">Arbitrum</option>
                                 <option value="106">Avalanche</option>
+                                <option value="101">Ethereum</option>
+                                <option value="184">Base</option>
+                                <option value="111">Optimism</option>
                             </select>
                             <div className={selectAppearanceStyle}>
                                 <BiSolidDownArrow size="15px" />
