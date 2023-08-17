@@ -8,15 +8,6 @@ import { getContractInstance, getErc20Data, getProvider } from '../utils/web3Lib
 import { parseUnits } from 'ethers/lib/utils';
 
 export function useUniswap() {
-    const {
-        smartAccount,
-        toChainId,
-        contractIndex,
-        allNetworkData,
-        setFunctionArray,
-        setAbi
-    }: any = useAppStore((state) => state);
-
     async function swap({tokenIn, tokenOut, amountIn, address, type}: any) {
         try {
             const web3JsonProvider = await getProvider('109')

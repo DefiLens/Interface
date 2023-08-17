@@ -4,7 +4,7 @@ import { getContractInstance, getErc20Allownace, getErc20Balanceof } from '../ut
 import { BigNumber, ethers } from 'ethers';
 import { BigNumber as bg } from "bignumber.js";
 import { batch, calculateFees, chooseChianId } from '../utils/helper';
-import { _functionType, _nonce } from '../utils/constants';
+import { _functionType, _nonce, gasFeesNames } from '../utils/constants';
 import { parseEther } from 'ethers/lib/utils';
 import IERC20 from "../abis/IERC20.json";
 import IStarGateRouter from "../abis/IStarGateRouter.json";
@@ -12,6 +12,8 @@ import ChainPing from "../abis/ChainPing.json";
 import { toast } from 'react-hot-toast';
 import { useBiconomyProvider } from './aaProvider/useBiconomyProvider';
 import { useEoaProvider } from './aaProvider/useEoaProvider';
+import ChainContext from '../Context/ChainContext';
+import { useContext } from 'react';
 
 export function useSendTx() {
     const {
@@ -34,6 +36,8 @@ export function useSendTx() {
         setTxHash,
         currentProvider
     }: any = useAppStore((state) => state);
+
+    const { selectedChain } = useContext(ChainContext);
 
     const {mutateAsync: sendToBiconomy} = useBiconomyProvider();
     const {mutateAsync: sendTxTrditionally} = useEoaProvider();
@@ -176,12 +180,14 @@ export function useSendTx() {
             const scwOrEoaNativeBalance = await _currentProvider.getBalance(_currentAddress)
             console.log("scwOrEoaNativeBalance", scwOrEoaNativeBalance.toString(), quoteData[0].toString())
             const currentBalance = BigNumber.from(scwOrEoaNativeBalance)
-            const minimumBalanceRequired = bg(currentBalance.toString()).plus(parseEther('1').toString()).dividedBy(bg(10).pow(18)).toString()
-            console.log("minimumBalanceRequired", minimumBalanceRequired.toString())
+            // const minimumBalanceRequired = bg(currentBalance.toString()).plus(parseEther('1').toString()).dividedBy(bg(10).pow(18)).toString()
+            // console.log("minimumBalanceRequired", minimumBalanceRequired.toString())
+
+            const minimumBalanceRequired = bg(quoteData[0].toString()).dividedBy(bg(10).pow(18)).toString()
 
             // Extra 1e18 should more as of now
-            if (!currentBalance.gt(quoteData[0].add(parseEther('1')))) {
-              throw (`Not Enough Balance, You should have at least ${minimumBalanceRequired.toString()} polygon in your SCW wallet`)
+            if (!currentBalance.gt(quoteData[0].add(parseEther('0')))) {
+              throw (`Not Enough Balance, You should have at least ${minimumBalanceRequired.toString()} ${gasFeesNames[selectedChain]} in your SCW wallet`)
             }
 
             console.log("stargateTx", stargateTx)

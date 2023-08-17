@@ -9,7 +9,6 @@ export function useEoaProvider() {
     const signer: any = useSigner(); // Detect the connected address
 
     const {
-        smartAccount,
         setSendtxLoadingForEoa,
         setTxHash,
     }: any = useAppStore((state) => state);

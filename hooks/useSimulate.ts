@@ -61,7 +61,7 @@ export function useSimulate() {
             const USDT = await getContractInstance(tokenIn, IERC20, smartAccount.provider)
             if (!USDT) return
             const balance = await getErc20Balanceof(USDT, smartAccount.address)
-            if (BigNumber.from(balance).lt(BigNumber.from(amountIn))) throw "You don't have enough balance"
+            // if (BigNumber.from(balance).lt(BigNumber.from(amountIn))) throw "You don't have enough balance"
 
             const approveData = await USDT.populateTransaction.approve(fromStarGateRouter, amountIn)
             const approveTx = {to: approveData.to, data: approveData.data}

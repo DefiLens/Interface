@@ -12,11 +12,22 @@ export function useBiconomyProvider() {
 
     async function sendToBiconomy(txs) {
         try {
-            const txResponseOfBiconomyAA = await smartAccount?.sendTransactionBatch({transactions: txs,})
-            const txReciept = await txResponseOfBiconomyAA?.wait()
-            console.log("userOp hash", txResponseOfBiconomyAA?.hash)
-            console.log("Tx hash", txReciept?.transactionHash)
-            setTxHash(txReciept?.transactionHash)
+            // const txResponseOfBiconomyAA = await smartAccount?.sendTransactionBatch({transactions: txs,})
+            // const txReciept = await txResponseOfBiconomyAA?.wait()
+            // console.log("userOp hash", txResponseOfBiconomyAA?.hash)
+            // console.log("Tx hash", txReciept?.transactionHash)
+
+            const userOp = await smartAccount.buildUserOp(txs)
+            userOp.paymasterAndData = "0x"
+            console.log("userOp: ", userOp);
+
+            const userOpResponse = await smartAccount.sendUserOp(userOp)
+            console.log("userOp hash: ", userOpResponse);
+
+            const txReciept = await userOpResponse.wait()
+            console.log("Tx hash: ", txReciept?.receipt.transactionHash)
+
+            setTxHash(txReciept?.receipt.transactionHash)
             setSendtxLoading(false)
           } catch (error: any) {
             setSendtxLoading(false);
