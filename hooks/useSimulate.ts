@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 import { useAppStore } from '../store/appStore';
 import { toast } from "react-hot-toast";
-import { getContractInstance, getErc20Balanceof } from '../utils/web3Libs/ethers';
+import { getContractInstance, getErc20Balanceof, getProvider } from '../utils/web3Libs/ethers';
 import { BigNumber, ethers } from 'ethers';
 import { batch, calculateFees, chooseChianId } from '../utils/helper';
 import { _functionType, _nonce } from '../utils/constants';
@@ -53,12 +53,13 @@ export function useSimulate() {
             if (isThisAmount < 0) throw "Select amount field"
             if(!allNetworkData) throw "a need to fetch"
 
+            const provider = await getProvider(fromChainId)
             const fromStarGateRouter = allNetworkData.starGateRouter
             const toUsdc = allNetworkData.tokens.usdc
             const toChainPing = allNetworkData.chainPing
 
             const abi = ethers.utils.defaultAbiCoder
-            const USDT = await getContractInstance(tokenIn, IERC20, smartAccount.provider)
+            const USDT = await getContractInstance(tokenIn, IERC20, provider)
             if (!USDT) return
             const balance = await getErc20Balanceof(USDT, smartAccount.address)
             // if (BigNumber.from(balance).lt(BigNumber.from(amountIn))) throw "You don't have enough balance"
@@ -75,7 +76,7 @@ export function useSimulate() {
                 destPoolId,
                 toChainId,
                 fromStarGateRouter,
-                smartAccount.provider
+                provider
             )
             params[funcIndex][isThisAmount] = amountAfterSlippage.toString()
             console.log("params2", params[funcIndex], currentFunc)

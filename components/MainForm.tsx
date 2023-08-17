@@ -194,6 +194,8 @@ export default function MainForm() {
         try {
             setLoading(true);
             setTokenIn("");
+            setToChainId("");
+            setData("")
             const realChainID = await chooseChianId(_fromNetwork);
             setFromChainId(_fromNetwork);
             setSelectedChain?.(NetworkNameByChainId[realChainID]);
@@ -476,6 +478,7 @@ export default function MainForm() {
                                 name="networks"
                                 id="toNetwork"
                                 onChange={(e: any) => onChangeToNetwork(e.target.value)}
+                                value={toChainId ? toChainId : ""}
                             >
                                 <option value="" disabled selected>
                                     To Network
