@@ -344,7 +344,6 @@ const center = css`
     text-align: center;
     height: auto;
 `
-
 const box1 = css`
     margin-top: 20px;
     margin-left: 20%;
@@ -354,7 +353,6 @@ const box1 = css`
     background: lightgray;
     background-clip: border-box;
 `
-
 const sendTxcss = css`
     width: 20%;
     padding: 10px;
@@ -362,7 +360,6 @@ const sendTxcss = css`
     color: white;
     font-size: 15px;
 `
-
 const gridContainer = css`
     display: grid;
     grid-template-columns: auto auto auto;
@@ -384,7 +381,6 @@ const buttonload = css`
     font-size: 16px; /* Set a font-size */
     margin: 5px;
 `
-
 /* Add a right margin to each icon */
 const fa = css`
     margin-left: -12px;
