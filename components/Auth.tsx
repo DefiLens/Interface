@@ -37,7 +37,7 @@ export default function Home() {
         loading,
         setLoading,
         connected,
-        setConnected
+        setConnected,
     }: any = useAppStore((state) => state);
     const { mutateAsync: fetchNativeBalance } = useCalculatebalance();
     const [interval, enableInterval] = useState(false);
@@ -83,7 +83,7 @@ export default function Home() {
             const chainIds = [137, 42161, 10, 1, 43114, 8453];
             if (chainIds.includes(chainId)) {
                 setisWrongNetwork(false);
-                await fetchNativeBalance({chainId: chainId, eoaAddress: address, scwAddress: smartAccount?.address})
+                await fetchNativeBalance({ chainId: chainId, eoaAddress: address, scwAddress: smartAccount?.address });
             } else {
                 setisWrongNetwork(true);
             }
@@ -183,15 +183,15 @@ export default function Home() {
     // }
 
     const handleConnect = async () => {
-        connect(metamaskConfig, {}).then(() => {
-            setConnected(true)
-        }).catch(
-            setConnected(false)
-        )
+        connect(metamaskConfig, {})
+            .then(() => {
+                setConnected(true);
+            })
+            .catch(setConnected(false));
         // if (chain?.chainId) {
         //   await login(chain?.chainId);
         // }
-      };
+    };
 
     const buttonStyle =
         "bg-primary-600 hover:bg-primary-700 py-3 px-8 rounded-lg text-primary-100 font-medium border-b-4 border-primary-800 hover:border-primary-900 transition duration-300";
@@ -235,7 +235,6 @@ export default function Home() {
                 </select> */}
 
                 <li style={{ float: "right", padding: "5px" }}>
-
                     <div>
                         {/* {!chainIds.includes(chain?.chainId as number) && !loading ? (
                             <button
@@ -246,100 +245,100 @@ export default function Home() {
                                 Wrong Network
                             </button>
                         ) : ( */}
-                            { smartAccount && !loading && (
-                                <div className="flex flex-wrap justify-start items-center gap-3 text-base">
-                                    <button className={`${buttonStyle} flex justify-center items-center gap-2`}>
-                                        Current Network: {chain?.name}
-                                    </button>
-                                    <button className={`${buttonStyle} flex justify-center items-center gap-2`}>
-                                        SCW :{" "}
-                                        <span className="text-sm font-medium">
-                                            {smartAccount &&
-                                                smartAccount.address.slice(0, 4) +
-                                                    ".." +
-                                                    smartAccount.address.slice(-3) +
-                                                    " : (" +
-                                                    scwBalance +
-                                                    " " +
-                                                    `${gasFeesNames[selectedChain]}` +
-                                                    ")"}
-                                        </span>
-                                        <FiCopy onClick={() => copyToClipboard(smartAccount.address)} />
-                                    </button>
+                        {smartAccount && !loading && (
+                            <div className="flex flex-wrap justify-start items-center gap-3 text-base">
+                                <button className={`${buttonStyle} flex justify-center items-center gap-2`}>
+                                    Current Network: {chain?.name}
+                                </button>
+                                <button className={`${buttonStyle} flex justify-center items-center gap-2`}>
+                                    SCW :{" "}
+                                    <span className="text-sm font-medium">
+                                        {smartAccount &&
+                                            smartAccount.address.slice(0, 4) +
+                                                ".." +
+                                                smartAccount.address.slice(-3) +
+                                                " : (" +
+                                                scwBalance +
+                                                " " +
+                                                `${gasFeesNames[selectedChain]}` +
+                                                ")"}
+                                    </span>
+                                    <FiCopy onClick={() => copyToClipboard(smartAccount.address)} />
+                                </button>
 
-                                    <button className={`${buttonStyle} flex justify-center items-center gap-2`}>
-                                        EOA :
-                                        <span className="text-sm font-medium">
-                                            {smartAccount &&
-                                                address?.slice(0, 4) +
-                                                    ".." +
-                                                    address?.slice(-3) +
-                                                    " : (" +
-                                                    eoaBalance +
-                                                    " " +
-                                                    `${gasFeesNames[selectedChain]}` +
-                                                    ")"}
-                                        </span>
-                                        <FiCopy onClick={() => copyToClipboard(address)} />
-                                    </button>
-                                </div>
-                                )}
-                            {/* // ) */}
+                                <button className={`${buttonStyle} flex justify-center items-center gap-2`}>
+                                    EOA :
+                                    <span className="text-sm font-medium">
+                                        {smartAccount &&
+                                            address?.slice(0, 4) +
+                                                ".." +
+                                                address?.slice(-3) +
+                                                " : (" +
+                                                eoaBalance +
+                                                " " +
+                                                `${gasFeesNames[selectedChain]}` +
+                                                ")"}
+                                    </span>
+                                    <FiCopy onClick={() => copyToClipboard(address)} />
+                                </button>
+                            </div>
+                        )}
+                        {/* // ) */}
                         {/* )} */}
 
-            {!smartAccount && !loading && !connected && (
-              <li>
-                <button
-                  className={`${buttonStyle} flex justify-center items-center gap-2`}
-                  onClick={handleConnect}
-                >
-                  <svg
-                    className="h-4 w-4 text-light"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    stroke-width="2"
-                    stroke="currentColor"
-                    fill="none"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <path stroke="none" d="M0 0h24v24H0z" />{" "}
-                    <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />{" "}
-                    <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
-                  </svg>
-                  Connect
-                </button>
-              </li>
-            )}
+                        {!smartAccount && !loading && !connected && (
+                            <li>
+                                <button
+                                    className={`${buttonStyle} flex justify-center items-center gap-2`}
+                                    onClick={handleConnect}
+                                >
+                                    <svg
+                                        className="h-4 w-4 text-light"
+                                        width="24"
+                                        height="24"
+                                        viewBox="0 0 24 24"
+                                        stroke-width="2"
+                                        stroke="currentColor"
+                                        fill="none"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                    >
+                                        <path stroke="none" d="M0 0h24v24H0z" />{" "}
+                                        <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />{" "}
+                                        <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+                                    </svg>
+                                    Connect
+                                </button>
+                            </li>
+                        )}
 
-            {connected && !smartAccount && !loading && (
-              <li>
-                <button
-                  className={`${buttonStyle} flex justify-center items-center gap-2`}
-                //   onClick={handleConnect}
-                >
-                  <svg
-                    className="h-4 w-4 text-light"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    stroke-width="2"
-                    stroke="currentColor"
-                    fill="none"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <path stroke="none" d="M0 0h24v24H0z" />{" "}
-                    <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />{" "}
-                    <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
-                  </svg>
-                  Connected To Metamask
-                </button>
-              </li>
-            )}
+                        {connected && !smartAccount && !loading && (
+                            <li>
+                                <button
+                                    className={`${buttonStyle} flex justify-center items-center gap-2`}
+                                    //   onClick={handleConnect}
+                                >
+                                    <svg
+                                        className="h-4 w-4 text-light"
+                                        width="24"
+                                        height="24"
+                                        viewBox="0 0 24 24"
+                                        stroke-width="2"
+                                        stroke="currentColor"
+                                        fill="none"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                    >
+                                        <path stroke="none" d="M0 0h24v24H0z" />{" "}
+                                        <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />{" "}
+                                        <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+                                    </svg>
+                                    Connected To Metamask
+                                </button>
+                            </li>
+                        )}
 
-            {loading && (
+                        {loading && (
                             <button className={`${buttonStyle} flex justify-center items-center gap-2`}>
                                 <ImSpinner className="animate-spin h-5 w-5" />
                                 Loading account details...
