@@ -195,6 +195,7 @@ export default function MainForm() {
         try {
             if (!connected) {
                 alert("Please connect to metamask");
+                setFromChainId("");
                 return;
             }
             setLoading(true);
@@ -388,6 +389,7 @@ export default function MainForm() {
                                 name="networks"
                                 id="fromNetwork"
                                 onChange={(e: any) => onChangeFromNetwork(e.target.value)}
+                                value={fromChainId ? fromChainId : ""}
                             >
                                 <option value="" disabled selected>
                                     From Network
