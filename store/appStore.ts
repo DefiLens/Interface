@@ -139,7 +139,7 @@ export const useAppStore = create<AppState>((set) => ({
     srcPoolId: 1,
     destPoolId: 1,
 
-    tokenIn: tokensByNetwork["109"].usdc,
+    tokenIn: "",
     tokenInDecimals: 6,
     amountIn: "100000",
     isThisAmount: "",
