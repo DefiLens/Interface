@@ -39,10 +39,10 @@ export default function Home() {
         connected,
         setConnected,
     }: any = useAppStore((state) => state);
+    const { selectedChain, setSelectedChain, selectedChainId, setSelectedChainId } = useContext(ChainContext);
     const { mutateAsync: fetchNativeBalance } = useCalculatebalance();
     const [interval, enableInterval] = useState(false);
     const sdkRef = useRef<SocialLogin | null>(null);
-    // const [loading, setLoading] = useState<boolean>(false);
     const isOnWrongNetwork = useNetworkMismatch(); // Detect if the user is on the wrong network
     const switchChain = useSwitchChain();
     const metamaskConfig = metamaskWallet();
@@ -51,8 +51,26 @@ export default function Home() {
     const signer: any = useSigner(); // Detect the connected address
     const chain = useChain();
     const [isWrongNetwork, setisWrongNetwork] = useState(false);
-    const { selectedChain } = useContext(ChainContext);
     const chainIds = [137, 42161, 43114, 1, 10, 8453];
+
+    useEffect(() => {
+        // alert("Hello")
+        async function changeWallet() {
+            if (address && smartAccount && chain) {
+                if (smartAccount.owner == address) return;
+                console.log("address1", selectedChainId, selectedChain, chain);
+                const _smartAccount = await login(chain?.chainId);
+                console.log("_smartAccount_", _smartAccount);
+                // @ts-ignore
+                await isNetworkCorrect(chain?.chainId, _smartAccount.address);
+                setSelectedChain?.(chain.slug);
+                setSelectedChainId?.(chain?.chainId.toString());
+            } else {
+                console.log("address2");
+            }
+        }
+        changeWallet();
+    }, [address]);
 
     async function createAccount(chainId) {
         const bundler: IBundler = new Bundler({
@@ -75,16 +93,20 @@ export default function Home() {
     }
 
     useEffect(() => {
-        isNetworkCorrect(chain?.chainId);
+        if (smartAccount) isNetworkCorrect(chain?.chainId, smartAccount.address);
     }, []);
 
-    const isNetworkCorrect = async (chainId: any) => {
+    const isNetworkCorrect = async (chainId: any, smartAccountAddress) => {
         try {
             const chainIds = [137, 42161, 10, 1, 43114, 8453];
+            console.log("1");
             if (chainIds.includes(chainId)) {
+                console.log("2", smartAccount?.address);
                 setisWrongNetwork(false);
-                await fetchNativeBalance({ chainId: chainId, eoaAddress: address, scwAddress: smartAccount?.address });
+                await fetchNativeBalance({ chainId: chainId, eoaAddress: address, scwAddress: smartAccountAddress });
+                console.log("2.1");
             } else {
+                console.log("3");
                 setisWrongNetwork(true);
             }
         } catch (error) {
@@ -94,38 +116,43 @@ export default function Home() {
 
     async function login(chainId) {
         if (!chainId) throw "No ChainId";
-        if (!sdkRef.current) {
-            const socialLoginSDK = new SocialLogin();
-            // const signature1 = await socialLoginSDK.whitelistUrl(
-            //   "http://localhost:3000/"
-            // );
-            await socialLoginSDK.init({
-                chainId: ethers.utils.hexValue(chainId),
-                // whitelistUrls: {
-                //   "http://localhost:3000/": signature1,
-                // },
-            });
-            sdkRef.current = socialLoginSDK;
-        }
-        if (!sdkRef.current.provider) {
-            // sdkRef.current.showConnectModal()
-            sdkRef.current.showWallet();
-            enableInterval(true);
-        } else {
-            setupSmartAccount(chainId);
-        }
+        // if (!sdkRef.current) {
+        //     const socialLoginSDK = new SocialLogin();
+        //     // const signature1 = await socialLoginSDK.whitelistUrl(
+        //     //   "http://localhost:3000/"
+        //     // );
+        //     await socialLoginSDK.init({
+        //         chainId: ethers.utils.hexValue(chainId),
+        //         // whitelistUrls: {
+        //         //   "http://localhost:3000/": signature1,
+        //         // },
+        //     });
+        //     sdkRef.current = socialLoginSDK;
+        // }
+        // if (!sdkRef.current.provider) {
+        //     // sdkRef.current.showConnectModal()
+        //     sdkRef.current.showWallet();
+        //     enableInterval(true);
+        // } else {
+        console.log("Hello");
+        return setupSmartAccount(chainId);
+        // }
     }
 
     async function setupSmartAccount(chainId) {
-        if (!sdkRef?.current?.provider) return;
-        sdkRef.current.hideWallet();
+        // if (!sdkRef?.current?.provider) return;
+        // sdkRef.current.hideWallet();
+        console.log("Hello2");
+
         setLoading(true);
-        const web3Provider = new ethers.providers.Web3Provider(sdkRef.current.provider);
+        // const web3Provider = new ethers.providers.Web3Provider(sdkRef.current.provider);
         try {
             const smartAccount = await createAccount(chainId);
+            console.log("smartAccount", smartAccount);
             setSmartAccount(smartAccount);
             setLoading(false);
             setCurrentProvider("Biconomy");
+            return smartAccount;
         } catch (err) {
             setLoading(false);
             console.log("error setting up smart account... ", err);
@@ -138,49 +165,81 @@ export default function Home() {
         toast.success("Wallet address Copied");
     };
 
-    // const switchOnSpecificChain = async (chainName) => {
-    //     try {
-    //         setLoading(true)
-    //         setSmartAccount(null)
-    //         enableInterval(false)
-    //         // setSelectedChain?.(chainName)
-    //         await changeChain(chainName)
-    //         setLoading(false)
-    //     } catch (error) {
-    //         setLoading(false)
-    //         console.log("switchToChain-error: ", error)
-    //     }
-    // }
+    const switchOnSpecificChain = async (chainName) => {
+        try {
+            setLoading(true);
+            setSmartAccount(null);
+            enableInterval(false);
+            // setSelectedChain?.(chainName)
+            await changeChain(chainName);
+            setLoading(false);
+        } catch (error) {
+            setLoading(false);
+            console.log("switchToChain-error: ", error);
+        }
+    };
 
-    // async function changeChain(chainName) {
-    //     try {
-    //         await connect(metamaskConfig, {})
-    //         console.log("chainName-2", chain?.slug, chainName)
-    //         if (chain?.slug != chainName) {
-    //             // await logout()
-    //             if (chainName == "polygon") {
-    //                 console.log("polygon-2")
-    //                 await switchChain(137)
-    //                 await login(137)
-    //                 await isNetworkCorrect(137)
-    //                 setSelectedChain?.(chainName)
-    //                 setSelectedChainId?.("137")
-    //             } else if (chainName == "arbitrum") {
-    //                 console.log("arbitrum-2")
-    //                 await switchChain?.(42161)
-    //                 await login(42161)
-    //                 await isNetworkCorrect(42161)
-    //                 setSelectedChain?.(chainName)
-    //                 setSelectedChainId?.("42161")
-    //             } else {
-    //                 console.log("other-2")
-    //                 await isNetworkCorrect(chain?.chainId)
-    //             }
-    //         }
-    //     } catch (error: any) {
-    //         console.log("changeChain-error", error)
-    //     }
-    // }
+    async function changeChain(chainName) {
+        try {
+            await handleConnect();
+            if (chain?.slug != chainName) {
+                // await logout()
+                if (chainName == "polygon") {
+                    await switchChain(137);
+                    const _smartAccount = await login(137);
+                    // @ts-ignore
+                    await isNetworkCorrect(137, _smartAccount.address);
+                    setSelectedChain?.(chainName);
+                    setSelectedChainId?.("137");
+                } else if (chainName == "arbitrum") {
+                    await switchChain?.(42161);
+                    const _smartAccount = await login(42161);
+                    // @ts-ignore
+                    await isNetworkCorrect(42161, _smartAccount.address);
+                    setSelectedChain?.(chainName);
+                    setSelectedChainId?.("42161");
+                } else if (chainName == "avalanche") {
+                    await switchChain(43114);
+                    const _smartAccount = await login(43114);
+                    // @ts-ignore
+                    await isNetworkCorrect(43114, _smartAccount.address);
+                    setSelectedChain?.(chainName);
+                    setSelectedChainId?.("43114");
+                } else if (chainName == "optimism") {
+                    await switchChain?.(10);
+                    const _smartAccount = await login(10);
+                    // @ts-ignore
+                    await isNetworkCorrect(10, _smartAccount.address);
+                    setSelectedChain?.(chainName);
+                    setSelectedChainId?.("10");
+                } else if (chainName == "ethereum") {
+                    await switchChain(1);
+                    const _smartAccount = await login(1);
+                    // @ts-ignore
+                    await isNetworkCorrect(1, _smartAccount.address);
+                    setSelectedChain?.(chainName);
+                    setSelectedChainId?.("1");
+                } else if (chainName == "base") {
+                    await switchChain?.(8453);
+                    const _smartAccount = await login(8453);
+                    // @ts-ignore
+                    await isNetworkCorrect(8453, _smartAccount.address);
+                    setSelectedChain?.(chainName);
+                    setSelectedChainId?.("8453");
+                }
+            } else {
+                if (chain) {
+                    const _smartAccount = await login(chain?.chainId);
+                    setSelectedChain?.(chain?.slug);
+                    setSelectedChainId?.(chain?.chainId.toString());
+                    // @ts-ignore
+                    await isNetworkCorrect(chain?.chainId, _smartAccount.address);
+                }
+            }
+        } catch (error: any) {
+            console.log("changeChain-error", error);
+        }
+    }
 
     const handleConnect = async () => {
         connect(metamaskConfig, {})
@@ -204,18 +263,12 @@ export default function Home() {
                         ChainPing
                     </a>
                 </li>
-                {/* <select
+                <select
                     value={String(selectedChain)}
                     onChange={(e) => switchOnSpecificChain(e.target.value)}
-                    style={{float: "right", padding: "5px", marginTop: "12px"}}
+                    style={{ float: "right", padding: "5px", marginTop: "12px" }}
                 >
-                    <option
-                        value=""
-                        disabled
-                        selected={
-                            selectedChain == "" || !selectedChain ? true : false
-                        }
-                    >
+                    <option value="" disabled selected={selectedChain == "" || !selectedChain ? true : false}>
                         ---
                     </option>
                     <option
@@ -232,7 +285,35 @@ export default function Home() {
                     >
                         Arbitrum
                     </option>
-                </select> */}
+                    <option
+                        value="avalanche"
+                        disabled={selectedChain == "avalanche" ? true : false}
+                        selected={selectedChain == "avalanche" ? true : false}
+                    >
+                        Avalanche
+                    </option>
+                    <option
+                        value="optimism"
+                        disabled={selectedChain == "optimism" ? true : false}
+                        selected={selectedChain == "optimism" ? true : false}
+                    >
+                        Optimism
+                    </option>
+                    <option
+                        value="ethereum"
+                        disabled={selectedChain == "ethereum" ? true : false}
+                        selected={selectedChain == "ethereum" ? true : false}
+                    >
+                        Ethereum
+                    </option>
+                    <option
+                        value="base"
+                        disabled={selectedChain == "base" ? true : false}
+                        selected={selectedChain == "base" ? true : false}
+                    >
+                        Base
+                    </option>
+                </select>
 
                 <li style={{ float: "right", padding: "5px" }}>
                     <div>
