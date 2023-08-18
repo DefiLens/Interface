@@ -12,10 +12,8 @@ import {
     _functionType,
     _nonce,
     bundlerURLs,
-    gasFeesNames,
     methodWithApi,
     paymasterURLs,
-    rpscURLS,
     tokensByNetwork,
 } from "../utils/constants";
 import { fetchMethodParams, getNetworkAndContractData } from "../utils/apis";
@@ -29,11 +27,9 @@ import {
     BiconomySmartAccount,
     BiconomySmartAccountConfig,
     DEFAULT_ENTRYPOINT_ADDRESS,
-    SmartAccount,
 } from "@biconomy/account";
 import { IPaymaster, BiconomyPaymaster } from "@biconomy/paymaster";
 import ChainContext from "../Context/ChainContext";
-import { ethers } from "ethers";
 import { toast } from "react-hot-toast";
 import { useCalculatebalance } from "../hooks/useCalculateBalance";
 
@@ -51,9 +47,7 @@ export default function MainForm() {
     const { mutateAsync: onChangeFunctionsHook } = useOnChangeFunctions();
     const { mutateAsync: onChangeInputHook } = useOnChangeInput();
     const { mutateAsync: fetchNativeBalance } = useCalculatebalance();
-
     const { selectedChain, setSelectedChain, selectedChainId, setSelectedChainId } = React.useContext(ChainContext);
-    const { setScwBalance, setEoaBalance }: any = useAppStore((state) => state);
     const {
         connected,
         smartAccount,
@@ -203,7 +197,6 @@ export default function MainForm() {
             setToChainId("");
             setData("");
             const realChainID = await chooseChianId(_fromNetwork);
-            setFromChainId(_fromNetwork);
             setSelectedChain?.(NetworkNameByChainId[realChainID]);
             setSelectedChainId?.(realChainID);
 
@@ -218,11 +211,13 @@ export default function MainForm() {
                     });
                     setSmartAccount(smartAccount);
                     setLoading(false);
+                    setFromChainId(_fromNetwork);
                 })
                 .catch((error) => {
                     console.log("connect:catch:error", error);
                     setLoading(false);
                 });
+
         } catch (error) {
             console.log("onChangeFromNetwork:error", error);
             setLoading(false);
@@ -415,7 +410,7 @@ export default function MainForm() {
                                 placeholder="Token"
                                 name="networks"
                                 id="token"
-                                value={tokenIn}
+                                value={tokenIn ? tokenIn : ""}
                                 onChange={(e: any) => onChangeTokenIn(e.target.value)}
                             >
                                 <option value="" disabled selected>
