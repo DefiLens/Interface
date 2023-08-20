@@ -68,6 +68,10 @@ interface AppState {
     isSimulationOpen: any;
     isSimulationSuccessOpen: any;
     isSimulationErrorOpen: any;
+
+    isSimulationSuccessDetailShow: any;
+    isSimulationErrorDetailShow: any;
+
     simulationErrorMsg: any;
     simulation: any;
     gasUsed: any;
@@ -77,6 +81,8 @@ interface AppState {
     sendTxLoading: any;
     sendTxLoadingForEoa: any;
     txhash: any;
+
+    showWalletAddress: boolean;
 
     setConnected: (connected: any) => void;
     setLoading: (loading: any) => void;
@@ -111,6 +117,10 @@ interface AppState {
     setIsSimulationOpen: (isSimulationOpen: any) => void;
     setIsSimulationSuccessOpen: (isSimulationSuccessOpen: any) => void;
     setIsSimulationErrorOpen: (isSimulationErrorOpen: any) => void;
+
+    setIsSimulationSuccessDetailShow: (isSimulationSuccessDetailShow: any) => void;
+    setIsSimulationErrorDetailShow: (isSimulationErrorDetailShow: any) => void;
+
     setsimulationErrorMsg: (simulationErrorMsg: any) => void;
     setSimulation: (simulation: any) => void;
     setGasUsed: (gasUsed: any) => void;
@@ -121,6 +131,8 @@ interface AppState {
     setSendtxLoadingForEoa: (sendTxLoadingForEoa: any) => void;
 
     setTxHash: (txhash: any) => void;
+
+    setShowWalletAddress: (showWalletAddress: any) => void;
 }
 
 export const useAppStore = create<AppState>((set) => ({
@@ -157,6 +169,10 @@ export const useAppStore = create<AppState>((set) => ({
     isSimulationOpen: false,
     isSimulationSuccessOpen: false,
     isSimulationErrorOpen: false,
+
+    isSimulationSuccessDetailShow: false,
+    isSimulationErrorDetailShow: false,
+
     simulationErrorMsg: "",
     simulation: "",
     gasUsed: "",
@@ -166,6 +182,8 @@ export const useAppStore = create<AppState>((set) => ({
     sendTxLoading: false,
     sendTxLoadingForEoa: false,
     txhash: false,
+
+    showWalletAddress: false,
 
     setConnected: (connected) => set(() => ({ connected })),
     setLoading: (loading) => set(() => ({ loading })),
@@ -200,6 +218,10 @@ export const useAppStore = create<AppState>((set) => ({
     setIsSimulationOpen: (isSimulationOpen) => set(() => ({ isSimulationOpen })),
     setIsSimulationSuccessOpen: (isSimulationSuccessOpen) => set(() => ({ isSimulationSuccessOpen })),
     setIsSimulationErrorOpen: (isSimulationErrorOpen) => set(() => ({ isSimulationErrorOpen })),
+
+    setIsSimulationSuccessDetailShow: (isSimulationSuccessDetailShow) => set(() => ({ isSimulationSuccessDetailShow })),
+    setIsSimulationErrorDetailShow: (isSimulationErrorDetailShow) => set(() => ({ isSimulationErrorDetailShow })),
+
     setsimulationErrorMsg: (simulationErrorMsg) => set(() => ({ simulationErrorMsg })),
     setSimulation: (simulation) => set(() => ({ simulation })),
     setGasUsed: (gasUsed) => set(() => ({ gasUsed })),
@@ -209,6 +231,8 @@ export const useAppStore = create<AppState>((set) => ({
     setSendtxLoading: (sendTxLoading) => set(() => ({ sendTxLoading })),
     setSendtxLoadingForEoa: (sendTxLoadingForEoa) => set(() => ({ sendTxLoadingForEoa })),
     setTxHash: (txhash) => set(() => ({ txhash })),
+
+    setShowWalletAddress: (showWalletAddress: any) => set(() => ({ showWalletAddress })),
 }));
 
 interface SwapAppState {
