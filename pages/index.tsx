@@ -28,10 +28,10 @@ const Index = () => {
             title: "Cross Chain Defi",
             component: <MainForm />,
         },
-        {
-            title: "Swap",
-            component: <Swap />,
-        },
+        // {
+        //     title: "Swap",
+        //     component: <Swap />,
+        // },
         {
             title: "Transfer Funds",
             component: <Transfer />,
