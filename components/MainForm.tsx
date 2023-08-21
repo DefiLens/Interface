@@ -247,6 +247,7 @@ export default function MainForm() {
 
     // for e.g usdt -> usdc
     const onChangeTokenIn = async (tokenIn: any) => {
+        if (!fromChainId) return alert("From network is not selecetd yet")
         await onChangeTokenInHook({ fromChainId, tokenIn });
     };
 
