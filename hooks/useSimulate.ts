@@ -80,7 +80,7 @@ export function useSimulate() {
             )
             params[funcIndex][isThisAmount] = amountAfterSlippage.toString()
             console.log("params2", params[funcIndex], currentFunc)
-            console.log('params3: ', [toUsdc, params[funcIndex][1], address, 0])
+            console.log('params3: ', [toUsdc, params[funcIndex][1], address, 0], currentFunc)
 
             let abiInterfaceForDestDefiProtocol = new ethers.utils.Interface(currentAbi)
             console.log("abiInterfaceForDestDefiProtocol", abiInterfaceForDestDefiProtocol, currentFunc)
@@ -97,7 +97,14 @@ export function useSimulate() {
 
             const destChainExecTx = {to: contractAddress, data: destChainExecData,}
             let data
-            if (toChainId == '106' || toChainId == '111' || toChainId == "184") {
+
+            // console.log(
+            //                 'amountAfterSlippage, contractAddress, address, extraOrShareToken, destChainExecTx.data',
+            //                 amountAfterSlippage.toString(), contractAddress, address, extraOrShareToken, destChainExecTx.data
+            //             )
+
+            if (toChainId == '106' || toChainId == '111' || toChainId == "184" || toChainId == "109") {
+            //   alert("Hello")
               data = abi.encode(
                 ["uint256", "uint256", "address", "address", "address", "bytes"],
                 [BigNumber.from("0"), amountAfterSlippage, contractAddress, address, extraOrShareToken, destChainExecTx.data,]
@@ -109,6 +116,8 @@ export function useSimulate() {
                 )
             }
 
+            // alert("toUsdc"+toUsdc)
+
             const srcAddress = ethers.utils.solidityPack(["address"], [smartAccount.address])
             let abiInterfaceForChainPing = new ethers.utils.Interface(ChainPing)
             const stargateParams = [
@@ -119,6 +128,8 @@ export function useSimulate() {
                 amountAfterSlippage,
                 data,
             ]
+            console.log("stargateParams:", stargateParams, data)
+
             const encodedDataForChainPing = abiInterfaceForChainPing.encodeFunctionData("sgReceive", stargateParams)
             const erc20Interface = new ethers.utils.Interface([
                 "function transfer(address _account, uint256 _value)",

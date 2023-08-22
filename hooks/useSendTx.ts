@@ -113,7 +113,7 @@ export function useSendTx() {
             const extraOrShareToken = allNetworkData?.contracts[contractIndex].extraOrShareToken
             const destChainExecTx = {to: contractAddress, data: destChainExecData,}
             let data
-            if (toChainId == '106' || toChainId == '111' || toChainId == "184") {
+            if (toChainId == '106' || toChainId == '111' || toChainId == "184" || toChainId == "109") {
                 data = abi.encode(
                     ["uint256", "uint256", "address", "address", "address", "bytes"],
                     [BigNumber.from("0"), amountAfterSlippage, contractAddress, address, extraOrShareToken, destChainExecTx.data,]
