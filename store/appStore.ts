@@ -75,6 +75,7 @@ interface AppState {
     simulationErrorMsg: any;
     simulation: any;
     gasUsed: any;
+    gasCost: any;
     simulateInputData: any;
     simulateLoading: any;
 
@@ -124,6 +125,8 @@ interface AppState {
     setsimulationErrorMsg: (simulationErrorMsg: any) => void;
     setSimulation: (simulation: any) => void;
     setGasUsed: (gasUsed: any) => void;
+    setGasCost: (gasCost: any) => void;
+    setBridgeGasCost: (bridgeGasCost: any) => void;
     setSimulateInputData: (simulateInputData: any) => void;
     setSimulationLoading: (simulateLoading: any) => void;
 
@@ -176,6 +179,8 @@ export const useAppStore = create<AppState>((set) => ({
     simulationErrorMsg: "",
     simulation: "",
     gasUsed: "",
+    gasCost: "",
+    bridgeGasCost: "",
     simulateInputData: "",
     simulateLoading: false,
 
@@ -225,6 +230,8 @@ export const useAppStore = create<AppState>((set) => ({
     setsimulationErrorMsg: (simulationErrorMsg) => set(() => ({ simulationErrorMsg })),
     setSimulation: (simulation) => set(() => ({ simulation })),
     setGasUsed: (gasUsed) => set(() => ({ gasUsed })),
+    setGasCost: (gasCost) => set(() => ({ gasCost })),
+    setBridgeGasCost: (bridgeGasCost) => set(() => ({ bridgeGasCost })),
     setSimulateInputData: (simulateInputData) => set(() => ({ simulateInputData })),
     setSimulationLoading: (simulateLoading) => set(() => ({ simulateLoading })),
 
