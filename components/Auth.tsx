@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 
-import { ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { toast } from "react-hot-toast";
 import { BigNumber as bg } from "bignumber.js";
 import { FiCopy } from "react-icons/fi";
@@ -24,6 +24,38 @@ import { useContext } from "react";
 import ChainContext from "../Context/ChainContext";
 import { ImSpinner } from "react-icons/im";
 import { useCalculatebalance } from "../hooks/useCalculateBalance";
+
+import { Web3AuthModalPack } from "@safe-global/auth-kit";
+import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
+import { Web3AuthOptions } from "@web3auth/modal";
+import { CHAIN_NAMESPACES, WALLET_ADAPTERS } from "@web3auth/base";
+import { GelatoRelayPack } from "@safe-global/relay-kit";
+import { MetaTransactionData, MetaTransactionOptions } from "@safe-global/safe-core-sdk-types";
+import AccountAbstraction, { OperationType } from "@safe-global/account-abstraction-kit-poc";
+import {
+    RelayTransaction,
+    // SafeProxyFactoryContract,
+    SafeVersion,
+} from "@safe-global/safe-core-sdk-types";
+import Safe, {
+    DEFAULT_SAFE_VERSION,
+    EthersAdapter,
+    PREDETERMINED_SALT_NONCE,
+    PredictedSafeProps,
+    SafeAccountConfig,
+    SafeDeploymentConfig,
+    encodeCreateProxyWithNonce,
+    encodeMultiSendData,
+    encodeSetupCallData,
+    getMultiSendCallOnlyContract,
+    getProxyFactoryContract,
+    getSafeContract,
+    predictSafeAddress,
+} from "@safe-global/protocol-kit";
+
+import IERC20 from "../abis/IERC20.json";
+import { getContractInstance } from "../utils/web3Libs/ethers";
+import { MAINNET_WEB3_AUTH } from "../utils/keys";
 
 bg.config({ DECIMAL_PLACES: 5 });
 
@@ -252,6 +284,198 @@ export default function Home() {
         // }
     };
 
+    const check = async () => {
+        try {
+            // console.log('loginWeb3Auth+')
+            // console.log(process.env.REACT_APP_WEB3AUTH_CLIENT_ID)
+            // console.log(chain.id, chain.rpcUrl)
+            const options: Web3AuthOptions = {
+                clientId: MAINNET_WEB3_AUTH || "",
+                web3AuthNetwork: "mainnet",
+                chainConfig: {
+                    chainNamespace: CHAIN_NAMESPACES.EIP155,
+                    chainId: "0x89",
+                    rpcTarget: "https://polygon-rpc.com",
+                },
+                uiConfig: {
+                    theme: "dark",
+                    loginMethodsOrder: ["google", "facebook"],
+                },
+            };
+
+            const modalConfig = {
+                [WALLET_ADAPTERS.TORUS_EVM]: {
+                    label: "torus",
+                    showOnModal: false,
+                },
+                [WALLET_ADAPTERS.METAMASK]: {
+                    label: "metamask",
+                    showOnDesktop: true,
+                    showOnMobile: false,
+                },
+            };
+
+            const openloginAdapter: any = new OpenloginAdapter({
+                loginSettings: {
+                    mfaLevel: "mandatory",
+                },
+                adapterSettings: {
+                    uxMode: "popup",
+                    whiteLabel: {
+                        name: "Safe",
+                    },
+                },
+            });
+
+            const web3AuthModalPack = new Web3AuthModalPack({
+                txServiceUrl: "https://safe-transaction-polygon.safe.global",
+            });
+
+            await web3AuthModalPack.init({
+                options,
+                adapters: [openloginAdapter],
+                modalConfig,
+            });
+
+            if (web3AuthModalPack) {
+                const { safes, eoa }: any = await web3AuthModalPack.signIn();
+                const provider = web3AuthModalPack.getProvider() as ethers.providers.ExternalProvider;
+                alert(eoa);
+                console.log(safes, new ethers.providers.Web3Provider(provider));
+
+                const signer = new ethers.providers.Web3Provider(provider).getSigner();
+
+                const ethAdapter: any = new EthersAdapter({
+                    ethers,
+                    signerOrProvider: signer,
+                });
+
+                const relayPack = new GelatoRelayPack();
+                const safeAccountAbstraction = new AccountAbstraction(signer);
+
+                await safeAccountAbstraction.init({ relayPack });
+
+                const USDC: any = await getContractInstance(
+                    "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
+                    IERC20,
+                    new ethers.providers.Web3Provider(provider)
+                );
+                const approveData = await USDC.populateTransaction.approve(
+                    "0x45A01E4e04F14f7A4a6702c74187c5F6222033cd",
+                    BigNumber.from("9999")
+                );
+                console.log("approveData", approveData);
+                const approveTx = { to: approveData.to, data: approveData.data, value: BigNumber.from("0").toString() };
+                console.log("approveTx-", approveTx);
+
+                //   const options: MetaTransactionOptions = {
+                const options: any = {
+                    isSponsored: false,
+                    gasLimit: "3000000", // in this alfa version we need to manually set the gas limit
+                    gasToken: ethers.constants.AddressZero, // native token
+                };
+
+                const safeSdk = await Safe.create({ ethAdapter: ethAdapter, safeAddress: safes[0] });
+                const standardizedSafeTx: any = await relayPack.createRelayedTransaction(safeSdk, [approveTx], options);
+
+                const safeVersion: SafeVersion = DEFAULT_SAFE_VERSION;
+                const safeSingletonContract = await getSafeContract({
+                    ethAdapter: ethAdapter,
+                    safeVersion,
+                });
+
+                const signedSafeTx = await safeSdk.signTransaction(standardizedSafeTx);
+
+                const transactionData = safeSingletonContract.encode("execTransaction", [
+                    signedSafeTx.data.to,
+                    signedSafeTx.data.value,
+                    signedSafeTx.data.data,
+                    signedSafeTx.data.operation,
+                    signedSafeTx.data.safeTxGas,
+                    signedSafeTx.data.baseGas,
+                    signedSafeTx.data.gasPrice,
+                    signedSafeTx.data.gasToken,
+                    signedSafeTx.data.refundReceiver,
+                    signedSafeTx.encodedSignatures(),
+                ]);
+
+                const multiSendCallOnlyContract = await getMultiSendCallOnlyContract({
+                    ethAdapter: ethAdapter,
+                    safeVersion,
+                });
+                const relayTransactionTarget = multiSendCallOnlyContract.getAddress();
+                //   const safeSingletonContract = await getSafeContract({
+                //     ethAdapter: ethAdapter,
+                //     safeVersion
+                //   })
+
+                const safeTransaction: MetaTransactionData = {
+                    to: safes[0],
+                    value: "0",
+                    data: transactionData,
+                    operation: OperationType.Call,
+                };
+
+                const multiSendData = encodeMultiSendData([safeTransaction]);
+                const encodedTransaction = multiSendCallOnlyContract.encode("multiSend", [multiSendData]);
+
+                //   const chainId = await this.#ethAdapter.getChainId()
+                const relayTransaction: any = {
+                    target: relayTransactionTarget,
+                    encodedTransaction: encodedTransaction,
+                    chainId: 137,
+                    options,
+                };
+                const response = await relayPack.relayTransaction(relayTransaction);
+                console.log("response", response);
+
+                // const transferData = await USDC.populateTransaction.transfer(
+                //     "0xb50685c25485CA8C520F5286Bbbf1d3F216D6989",
+                //     BigNumber.from("9999")
+                // );
+                // console.log("transferData", transferData);
+                // const transferTx = {
+                //     to: transferData.to,
+                //     data: transferData.data,
+                //     value: BigNumber.from("0").toString(),
+                // };
+                // console.log("transferTx", transferTx);
+
+                // //   we use a dump safe transfer as a demo transaction
+                // const dumpSafeTransafer: MetaTransactionData[] = [
+                //     {
+                //         to: "0xb50685c25485CA8C520F5286Bbbf1d3F216D6989",
+                //         data: transferTx.data,
+                //         value: ethers.utils.parseUnits("0.01", "ether").toString(),
+                //         // value: BigNumber.from("0").toString(),
+                //         operation: OperationType.Call, // OperationType.Call,
+                //     },
+                // ];
+
+                // const num: BigNumber = BigNumber.from("600000");
+
+                // //   const options: MetaTransactionOptions = {
+                // const options: any = {
+                //     isSponsored: false,
+                //     gasLimit: num, // in this alfa version we need to manually set the gas limit
+                //     gasToken: ethers.constants.AddressZero, // native token
+                // };
+
+                // const gelatoTaskId = await safeAccountAbstraction.relayTransaction(dumpSafeTransafer, options);
+                // console.log("gelatoTaskId", gelatoTaskId);
+
+                // we set react state with the provided values: owner (eoa address), chain, safes owned & web3 provider
+                //   setChainId(chain.id)
+                //   setOwnerAddress(eoa)
+                //   setSafes(safes || [])
+                //   setWeb3Provider(new ethers.providers.Web3Provider(provider))
+                //   setWeb3AuthModalPack(web3AuthModalPack)
+            }
+        } catch (error) {
+            console.log("error: ", error);
+        }
+    };
+
     const buttonStyle =
         "bg-primary-600 hover:bg-primary-700 py-3 px-8 rounded-lg text-primary-100 font-medium border-b-4 border-primary-800 hover:border-primary-900 transition duration-300";
 
@@ -314,6 +538,13 @@ export default function Home() {
                         Base
                     </option>
                 </select>
+
+                <button
+                    className="bg-error-600 hover:bg-error-700 py-3 px-8 rounded-lg text-error-100 font-medium border-b-4 border-error-800 hover:border-error-900 transition duration-300 mx-2"
+                    onClick={() => check()}
+                >
+                    Checkkk
+                </button>
 
                 <li style={{ float: "right", padding: "5px" }}>
                     <div>
