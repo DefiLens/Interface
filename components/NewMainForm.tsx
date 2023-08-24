@@ -227,14 +227,14 @@ export default function NewMainForm() {
         try {
             if (simulateLoading || sendTxLoading || sendTxLoadingForEoa) {
                 alert("wait, tx loading currently ...");
-                return
+                return;
             }
             if (!connected) {
                 alert("Please connect to metamask");
                 setFromChainId("");
                 return;
             }
-            setCurrentFunc("")
+            setCurrentFunc("");
             setLoading(true);
             setTokenIn("");
             setToChainId("");
@@ -270,7 +270,7 @@ export default function NewMainForm() {
         try {
             if (simulateLoading || sendTxLoading || sendTxLoadingForEoa) {
                 alert("wait, tx loading currently ...");
-                return
+                return;
             }
             setIsSimulationSuccessOpen(false);
             setData(null);
@@ -287,7 +287,7 @@ export default function NewMainForm() {
     const handleContractAddress = async (_contractIndex) => {
         if (simulateLoading || sendTxLoading || sendTxLoadingForEoa) {
             alert("wait, tx loading currently ...");
-            return
+            return;
         }
         if (!smartAccount) {
             alert("You need to biconomy login");
@@ -300,7 +300,7 @@ export default function NewMainForm() {
     const onChangeTokenIn = async (tokenIn: any) => {
         if (simulateLoading || sendTxLoading || sendTxLoadingForEoa) {
             alert("wait, tx loading currently ...");
-            return
+            return;
         }
         if (!fromChainId) return alert("From network is not selecetd yet");
         const provider = await getProvider(fromChainId);
@@ -320,7 +320,7 @@ export default function NewMainForm() {
     const handleAmountIn = async (_amountIn) => {
         if (simulateLoading || sendTxLoading || sendTxLoadingForEoa) {
             alert("wait, tx loading currently ...");
-            return
+            return;
         }
         if (!smartAccount) {
             alert("You need to biconomy login");
@@ -678,6 +678,7 @@ export default function NewMainForm() {
                 )}
 
                 <div className="w-full h-[calc(100vh-108px)] bg-gradient-to-r from-primary-950 via-primary-600 to-primary-950 flex flex-col gap-2 border-2 border-secondary-800 shadow-sm shadow-primary-950 rounded-lg cursor-pointer p-10">
+                    <div className="text-white font-semibold text-sm md:text-base lg:text-lg">Simulation Details:</div>
                     {currentFunc && allNetworkData && (
                         <>
                             <div className="flex justify-start items-baseline gap-3">
@@ -698,9 +699,7 @@ export default function NewMainForm() {
                                 <div className="text-white font-semibold text-sm md:text-base lg:text-lg">
                                     Destination lending method:
                                 </div>
-                                <div className="text-white font-medium text-xs md:text-sm">
-                                    {currentFunc}
-                                </div>
+                                <div className="text-white font-medium text-xs md:text-sm">{currentFunc}</div>
                             </div>
 
                             <div className="flex justify-start items-baseline gap-3">
