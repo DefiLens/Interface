@@ -394,7 +394,7 @@ export default function OldMainForm() {
                                 <option value="110">Arbitrum</option>
                                 <option value="106">Avalanche</option>
                                 <option value="101">Ethereum</option>
-                                {/* <option value="184">Base</option> */}
+                                <option value="184">Base</option>
                                 <option value="111">Optimism</option>
                             </select>
                             <div className={selectAppearanceStyle}>

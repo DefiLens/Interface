@@ -37,7 +37,7 @@ import { getContractInstance, getErc20Balanceof, getProvider } from "../utils/we
 import IERC20 from "../abis/IERC20.json";
 import { BigNumber } from "ethers";
 import { FiCopy } from "react-icons/fi";
-bg.config({ DECIMAL_PLACES: 5 });
+bg.config({ DECIMAL_PLACES: 10 });
 
 export default function NewMainForm() {
     const chain = useChain(); // Detect the connected address
@@ -225,6 +225,10 @@ export default function NewMainForm() {
 
     const onChangeFromNetwork = async (_fromNetwork: any) => {
         try {
+            if (simulateLoading || sendTxLoading || sendTxLoadingForEoa) {
+                alert("wait, tx loading currently ...");
+                return
+            }
             if (!connected) {
                 alert("Please connect to metamask");
                 setFromChainId("");
@@ -264,6 +268,10 @@ export default function NewMainForm() {
 
     const onChangeToNetwork = async (toNetwork: any) => {
         try {
+            if (simulateLoading || sendTxLoading || sendTxLoadingForEoa) {
+                alert("wait, tx loading currently ...");
+                return
+            }
             setIsSimulationSuccessOpen(false);
             setData(null);
             setToChainId(toNetwork);
@@ -277,6 +285,10 @@ export default function NewMainForm() {
     };
 
     const handleContractAddress = async (_contractIndex) => {
+        if (simulateLoading || sendTxLoading || sendTxLoadingForEoa) {
+            alert("wait, tx loading currently ...");
+            return
+        }
         if (!smartAccount) {
             alert("You need to biconomy login");
             return;
@@ -286,6 +298,10 @@ export default function NewMainForm() {
 
     // for e.g usdt -> usdc
     const onChangeTokenIn = async (tokenIn: any) => {
+        if (simulateLoading || sendTxLoading || sendTxLoadingForEoa) {
+            alert("wait, tx loading currently ...");
+            return
+        }
         if (!fromChainId) return alert("From network is not selecetd yet");
         const provider = await getProvider(fromChainId);
         const token = tokensByNetwork[fromChainId];
@@ -302,6 +318,10 @@ export default function NewMainForm() {
 
     // for e.g 0 -> 1000
     const handleAmountIn = async (_amountIn) => {
+        if (simulateLoading || sendTxLoading || sendTxLoadingForEoa) {
+            alert("wait, tx loading currently ...");
+            return
+        }
         if (!smartAccount) {
             alert("You need to biconomy login");
             return;
@@ -667,10 +687,19 @@ export default function NewMainForm() {
 
                             <div className="flex justify-start items-baseline gap-3">
                                 <div className="text-white font-semibold text-sm md:text-base lg:text-lg">
-                                    Lending Protocol :
+                                    Lending Protocol:
                                 </div>
                                 <div className="text-white font-medium text-xs md:text-sm">
                                     {allNetworkData?.contracts[contractIndex].contractName}
+                                </div>
+                            </div>
+
+                            <div className="flex justify-start items-baseline gap-3">
+                                <div className="text-white font-semibold text-sm md:text-base lg:text-lg">
+                                    Destination lending method:
+                                </div>
+                                <div className="text-white font-medium text-xs md:text-sm">
+                                    {currentFunc}
                                 </div>
                             </div>
 
@@ -683,7 +712,7 @@ export default function NewMainForm() {
 
                             <div className="flex justify-start items-baseline gap-3">
                                 <div className="text-white font-semibold text-sm md:text-base lg:text-lg">
-                                    Recipient :
+                                    Recipient:
                                 </div>
                                 <div className="text-white font-medium text-xs md:text-sm">{shorten(address)}</div>
                             </div>
@@ -692,7 +721,7 @@ export default function NewMainForm() {
                                 <>
                                     <div className="flex justify-start items-baseline gap-3">
                                         <div className="text-white font-semibold text-sm md:text-base lg:text-lg">
-                                            Gas Cost :
+                                            Gas Cost:
                                         </div>
                                         <div className="text-white font-medium text-xs md:text-sm">
                                             {`${gasCost} ${gasFeesNamesByChainId[fromChainId]}`}
@@ -701,7 +730,7 @@ export default function NewMainForm() {
 
                                     <div className="flex justify-start items-baseline gap-3">
                                         <div className="text-white font-semibold text-sm md:text-base lg:text-lg">
-                                            Bridge Gas Cost :
+                                            Bridge Gas Cost:
                                         </div>
                                         <div className="text-white font-medium text-xs md:text-sm">
                                             {`${bridgeGasCost} ${gasFeesNamesByChainId[fromChainId]}`}
@@ -710,7 +739,7 @@ export default function NewMainForm() {
 
                                     <div className="flex justify-start items-baseline gap-3">
                                         <div className="text-white font-semibold text-sm md:text-base lg:text-lg">
-                                            Total Gas Cost :
+                                            Total Gas Cost:
                                         </div>
                                         <div className="text-white font-medium text-xs md:text-sm">
                                             {`${

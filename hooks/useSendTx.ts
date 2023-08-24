@@ -78,7 +78,12 @@ export function useSendTx() {
             const USDT = await getContractInstance(tokenIn, IERC20, _currentProvider);
             if (!USDT) return;
             const balance = await getErc20Balanceof(USDT, _currentAddress);
-            if (BigNumber.from(balance).lt(BigNumber.from(amountIn))) throw "You don't have enough balance";
+
+            if (isSCW) {
+                if (BigNumber.from(balance).lt(BigNumber.from(amountIn))) throw "You don't have enough balance in SCW";
+            } else {
+                if (BigNumber.from(balance).lt(BigNumber.from(amountIn))) throw "You don't have enough balance in EOA";
+            }
 
             let approveTx;
             const allowance = await getErc20Allownace(USDT, _currentAddress, fromStarGateRouter);

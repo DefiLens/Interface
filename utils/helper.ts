@@ -162,17 +162,22 @@ export const calculateFees = async (
     provider: any
 ) => {
     try {
+        // console.log("stargateRouter: ", stargateRouter.toString());
+
         const stargateRouterInstance = await getContractInstance(stargateRouter, IStarGateRouter, provider);
         if (!stargateRouterInstance) return;
         const factory = await stargateRouterInstance.factory();
+        // console.log("factory: ", factory.toString());
 
         const factoryInstance = await getContractInstance(factory, IStarGateFactory, provider);
         if (!factoryInstance) return;
-        const pool = await factoryInstance.getPool(2);
+        const pool = await factoryInstance.getPool(1);
+        // console.log("factory: ", factory.toString());
 
         const poolInstance = await getContractInstance(pool, IStarGatePool, provider);
         if (!poolInstance) return;
         const feeLibrary = await poolInstance.feeLibrary();
+        // console.log("feeLibrary: ", feeLibrary.toString());
 
         const feeLibraryInstance = await getContractInstance(feeLibrary, IStarGateFeeLibrary, provider);
         if (!feeLibraryInstance) return;
@@ -180,7 +185,7 @@ export const calculateFees = async (
         // console.log("fees: ", fees.toString());
         const ChainPingFees = "65"; // will deposit into dest eoa if stargate do not take much slippage
         amountIn = BigNumber.from(amountIn).sub(fees.eqFee).sub(fees.protocolFee).sub(fees.lpFee).sub(ChainPingFees);
-        // console.log("amountIn: ", amountIn.toString());
+        console.log("amountIn: ", amountIn.toString());
         return amountIn;
     } catch (error) {
         console.log("calculateFees-error: ", error);

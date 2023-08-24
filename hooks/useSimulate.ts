@@ -10,7 +10,7 @@ import ChainPing from "../abis/ChainPing.json";
 import IStarGateRouter from "../abis/IStarGateRouter.json";
 import { BigNumber as bg } from "bignumber.js";
 import axios from "axios";
-bg.config({ DECIMAL_PLACES: 5 });
+bg.config({ DECIMAL_PLACES: 18 });
 
 export function useSimulate() {
     const {
@@ -186,35 +186,77 @@ export function useSimulate() {
             console.log("stargateTx", stargateTx, fromChainId);
 
             const biconomyGasInfo = await axios.get(`https://sdk-relayer.prod.biconomy.io/api/v1/relay/feeOptions?chainId=${chooseChianId(fromChainId)}`)
-            console.log(biconomyGasInfo)
-            const firstObject: any = biconomyGasInfo.data.data.response[0];
-            const tokenGasPrice: number = firstObject.tokenGasPrice;
-            const feeTokenTransferGas: number = firstObject.feeTokenTransferGas;
+            console.log('biconomyGasInfo: ', biconomyGasInfo)
 
-            const gasCost = bg(tokenGasPrice).multipliedBy(feeTokenTransferGas).dividedBy(1e18)
-            console.log("Token Gas Price in ETH:", gasCost);
+            if (biconomyGasInfo && biconomyGasInfo.data && biconomyGasInfo.data.data) {
+                if (biconomyGasInfo.data.data.response.length > 0) {
+                    const firstObject: any = biconomyGasInfo.data.data.response[0];
+                    if (firstObject.tokenGasPrice && firstObject.feeTokenTransferGas) {
+                        const tokenGasPrice = new bg(firstObject.tokenGasPrice.toString());
+                        const feeTokenTransferGas = new bg(firstObject.feeTokenTransferGas.toString());
+                        const divisor = new bg('1e18');
+                        const result = tokenGasPrice.times(feeTokenTransferGas).dividedBy(divisor);
+                        const formattedResult = result.toFixed(15);
+                        console.log("Token Gas Price in ETH:", formattedResult.toString());
 
-            // const richSigner = new ethers.VoidSigner(richAddressByChainId[fromChainId], provider)
-            // console.log("richSigner", fromChainId, richSigner, richAddressByChainId[fromChainId]);
+                        const _bridgeGasCost = bg(quoteData[0].toString()).dividedBy(1e18);
+                        setGasCost(formattedResult.toString());
+                        setBridgeGasCost(_bridgeGasCost.toString());
+                    } else {
+                        setGasCost('0');
+                        const _bridgeGasCost = bg(quoteData[0].toString()).dividedBy(1e18);
+                        setBridgeGasCost(_bridgeGasCost.toString());
+                    }
+                }
+            }
 
-            // const gasEstimate = await richSigner?.estimateGas({
-            //     from: richAddressByChainId[fromChainId],
-            //     to: stargateTx?.to,
-            //     value: quoteData[0],
-            //     data: stargateTx?.data,
-            // });
-            // console.log("gasEstimate--", gasEstimate?.toString());
+            // const firstObject: any = biconomyGasInfo.data.data.response[0];
+            // console.log('firstObject: ', firstObject)
 
-            // const gasPrice = await provider?.getGasPrice();
-            // console.log("gasPrice--", gasPrice?.toString());
+            // // const tokenGasPrice: number = firstObject.tokenGasPrice;
+            // // console.log('tokenGasPrice: ', tokenGasPrice)
 
-            // const gasCost = bg(BigNumber.from(gasEstimate).toString())
-            //     .multipliedBy(BigNumber.from(gasPrice).toString())
-            //     .dividedBy(1e18);
-            const _bridgeGasCost = bg(quoteData[0].toString()).dividedBy(1e18);
-            // console.log("gasCost--", gasCost?.toString(), _bridgeGasCost.toString());
-            setGasCost(gasCost.toString());
-            setBridgeGasCost(_bridgeGasCost.toString());
+            // // const feeTokenTransferGas: number = firstObject.feeTokenTransferGas;
+            // // console.log('feeTokenTransferGas: ', feeTokenTransferGas)
+
+            // // const totalfees = BigNumber.from(tokenGasPrice).mul(feeTokenTransferGas).mul(1e9)
+            // // const divisor = new BigNumber('1e18');
+
+            // const tokenGasPrice = new bg(firstObject.tokenGasPrice.toString());
+            // const feeTokenTransferGas = new bg(firstObject.feeTokenTransferGas.toString());
+            // const divisor = new bg('1e18');
+            // const result = tokenGasPrice.times(feeTokenTransferGas).dividedBy(divisor);
+            // const formattedResult = result.toFixed(8);
+
+            // // const gasCost = bg(totalfees.toString()).dividedBy(bg(10).pow(27))
+            // // const decimalRepresentation = new bg(gasCost.toString()).toString();
+
+            // console.log("Token Gas Price in ETH:", formattedResult.toString());
+
+
+
+            // // const richSigner = new ethers.VoidSigner(richAddressByChainId[fromChainId], provider)
+            // // console.log("richSigner", fromChainId, richSigner, richAddressByChainId[fromChainId]);
+
+            // // const gasEstimate = await richSigner?.estimateGas({
+            // //     from: richAddressByChainId[fromChainId],
+            // //     to: stargateTx?.to,
+            // //     value: quoteData[0],
+            // //     data: stargateTx?.data,
+            // // });
+            // // console.log("gasEstimate--", gasEstimate?.toString());
+
+            // // const gasPrice = await provider?.getGasPrice();
+            // // console.log("gasPrice--", gasPrice?.toString());
+
+            // // const gasCost = bg(BigNumber.from(gasEstimate).toString())
+            // //     .multipliedBy(BigNumber.from(gasPrice).toString())
+            // //     .dividedBy(1e18);
+            // // console.log("gasCost--", gasCost?.toString(), _bridgeGasCost.toString());
+
+            // const _bridgeGasCost = bg(quoteData[0].toString()).dividedBy(1e18);
+            // setGasCost(formattedResult.toString());
+            // setBridgeGasCost(_bridgeGasCost.toString());
 
             setGasUsed(simulation.simulation.gas_used);
             setSimulateInputData(simulation.simulation.input);

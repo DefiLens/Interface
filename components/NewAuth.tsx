@@ -263,7 +263,7 @@ export default function Home() {
             <ul className="flex justify-between items-center gap-2 bg-primary-950 p-2 shadow-md shadow-secondary-500">
                 <li>
                     <a href="#" className="font-bold text-2xl hover:bg-transparent">
-                        ChainPing
+                        ChainPing - Cross-Chain-Lending
                     </a>
                 </li>
                 <li className="flex flex-wrap justify-end items-center gap-2">
@@ -443,13 +443,13 @@ export default function Home() {
                             >
                                 Ethereum
                             </option>
-                            {/* <option
+                            <option
                                 value="base"
                                 disabled={selectedChain == "base" ? true : false}
                                 selected={selectedChain == "base" ? true : false}
                             >
                                 Base
-                            </option> */}
+                            </option>
                         </select>
                         <div className="absolute right-0 top-0 bottom-0 pointer-events-none flex items-center px-1">
                             <TbSquareRoundedChevronDownFilled size="25px" />
