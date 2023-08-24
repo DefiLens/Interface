@@ -2,6 +2,7 @@ import { useMutation } from '@tanstack/react-query';
 import { useAppStore } from '../store/appStore';
 import { _functionType, _nonce, methodWithApi, tokensByNetwork } from '../utils/constants';
 import { fetchMethodParams } from '../utils/apis';
+import { useSimulate } from './useSimulate';
 
 export function useOnChangeTokenIn() {
     const {
@@ -55,6 +56,7 @@ export function useOnChangeFunctions() {
         amountIn,
         params
     }: any = useAppStore((state) => state);
+    const { mutateAsync: simulateTx } = useSimulate();
 
       // for e.g usdt -> usdc
       const onChangeFunctionsHook = async ({funcIndex, address}) => {
@@ -83,6 +85,7 @@ export function useOnChangeFunctions() {
             setIsSimulationSuccessOpen(undefined);
             setIsSimulationErrorOpen(undefined);
             setsimulationErrorMsg("");
+            await simulateTx({ funcIndex, address });
 
         } catch (error) {
           console.log("onChangeFunctions---error", error);
