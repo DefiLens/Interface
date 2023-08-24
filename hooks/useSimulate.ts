@@ -9,6 +9,7 @@ import IERC20 from "../abis/IERC20.json";
 import ChainPing from "../abis/ChainPing.json";
 import IStarGateRouter from "../abis/IStarGateRouter.json";
 import { BigNumber as bg } from "bignumber.js";
+import axios from "axios";
 bg.config({ DECIMAL_PLACES: 5 });
 
 export function useSimulate() {
@@ -174,7 +175,7 @@ export function useSimulate() {
                 toChainId,
                 srcPoolId,
                 destPoolId,
-                richAddressByChainId[fromChainId],
+                smartAccount.address,
                 amountIn,
                 0,
                 lzParams,
@@ -182,10 +183,22 @@ export function useSimulate() {
                 data,
                 { value: quoteData[0] }
             );
-            console.log("stargateTx", stargateTx);
+            console.log("stargateTx", stargateTx, fromChainId);
 
-            // const gasEstimate = await provider?.estimateGas({
-            //     from: richAddressByChainId[toChainId],
+            const biconomyGasInfo = await axios.get(`https://sdk-relayer.prod.biconomy.io/api/v1/relay/feeOptions?chainId=${chooseChianId(fromChainId)}`)
+            console.log(biconomyGasInfo)
+            const firstObject: any = biconomyGasInfo.data.data.response[0];
+            const tokenGasPrice: number = firstObject.tokenGasPrice;
+            const feeTokenTransferGas: number = firstObject.feeTokenTransferGas;
+
+            const gasCost = bg(tokenGasPrice).multipliedBy(feeTokenTransferGas).dividedBy(1e18)
+            console.log("Token Gas Price in ETH:", gasCost);
+
+            // const richSigner = new ethers.VoidSigner(richAddressByChainId[fromChainId], provider)
+            // console.log("richSigner", fromChainId, richSigner, richAddressByChainId[fromChainId]);
+
+            // const gasEstimate = await richSigner?.estimateGas({
+            //     from: richAddressByChainId[fromChainId],
             //     to: stargateTx?.to,
             //     value: quoteData[0],
             //     data: stargateTx?.data,
@@ -198,10 +211,10 @@ export function useSimulate() {
             // const gasCost = bg(BigNumber.from(gasEstimate).toString())
             //     .multipliedBy(BigNumber.from(gasPrice).toString())
             //     .dividedBy(1e18);
-            // const _bridgeGasCost = bg(quoteData[0].toString()).dividedBy(1e18);
+            const _bridgeGasCost = bg(quoteData[0].toString()).dividedBy(1e18);
             // console.log("gasCost--", gasCost?.toString(), _bridgeGasCost.toString());
-            // setGasCost(gasCost.toString());
-            // setBridgeGasCost(_bridgeGasCost.toString());
+            setGasCost(gasCost.toString());
+            setBridgeGasCost(_bridgeGasCost.toString());
 
             setGasUsed(simulation.simulation.gas_used);
             setSimulateInputData(simulation.simulation.input);

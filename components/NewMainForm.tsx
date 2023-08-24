@@ -186,9 +186,9 @@ export default function NewMainForm() {
                 setScwTokenInbalance(scwBalance);
                 setEoaTokenInbalance(eoaBalance);
 
+                resetField();
                 setAmountIn("");
                 setContractIndex("");
-                resetField();
             }
         }
         onChangeFromChainId();
@@ -230,6 +230,7 @@ export default function NewMainForm() {
                 setFromChainId("");
                 return;
             }
+            setCurrentFunc("")
             setLoading(true);
             setTokenIn("");
             setToChainId("");
@@ -657,7 +658,7 @@ export default function NewMainForm() {
                 )}
 
                 <div className="w-full h-[calc(100vh-108px)] bg-gradient-to-r from-primary-950 via-primary-600 to-primary-950 flex flex-col gap-2 border-2 border-secondary-800 shadow-sm shadow-primary-950 rounded-lg cursor-pointer p-10">
-                    {currentFunc && (
+                    {currentFunc && allNetworkData && (
                         <>
                             <div className="flex justify-start items-baseline gap-3">
                                 <div className="text-white font-semibold text-sm md:text-base lg:text-lg">Routes :</div>
@@ -781,7 +782,7 @@ export default function NewMainForm() {
                         </div>
                     )}
 
-                    {isSimulationSuccessOpen && (
+                    {currentFunc && isSimulationSuccessOpen && (
                         <div className="relative">
                             <div className="simulation-success flex justify-between items-center gap-5 bg-black py-2 px-5 rounded-lg text-primary-100 font-medium   transition duration-300">
                                 <h1 className="flex justify-center items-center gap-3 text-white font-semibold text-base">

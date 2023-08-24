@@ -3,8 +3,8 @@ import { useState, Suspense } from "react";
 import { Toaster } from "react-hot-toast";
 import dynamic from "next/dynamic";
 import Swap from "../components/Swap";
-// import MainForm from "../components/MainForm";
-import NewMainForm from "../components/NewMainForm";
+import MainForm from "../components/OldMainForm";
+// import MainForm from "../components/NewMainForm";
 import Transfer from "../components/Transfer";
 
 const Index = () => {
@@ -15,7 +15,7 @@ const Index = () => {
     const TabList = [
         {
             title: "Cross Chain Defi",
-            component: <NewMainForm />,
+            component: <MainForm />,
         },
         // {
         //     title: "Swap",
