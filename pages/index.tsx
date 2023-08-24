@@ -1,30 +1,21 @@
 import * as React from "react";
 import { useState, Suspense } from "react";
-
 import { Toaster } from "react-hot-toast";
-
 import dynamic from "next/dynamic";
-
 import Swap from "../components/Swap";
 // import MainForm from "../components/MainForm";
-import MainForm from "../components/TestMainForm";
+import NewMainForm from "../components/NewMainForm";
 import Transfer from "../components/Transfer";
 
 const Index = () => {
-    // const SocialLoginDynamic = dynamic(
-    //     () => import("../components/Auth").then((res) => res.default), {
-    //         ssr: false,
-    //     }
-    // )
-
-    const SocialLoginDynamic = dynamic(() => import("../components/TestAuth").then((res) => res.default), {
+    const SocialLoginDynamic = dynamic(() => import("../components/NewAuth").then((res) => res.default), {
         ssr: false,
     });
 
     const TabList = [
         {
             title: "Cross Chain Defi",
-            component: <MainForm />,
+            component: <NewMainForm />,
         },
         // {
         //     title: "Swap",
