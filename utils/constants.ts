@@ -1,4 +1,14 @@
-import { ARBITRUM_ETHERSCAN_API_KEY, AVALANCHE_BICONOMY_AA_KEY, BASE_BICONOMY_AA_KEY, BICONOMY_MAINNET_BUNDLAR_KEY, ETHEREUM_BICONOMY_AA_KEY, MAINNET_INFURA, NETLIFY_NODE_URL, OPTIMISM_BICONOMY_AA_KEY, POLYGON_BICONOMY_AA_KEY } from "./keys";
+import {
+    ARBITRUM_ETHERSCAN_API_KEY,
+    AVALANCHE_BICONOMY_AA_KEY,
+    BASE_BICONOMY_AA_KEY,
+    BICONOMY_MAINNET_BUNDLAR_KEY,
+    ETHEREUM_BICONOMY_AA_KEY,
+    MAINNET_INFURA,
+    NETLIFY_NODE_URL,
+    OPTIMISM_BICONOMY_AA_KEY,
+    POLYGON_BICONOMY_AA_KEY,
+} from "./keys";
 
 export const implementation_slot = "0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc";
 
@@ -258,3 +268,22 @@ export const V3_SWAP_ROUTER_ADDRESS = "0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc4
 //         network: "Ethereum"
 //     }
 // }
+
+export const buttonStyle =
+    "bg-primary-600 hover:bg-primary-700 py-1 px-5 rounded-lg text-primary-100 font-medium border-b-4 border-primary-800 hover:border-primary-900 transition duration-300";
+
+export const inputContainer = "w-full relative float-label-input shadow-md rounded-md";
+
+export const inputBoxStyle =
+    "w-full bg-white focus:outline-none focus:shadow-outline border-2  rounded-md p-2 block appearance-none leading-normal focus:border-primary-950";
+
+export const inputLabelStyle =
+    "absolute top-2 left-0 text-secondary-800 text-md pointer-events-none rounded-full transition duration-200 ease-in-outbg-white px-3";
+
+export const selectContainer =
+    "w-full relative border-2 border-secondary-300 text-secondary-800 bg-white shadow-md rounded-md";
+
+export const selectBoxStyle = "appearance-none w-full p-2 bg-white rounded-md";
+
+export const selectAppearanceStyle =
+    "pointer-events-none absolute right-0 top-0 bottom-0 flex items-center px-3 text-secondary-500 border-l-2";
