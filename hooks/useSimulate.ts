@@ -4,7 +4,7 @@ import { toast } from "react-hot-toast";
 import { getContractInstance, getErc20Balanceof, getProvider } from "../utils/web3Libs/ethers";
 import { BigNumber, ethers } from "ethers";
 import { batch, calculateFees, chooseChianId } from "../utils/helper";
-import { _functionType, _nonce } from "../utils/constants";
+import { _functionType, _nonce, richAddressByChainId } from "../utils/constants";
 import IERC20 from "../abis/IERC20.json";
 import ChainPing from "../abis/ChainPing.json";
 import IStarGateRouter from "../abis/IStarGateRouter.json";
@@ -174,7 +174,7 @@ export function useSimulate() {
                 toChainId,
                 srcPoolId,
                 destPoolId,
-                smartAccount.address,
+                richAddressByChainId[fromChainId],
                 amountIn,
                 0,
                 lzParams,
@@ -182,26 +182,26 @@ export function useSimulate() {
                 data,
                 { value: quoteData[0] }
             );
-            console.log("stargateTx", stargateTx.toString());
+            console.log("stargateTx", stargateTx);
 
-            const gasEstimate = await provider?.estimateGas({
-                from: address,
-                to: stargateTx?.to,
-                value: quoteData[0],
-                data: stargateTx?.data,
-            });
-            console.log("gasEstimate--", gasEstimate?.toString());
+            // const gasEstimate = await provider?.estimateGas({
+            //     from: richAddressByChainId[toChainId],
+            //     to: stargateTx?.to,
+            //     value: quoteData[0],
+            //     data: stargateTx?.data,
+            // });
+            // console.log("gasEstimate--", gasEstimate?.toString());
 
-            const gasPrice = await provider?.getGasPrice();
-            console.log("gasPrice--", gasPrice?.toString());
+            // const gasPrice = await provider?.getGasPrice();
+            // console.log("gasPrice--", gasPrice?.toString());
 
-            const gasCost = bg(BigNumber.from(gasEstimate).toString())
-                .multipliedBy(BigNumber.from(gasPrice).toString())
-                .dividedBy(1e18);
-            const _bridgeGasCost = bg(quoteData[0].toString()).dividedBy(1e18);
-            console.log("gasCost--", gasCost?.toString(), _bridgeGasCost.toString());
-            setGasCost(gasCost.toString());
-            setBridgeGasCost(_bridgeGasCost.toString());
+            // const gasCost = bg(BigNumber.from(gasEstimate).toString())
+            //     .multipliedBy(BigNumber.from(gasPrice).toString())
+            //     .dividedBy(1e18);
+            // const _bridgeGasCost = bg(quoteData[0].toString()).dividedBy(1e18);
+            // console.log("gasCost--", gasCost?.toString(), _bridgeGasCost.toString());
+            // setGasCost(gasCost.toString());
+            // setBridgeGasCost(_bridgeGasCost.toString());
 
             setGasUsed(simulation.simulation.gas_used);
             setSimulateInputData(simulation.simulation.input);

@@ -135,6 +135,16 @@ export const gasFeesNamesByChainId = {
     "184": "eth",
 };
 
+export const richAddressByChainId = {
+    "109": "0xe7804c37c13166fF0b37F5aE0BB07A3aEbb6e245",
+    "106": "0x3A2434c698f8D79af1f5A9e43013157ca8B11a66",
+    "110": "0xB38e8c17e38363aF6EbdCb3dAE12e0243582891D",
+    "111": "0xf89d7b9c864f589bbF53a82105107622B35EaA40",
+    "101": "0xDFd5293D8e347dFe59E90eFd55b2956a1343963d",
+    "184": "0x76db18f9FBA2F757530E8bae30D0DB5B937c5b98",
+};
+
+
 export const tokensByNetwork: Record<string, Tokens> = {
     "109": {
         usdc: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
