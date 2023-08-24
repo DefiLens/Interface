@@ -108,6 +108,15 @@ export const NetworkNameByChainId = {
     "8453": "base",
 };
 
+export const NetworkNameByStargateChainId = {
+    "109": "Polygon",
+    "106": "Avalanche",
+    "110": "Arbitrum",
+    "111": "Optimism",
+    "101": "Ethereum",
+    "184": "Base",
+};
+
 export const gasFeesNames = {
     polygon: "polygon",
     avalanche: "avax",
@@ -115,6 +124,15 @@ export const gasFeesNames = {
     optimism: "eth",
     ethereum: "eth",
     base: "eth",
+};
+
+export const gasFeesNamesByChainId = {
+    "109": "polygon",
+    "106": "avax",
+    "110": "eth",
+    "111": "eth",
+    "101": "eth",
+    "184": "eth",
 };
 
 export const tokensByNetwork: Record<string, Tokens> = {
