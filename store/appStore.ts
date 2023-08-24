@@ -76,6 +76,7 @@ interface AppState {
     simulation: any;
     gasUsed: any;
     gasCost: any;
+    bridgeGasCost: any;
     simulateInputData: any;
     simulateLoading: any;
 
