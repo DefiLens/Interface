@@ -443,13 +443,13 @@ export default function Home() {
                             >
                                 Ethereum
                             </option>
-                            <option
+                            {/* <option
                                 value="base"
                                 disabled={selectedChain == "base" ? true : false}
                                 selected={selectedChain == "base" ? true : false}
                             >
                                 Base
-                            </option>
+                            </option> */}
                         </select>
                         <div className="absolute right-0 top-0 bottom-0 pointer-events-none flex items-center px-1">
                             <TbSquareRoundedChevronDownFilled size="25px" />
