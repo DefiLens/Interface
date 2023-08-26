@@ -37,6 +37,7 @@ import { getContractInstance, getErc20Balanceof, getProvider } from "../utils/we
 import IERC20 from "../abis/IERC20.json";
 import { BigNumber } from "ethers";
 import { FiCopy } from "react-icons/fi";
+import { useRefinance } from "../hooks/Batching/useRefinance";
 bg.config({ DECIMAL_PLACES: 10 });
 
 export default function NewMainForm() {
@@ -53,6 +54,7 @@ export default function NewMainForm() {
     const { mutateAsync: onChangeFunctionsHook } = useOnChangeFunctions();
     const { mutateAsync: onChangeInputHook } = useOnChangeInput();
     const { mutateAsync: fetchNativeBalance } = useCalculatebalance();
+    const { mutateAsync: refinance } = useRefinance();
     const { selectedChain, setSelectedChain, selectedChainId, setSelectedChainId } = React.useContext(ChainContext);
     const {
         connected,
@@ -431,9 +433,34 @@ export default function NewMainForm() {
         toast.success("Destination Lending CallData Copied");
     };
 
+    const sendBatch = async () => {
+        try {
+            const provider = await getProvider("109");
+            await refinance({
+                isSCW: true,
+                tokenIn: "",
+                tokenInName: "aUSDC",
+                tokenOut: "",
+                tokenOutName: "aDAI",
+                amount: "10000",
+                address: smartAccount.address,
+                provider,
+            });
+        } catch (error) {
+            console.log("sendBatch-error", error);
+        }
+    };
     return (
         <>
             <div className="main-container flex justify-start items-start gap-3">
+                {/* <button
+                    type="button"
+                    onClick={() => sendBatch()}
+                    className="w-32 mt-8 flex justify-center items-center gap-2 bg-success-600 hover:bg-success-700 py-1 px-5 rounded-lg text-white font-medium border-b-4 border-success-800 hover:border-success-900 transition duration-300"
+                >
+                    <ImSpinner9 className="animate-spin h-5 w-5" />
+                    Sendbatch
+                </button> */}
                 {true && (
                     <div className="w-full h-[calc(100vh-108px)] bg-gradient-to-r from-primary-950 via-primary-600 to-primary-950 flex flex-col justify-center items-center gap-5 border-2 border-secondary-800 shadow-sm shadow-primary-950 rounded-lg cursor-pointer p-10">
                         <div className="w-full">
