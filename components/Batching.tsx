@@ -286,7 +286,7 @@ export default function Batching() {
 
                                         {fromProtocol &&
                                             protocolByNetwork[fromProtocol].map((token: any, tokenIndex: any) => (
-                                                <option value={token}>{token}</option>
+                                                <option value={token} key={tokenIndex}>{token}</option>
                                             ))}
                                     </select>
                                     <div className="bg-white pointer-events-none absolute right-0 top-0 bottom-0 flex items-center px-2">
@@ -343,7 +343,7 @@ export default function Batching() {
                                         </option>
                                         {toProtocol &&
                                             protocolByNetwork[toProtocol].map((token: any, tokenIndex: any) => (
-                                                <option value={token}>{token}</option>
+                                                <option value={token} key={tokenIndex}>{token}</option>
                                             ))}
                                     </select>
                                     <div className="bg-white pointer-events-none absolute right-0 top-0 bottom-0 flex items-center px-2">
