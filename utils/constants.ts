@@ -170,6 +170,42 @@ export const tokensByNetwork: Record<string, Tokens> = {
 export const UniversalRouter = "0x4C60051384bd2d3C01bfc845Cf5F4b44bcbE9de5"; // polygon
 export const V3_SWAP_ROUTER_ADDRESS = "0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45";
 
+export const protocolByNetwork = {
+    aaveV2: [
+        "aUSDC",
+        "aUSDT",
+        "aDAI",
+        "aWETH",
+        "aWMATIC",
+        "aAAVE",
+        "aWBTC",
+    ],
+    compoundV3: [
+        'cUSDC'
+    ],
+    dForce: [
+        'dForceUSDC'
+    ]
+}
+
+export const tokenAddressByProtocol = {
+    aaveV2: {
+        "aUSDC": "0x1a13F4Ca1d028320A707D99520AbFefca3998b7F",
+        "aUSDT": "0x60D55F02A771d515e077c9C2403a1ef324885CeC",
+        "aDAI": "0x27F8D03b3a2196956ED754baDc28D73be8830A6e",
+        "aWETH": "0x28424507fefb6f7f8E9D3860F56504E4e5f5f390",
+        "aWMATIC": "0x8dF3aad3a84da6b69A4DA8aeC3eA40d9091B2Ac4",
+        "aAAVE": "0x1d2a0E5EC8E5bBDCA5CB219e649B565d8e5c3360",
+        "aWBTC": "0x5c2ed810328349100A66B82b78a1791B101C9D61",
+    },
+    compoundV3: {
+        'cUSDC': "0xF25212E676D1F7F89Cd72fFEe66158f541246445"
+    },
+    dForce: {
+        'dForceUSDC': '0x5268b3c4afb0860D365a093C184985FCFcb65234'
+    }
+}
+
 // export const contractDataByNetwork = [
 //     {
 //         109: {
