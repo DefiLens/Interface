@@ -3,9 +3,10 @@ import { useState, Suspense } from "react";
 import { Toaster } from "react-hot-toast";
 import dynamic from "next/dynamic";
 import Swap from "../components/Swap";
-import MainForm from "../components/OldMainForm";
-// import MainForm from "../components/NewMainForm";
+// import MainForm from "../components/OldMainForm";
+import MainForm from "../components/NewMainForm";
 import Transfer from "../components/Transfer";
+import Batching from "../components/Batching";
 
 const Index = () => {
     const SocialLoginDynamic = dynamic(() => import("../components/NewAuth").then((res) => res.default), {
@@ -21,6 +22,10 @@ const Index = () => {
         //     title: "Swap",
         //     component: <Swap />,
         // },
+        {
+            title: "Refinance Batching for Lending",
+            component: <Batching/>
+        },
         {
             title: "Transfer Funds",
             component: <Transfer />,
