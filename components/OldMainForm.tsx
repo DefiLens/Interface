@@ -23,11 +23,7 @@ import { useGenerateAbis } from "../hooks/useGenerateAbis";
 import { useOnChangeFunctions, useOnChangeInput, useOnChangeTokenIn } from "../hooks/useOnChangeMainForm";
 import { ChainId } from "@biconomy/core-types";
 import { IBundler, Bundler } from "@biconomy/bundler";
-import {
-    BiconomySmartAccount,
-    BiconomySmartAccountConfig,
-    DEFAULT_ENTRYPOINT_ADDRESS,
-} from "@biconomy/account";
+import { BiconomySmartAccount, BiconomySmartAccountConfig, DEFAULT_ENTRYPOINT_ADDRESS } from "@biconomy/account";
 import { IPaymaster, BiconomyPaymaster } from "@biconomy/paymaster";
 import ChainContext from "../Context/ChainContext";
 import { toast } from "react-hot-toast";
@@ -217,7 +213,6 @@ export default function OldMainForm() {
                     console.log("connect:catch:error", error);
                     setLoading(false);
                 });
-
         } catch (error) {
             console.log("onChangeFromNetwork:error", error);
             setLoading(false);
@@ -247,7 +242,7 @@ export default function OldMainForm() {
 
     // for e.g usdt -> usdc
     const onChangeTokenIn = async (tokenIn: any) => {
-        if (!fromChainId) return alert("From network is not selecetd yet")
+        if (!fromChainId) return alert("From network is not selecetd yet");
         await onChangeTokenInHook({ fromChainId, tokenIn });
     };
 
