@@ -58,7 +58,7 @@ export default function Batching() {
     const { mutateAsync: fetchNativeBalance } = useCalculatebalance();
     const { mutateAsync: refinance } = useRefinance();
     const { selectedChain, setSelectedChain, selectedChainId, setSelectedChainId } = React.useContext(ChainContext);
-    const { smartAccount, sendTxLoading, sendTxLoadingForEoa, txHash }: any = useAppStore((state) => state);
+    const { smartAccount, sendTxLoading, sendTxLoadingForEoa, txhash }: any = useAppStore((state) => state);
 
     const [fromProtocol, setFromProtocol] = React.useState<any>();
     const [toProtocol, setToProtocol] = React.useState<any>();
@@ -420,14 +420,14 @@ export default function Batching() {
                             </button>
                         </div>
                         <div className="flex justify-center items-center gap-3 py-5">
-                            {txHash && (
+                            {txhash && (
                                 <p>
                                     <a
                                         target="_blank"
-                                        href={`https://polygonscan.com/tx/${txHash}`}
+                                        href={`https://polygonscan.com/tx/${txhash}`}
                                         style={{ color: "white" }}
                                     >
-                                        TxHash : {shorten(txHash)}
+                                        TxHash : {shorten(txhash)}
                                     </a>
                                 </p>
                             )}
