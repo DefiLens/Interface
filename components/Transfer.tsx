@@ -44,6 +44,7 @@ export default function Transfer() {
         }
     }
     const handleAmountIn = async (_amountIn) => {
+        console.log('hello')
         setAmountInDecimals(_amountIn)
         if (isNative == "Native") {
             let amountInByDecimals = bg(_amountIn)
@@ -66,8 +67,9 @@ export default function Transfer() {
             let decimal = await contract.decimals()
             let amountInByDecimals = bg(_amountIn)
             amountInByDecimals = amountInByDecimals.multipliedBy(
-                bg(10).pow(decimal.toNumber())
+                bg(10).pow(decimal.toString())
             )
+            console.log('amountInByDecimals', amountInByDecimals.toString(), _amountIn.toString())
             if (amountInByDecimals.eq(0)) {
                 setAmountIn(_amountIn)
             } else {
