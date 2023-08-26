@@ -21,7 +21,7 @@ const abiFetcherNum = {
     aWMATIC: "2",
     aAAVE: "2",
     aWBTC: "2",
-    dForceUSDC: "3"
+    dForceUSDC: "3",
 };
 
 const abiFetcher = {
@@ -113,11 +113,11 @@ export function useRefinance() {
     const { mutateAsync: approve } = useApprove();
     const { mutateAsync: sendToBiconomy } = useBiconomyProvider();
     const { mutateAsync: sendTxTrditionally } = useEoaProvider();
-    const { setTxHash, setSendtxLoading, setSendtxLoadingForEoa, }: any = useAppStore((state) => state);
+    const { setTxHash, setSendtxLoading, setSendtxLoadingForEoa }: any = useAppStore((state) => state);
 
     async function refinance({ isSCW, tokenIn, tokenInName, tokenOut, tokenOutName, amount, address, provider }: any) {
         try {
-            setTxHash('')
+            setTxHash("");
             if (isSCW) {
                 setSendtxLoading(true);
             } else {
