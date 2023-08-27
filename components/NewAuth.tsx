@@ -263,7 +263,7 @@ export default function Home() {
             <ul className="flex justify-between items-center gap-2 bg-primary-950 p-2 shadow-md shadow-secondary-500">
                 <li>
                     <a href="#" className="font-bold text-2xl hover:bg-transparent">
-                        ChainPing - By DefiLensLabs
+                        DefiLens(Formerly ChainPing)
                     </a>
                 </li>
                 <li>
