@@ -37,9 +37,12 @@ import { toast } from "react-hot-toast";
 import { useCalculatebalance } from "../hooks/useCalculateBalance";
 import { getContractInstance, getErc20Balanceof, getErc20Decimals, getProvider } from "../utils/web3Libs/ethers";
 import IERC20 from "../abis/IERC20.json";
-import { BigNumber } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { FiCopy } from "react-icons/fi";
 import { useRefinance } from "../hooks/Batching/useRefinance";
+import { abiFetcher, abiFetcherNum, fetchApy, nativeTokenFetcher, nativeTokenNum } from "../hooks/Batching/batchingUtils";
+
+import aave_v2_Abi from "../abis/defi/aave_v2.json";
 bg.config({ DECIMAL_PLACES: 10 });
 
 export default function Batching() {
@@ -68,6 +71,62 @@ export default function Batching() {
     const [fromTokenBalanceForSCW, setFromTokenBalanceForSCW] = React.useState<any>(0);
     const [fromTokenBalanceForEOA, setFromTokenBalanceForEOA] = React.useState<any>(0);
     const [fromTokenDecimal, setFromTokenDecimal] = React.useState<any>(0);
+    const [apys, setApys] = React.useState<any>([]);
+    const [apysTo, setApysForTo] = React.useState<any>([]);
+
+    // useEffect(() => {
+    //     async function apys() {
+    //         if (!fromProtocol) return
+    //         setApys([])
+    //         const data = protocolByNetwork[fromProtocol]
+    //         console.log('data', data[0].toString())
+    //         let abiNum = abiFetcherNum[data[0].toString()];
+    //         let lendingContractAddress = abiFetcher[abiNum]["contractAddress"];
+    //         let apyFunction = abiFetcher[abiNum]["apyFetch"];
+    //         const provider = await getProvider("109");
+    //         for (let i=0; i<protocolByNetwork[fromProtocol].length; i++) {
+    //             const tokenInNum = nativeTokenNum[data[i]];
+    //             const nativeTokenIn = nativeTokenFetcher[tokenInNum].nativeToken;
+    //             let apy: any = await fetchApy({
+    //                 protocol: apyFunction,
+    //                 contractAddress: lendingContractAddress,
+    //                 // abi,
+    //                 provider,
+    //                 signer,
+    //                 token: nativeTokenIn
+    //             })
+    //             setApys(apys => [...apys, apy])
+    //         }
+    //     }
+    //     apys()
+    // }, [fromProtocol])
+
+    // useEffect(() => {
+    //     async function apys() {
+    //         if (!toProtocol) return
+    //         setApysForTo([])
+    //         const data = protocolByNetwork[toProtocol]
+    //         console.log('data---', toProtocol, data[0].toString())
+    //         let abiNum = abiFetcherNum[data[0].toString()];
+    //         let lendingContractAddress = abiFetcher[abiNum]["contractAddress"];
+    //         let apyFunction = abiFetcher[abiNum]["apyFetch"];
+    //         const provider = await getProvider("109");
+    //         for (let i=0; i<protocolByNetwork[toProtocol].length; i++) {
+    //             const tokenInNum = nativeTokenNum[data[i]];
+    //             const nativeTokenIn = nativeTokenFetcher[tokenInNum].nativeToken;
+    //             let apy: any = await fetchApy({
+    //                 protocol: apyFunction,
+    //                 contractAddress: lendingContractAddress,
+    //                 // abi,
+    //                 provider,
+    //                 signer,
+    //                 token: nativeTokenIn
+    //             })
+    //             setApysForTo(apysTo => [...apysTo, apy])
+    //         }
+    //     }
+    //     apys()
+    // }, [toProtocol])
 
     useEffect(() => {
         async function onChangeFromProtocol() {
@@ -162,22 +221,22 @@ export default function Batching() {
             alert("Batching is only supported on polygon as of now");
             return;
         }
-        console.log("_amountIn-1", _amountIn.toString());
+        // console.log("_amountIn-1", _amountIn.toString());
         if (_amountIn) {
-            console.log("_amountIn-2", _amountIn.toString());
+            // console.log("_amountIn-2", _amountIn.toString());
             let amountInByDecimals = bg(_amountIn);
-            console.log("_amountIn-3", amountInByDecimals.toString());
+            // console.log("_amountIn-3", amountInByDecimals.toString());
             amountInByDecimals = amountInByDecimals.multipliedBy(bg(10).pow(fromTokenDecimal));
-            console.log("_amountIn-4", amountInByDecimals.toString());
+            // console.log("_amountIn-4", amountInByDecimals.toString());
             if (amountInByDecimals.eq(0)) {
-                console.log("_amountIn-5", _amountIn.toString());
+                // console.log("_amountIn-5", _amountIn.toString());
                 setAmountIn(_amountIn);
             } else {
-                console.log("_amountIn-6", amountInByDecimals.toString());
+                // console.log("_amountIn-6", amountInByDecimals.toString());
                 setAmountIn(amountInByDecimals.toString());
             }
         } else {
-            console.log("_amountIn-7", _amountIn.toString());
+            // console.log("_amountIn-7", _amountIn.toString());
             setAmountIn("");
         }
     };
@@ -286,6 +345,7 @@ export default function Batching() {
 
                                         {fromProtocol &&
                                             protocolByNetwork[fromProtocol].map((token: any, tokenIndex: any) => (
+                                                // <option value={token} key={tokenIndex}>{token} {apys[tokenIndex] ? (`(APY: ${apys[tokenIndex]} %)`) : "(APY: Not Available)"}</option>
                                                 <option value={token} key={tokenIndex}>{token}</option>
                                             ))}
                                     </select>
@@ -344,6 +404,7 @@ export default function Batching() {
                                         {toProtocol &&
                                             protocolByNetwork[toProtocol].map((token: any, tokenIndex: any) => (
                                                 <option value={token} key={tokenIndex}>{token}</option>
+                                                // <option value={token} key={tokenIndex}>{token} {apysTo[tokenIndex] ? (`(APY: ${apysTo[tokenIndex]} %)`) : "(APY: Not Available)"}</option>
                                             ))}
                                     </select>
                                     <div className="bg-white pointer-events-none absolute right-0 top-0 bottom-0 flex items-center px-2">
@@ -367,7 +428,6 @@ export default function Batching() {
                             } */}
                             <div className="flex justify-between items-center gap-2 text-white font-semibold text-xs md:text-sm pr-2">
                                 <span>Total Amount</span>
-                                <>{console.log("fromTokenBalance: ", fromTokenBalanceForSCW)}</>
                                 <span>
                                     {`(SCW Balance : ${
                                         fromTokenBalanceForSCW != undefined
