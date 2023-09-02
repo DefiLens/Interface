@@ -40,9 +40,18 @@ import IERC20 from "../abis/IERC20.json";
 import { BigNumber, ethers } from "ethers";
 import { FiCopy } from "react-icons/fi";
 import { useRefinance } from "../hooks/Batching/useRefinance";
-import { abiFetcher, abiFetcherNum, fetchApy, nativeTokenFetcher, nativeTokenNum } from "../hooks/Batching/batchingUtils";
+import {
+    abiFetcher,
+    abiFetcherNum,
+    fetchApy,
+    nativeTokenFetcher,
+    nativeTokenNum,
+} from "../hooks/Batching/batchingUtils";
 
 import aave_v2_Abi from "../abis/defi/aave_v2.json";
+import IndividualBatch from "./BatchingComponenets/IndividualBatch";
+import { useBiconomyProvider } from "../hooks/aaProvider/useBiconomyProvider";
+import { useEoaProvider } from "../hooks/aaProvider/useEoaProvider";
 bg.config({ DECIMAL_PLACES: 10 });
 
 export default function Batching() {
@@ -59,9 +68,12 @@ export default function Batching() {
     const { mutateAsync: onChangeFunctionsHook } = useOnChangeFunctions();
     const { mutateAsync: onChangeInputHook } = useOnChangeInput();
     const { mutateAsync: fetchNativeBalance } = useCalculatebalance();
+    const { mutateAsync: sendToBiconomy } = useBiconomyProvider();
+    const { mutateAsync: sendTxTrditionally } = useEoaProvider();
     const { mutateAsync: refinance } = useRefinance();
     const { selectedChain, setSelectedChain, selectedChainId, setSelectedChainId } = React.useContext(ChainContext);
-    const { smartAccount, sendTxLoading, sendTxLoadingForEoa, txhash }: any = useAppStore((state) => state);
+    const { smartAccount, sendTxLoading, sendTxLoadingForEoa, setSendtxLoading, setSendtxLoadingForEoa, txhash }: any =
+        useAppStore((state) => state);
 
     const [fromProtocol, setFromProtocol] = React.useState<any>();
     const [toProtocol, setToProtocol] = React.useState<any>();
@@ -73,6 +85,11 @@ export default function Batching() {
     const [fromTokenDecimal, setFromTokenDecimal] = React.useState<any>(0);
     const [apys, setApys] = React.useState<any>([]);
     const [apysTo, setApysForTo] = React.useState<any>([]);
+    // const [individualBatch, setIndividualBatch] = React.useState<number[]>([]);
+    // const [collectedValues, setCollectedValues] = React.useState<string[][]>([]);
+    // const [currentRow, setCurrentRow] = React.useState<string[]>([]);
+    const [individualBatch, setIndividualBatch] = React.useState<{ id: number; txHash: string[] }[]>([]);
+    const [allTxs, setCollectedValues] = React.useState<any>([]);
 
     // useEffect(() => {
     //     async function apys() {
@@ -127,6 +144,47 @@ export default function Batching() {
     //     }
     //     apys()
     // }, [toProtocol])
+
+    // const addBatch = () => {
+    //     setIndividualBatch((prevInputBars) => [...prevInputBars, Date.now()]);
+    // };
+
+    const addBatch = () => {
+        const id = individualBatch.length + 1;
+        setIndividualBatch((prevInputBars) => [...prevInputBars, { id, txHash: [""] }]);
+    };
+
+    const removeBatch = (id: number) => {
+        setIndividualBatch((prevInputBars) => prevInputBars.filter((bar) => bar.id !== id));
+    };
+
+    // const removeBatch = (id: number) => {
+    //     setIndividualBatch((prevInputBars) => prevInputBars.filter((barId) => barId !== id));
+    // };
+
+    // const updateInputValue = (id: number, value: string) => {
+    //     setIndividualBatch((prevInputBars) => [...prevInputBars, Date.now()]
+    //       prevInputBars.map((bar) =>
+    //         bar.id === id ? { ...bar, value } : bar
+    //       )
+    //     );
+    //   };
+
+    const updateInputValues = (id: number, txHash: string[]) => {
+        setIndividualBatch((prevInputBars) => prevInputBars.map((bar) => (bar.id === id ? { ...bar, txHash } : bar)));
+    };
+
+    // const collectInputValues = async () => {
+    //     const mergeArray: any = [];
+    //     const txHash = await individualBatch.map((bar) => bar.txHash.map((hash) => mergeArray.push(hash)));
+    //     console.log("txHash---: ", txHash);
+    //     console.log("mergedArray--: ", mergeArray);
+    //     setCollectedValues(mergeArray);
+    // };
+
+    // const checkvalues = () => {
+    //     console.log("collectInputValues: ", allTxs);
+    // };
 
     useEffect(() => {
         async function onChangeFromProtocol() {
@@ -247,8 +305,34 @@ export default function Batching() {
         toast.success("Destination Lending CallData Copied");
     };
 
+    const sendBatchAll = async (isSCW: any) => {
+        try {
+            if (isSCW) {
+                setSendtxLoading(true);
+            } else {
+                setSendtxLoadingForEoa(true);
+            }
+            const mergeArray: any = [];
+            const txHash = await individualBatch.map((bar) => bar.txHash.map((hash) => mergeArray.push(hash)));
+            console.log("txHash---: ", txHash);
+            console.log("mergedArray--: ", mergeArray);
+            // setCollectedValues(mergeArray);
+            if (isSCW) {
+                await sendToBiconomy(mergeArray);
+            } else {
+                await sendTxTrditionally(mergeArray);
+            }
+            setSendtxLoading(false);
+            setSendtxLoadingForEoa(false);
+        } catch (error) {
+            setSendtxLoading(false);
+            setSendtxLoadingForEoa(false);
+        }
+    };
+
     const sendBatch = async (isSCW: any) => {
         try {
+            alert(fromToken + toToken);
             if (fromToken == toToken) {
                 alert("fromToken and toToken should not same");
                 return;
@@ -300,8 +384,8 @@ export default function Batching() {
         <>
             <div className="main-container flex justify-start items-start gap-3">
                 {true && (
-                    <div className="w-full h-[calc(100vh-108px)] bg-gradient-to-r from-primary-950 via-primary-600 to-primary-950 flex flex-col justify-center items-center gap-5 border-2 border-secondary-800 shadow-sm shadow-primary-950 rounded-lg cursor-pointer p-10">
-                        <div className="w-full">
+                    <div className="w-full h-[calc(1000vh-108px)] bg-gradient-to-r from-primary-950 via-primary-600 to-primary-950 flex flex-col gap-5 border-2 border-secondary-800 shadow-sm shadow-primary-950 rounded-lg cursor-pointer p-10">
+                        {/* <div className="w-full">
                             <span className="text-white font-semibold text-xs md:text-sm lg:text-base">From</span>
                             <div className="w-full flex justify-start items-center gap-1 border-2 border-secondary-300 text-secondary-800 bg-white shadow-md rounded-md mt-1">
                                 <div className="w-48 relative">
@@ -346,7 +430,9 @@ export default function Batching() {
                                         {fromProtocol &&
                                             protocolByNetwork[fromProtocol].map((token: any, tokenIndex: any) => (
                                                 // <option value={token} key={tokenIndex}>{token} {apys[tokenIndex] ? (`(APY: ${apys[tokenIndex]} %)`) : "(APY: Not Available)"}</option>
-                                                <option value={token} key={tokenIndex}>{token}</option>
+                                                <option value={token} key={tokenIndex}>
+                                                    {token}
+                                                </option>
                                             ))}
                                     </select>
                                     <div className="bg-white pointer-events-none absolute right-0 top-0 bottom-0 flex items-center px-2">
@@ -403,7 +489,9 @@ export default function Batching() {
                                         </option>
                                         {toProtocol &&
                                             protocolByNetwork[toProtocol].map((token: any, tokenIndex: any) => (
-                                                <option value={token} key={tokenIndex}>{token}</option>
+                                                <option value={token} key={tokenIndex}>
+                                                    {token}
+                                                </option>
                                                 // <option value={token} key={tokenIndex}>{token} {apysTo[tokenIndex] ? (`(APY: ${apysTo[tokenIndex]} %)`) : "(APY: Not Available)"}</option>
                                             ))}
                                     </select>
@@ -415,17 +503,6 @@ export default function Batching() {
                         </div>
 
                         <div className="w-full">
-                            {/* {
-                                <>
-                                    {scwTokenInBalance &&
-                                        console.log(
-                                            "lll",
-                                            scwTokenInBalance.toString(),
-                                            tokenInDecimals,
-                                            bg(scwTokenInBalance).dividedBy(bg(10).pow(tokenInDecimals)).toString()
-                                        )}
-                                </>
-                            } */}
                             <div className="flex justify-between items-center gap-2 text-white font-semibold text-xs md:text-sm pr-2">
                                 <span>Total Amount</span>
                                 <span>
@@ -460,25 +537,49 @@ export default function Batching() {
                                     onChange={(e: any) => onChangeAmountIn(e.target.value)}
                                 />
                             </div>
-                        </div>
+                        </div> */}
+                        {/* <IndividualBatch /> */}
+
+                        {individualBatch.map((bar) => (
+                            <IndividualBatch
+                                key={bar.id}
+                                // values={bar.txHash}
+                                onUpdate={(newValues) => updateInputValues(bar.id, newValues)}
+                            />
+                        ))}
+
+                        {/* <button onClick={collectInputValues}>Collect Input Values</button>
+                        <button onClick={checkvalues}>Check Values</button> */}
+
                         <div className="flex justify-center items-center gap-3 py-3">
                             <button
                                 type="button"
-                                onClick={() => sendBatch(true)}
+                                onClick={addBatch}
+                                className="flex justify-center items-center gap-2 bg-slate-900 hover:bg-slate-950 py-2 px-5 rounded-lg text-white font-medium border-b-4 border-success-800 hover:border-success-900 transition duration-300"
+                            >
+                                + Add New Batch Bar
+                            </button>
+                        </div>
+
+                        <div className="flex justify-center items-center gap-3 py-3">
+                            <button
+                                type="button"
+                                onClick={() => sendBatchAll(true)}
                                 className="flex justify-center items-center gap-2 bg-success-600 hover:bg-success-700 py-2 px-5 rounded-lg text-white font-medium border-b-4 border-success-800 hover:border-success-900 transition duration-300"
                             >
                                 {sendTxLoading && <ImSpinner className="animate-spin h-5 w-5" />}
-                                Sendbatch via SCW
+                                SendbatchALL via SCW
                             </button>
                             <button
                                 type="button"
-                                onClick={() => sendBatch(false)}
+                                onClick={() => sendBatchAll(false)}
                                 className="flex justify-center items-center gap-2 bg-success-600 hover:bg-success-700 py-2 px-5 rounded-lg text-white font-medium border-b-4 border-success-800 hover:border-success-900 transition duration-300"
                             >
                                 {sendTxLoadingForEoa && <ImSpinner className="animate-spin h-5 w-5" />}
-                                Sendbatch via EOA
+                                SendbatchALL via EOA
                             </button>
                         </div>
+
                         <div className="flex justify-center items-center gap-3 py-5">
                             {txhash && (
                                 <p>
