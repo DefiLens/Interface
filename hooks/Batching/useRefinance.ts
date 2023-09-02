@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { useAppStore } from "../../store/appStore";
+import { useAppStore, useBatchAppStore } from "../../store/appStore";
 import { fetchContractDetails } from "../../utils/helper";
 import { V3_SWAP_ROUTER_ADDRESS, _functionType, _nonce } from "../../utils/constants";
 import { AlphaRouter, SwapType } from "@uniswap/smart-order-router";
@@ -19,8 +19,20 @@ export function useRefinance() {
     const { mutateAsync: sendToBiconomy } = useBiconomyProvider();
     const { mutateAsync: sendTxTrditionally } = useEoaProvider();
     const { setTxHash, setSendtxLoading, setSendtxLoadingForEoa }: any = useAppStore((state) => state);
+    const { tokensData }: any = useBatchAppStore((state) => state);
 
-    async function refinance({ isSCW, tokenIn, tokenInName, tokenOut, tokenOutName, amount, address, provider }: any) {
+    async function refinance({
+        isSCW,
+        fromProtocol,
+        toProtocol,
+        tokenIn,
+        tokenInName,
+        tokenOut,
+        tokenOutName,
+        amount,
+        address,
+        provider,
+    }: any) {
         try {
             setTxHash("");
             // if (isSCW) {
@@ -29,41 +41,66 @@ export function useRefinance() {
             //     setSendtxLoadingForEoa(true);
             // }
             const tempTxs: any = [];
-            let abiNum = abiFetcherNum[tokenInName];
-            let abi = abiFetcher[abiNum]["withdrawAbi"];
-            let methodName = abiFetcher[abiNum]["withdrawMethodName"];
-            let paramDetailsMethod = abiFetcher[abiNum]["withdrawParamDetailsMethod"];
-            let tokenInContractAddress = abiFetcher[abiNum]["contractAddress"];
 
-            console.log("tokenInName", tokenInName, tokenInContractAddress);
-
-            const tokenInNum = nativeTokenNum[tokenInName];
-            console.log("tokenInNum", tokenInNum);
-            const nativeTokenIn = nativeTokenFetcher[tokenInNum].nativeToken;
-            console.log("nativeTokenIn", nativeTokenIn);
-
-            const tokenOutNum = nativeTokenNum[tokenOutName];
-            const nativeTokenOut = nativeTokenFetcher[tokenOutNum].nativeToken;
-            console.log("nativeTokenOut", nativeTokenOut);
-
-            const isSwap = nativeTokenIn != nativeTokenOut ? true : false;
-
-            let abiInterface = new ethers.utils.Interface([abi]);
-            let params = await buildParams({
-                tokenIn,
-                tokenOut,
-                nativeTokenIn,
-                nativeTokenOut,
-                amount,
-                address,
+            let abiNum,
+                abi,
+                methodName,
                 paramDetailsMethod,
-            });
-            let txData = abiInterface.encodeFunctionData(methodName, params);
-            const tx1 = { to: tokenInContractAddress, data: txData };
-            console.log("tx1", tx1);
-            tempTxs.push(tx1);
+                tokenInContractAddress,
+                abiInterface,
+                params,
+                txData,
+                swapData,
+                isSwap,
+                nativeTokenIn,
+                nativeTokenOut;
 
-            let swapData;
+            if (fromProtocol == "erc20") {
+                nativeTokenIn = tokensData?.filter((token) => token.symbol === tokenInName)[0].address;
+            }
+            if (toProtocol == "erc20") {
+                nativeTokenOut = tokensData?.filter((token) => token.symbol === tokenOutName)[0].address;
+                console.log("nativeTokenOut", nativeTokenOut);
+            }
+
+            if (toProtocol != "erc20") {
+                const tokenOutNum = nativeTokenNum[tokenOutName];
+                nativeTokenOut = nativeTokenFetcher[tokenOutNum].nativeToken;
+                console.log("nativeTokenOut", nativeTokenOut);
+            }
+
+            if (fromProtocol != "erc20") {
+                abiNum = abiFetcherNum[tokenInName];
+                abi = abiFetcher[abiNum]["withdrawAbi"];
+                methodName = abiFetcher[abiNum]["withdrawMethodName"];
+                paramDetailsMethod = abiFetcher[abiNum]["withdrawParamDetailsMethod"];
+                tokenInContractAddress = abiFetcher[abiNum]["contractAddress"];
+
+                console.log("tokenInName", tokenInName, tokenInContractAddress);
+
+                const tokenInNum = nativeTokenNum[tokenInName];
+                console.log("tokenInNum", tokenInNum);
+                nativeTokenIn = nativeTokenFetcher[tokenInNum].nativeToken;
+                console.log("nativeTokenIn", nativeTokenIn);
+
+                abiInterface = new ethers.utils.Interface([abi]);
+                params = await buildParams({
+                    tokenIn,
+                    tokenOut,
+                    nativeTokenIn,
+                    nativeTokenOut,
+                    amount,
+                    address,
+                    paramDetailsMethod,
+                });
+                txData = abiInterface.encodeFunctionData(methodName, params);
+                const tx1 = { to: tokenInContractAddress, data: txData };
+                console.log("tx1", tx1);
+                tempTxs.push(tx1);
+            }
+
+            isSwap = nativeTokenIn != nativeTokenOut ? true : false;
+
             if (isSwap) {
                 console.log("isSwap", isSwap);
                 const approveData = await approve({
@@ -84,46 +121,48 @@ export function useRefinance() {
                 tempTxs.push(swapData.swapTx);
             }
 
-            const newTokenIn = isSwap ? nativeTokenOut : nativeTokenIn;
-            const newAmount = isSwap ? swapData.amountOutprice : amount;
+            if (toProtocol != "erc20") {
+                const newTokenIn = isSwap ? nativeTokenOut : nativeTokenIn;
+                const newAmount = isSwap ? swapData.amountOutprice : amount;
 
-            abiNum = abiFetcherNum[tokenOutName];
-            abi = abiFetcher[abiNum]["depositAbi"];
-            methodName = abiFetcher[abiNum]["depositMethodName"];
-            paramDetailsMethod = abiFetcher[abiNum]["depositParamDetailsMethod"];
-            const tokenOutContractAddress = abiFetcher[abiNum]["contractAddress"];
-            console.log(
-                "tokenOutContractAddress",
-                tokenOutContractAddress,
-                paramDetailsMethod,
-                methodName,
-                abi,
-                provider
-            );
+                abiNum = abiFetcherNum[tokenOutName];
+                abi = abiFetcher[abiNum]["depositAbi"];
+                methodName = abiFetcher[abiNum]["depositMethodName"];
+                paramDetailsMethod = abiFetcher[abiNum]["depositParamDetailsMethod"];
+                const tokenOutContractAddress = abiFetcher[abiNum]["contractAddress"];
+                console.log(
+                    "tokenOutContractAddress",
+                    tokenOutContractAddress,
+                    paramDetailsMethod,
+                    methodName,
+                    abi,
+                    provider
+                );
 
-            const approveData = await approve({
-                tokenIn: newTokenIn,
-                spender: tokenOutContractAddress,
-                amountIn: newAmount,
-                address,
-                web3JsonProvider: provider,
-            });
-            if (approveData) tempTxs.push(approveData);
+                const approveData = await approve({
+                    tokenIn: newTokenIn,
+                    spender: tokenOutContractAddress,
+                    amountIn: newAmount,
+                    address,
+                    web3JsonProvider: provider,
+                });
+                if (approveData) tempTxs.push(approveData);
 
-            abiInterface = new ethers.utils.Interface([abi]);
-            params = await buildParams({
-                tokenIn,
-                tokenOut,
-                nativeTokenIn: newTokenIn,
-                nativeTokenOut: "",
-                amount: newAmount,
-                address,
-                paramDetailsMethod,
-            });
-            txData = abiInterface.encodeFunctionData(methodName, params);
-            const tx2 = { to: tokenOutContractAddress, data: txData };
-            tempTxs.push(tx2);
-            console.log("tempTxs", tempTxs);
+                abiInterface = new ethers.utils.Interface([abi]);
+                params = await buildParams({
+                    tokenIn,
+                    tokenOut,
+                    nativeTokenIn: newTokenIn,
+                    nativeTokenOut: "",
+                    amount: newAmount,
+                    address,
+                    paramDetailsMethod,
+                });
+                txData = abiInterface.encodeFunctionData(methodName, params);
+                const tx2 = { to: tokenOutContractAddress, data: txData };
+                tempTxs.push(tx2);
+                console.log("tempTxs", tempTxs);
+            }
 
             // if (isSCW) {
             //     await sendToBiconomy(tempTxs);
@@ -132,6 +171,7 @@ export function useRefinance() {
             // }
             // setSendtxLoading(false);
             // setSendtxLoadingForEoa(false);
+
             return tempTxs;
         } catch (error) {
             // setSendtxLoading(false);
