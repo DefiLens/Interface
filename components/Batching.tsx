@@ -385,161 +385,6 @@ export default function Batching() {
             <div className="main-container flex justify-start items-start gap-3">
                 {true && (
                     <div className="w-full h-[calc(1000vh-108px)] bg-gradient-to-r from-primary-950 via-primary-600 to-primary-950 flex flex-col gap-5 border-2 border-secondary-800 shadow-sm shadow-primary-950 rounded-lg cursor-pointer p-10">
-                        {/* <div className="w-full">
-                            <span className="text-white font-semibold text-xs md:text-sm lg:text-base">From</span>
-                            <div className="w-full flex justify-start items-center gap-1 border-2 border-secondary-300 text-secondary-800 bg-white shadow-md rounded-md mt-1">
-                                <div className="w-48 relative">
-                                    <label htmlFor="fromNetwork" className="sr-only">
-                                        From Protocol
-                                    </label>
-                                    <select
-                                        className="appearance-none w-full outline-none px-3 py-1 font-medium"
-                                        placeholder="Network"
-                                        name="networks"
-                                        id="fromNetwork"
-                                        onChange={(e: any) => onChangeFromProtocol(e.target.value)}
-                                        value={fromProtocol ? fromProtocol : ""}
-                                    >
-                                        <option value="" disabled selected>
-                                            Protocols
-                                        </option>
-                                        <option value="aaveV2">AAVE V2</option>
-                                        <option value="compoundV3">Compound V3</option>
-                                        <option value="dForce">dForce</option>
-                                    </select>
-                                    <div className="bg-white pointer-events-none absolute right-0 top-0 bottom-0 flex items-center px-2">
-                                        <BiSolidChevronDown size="20px" />
-                                    </div>
-                                </div>
-                                <div className="w-full relative">
-                                    <label htmlFor="token" className="sr-only">
-                                        Tokens
-                                    </label>
-                                    <select
-                                        className="appearance-none w-full outline-none px-3 py-1 font-medium"
-                                        placeholder="Token"
-                                        name="networks"
-                                        id="token"
-                                        value={fromToken ? fromToken : ""}
-                                        onChange={(e: any) => onChangeFromToken(e.target.value)}
-                                    >
-                                        <option value="" disabled selected>
-                                            From Tokens
-                                        </option>
-
-                                        {fromProtocol &&
-                                            protocolByNetwork[fromProtocol].map((token: any, tokenIndex: any) => (
-                                                // <option value={token} key={tokenIndex}>{token} {apys[tokenIndex] ? (`(APY: ${apys[tokenIndex]} %)`) : "(APY: Not Available)"}</option>
-                                                <option value={token} key={tokenIndex}>
-                                                    {token}
-                                                </option>
-                                            ))}
-                                    </select>
-                                    <div className="bg-white pointer-events-none absolute right-0 top-0 bottom-0 flex items-center px-2">
-                                        <BiSolidChevronDown size="20px" />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="text-white -mb-3">
-                            <HiOutlineRefresh size="22px" />
-                        </div>
-
-                        <div className="w-full">
-                            <span className="text-white font-semibold text-xs md:text-sm lg:text-base">To</span>
-                            <div className="w-full flex justify-start items-center gap-1 border-2 border-secondary-300 text-secondary-800 bg-white shadow-md rounded-md mt-1">
-                                <div className="w-48 relative">
-                                    <label htmlFor="toNetwork" className="sr-only">
-                                        To Protocols
-                                    </label>
-                                    <select
-                                        className="appearance-none w-full outline-none px-3 py-1 font-medium"
-                                        placeholder="Network"
-                                        name="networks"
-                                        id="toNetwork"
-                                        onChange={(e: any) => onChangeToProtocol(e.target.value)}
-                                        value={toProtocol ? toProtocol : ""}
-                                    >
-                                        <option value="" disabled selected>
-                                            Protocols
-                                        </option>
-                                        <option value="aaveV2">AAVE V2</option>
-                                        <option value="compoundV3">Compound V3</option>
-                                        <option value="dForce">dForce</option>
-                                    </select>
-                                    <div className="bg-white pointer-events-none absolute right-0 top-0 bottom-0 flex items-center px-2">
-                                        <BiSolidChevronDown size="20px" />
-                                    </div>
-                                </div>
-                                <div className="w-full relative">
-                                    <label htmlFor="contractAddresses" className="sr-only">
-                                        To Tokens
-                                    </label>
-                                    <select
-                                        className="appearance-none w-full outline-none px-3 py-1 font-medium"
-                                        placeholder="To Token"
-                                        name="contractAddresses"
-                                        id="contractAddresses"
-                                        onChange={(e: any) => onChangeToToken(e.target.value)}
-                                        value={toToken}
-                                    >
-                                        <option key={"0x"} value="" disabled selected>
-                                            To Tokens
-                                        </option>
-                                        {toProtocol &&
-                                            protocolByNetwork[toProtocol].map((token: any, tokenIndex: any) => (
-                                                <option value={token} key={tokenIndex}>
-                                                    {token}
-                                                </option>
-                                                // <option value={token} key={tokenIndex}>{token} {apysTo[tokenIndex] ? (`(APY: ${apysTo[tokenIndex]} %)`) : "(APY: Not Available)"}</option>
-                                            ))}
-                                    </select>
-                                    <div className="bg-white pointer-events-none absolute right-0 top-0 bottom-0 flex items-center px-2">
-                                        <BiSolidChevronDown size="20px" />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="w-full">
-                            <div className="flex justify-between items-center gap-2 text-white font-semibold text-xs md:text-sm pr-2">
-                                <span>Total Amount</span>
-                                <span>
-                                    {`(SCW Balance : ${
-                                        fromTokenBalanceForSCW != undefined
-                                            ? bg(BigNumber.from(fromTokenBalanceForSCW).toString())
-                                                  .dividedBy(bg(10).pow(fromTokenDecimal))
-                                                  .toString()
-                                            : "calculating..."
-                                    } ${fromToken ? fromToken : ""})
-                                    `}
-                                    {`|| (EOA Balance : ${
-                                        fromTokenBalanceForEOA != undefined
-                                            ? bg(BigNumber.from(fromTokenBalanceForEOA).toString())
-                                                  .dividedBy(bg(10).pow(fromTokenDecimal))
-                                                  .toString()
-                                            : "calculating..."
-                                    } ${fromToken ? fromToken : ""})
-                                    `}
-                                </span>
-                            </div>
-                            <div className="w-full flex justify-start items-center gap-1 border-2 border-secondary-300 text-secondary-800 bg-white shadow-md rounded-md mt-1">
-                                <input
-                                    type="number"
-                                    placeholder="amountIn"
-                                    className="w-full bg-white font-medium outline-none shadow-outline border-2  rounded-md py-1 px-3 block appearance-none leading-normal focus:border-primary-950"
-                                    value={
-                                        amountIn != 0
-                                            ? bg(amountIn).dividedBy(bg(10).pow(fromTokenDecimal)).toString()
-                                            : amountIn
-                                    }
-                                    onChange={(e: any) => onChangeAmountIn(e.target.value)}
-                                />
-                            </div>
-                        </div> */}
-                        {/* <IndividualBatch /> */}
-
                         {individualBatch.map((bar) => (
                             <IndividualBatch
                                 key={bar.id}
@@ -547,9 +392,6 @@ export default function Batching() {
                                 onUpdate={(newValues) => updateInputValues(bar.id, newValues)}
                             />
                         ))}
-
-                        {/* <button onClick={collectInputValues}>Collect Input Values</button>
-                        <button onClick={checkvalues}>Check Values</button> */}
 
                         <div className="flex justify-center items-center gap-3 py-3">
                             <button
@@ -568,7 +410,7 @@ export default function Batching() {
                                 className="flex justify-center items-center gap-2 bg-success-600 hover:bg-success-700 py-2 px-5 rounded-lg text-white font-medium border-b-4 border-success-800 hover:border-success-900 transition duration-300"
                             >
                                 {sendTxLoading && <ImSpinner className="animate-spin h-5 w-5" />}
-                                SendbatchALL via SCW
+                                Send Batches via SCW
                             </button>
                             <button
                                 type="button"
@@ -576,7 +418,7 @@ export default function Batching() {
                                 className="flex justify-center items-center gap-2 bg-success-600 hover:bg-success-700 py-2 px-5 rounded-lg text-white font-medium border-b-4 border-success-800 hover:border-success-900 transition duration-300"
                             >
                                 {sendTxLoadingForEoa && <ImSpinner className="animate-spin h-5 w-5" />}
-                                SendbatchALL via EOA
+                                Send Batches via EOA
                             </button>
                         </div>
 

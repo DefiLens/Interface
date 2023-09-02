@@ -210,7 +210,7 @@ export default function IndividualBatch({ onUpdate }) {
                 setSendtxLoadingForEoa(true);
             }
             if (fromToken == toToken) {
-                alert("fromToken and toToken should not same");
+                throw("fromToken and toToken should not same");
                 return;
             }
             if (selectedChain != "polygon") {
@@ -218,27 +218,27 @@ export default function IndividualBatch({ onUpdate }) {
                 return;
             }
             if (sendTxLoading || sendTxLoadingForEoa) {
-                alert("wait, tx loading");
+                throw("wait, tx loading");
                 return;
             }
             if (!fromProtocol) {
-                alert("select from protocol");
+                throw("select from protocol");
                 return;
             }
             if (!fromToken) {
-                alert("select fromToken");
+                throw("select fromToken");
                 return;
             }
             if (!toProtocol) {
-                alert("select to protocol");
+                throw("select to protocol");
                 return;
             }
             if (!toToken) {
-                alert("select toToken");
+                throw("select toToken");
                 return;
             }
             if (!amountIn) {
-                alert("select amountIn");
+                throw("select amountIn");
                 return;
             }
             const provider = await getProvider("109");
@@ -258,6 +258,7 @@ export default function IndividualBatch({ onUpdate }) {
         } catch (error) {
             setSendtxLoading(false);
             setSendtxLoadingForEoa(false);
+            alert(error)
             console.log("sendBatch-error", error);
         }
     };
