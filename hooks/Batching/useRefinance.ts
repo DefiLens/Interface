@@ -23,11 +23,11 @@ export function useRefinance() {
     async function refinance({ isSCW, tokenIn, tokenInName, tokenOut, tokenOutName, amount, address, provider }: any) {
         try {
             setTxHash("");
-            if (isSCW) {
-                setSendtxLoading(true);
-            } else {
-                setSendtxLoadingForEoa(true);
-            }
+            // if (isSCW) {
+            //     setSendtxLoading(true);
+            // } else {
+            //     setSendtxLoadingForEoa(true);
+            // }
             const tempTxs: any = [];
             let abiNum = abiFetcherNum[tokenInName];
             let abi = abiFetcher[abiNum]["withdrawAbi"];
@@ -125,15 +125,17 @@ export function useRefinance() {
             tempTxs.push(tx2);
             console.log("tempTxs", tempTxs);
 
-            if (isSCW) {
-                await sendToBiconomy(tempTxs);
-            } else {
-                await sendTxTrditionally(tempTxs);
-            }
+            // if (isSCW) {
+            //     await sendToBiconomy(tempTxs);
+            // } else {
+            //     await sendTxTrditionally(tempTxs);
+            // }
+            // setSendtxLoading(false);
+            // setSendtxLoadingForEoa(false);
             return tempTxs;
         } catch (error) {
-            setSendtxLoading(false);
-            setSendtxLoadingForEoa(false);
+            // setSendtxLoading(false);
+            // setSendtxLoadingForEoa(false);
             console.log("refinance-error", error);
         }
     }
