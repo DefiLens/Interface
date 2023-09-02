@@ -28,7 +28,7 @@ export const abiFetcher = {
         depositParamDetailsMethod: "compound_supply",
         withdrawParamDetailsMethod: "compound_withdraw",
         contractAddress: "0xF25212E676D1F7F89Cd72fFEe66158f541246445",
-        apyFetch: "fetchApyForCompoundPolygon"
+        apyFetch: "fetchApyForCompoundPolygon",
     },
     "2": {
         depositAbi: "function deposit(address asset, uint256 amount, address onBehalfOf, uint16 referralCode)",
@@ -39,7 +39,7 @@ export const abiFetcher = {
         depositParamDetailsMethod: "aave_deposit",
         withdrawParamDetailsMethod: "aave_withdraw",
         contractAddress: "0x8dFf5E27EA6b7AC08EbFdf9eB090F32ee9a30fcf",
-        apyFetch: "fetchApyForAaveV2Polygon"
+        apyFetch: "fetchApyForAaveV2Polygon",
     },
     "3": {
         depositAbi: "function mint(address _recipient, uint256 _mintAmount)",
@@ -50,7 +50,7 @@ export const abiFetcher = {
         depositParamDetailsMethod: "dForce_deposit",
         withdrawParamDetailsMethod: "dForce_withdraw",
         contractAddress: "0x5268b3c4afb0860D365a093C184985FCFcb65234",
-        apyFetch: "fetchApyForDForcePolygon"
+        apyFetch: "fetchApyForDForcePolygon",
     },
 };
 
@@ -90,7 +90,15 @@ export const nativeTokenFetcher = {
     },
 };
 
-export async function buildParams({ tokenIn, tokenOut, nativeTokenIn, nativeTokenOut, amount, address, paramDetailsMethod }) {
+export async function buildParams({
+    tokenIn,
+    tokenOut,
+    nativeTokenIn,
+    nativeTokenOut,
+    amount,
+    address,
+    paramDetailsMethod,
+}) {
     if (paramDetailsMethod == "aave_deposit") {
         return [nativeTokenIn, amount, address, 0];
     } else if (paramDetailsMethod == "aave_withdraw") {
@@ -106,27 +114,27 @@ export async function buildParams({ tokenIn, tokenOut, nativeTokenIn, nativeToke
     }
 }
 
-export async function fetchApy({ protocol, contractAddress, provider, signer,  token }) {
+export async function fetchApy({ protocol, contractAddress, provider, signer, token }) {
     if (protocol == "fetchApyForAaveV2Polygon") {
         let abi = new ethers.utils.Interface(aave_v2_Abi);
-        const protocolInstance = await getContractInstance(contractAddress, abi, provider)
-        const reserveData = await protocolInstance?.getReserveData(token)
-        return bg(reserveData[3].toString()).dividedBy(1e25)
+        const protocolInstance = await getContractInstance(contractAddress, abi, provider);
+        const reserveData = await protocolInstance?.getReserveData(token);
+        return bg(reserveData[3].toString()).dividedBy(1e25);
     } else if (protocol == "fetchApyForCompoundPolygon") {
         let abi = new ethers.utils.Interface(compound_Abi);
-        const SecondsPerYear = 60 * 60 * 24 * 365
-        const protocolInstance = await getContractInstance(contractAddress, abi, provider)
-        const utilization = await protocolInstance?.getUtilization()
-        let supplyRate = await protocolInstance?.getSupplyRate(utilization)
-        supplyRate = bg(supplyRate.toString()).dividedBy(1e18).multipliedBy(bg(SecondsPerYear).multipliedBy(100))
-        return supplyRate
+        const SecondsPerYear = 60 * 60 * 24 * 365;
+        const protocolInstance = await getContractInstance(contractAddress, abi, provider);
+        const utilization = await protocolInstance?.getUtilization();
+        let supplyRate = await protocolInstance?.getSupplyRate(utilization);
+        supplyRate = bg(supplyRate.toString()).dividedBy(1e18).multipliedBy(bg(SecondsPerYear).multipliedBy(100));
+        return supplyRate;
     } else if (protocol == "fetchApyForCompoundPolygon") {
         let abi = new ethers.utils.Interface(compound_Abi);
-        const SecondsPerYear = 60 * 60 * 24 * 365
-        const protocolInstance = await getContractInstance(contractAddress, abi, provider)
-        const utilization = await protocolInstance?.getUtilization()
-        let supplyRate = await protocolInstance?.getSupplyRate(utilization)
-        supplyRate = bg(supplyRate.toString()).dividedBy(1e18).multipliedBy(bg(SecondsPerYear).multipliedBy(100))
-        return supplyRate
+        const SecondsPerYear = 60 * 60 * 24 * 365;
+        const protocolInstance = await getContractInstance(contractAddress, abi, provider);
+        const utilization = await protocolInstance?.getUtilization();
+        let supplyRate = await protocolInstance?.getSupplyRate(utilization);
+        supplyRate = bg(supplyRate.toString()).dividedBy(1e18).multipliedBy(bg(SecondsPerYear).multipliedBy(100));
+        return supplyRate;
     }
 }
