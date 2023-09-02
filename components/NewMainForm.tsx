@@ -433,23 +433,24 @@ export default function NewMainForm() {
         toast.success("Destination Lending CallData Copied");
     };
 
-    const sendBatch = async () => {
-        try {
-            const provider = await getProvider("109");
-            await refinance({
-                isSCW: true,
-                tokenIn: "",
-                tokenInName: "aUSDC",
-                tokenOut: "",
-                tokenOutName: "aDAI",
-                amount: "10000",
-                address: smartAccount.address,
-                provider,
-            });
-        } catch (error) {
-            console.log("sendBatch-error", error);
-        }
-    };
+    // const sendBatch = async () => {
+    //     try {
+    //         const provider = await getProvider("109");
+    //         await refinance({
+    //             isSCW: true,
+    //             fromProtocol: '',
+    //             tokenIn: "",
+    //             tokenInName: "aUSDC",
+    //             tokenOut: "",
+    //             tokenOutName: "aDAI",
+    //             amount: "10000",
+    //             address: smartAccount.address,
+    //             provider,
+    //         });
+    //     } catch (error) {
+    //         console.log("sendBatch-error", error);
+    //     }
+    // };
     return (
         <>
             <div className="main-container flex justify-start items-start gap-3">
