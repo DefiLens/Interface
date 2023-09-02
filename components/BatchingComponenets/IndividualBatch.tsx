@@ -7,7 +7,7 @@ import { BsArrowRightCircleFill, BsChevronDown } from "react-icons/bs";
 import { FaChevronDown } from "react-icons/fa";
 import { HiOutlineRefresh } from "react-icons/hi";
 import { useSigner, useAddress, useChain, useSwitchChain, useConnect, metamaskWallet } from "@thirdweb-dev/react";
-import { useAppStore } from "../../store/appStore";
+import { useAppStore, useBatchAppStore } from "../../store/appStore";
 import { chooseChianId, shorten } from "../../utils/helper";
 import {
     NetworkNameByChainId,
@@ -49,6 +49,7 @@ import {
 } from "../../hooks/Batching/batchingUtils";
 
 import aave_v2_Abi from "../../abis/defi/aave_v2.json";
+import axios from "axios";
 bg.config({ DECIMAL_PLACES: 10 });
 
 export default function IndividualBatch({ onUpdate }) {
@@ -68,6 +69,7 @@ export default function IndividualBatch({ onUpdate }) {
     const { mutateAsync: refinance } = useRefinance();
     const { selectedChain, setSelectedChain, selectedChainId, setSelectedChainId } = React.useContext(ChainContext);
     const { smartAccount, txhash }: any = useAppStore((state) => state);
+    const { setTokensData, tokensData }: any = useBatchAppStore((state) => state);
 
     const [fromProtocol, setFromProtocol] = React.useState<any>();
     const [toProtocol, setToProtocol] = React.useState<any>();
@@ -86,23 +88,43 @@ export default function IndividualBatch({ onUpdate }) {
     useEffect(() => {
         async function onChangeFromProtocol() {
             if (fromProtocol) {
-                setFromTokenBalanceForSCW(undefined);
-                setFromTokenBalanceForEOA(undefined);
-                const firstFromToken = protocolByNetwork[fromProtocol][0];
-                setFromToken(firstFromToken);
-                const provider = await getProvider("109");
-                const tokenAddress = tokenAddressByProtocol[fromProtocol][firstFromToken];
-                const erc20 = await getContractInstance(tokenAddress, IERC20, provider);
-                const scwBalance = await getErc20Balanceof(erc20, smartAccount.address);
-                const eoaBalance = await getErc20Balanceof(erc20, address);
-                const fromTokendecimal = await getErc20Decimals(erc20);
-                setFromTokenDecimal(fromTokendecimal);
-                setFromTokenBalanceForSCW(scwBalance);
-                setFromTokenBalanceForEOA(eoaBalance);
+                if (fromProtocol != "erc20") {
+                    setFromTokenBalanceForSCW(undefined);
+                    setFromTokenBalanceForEOA(undefined);
+                    const firstFromToken = protocolByNetwork[fromProtocol][0];
+                    setFromToken(firstFromToken);
+                    const provider = await getProvider("109");
+                    const tokenAddress = tokenAddressByProtocol[fromProtocol][firstFromToken];
+                    const erc20 = await getContractInstance(tokenAddress, IERC20, provider);
+                    const scwBalance = await getErc20Balanceof(erc20, smartAccount.address);
+                    const eoaBalance = await getErc20Balanceof(erc20, address);
+                    const fromTokendecimal = await getErc20Decimals(erc20);
+                    setFromTokenDecimal(fromTokendecimal);
+                    setFromTokenBalanceForSCW(scwBalance);
+                    setFromTokenBalanceForEOA(eoaBalance);
+                } else {
+                    const response: any = await axios.get("https://gateway.ipfs.io/ipns/tokens.uniswap.org");
+                    console.log("response: ", response, response.tokens);
+                    const tokensWithChain137 = response.data.tokens?.filter((token) => token.chainId === 137);
+                    const filteredTokens = tokensWithChain137.map((token) => {
+                        const { extensions, logoURI, ...filteredToken } = token;
+                        return filteredToken;
+                    });
+                    console.log("filteredTokens: ", filteredTokens);
+                    setTokensData(filteredTokens);
+                }
             }
         }
         onChangeFromProtocol();
     }, [fromProtocol]);
+
+    useEffect(() => {
+        console.log("tokensWithChain137--uese", tokensData);
+        if (tokensData) {
+            // const tokensWithChain137 = tokensData.filter((token) => token.chainId === 137);
+            // console.log("tokensWithChain137----: ", tokensWithChain137);
+        }
+    }, [tokensData]);
 
     const onChangeFromProtocol = async (_fromProtocol: any) => {
         if (sendTxLoading || sendTxLoadingForEoa) {
@@ -113,6 +135,7 @@ export default function IndividualBatch({ onUpdate }) {
             alert("Batching is only supported on polygon as of now");
             return;
         }
+        setFromProtocol("");
         setFromProtocol(_fromProtocol);
     };
 
@@ -125,6 +148,7 @@ export default function IndividualBatch({ onUpdate }) {
             alert("Batching is only supported on polygon as of now");
             return;
         }
+        setToToken("");
         setToProtocol(_toProtocol);
     };
 
@@ -145,7 +169,18 @@ export default function IndividualBatch({ onUpdate }) {
         setFromTokenBalanceForEOA(undefined);
         setFromToken(_fromToken);
         const provider = await getProvider("109");
-        const tokenAddress = tokenAddressByProtocol[fromProtocol][_fromToken];
+        console.log(
+            "---",
+            _fromToken,
+            tokensData.filter((token) => token.symbol === _fromToken)
+        );
+        console.log(
+            "----",
+            tokensData.filter((token) => token.symbol === fromToken)
+        );
+        const erc20Address = fromProtocol == "erc20" ? tokensData.filter((token) => token.symbol === _fromToken) : "";
+        const tokenAddress =
+            fromProtocol != "erc20" ? tokenAddressByProtocol[fromProtocol][_fromToken] : erc20Address[0].address;
         const erc20 = await getContractInstance(tokenAddress, IERC20, provider);
         const scwBalance = await getErc20Balanceof(erc20, smartAccount.address);
         const eoaBalance = await getErc20Balanceof(erc20, address);
@@ -210,7 +245,7 @@ export default function IndividualBatch({ onUpdate }) {
                 setSendtxLoadingForEoa(true);
             }
             if (fromToken == toToken) {
-                throw("fromToken and toToken should not same");
+                throw "fromToken and toToken should not same-";
                 return;
             }
             if (selectedChain != "polygon") {
@@ -218,32 +253,34 @@ export default function IndividualBatch({ onUpdate }) {
                 return;
             }
             if (sendTxLoading || sendTxLoadingForEoa) {
-                throw("wait, tx loading");
+                throw "wait, tx loading";
                 return;
             }
             if (!fromProtocol) {
-                throw("select from protocol");
+                throw "select from protocol";
                 return;
             }
             if (!fromToken) {
-                throw("select fromToken");
+                throw "select fromToken";
                 return;
             }
             if (!toProtocol) {
-                throw("select to protocol");
+                throw "select to protocol";
                 return;
             }
             if (!toToken) {
-                throw("select toToken");
+                throw "select toToken";
                 return;
             }
             if (!amountIn) {
-                throw("select amountIn");
+                throw "select amountIn";
                 return;
             }
             const provider = await getProvider("109");
             const txHash = await refinance({
                 isSCW: isSCW,
+                fromProtocol: fromProtocol,
+                toProtocol: toProtocol,
                 tokenIn: "",
                 tokenInName: fromToken,
                 tokenOut: "",
@@ -258,7 +295,7 @@ export default function IndividualBatch({ onUpdate }) {
         } catch (error) {
             setSendtxLoading(false);
             setSendtxLoadingForEoa(false);
-            alert(error)
+            alert(error);
             console.log("sendBatch-error", error);
         }
     };
@@ -288,6 +325,7 @@ export default function IndividualBatch({ onUpdate }) {
                             <option value="aaveV2">AAVE V2</option>
                             <option value="compoundV3">Compound V3</option>
                             <option value="dForce">dForce</option>
+                            <option value="erc20">ERC20</option>
                         </select>
                         <div className="bg-white pointer-events-none absolute right-0 top-0 bottom-0 flex items-center px-2">
                             <BiSolidChevronDown size="20px" />
@@ -309,13 +347,19 @@ export default function IndividualBatch({ onUpdate }) {
                                 From Tokens
                             </option>
 
-                            {fromProtocol &&
-                                protocolByNetwork[fromProtocol].map((token: any, tokenIndex: any) => (
-                                    // <option value={token} key={tokenIndex}>{token} {apys[tokenIndex] ? (`(APY: ${apys[tokenIndex]} %)`) : "(APY: Not Available)"}</option>
-                                    <option value={token} key={tokenIndex}>
-                                        {token}
-                                    </option>
-                                ))}
+                            {fromProtocol && fromProtocol != "erc20"
+                                ? protocolByNetwork[fromProtocol].map((token: any, tokenIndex: any) => (
+                                      // <option value={token} key={tokenIndex}>{token} {apys[tokenIndex] ? (`(APY: ${apys[tokenIndex]} %)`) : "(APY: Not Available)"}</option>
+                                      <option value={token} key={tokenIndex}>
+                                          {token}
+                                      </option>
+                                  ))
+                                : tokensData && tokensData.map((token: any, tokenIndex: any) => (
+                                      // <option value={token} key={tokenIndex}>{token} {apys[tokenIndex] ? (`(APY: ${apys[tokenIndex]} %)`) : "(APY: Not Available)"}</option>
+                                      <option value={token.symbol} key={tokenIndex}>
+                                          {token.symbol}
+                                      </option>
+                                  ))}
                         </select>
                         <div className="bg-white pointer-events-none absolute right-0 top-0 bottom-0 flex items-center px-2">
                             <BiSolidChevronDown size="20px" />
@@ -349,6 +393,7 @@ export default function IndividualBatch({ onUpdate }) {
                             <option value="aaveV2">AAVE V2</option>
                             <option value="compoundV3">Compound V3</option>
                             <option value="dForce">dForce</option>
+                            <option value="erc20">ERC20</option>
                         </select>
                         <div className="bg-white pointer-events-none absolute right-0 top-0 bottom-0 flex items-center px-2">
                             <BiSolidChevronDown size="20px" />
@@ -369,13 +414,19 @@ export default function IndividualBatch({ onUpdate }) {
                             <option key={"0x"} value="" disabled selected>
                                 To Tokens
                             </option>
-                            {toProtocol &&
-                                protocolByNetwork[toProtocol].map((token: any, tokenIndex: any) => (
-                                    <option value={token} key={tokenIndex}>
-                                        {token}
-                                    </option>
-                                    // <option value={token} key={tokenIndex}>{token} {apysTo[tokenIndex] ? (`(APY: ${apysTo[tokenIndex]} %)`) : "(APY: Not Available)"}</option>
-                                ))}
+                            {toProtocol && toProtocol != "erc20"
+                                ? protocolByNetwork[toProtocol].map((token: any, tokenIndex: any) => (
+                                      <option value={token} key={tokenIndex}>
+                                          {token}
+                                      </option>
+                                      // <option value={token} key={tokenIndex}>{token} {apysTo[tokenIndex] ? (`(APY: ${apysTo[tokenIndex]} %)`) : "(APY: Not Available)"}</option>
+                                  ))
+                                : tokensData && tokensData.map((token: any, tokenIndex: any) => (
+                                      // <option value={token} key={tokenIndex}>{token} {apys[tokenIndex] ? (`(APY: ${apys[tokenIndex]} %)`) : "(APY: Not Available)"}</option>
+                                      <option value={token.symbol} key={tokenIndex}>
+                                          {token.symbol}
+                                      </option>
+                                  ))}
                         </select>
                         <div className="bg-white pointer-events-none absolute right-0 top-0 bottom-0 flex items-center px-2">
                             <BiSolidChevronDown size="20px" />
