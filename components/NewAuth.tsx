@@ -262,7 +262,7 @@ export default function Home() {
         <div className="auth-container">
             <ul className="flex justify-between items-center gap-2 bg-primary-950 p-2 shadow-md shadow-secondary-500">
                 <li>
-                    <div className="text-[30px] font-bold flex flex-row m-1">
+                    <div className="text-[30px] font-bold flex flex-row m-">
                         <div className="mr-2">
                             <svg
                                 width="50px"
