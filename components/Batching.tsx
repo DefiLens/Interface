@@ -368,6 +368,8 @@ export default function Batching() {
             const provider = await getProvider("109");
             await refinance({
                 isSCW: isSCW,
+                fromProtocol: fromProtocol,
+                toProtocol: toProtocol,
                 tokenIn: "",
                 tokenInName: fromToken,
                 tokenOut: "",
