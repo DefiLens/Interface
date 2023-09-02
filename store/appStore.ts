@@ -3,6 +3,14 @@ import { devtools, persist } from "zustand/middleware";
 import { BiconomySmartAccount } from "@biconomy/account";
 import { tokensByNetwork } from "../utils/constants";
 
+interface Token {
+    chainId: number;
+    address: string;
+    name: string;
+    symbol: string;
+    decimals: number;
+}
+
 interface Contract {
     contractName: string;
     contractAddress: string;
@@ -281,4 +289,14 @@ export const useChainAppStore = create<ChainState>((set) => ({
     activeChainId: 137,
     setActiveChainName: (activeChainName) => set(() => ({ activeChainName })),
     setActiveChainId: (activeChainId) => set(() => ({ activeChainId })),
+}));
+
+interface BatchState {
+    tokensData: '';
+    setTokensData: (tokensData: any) => void;
+}
+
+export const useBatchAppStore = create<BatchState>((set) => ({
+    tokensData: "",
+    setTokensData: (tokensData) => set(() => ({ tokensData })),
 }));
