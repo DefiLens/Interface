@@ -368,9 +368,9 @@ export default function IndividualBatch({ onUpdate }) {
                 </div>
             </div>
 
-            <div className="text-white -mb-3">
+            {/* <div className="text-white -mb-3">
                 <HiOutlineRefresh size="22px" />
-            </div>
+            </div> */}
 
             <div className="w-full">
                 <span className="text-white font-semibold text-xs md:text-sm lg:text-base">To</span>
