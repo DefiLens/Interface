@@ -80,6 +80,25 @@ export default function IndividualBatch({ onUpdate }) {
     }, [fromProtocol]);
 
     useEffect(() => {
+        async function onChangeFromProtocol() {
+            if (toProtocol) {
+                if (toProtocol == "erc20" && !tokensData) {
+                    const response: any = await axios.get("https://gateway.ipfs.io/ipns/tokens.uniswap.org");
+                    console.log("response: ", response, response.tokens);
+                    const tokensWithChain137 = response.data.tokens?.filter((token) => token.chainId === 137);
+                    const filteredTokens = tokensWithChain137.map((token) => {
+                        const { extensions, logoURI, ...filteredToken } = token;
+                        return filteredToken;
+                    });
+                    console.log("filteredTokens: ", filteredTokens);
+                    setTokensData(filteredTokens);
+                }
+            }
+        }
+        onChangeFromProtocol();
+    }, [toProtocol]);
+
+    useEffect(() => {
         console.log("tokensWithChain137--uese", tokensData);
         if (tokensData) {
             // const tokensWithChain137 = tokensData.filter((token) => token.chainId === 137);
