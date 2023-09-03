@@ -303,6 +303,7 @@ export default function IndividualBatch({ onUpdate }) {
                                 Protocols
                             </option>
                             <option value="aaveV2">AAVE V2</option>
+                            <option value="aaveV3">AAVE V3</option>
                             <option value="compoundV3">Compound V3</option>
                             <option value="dForce">dForce</option>
                             <option value="erc20">ERC20</option>
@@ -371,6 +372,7 @@ export default function IndividualBatch({ onUpdate }) {
                                 Protocols
                             </option>
                             <option value="aaveV2">AAVE V2</option>
+                            <option value="aaveV3">AAVE V3</option>
                             <option value="compoundV3">Compound V3</option>
                             <option value="dForce">dForce</option>
                             <option value="erc20">ERC20</option>

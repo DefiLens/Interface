@@ -17,6 +17,14 @@ export const abiFetcherNum = {
     aAAVE: "2",
     aWBTC: "2",
     dForceUSDC: "3",
+    aUSDCv3: "4",
+    aUSDTv3: "4",
+    aDAIv3: "4",
+    aWETHv3: "4",
+    aWMATICv3: "4",
+    aAAVEv3: "4",
+    aWBTCv3: "4",
+    aBALv3: "4",
 };
 
 export const abiFetcher = {
@@ -52,10 +60,22 @@ export const abiFetcher = {
         contractAddress: "0x5268b3c4afb0860D365a093C184985FCFcb65234",
         apyFetch: "fetchApyForDForcePolygon",
     },
+    "4": {
+        depositAbi: "function supply(address asset, uint256 amount, address onBehalfOf, uint16 referralCode)",
+        withdrawAbi: "function withdraw(address asset, uint256 amount, address to)",
+        depositMethodName: "supply",
+        withdrawMethodName: "withdraw",
+        paramDetailsMethod: "aave_supply_v3",
+        depositParamDetailsMethod: "aave_supply_v3",
+        withdrawParamDetailsMethod: "aave_withdraw_v3",
+        contractAddress: "0x794a61358D6845594F94dc1DB02A252b5b4814aD",
+        apyFetch: "fetchApyForAaveV3Polygon",
+    },
 };
 
 export const nativeTokenNum = {
     cUSDC: "1",
+
     aUSDC: "1",
     aUSDT: "2",
     aDAI: "3",
@@ -63,7 +83,17 @@ export const nativeTokenNum = {
     aWMATIC: "5",
     aAAVE: "6",
     aWBTC: "7",
+
     dForceUSDC: "1",
+
+    aUSDCv3: "1",
+    aUSDTv3: "2",
+    aDAIv3: "3",
+    aWETHv3: "4",
+    aWMATICv3: "5",
+    aAAVEv3: "6",
+    aWBTCv3: "7",
+    aBALv3: "8",
 };
 
 export const nativeTokenFetcher = {
@@ -88,6 +118,9 @@ export const nativeTokenFetcher = {
     "7": {
         nativeToken: "0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6",
     },
+    "8": {
+        nativeToken: "0x9a71012B13CA4d3D0Cdc72A177DF3ef03b0E76A3",
+    },
 };
 
 export async function buildParams({
@@ -99,9 +132,9 @@ export async function buildParams({
     address,
     paramDetailsMethod,
 }) {
-    if (paramDetailsMethod == "aave_deposit") {
+    if (paramDetailsMethod == "aave_deposit" || paramDetailsMethod == "aave_supply_v3") {
         return [nativeTokenIn, amount, address, 0];
-    } else if (paramDetailsMethod == "aave_withdraw") {
+    } else if (paramDetailsMethod == "aave_withdraw" || paramDetailsMethod == "aave_withdraw_v3") {
         return [nativeTokenIn, amount, address];
     } else if (paramDetailsMethod == "compound_supply") {
         return [nativeTokenIn, amount];
@@ -120,6 +153,11 @@ export async function fetchApy({ protocol, contractAddress, provider, signer, to
         const protocolInstance = await getContractInstance(contractAddress, abi, provider);
         const reserveData = await protocolInstance?.getReserveData(token);
         return bg(reserveData[3].toString()).dividedBy(1e25);
+    } else if (protocol == "fetchApyForAaveV3Polygon") {
+        let abi = new ethers.utils.Interface(aave_v2_Abi);
+        const protocolInstance = await getContractInstance(contractAddress, abi, provider);
+        const reserveData = await protocolInstance?.getReserveData(token);
+        return bg(reserveData[2].toString()).dividedBy(1e25);
     } else if (protocol == "fetchApyForCompoundPolygon") {
         let abi = new ethers.utils.Interface(compound_Abi);
         const SecondsPerYear = 60 * 60 * 24 * 365;

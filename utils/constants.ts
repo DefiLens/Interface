@@ -180,6 +180,16 @@ export const protocolByNetwork = {
         "aAAVE",
         "aWBTC",
     ],
+    aaveV3: [
+        "aUSDCv3",
+        "aUSDTv3",
+        "aDAIv3",
+        "aWETHv3",
+        "aWMATICv3",
+        "aAAVEv3",
+        "aWBTCv3",
+        "aBALv3",
+    ],
     compoundV3: [
         'cUSDC'
     ],
@@ -197,6 +207,16 @@ export const tokenAddressByProtocol = {
         "aWMATIC": "0x8dF3aad3a84da6b69A4DA8aeC3eA40d9091B2Ac4",
         "aAAVE": "0x1d2a0E5EC8E5bBDCA5CB219e649B565d8e5c3360",
         "aWBTC": "0x5c2ed810328349100A66B82b78a1791B101C9D61",
+    },
+    aaveV3: {
+        "aUSDCv3": "0x625E7708f30cA75bfd92586e17077590C60eb4cD",
+        "aUSDTv3": "0x6ab707Aca953eDAeFBc4fD23bA73294241490620",
+        "aDAIv3": "0x82E64f49Ed5EC1bC6e43DAD4FC8Af9bb3A2312EE",
+        "aWETHv3": "0xe50fA9b3c56FfB159cB0FCA61F5c9D750e8128c8",
+        "aWMATICv3": "0x6d80113e533a2C0fe82EaBD35f1875DcEA89Ea97",
+        "aAAVEv3": "0xf329e36C7bF6E5E86ce2150875a84Ce77f477375",
+        "aWBTCv3": "0x078f358208685046a11C85e8ad32895DED33A249",
+        "aBALv3": "0x8ffDf2DE812095b1D19CB146E4c004587C0A0692"
     },
     compoundV3: {
         'cUSDC': "0xF25212E676D1F7F89Cd72fFEe66158f541246445"
