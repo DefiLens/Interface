@@ -99,7 +99,6 @@ export default function Batching() {
     const [individualBatch, setIndividualBatch] = React.useState<{ id: number; txHash: string[] }[]>([
         { id: 1, txHash: [""] },
     ]);
-    console.log("🚀 ~ file: Batching.tsx:95 ~ Batching ~ individualBatch:", individualBatch);
     const [showIndividualBatchList, setShowIndividualBatchList] = React.useState<any>(null);
     const [allTxs, setCollectedValues] = React.useState<any>([]);
 
@@ -457,6 +456,10 @@ export default function Batching() {
                         </div>
                     )}
                     <div className="w-full min-h-[calc(100vh-225px)] bg-gradient-to-t from-gray-200 via-white to-gray-200 text-center flex flex-col gap-3 shadow-md shadow-primary-950 rounded-lg cursor-pointer p-10">
+                        <h1 className="text-base md:text-lg lg:text-xl text-center font-extrabold mb-3">
+                            Batch List Detail
+                        </h1>
+
                         {individualBatch.length > 0 ? (
                             individualBatch.map((bar) => (
                                 <div key={bar.id} className="relative">
