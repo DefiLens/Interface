@@ -3,16 +3,11 @@ import { useEffect } from "react";
 import { BigNumber as bg } from "bignumber.js";
 import { BiSolidChevronDown } from "react-icons/bi";
 import { ImSpinner } from "react-icons/im";
-import { useSigner, useAddress, useChain, useSwitchChain, useConnect, metamaskWallet } from "@thirdweb-dev/react";
+import { useAddress } from "@thirdweb-dev/react";
 import { useAppStore, useBatchAppStore } from "../../store/appStore";
 import { _functionType, _nonce, protocolByNetwork, tokenAddressByProtocol } from "../../utils/constants";
-import { useSendTx } from "../../hooks/useSendTx";
-import { useSimulate } from "../../hooks/useSimulate";
-import { useGenerateAbis } from "../../hooks/useGenerateAbis";
-import { useOnChangeFunctions, useOnChangeInput, useOnChangeTokenIn } from "../../hooks/useOnChangeMainForm";
 import ChainContext from "../../Context/ChainContext";
 import { toast } from "react-hot-toast";
-import { useCalculatebalance } from "../../hooks/useCalculateBalance";
 import { getContractInstance, getErc20Balanceof, getErc20Decimals, getProvider } from "../../utils/web3Libs/ethers";
 import IERC20 from "../../abis/IERC20.json";
 import { BigNumber } from "ethers";
@@ -93,14 +88,6 @@ export default function IndividualBatch({ onUpdate }) {
         onChangeFromProtocol();
     }, [toProtocol]);
 
-    useEffect(() => {
-        console.log("tokensWithChain137--uese", tokensData);
-        if (tokensData) {
-            // const tokensWithChain137 = tokensData.filter((token) => token.chainId === 137);
-            // console.log("tokensWithChain137----: ", tokensWithChain137);
-        }
-    }, [tokensData]);
-
     const onChangeFromProtocol = async (_fromProtocol: any) => {
         if (addToBatchLoading) {
             alert("wait, tx loading");
@@ -144,15 +131,6 @@ export default function IndividualBatch({ onUpdate }) {
         setFromTokenBalanceForEOA(undefined);
         setFromToken(_fromToken);
         const provider = await getProvider("109");
-        console.log(
-            "---",
-            _fromToken,
-            tokensData.filter((token) => token.symbol === _fromToken)
-        );
-        console.log(
-            "----",
-            tokensData.filter((token) => token.symbol === fromToken)
-        );
         const erc20Address = fromProtocol == "erc20" ? tokensData.filter((token) => token.symbol === _fromToken) : "";
         const tokenAddress =
             fromProtocol != "erc20" ? tokenAddressByProtocol[fromProtocol][_fromToken] : erc20Address[0].address;
@@ -186,22 +164,15 @@ export default function IndividualBatch({ onUpdate }) {
             alert("Batching is only supported on polygon as of now");
             return;
         }
-        // console.log("_amountIn-1", _amountIn.toString());
         if (_amountIn) {
-            // console.log("_amountIn-2", _amountIn.toString());
             let amountInByDecimals = bg(_amountIn);
-            // console.log("_amountIn-3", amountInByDecimals.toString());
             amountInByDecimals = amountInByDecimals.multipliedBy(bg(10).pow(fromTokenDecimal));
-            // console.log("_amountIn-4", amountInByDecimals.toString());
             if (amountInByDecimals.eq(0)) {
-                // console.log("_amountIn-5", _amountIn.toString());
                 setAmountIn(_amountIn);
             } else {
-                // console.log("_amountIn-6", amountInByDecimals.toString());
                 setAmountIn(amountInByDecimals.toString());
             }
         } else {
-            // console.log("_amountIn-7", _amountIn.toString());
             setAmountIn("");
         }
     };
