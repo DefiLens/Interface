@@ -5,12 +5,7 @@ import { BiSolidChevronDown } from "react-icons/bi";
 import { ImSpinner } from "react-icons/im";
 import { useSigner, useAddress, useChain, useSwitchChain, useConnect, metamaskWallet } from "@thirdweb-dev/react";
 import { useAppStore, useBatchAppStore } from "../../store/appStore";
-import {
-    _functionType,
-    _nonce,
-    protocolByNetwork,
-    tokenAddressByProtocol,
-} from "../../utils/constants";
+import { _functionType, _nonce, protocolByNetwork, tokenAddressByProtocol } from "../../utils/constants";
 import { useSendTx } from "../../hooks/useSendTx";
 import { useSimulate } from "../../hooks/useSimulate";
 import { useGenerateAbis } from "../../hooks/useGenerateAbis";
@@ -285,8 +280,8 @@ export default function IndividualBatch({ onUpdate }) {
                 {true && (
                     <div className="w-full h-[calc(100vh-108px)] bg-gradient-to-r from-primary-950 via-primary-600 to-primary-950 flex flex-col justify-center items-center gap-5 border-2 border-secondary-800 shadow-sm shadow-primary-950 rounded-lg cursor-pointer p-10"> */}
             <div className="w-full">
-                <span className="text-white font-semibold text-xs md:text-sm lg:text-base">From</span>
-                <div className="w-full flex justify-start items-center gap-1 border-2 border-secondary-300 text-secondary-800 bg-white shadow-md rounded-md mt-1">
+                <span className="text-black font-semibold text-xs md:text-sm lg:text-base">From</span>
+                <div className="w-full flex justify-start items-center gap-1 border-2 border-secondary-300 text-secondary-800 bg-white shadow rounded-md overflow-hidden mt-1">
                     <div className="w-48 relative">
                         <label htmlFor="fromNetwork" className="sr-only">
                             From Protocol
@@ -335,7 +330,8 @@ export default function IndividualBatch({ onUpdate }) {
                                           {token}
                                       </option>
                                   ))
-                                : tokensData && tokensData.map((token: any, tokenIndex: any) => (
+                                : tokensData &&
+                                  tokensData.map((token: any, tokenIndex: any) => (
                                       // <option value={token} key={tokenIndex}>{token} {apys[tokenIndex] ? (`(APY: ${apys[tokenIndex]} %)`) : "(APY: Not Available)"}</option>
                                       <option value={token.symbol} key={tokenIndex}>
                                           {token.symbol}
@@ -349,13 +345,13 @@ export default function IndividualBatch({ onUpdate }) {
                 </div>
             </div>
 
-            {/* <div className="text-white -mb-3">
+            {/* <div className="text-black -mb-3">
                 <HiOutlineRefresh size="22px" />
             </div> */}
 
             <div className="w-full">
-                <span className="text-white font-semibold text-xs md:text-sm lg:text-base">To</span>
-                <div className="w-full flex justify-start items-center gap-1 border-2 border-secondary-300 text-secondary-800 bg-white shadow-md rounded-md mt-1">
+                <span className="text-black font-semibold text-xs md:text-sm lg:text-base">To</span>
+                <div className="w-full flex justify-start items-center gap-1 border-2 border-secondary-300 text-secondary-800 bg-white shadow rounded-md overflow-hidden mt-1">
                     <div className="w-48 relative">
                         <label htmlFor="toNetwork" className="sr-only">
                             To Protocols
@@ -403,7 +399,8 @@ export default function IndividualBatch({ onUpdate }) {
                                       </option>
                                       // <option value={token} key={tokenIndex}>{token} {apysTo[tokenIndex] ? (`(APY: ${apysTo[tokenIndex]} %)`) : "(APY: Not Available)"}</option>
                                   ))
-                                : tokensData && tokensData.map((token: any, tokenIndex: any) => (
+                                : tokensData &&
+                                  tokensData.map((token: any, tokenIndex: any) => (
                                       // <option value={token} key={tokenIndex}>{token} {apys[tokenIndex] ? (`(APY: ${apys[tokenIndex]} %)`) : "(APY: Not Available)"}</option>
                                       <option value={token.symbol} key={tokenIndex}>
                                           {token.symbol}
@@ -418,7 +415,7 @@ export default function IndividualBatch({ onUpdate }) {
             </div>
 
             <div className="w-full">
-                <div className="flex justify-between items-center gap-2 text-white font-semibold text-xs md:text-sm pr-2">
+                <div className="flex justify-between items-center gap-2 text-black font-semibold text-xs md:text-sm pr-2">
                     <span>Total Amount</span>
                     <span>
                         {`(SCW Balance : ${
@@ -439,7 +436,7 @@ export default function IndividualBatch({ onUpdate }) {
                                     `}
                     </span>
                 </div>
-                <div className="w-full flex justify-start items-center gap-1 border-2 border-secondary-300 text-secondary-800 bg-white shadow-md rounded-md mt-1">
+                <div className="w-full flex justify-start items-center gap-1 text-secondary-800 bg-white shadow rounded-md overflow-hidden mt-1">
                     <input
                         type="number"
                         placeholder="amountIn"
@@ -461,13 +458,13 @@ export default function IndividualBatch({ onUpdate }) {
                     Add Batch to List
                 </button>
                 {/* <button
-                                type="button"
-                                onClick={() => sendBatch(false)}
-                                className="flex justify-center items-center gap-2 bg-success-600 hover:bg-success-700 py-2 px-5 rounded-lg text-white font-medium border-b-4 border-success-800 hover:border-success-900 transition duration-300"
-                            >
-                                {sendTxLoadingForEoa && <ImSpinner className="animate-spin h-5 w-5" />}
-                                Sendbatch via EOA
-                            </button> */}
+                    type="button"
+                    onClick={() => sendBatch(false)}
+                    className="flex justify-center items-center gap-2 bg-success-600 hover:bg-success-700 py-2 px-5 rounded-lg text-white font-medium border-b-4 border-success-800 hover:border-success-900 transition duration-300"
+                >
+                    {sendTxLoadingForEoa && <ImSpinner className="animate-spin h-5 w-5" />}
+                    Sendbatch via EOA
+                </button> */}
             </div>
             {/* <div className="flex justify-center items-center gap-3 py-5">
                             {txhash && (

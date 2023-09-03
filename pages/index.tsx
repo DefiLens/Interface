@@ -24,7 +24,7 @@ const Index = () => {
         // },
         {
             title: "Refinance Batching for Lending",
-            component: <Batching/>
+            component: <Batching />,
         },
         {
             title: "Transfer Funds",
@@ -40,13 +40,13 @@ const Index = () => {
             <Suspense fallback={<div>Loading...</div>}>
                 <SocialLoginDynamic />
 
-                <div className="w-[100vw] h-[calc(100vh-76px)] flex justify-center items-start">
+                <div className="w-[100vw] h-[calc(100vh-69px)] flex justify-center items-start">
                     <div className="w-[250px] h-full flex flex-col justify-start items-center gap-5 p-5 pt-10 text-lg text-light bg-secondary-800 shadow-lg shadow-secondary-500">
                         {TabList.length > 0 &&
                             TabList?.map((item) => (
                                 <div
                                     key={item.title}
-                                    className={`cursor-pointer px-4 py-2 rounded-md hover:bg-secondary-600 transition duration-300 ${
+                                    className={`cursor-pointer px-4 py-2 text-sm md:text-base text-center rounded-md hover:bg-secondary-600 transition duration-300 ${
                                         activeTab === item.title ? "bg-secondary-500" : ""
                                     } `}
                                     onClick={() => setActiveTab(item.title)}
@@ -55,7 +55,7 @@ const Index = () => {
                                 </div>
                             ))}
                     </div>
-                    <div className="w-full h-[calc(100vh-76px)] overflow-y-scroll  overflow-x-hidden p-4">
+                    <div className="w-full h-[calc(100vh-69px)] overflow-y-scroll  overflow-x-hidden p-4">
                         {TabList.length > 0 &&
                             TabList?.map((item) => (
                                 <div key={item.title}>{activeTab === item.title && item.component}</div>

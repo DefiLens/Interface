@@ -453,20 +453,24 @@ export default function NewMainForm() {
     // };
     return (
         <>
-            <div className="main-container flex justify-start items-start gap-3">
+            <div className="main-container flex flex-col sm:flex-row justify-start items-start gap-4">
                 {/* <button
                     type="button"
                     onClick={() => sendBatch()}
-                    className="w-32 mt-8 flex justify-center items-center gap-2 bg-success-600 hover:bg-success-700 py-1 px-5 rounded-lg text-white font-medium border-b-4 border-success-800 hover:border-success-900 transition duration-300"
+                    className="w-32 mt-8 flex justify-center items-center gap-2 bg-success-600 hover:bg-success-700 py-1 px-5 rounded-lg text-black font-medium border-b-4 border-success-800 hover:border-success-900 transition duration-300"
                 >
                     <ImSpinner9 className="animate-spin h-5 w-5" />
                     Sendbatch
                 </button> */}
                 {true && (
-                    <div className="w-full h-[calc(100vh-108px)] bg-gradient-to-r from-primary-950 via-primary-600 to-primary-950 flex flex-col justify-center items-center gap-5 border-2 border-secondary-800 shadow-sm shadow-primary-950 rounded-lg cursor-pointer p-10">
+                    <div className="w-full min-h-[calc(100vh-101px)] bg-gradient-to-t from-gray-200 via-white to-gray-200 flex flex-col justify-start items-center gap-5 shadow-md shadow-primary-950 rounded-lg cursor-pointer p-10">
+                        <h1 className="text-xl md:text-2xl lg:text-3xl text-center font-extrabold mb-7">
+                            Cross-Chain DiFi
+                        </h1>
+
                         <div className="w-full">
-                            <span className="text-white font-semibold text-xs md:text-sm lg:text-base">From</span>
-                            <div className="w-full flex justify-start items-center gap-1 border-2 border-secondary-300 text-secondary-800 bg-white shadow-md rounded-md mt-1">
+                            <span className="text-black font-semibold text-xs md:text-sm lg:text-base">From</span>
+                            <div className="w-full flex justify-start items-center gap-1 border-2 border-secondary-300 text-secondary-800 bg-white shadow rounded-md overflow-hidden mt-1 ">
                                 <div className="w-48 relative">
                                     <label htmlFor="fromNetwork" className="sr-only">
                                         Network
@@ -519,13 +523,13 @@ export default function NewMainForm() {
                             </div>
                         </div>
 
-                        <div className="text-white -mb-3">
+                        <div className="text-black -mb-3">
                             <HiOutlineRefresh size="22px" />
                         </div>
 
                         <div className="w-full">
-                            <span className="text-white font-semibold text-xs md:text-sm lg:text-base">To</span>
-                            <div className="w-full flex justify-start items-center gap-1 border-2 border-secondary-300 text-secondary-800 bg-white shadow-md rounded-md mt-1">
+                            <span className="text-black font-semibold text-xs md:text-sm lg:text-base">To</span>
+                            <div className="w-full flex justify-start items-center gap-1 border-2 border-secondary-300 text-secondary-800 bg-white shadow rounded-md overflow-hidden mt-1">
                                 <div className="w-48 relative">
                                     <label htmlFor="toNetwork" className="sr-only">
                                         Network
@@ -594,7 +598,7 @@ export default function NewMainForm() {
                                         )}
                                 </>
                             } */}
-                            <div className="flex justify-between items-center gap-2 text-white font-semibold text-xs md:text-sm pr-2">
+                            <div className="flex justify-between items-center gap-2 text-black font-semibold text-xs md:text-sm pr-2">
                                 <span>Total Amount</span>
                                 <span>
                                     {`Balance : ${
@@ -607,7 +611,7 @@ export default function NewMainForm() {
                                     `}
                                 </span>
                             </div>
-                            <div className="w-full flex justify-start items-center gap-1 border-2 border-secondary-300 text-secondary-800 bg-white shadow-md rounded-md mt-1">
+                            <div className="w-full flex justify-start items-center gap-1 text-secondary-800 bg-white shadow rounded-md overflow-hidden mt-1">
                                 <input
                                     type="number"
                                     placeholder=""
@@ -624,11 +628,11 @@ export default function NewMainForm() {
 
                         {isSimulationOpen && allNetworkData && funcArray && (
                             <div className="w-full mt-3">
-                                <span className="text-white font-semibold text-xs md:text-sm lg:text-base">
+                                <span className="text-black font-semibold text-xs md:text-sm lg:text-base">
                                     Build DestinationChain Method/Calldata to execute after bridge funds
                                 </span>
 
-                                <div className="w-full flex justify-start items-center gap-1 border-2 border-secondary-300 text-secondary-800 bg-white shadow-md rounded-md mt-1">
+                                <div className="w-full flex justify-start items-center gap-1 border-2 border-secondary-300 text-secondary-800 bg-white shadow rounded-md overflow-hidden mt-1">
                                     <div className="w-full relative">
                                         <label htmlFor="funcNames" className="sr-only">
                                             Select Function Name
@@ -662,7 +666,7 @@ export default function NewMainForm() {
                             <button
                                 type="button"
                                 onClick={() => setIsSimulationOpen(false)}
-                                className="w-32 mt-8 flex justify-center items-center gap-2 bg-success-600 hover:bg-success-700 py-1 px-5 rounded-lg text-white font-medium border-b-4 border-success-800 hover:border-success-900 transition duration-300"
+                                className="w-32 mt-8 flex justify-center items-center gap-2 bg-success-600 hover:bg-success-700 py-1 px-5 rounded-lg text-black font-medium border-b-4 border-success-800 hover:border-success-900 transition duration-300"
                             >
                                 <ImSpinner9 className="animate-spin h-5 w-5" />
                                 Bridge
@@ -705,70 +709,72 @@ export default function NewMainForm() {
                     </div>
                 )}
 
-                <div className="w-full h-[calc(100vh-108px)] bg-gradient-to-r from-primary-950 via-primary-600 to-primary-950 flex flex-col gap-2 border-2 border-secondary-800 shadow-sm shadow-primary-950 rounded-lg cursor-pointer p-10">
-                    <div className="text-white font-semibold text-sm md:text-base lg:text-lg">Simulation Details:</div>
+                <div className="w-full min-h-[calc(100vh-101px)] bg-gradient-to-t from-gray-200 via-white to-gray-200 flex flex-col gap-2 shadow-md shadow-primary-950 rounded-lg cursor-pointer p-10">
+                    <div className="text-black font-semibold text-base md:text-lg lg:text-xl">
+                        Simulation Details :-
+                    </div>
                     {currentFunc && allNetworkData && (
                         <>
                             <div className="flex justify-start items-baseline gap-3">
-                                <div className="text-white font-semibold text-sm md:text-base lg:text-lg">Routes :</div>
-                                <div className="text-white font-medium text-xs md:text-sm">{`${NetworkNameByStargateChainId[fromChainId]} -> ${NetworkNameByStargateChainId[toChainId]}`}</div>
+                                <div className="text-black font-semibold text-sm md:text-base lg:text-lg">Routes :</div>
+                                <div className="text-black font-medium text-xs md:text-sm">{`${NetworkNameByStargateChainId[fromChainId]} -> ${NetworkNameByStargateChainId[toChainId]}`}</div>
                             </div>
 
                             <div className="flex justify-start items-baseline gap-3">
-                                <div className="text-white font-semibold text-sm md:text-base lg:text-lg">
+                                <div className="text-black font-semibold text-sm md:text-base lg:text-lg">
                                     Lending Protocol:
                                 </div>
-                                <div className="text-white font-medium text-xs md:text-sm">
+                                <div className="text-black font-medium text-xs md:text-sm">
                                     {allNetworkData?.contracts[contractIndex].contractName}
                                 </div>
                             </div>
 
                             <div className="flex justify-start items-baseline gap-3">
-                                <div className="text-white font-semibold text-sm md:text-base lg:text-lg">
+                                <div className="text-black font-semibold text-sm md:text-base lg:text-lg">
                                     Destination lending method:
                                 </div>
-                                <div className="text-white font-medium text-xs md:text-sm">{currentFunc}</div>
+                                <div className="text-black font-medium text-xs md:text-sm">{currentFunc}</div>
                             </div>
 
                             <div className="flex justify-start items-baseline gap-3">
-                                <div className="text-white font-semibold text-sm md:text-base lg:text-lg">Amount :</div>
-                                <div className="text-white font-medium text-xs md:text-sm">{`${bg(amountIn)
+                                <div className="text-black font-semibold text-sm md:text-base lg:text-lg">Amount :</div>
+                                <div className="text-black font-medium text-xs md:text-sm">{`${bg(amountIn)
                                     .dividedBy(bg(10).pow(tokenInDecimals))
                                     .toString()} USDC`}</div>
                             </div>
 
                             <div className="flex justify-start items-baseline gap-3">
-                                <div className="text-white font-semibold text-sm md:text-base lg:text-lg">
+                                <div className="text-black font-semibold text-sm md:text-base lg:text-lg">
                                     Recipient:
                                 </div>
-                                <div className="text-white font-medium text-xs md:text-sm">{shorten(address)}</div>
+                                <div className="text-black font-medium text-xs md:text-sm">{shorten(address)}</div>
                             </div>
 
                             {gasCost && bridgeGasCost && fromChainId ? (
                                 <>
                                     <div className="flex justify-start items-baseline gap-3">
-                                        <div className="text-white font-semibold text-sm md:text-base lg:text-lg">
+                                        <div className="text-black font-semibold text-sm md:text-base lg:text-lg">
                                             Gas Cost:
                                         </div>
-                                        <div className="text-white font-medium text-xs md:text-sm">
+                                        <div className="text-black font-medium text-xs md:text-sm">
                                             {`${gasCost} ${gasFeesNamesByChainId[fromChainId]}`}
                                         </div>
                                     </div>
 
                                     <div className="flex justify-start items-baseline gap-3">
-                                        <div className="text-white font-semibold text-sm md:text-base lg:text-lg">
+                                        <div className="text-black font-semibold text-sm md:text-base lg:text-lg">
                                             Bridge Gas Cost:
                                         </div>
-                                        <div className="text-white font-medium text-xs md:text-sm">
+                                        <div className="text-black font-medium text-xs md:text-sm">
                                             {`${bridgeGasCost} ${gasFeesNamesByChainId[fromChainId]}`}
                                         </div>
                                     </div>
 
                                     <div className="flex justify-start items-baseline gap-3">
-                                        <div className="text-white font-semibold text-sm md:text-base lg:text-lg">
+                                        <div className="text-black font-semibold text-sm md:text-base lg:text-lg">
                                             Total Gas Cost:
                                         </div>
-                                        <div className="text-white font-medium text-xs md:text-sm">
+                                        <div className="text-black font-medium text-xs md:text-sm">
                                             {`${
                                                 bridgeGasCost && gasCost && bg(bridgeGasCost).plus(gasCost).toString()
                                             } ${gasFeesNamesByChainId[fromChainId]}`}{" "}
@@ -786,7 +792,7 @@ export default function NewMainForm() {
                         funcArray.length > 0 &&
                         funcArray[currentFuncIndex].inputs.map((input: any, inputIndex: any) => (
                             <>
-                                <div className="flex justify-start items-baseline gap-3 text-white">
+                                <div className="flex justify-start items-baseline gap-3 text-black">
                                     {isThisAmount == inputIndex && input.type == "uint256" ? (
                                         <div className="flex justify-start items-baseline gap-3">
                                             <div className="font-semibold text-sm md:text-base lg:text-lg">
@@ -809,7 +815,7 @@ export default function NewMainForm() {
                                             </div>
                                         </div>
                                     ) : (
-                                        <div className="flex justify-start items-baseline gap-3 text-white">
+                                        <div className="flex justify-start items-baseline gap-3 text-black">
                                             <div className="font-semibold text-sm md:text-base lg:text-lg">
                                                 {input.name} :
                                             </div>
@@ -869,7 +875,7 @@ export default function NewMainForm() {
                                 </span>
                             </div>
                             {isSimulationSuccessDetailShow && (
-                                <div className="w-full absolute top-[42px] z-50 flex flex-col justify-center items-start gap-1 bg-gray-700 p-3 rounded-lg">
+                                <div className="w-full my-1 z-50 flex flex-col justify-center items-start gap-1 bg-black p-3 rounded-lg">
                                     <div className="w-full flex justify-start items-baseline gap-2 text-white">
                                         <div className="w-60 font-medium text-sm">Destination Method: </div>
                                         <div className="w-full font-normal text-xs">
@@ -902,14 +908,17 @@ export default function NewMainForm() {
                                     </div>
                                     <div className="w-full flex justify-start items-baseline gap-2 text-white">
                                         <div className="w-60 font-medium text-sm">Lending CallData: </div>
-                                        <div className="w-full font-normal text-xs">
+                                        <div className="w-full flex justify-start items-center gap-2 font-normal text-xs">
                                             <span className="text-sm font-medium">
                                                 {simulateInputData &&
                                                     simulateInputData.slice(0, 15) +
                                                         "..." +
                                                         simulateInputData.slice(-5)}
                                             </span>
-                                            <FiCopy onClick={() => copyToClipboard(simulateInputData)} />
+                                            <FiCopy
+                                                className="text-white hover:text-gray-300 active:text-gray-500"
+                                                onClick={() => copyToClipboard(simulateInputData)}
+                                            />
                                         </div>
                                     </div>
                                 </div>
@@ -949,7 +958,7 @@ export default function NewMainForm() {
                                 </span>
                             </div>
                             {isSimulationErrorDetailShow && (
-                                <div className="w-full absolute top-[42px] z-50 flex flex-col justify-center items-start gap-1 bg-gray-700 p-3 rounded-lg">
+                                <div className="w-full my-1 z-50 flex flex-col justify-center items-start gap-1 bg-black p-3 rounded-lg">
                                     {currentFunc && (
                                         <div className="w-full flex justify-start items-baseline gap-2 text-white">
                                             <div className="w-20 font-medium text-sm">Method :</div>
@@ -989,8 +998,8 @@ export default function NewMainForm() {
                                     sendTx via EOA
                                 </button>
                             </div>
-                            <div className="flex justify-center items-center gap-3 py-5">
-                                {txhash && (
+                            {txhash && (
+                                <div className="flex justify-center items-center gap-3 py-5">
                                     <p>
                                         <a
                                             target="_blank"
@@ -1000,8 +1009,8 @@ export default function NewMainForm() {
                                             TxHash : {shorten(txhash)}
                                         </a>
                                     </p>
-                                )}
-                            </div>
+                                </div>
+                            )}
                         </>
                     )}
 
