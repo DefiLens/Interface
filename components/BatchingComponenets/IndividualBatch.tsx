@@ -1,71 +1,32 @@
 import * as React from "react";
 import { useEffect } from "react";
 import { BigNumber as bg } from "bignumber.js";
-import { BiSolidDownArrow, BiSolidChevronDown } from "react-icons/bi";
-import { ImSpinner9, ImSpinner } from "react-icons/im";
-import { BsArrowRightCircleFill, BsChevronDown } from "react-icons/bs";
-import { FaChevronDown } from "react-icons/fa";
-import { HiOutlineRefresh } from "react-icons/hi";
+import { BiSolidChevronDown } from "react-icons/bi";
+import { ImSpinner } from "react-icons/im";
 import { useSigner, useAddress, useChain, useSwitchChain, useConnect, metamaskWallet } from "@thirdweb-dev/react";
 import { useAppStore, useBatchAppStore } from "../../store/appStore";
-import { chooseChianId, shorten } from "../../utils/helper";
 import {
-    NetworkNameByChainId,
-    NetworkNameByStargateChainId,
     _functionType,
     _nonce,
-    bundlerURLs,
-    gasFeesNames,
-    gasFeesNamesByChainId,
-    methodWithApi,
-    paymasterURLs,
     protocolByNetwork,
     tokenAddressByProtocol,
-    tokensByNetwork,
 } from "../../utils/constants";
-import { fetchMethodParams, getNetworkAndContractData } from "../../utils/apis";
 import { useSendTx } from "../../hooks/useSendTx";
 import { useSimulate } from "../../hooks/useSimulate";
 import { useGenerateAbis } from "../../hooks/useGenerateAbis";
 import { useOnChangeFunctions, useOnChangeInput, useOnChangeTokenIn } from "../../hooks/useOnChangeMainForm";
-import { ChainId } from "@biconomy/core-types";
-import { IBundler, Bundler } from "@biconomy/bundler";
-import { BiconomySmartAccount, BiconomySmartAccountConfig, DEFAULT_ENTRYPOINT_ADDRESS } from "@biconomy/account";
-import { IPaymaster, BiconomyPaymaster } from "@biconomy/paymaster";
 import ChainContext from "../../Context/ChainContext";
 import { toast } from "react-hot-toast";
 import { useCalculatebalance } from "../../hooks/useCalculateBalance";
 import { getContractInstance, getErc20Balanceof, getErc20Decimals, getProvider } from "../../utils/web3Libs/ethers";
 import IERC20 from "../../abis/IERC20.json";
-import { BigNumber, ethers } from "ethers";
-import { FiCopy } from "react-icons/fi";
+import { BigNumber } from "ethers";
 import { useRefinance } from "../../hooks/Batching/useRefinance";
-import {
-    abiFetcher,
-    abiFetcherNum,
-    fetchApy,
-    nativeTokenFetcher,
-    nativeTokenNum,
-} from "../../hooks/Batching/batchingUtils";
-
-import aave_v2_Abi from "../../abis/defi/aave_v2.json";
 import axios from "axios";
 bg.config({ DECIMAL_PLACES: 10 });
 
 export default function IndividualBatch({ onUpdate }) {
-    const chain = useChain(); // Detect the connected address
-    const switchChain = useSwitchChain();
     const address = useAddress(); // Detect the connected address
-    const signer: any = useSigner(); // Detect the connected address
-    const connect = useConnect();
-    const metamaskConfig = metamaskWallet();
-    const { mutateAsync: sendTxToChain } = useSendTx();
-    const { mutateAsync: simulateTx } = useSimulate();
-    const { mutateAsync: generateAbisForContract } = useGenerateAbis();
-    const { mutateAsync: onChangeTokenInHook } = useOnChangeTokenIn();
-    const { mutateAsync: onChangeFunctionsHook } = useOnChangeFunctions();
-    const { mutateAsync: onChangeInputHook } = useOnChangeInput();
-    const { mutateAsync: fetchNativeBalance } = useCalculatebalance();
     const { mutateAsync: refinance } = useRefinance();
     const { selectedChain, setSelectedChain, selectedChainId, setSelectedChainId } = React.useContext(ChainContext);
     const { smartAccount, txhash }: any = useAppStore((state) => state);
@@ -82,8 +43,8 @@ export default function IndividualBatch({ onUpdate }) {
     const [apys, setApys] = React.useState<any>([]);
     const [apysTo, setApysForTo] = React.useState<any>([]);
 
-    const [sendTxLoading, setSendtxLoading] = React.useState<any>();
-    const [sendTxLoadingForEoa, setSendtxLoadingForEoa] = React.useState<any>();
+    const [addToBatchLoading, setAddToBatchLoading] = React.useState<any>();
+    // const [sendTxLoadingForEoa, setSendtxLoadingForEoa] = React.useState<any>();
 
     useEffect(() => {
         async function onChangeFromProtocol() {
@@ -127,7 +88,7 @@ export default function IndividualBatch({ onUpdate }) {
     }, [tokensData]);
 
     const onChangeFromProtocol = async (_fromProtocol: any) => {
-        if (sendTxLoading || sendTxLoadingForEoa) {
+        if (addToBatchLoading) {
             alert("wait, tx loading");
             return;
         }
@@ -140,7 +101,7 @@ export default function IndividualBatch({ onUpdate }) {
     };
 
     const onChangeToProtocol = async (_toProtocol: any) => {
-        if (sendTxLoading || sendTxLoadingForEoa) {
+        if (addToBatchLoading) {
             alert("wait, tx loading");
             return;
         }
@@ -153,7 +114,7 @@ export default function IndividualBatch({ onUpdate }) {
     };
 
     const onChangeFromToken = async (_fromToken: any) => {
-        if (sendTxLoading || sendTxLoadingForEoa) {
+        if (addToBatchLoading) {
             alert("wait, tx loading");
             return;
         }
@@ -191,7 +152,7 @@ export default function IndividualBatch({ onUpdate }) {
     };
 
     const onChangeToToken = async (_toToken: any) => {
-        if (sendTxLoading || sendTxLoadingForEoa) {
+        if (addToBatchLoading) {
             alert("wait, tx loading");
             return;
         }
@@ -203,7 +164,7 @@ export default function IndividualBatch({ onUpdate }) {
     };
 
     const onChangeAmountIn = async (_amountIn: any) => {
-        if (sendTxLoading || sendTxLoadingForEoa) {
+        if (addToBatchLoading) {
             alert("wait, tx loading");
             return;
         }
@@ -240,9 +201,9 @@ export default function IndividualBatch({ onUpdate }) {
     const sendBatch = async (isSCW: any) => {
         try {
             if (isSCW) {
-                setSendtxLoading(true);
+                setAddToBatchLoading(true);
             } else {
-                setSendtxLoadingForEoa(true);
+                // setSendtxLoadingForEoa(true);
             }
             if (fromToken == toToken) {
                 throw "fromToken and toToken should not same-";
@@ -252,7 +213,7 @@ export default function IndividualBatch({ onUpdate }) {
                 alert("Batching is only supported on polygon as of now");
                 return;
             }
-            if (sendTxLoading || sendTxLoadingForEoa) {
+            if (addToBatchLoading) {
                 throw "wait, tx loading";
                 return;
             }
@@ -290,11 +251,11 @@ export default function IndividualBatch({ onUpdate }) {
                 provider,
             });
             onUpdate(txHash);
-            setSendtxLoading(false);
-            setSendtxLoadingForEoa(false);
+            setAddToBatchLoading(false);
+            // setSendtxLoadingForEoa(false);
         } catch (error) {
-            setSendtxLoading(false);
-            setSendtxLoadingForEoa(false);
+            setAddToBatchLoading(false);
+            // setSendtxLoadingForEoa(false);
             alert(error);
             console.log("sendBatch-error", error);
         }
@@ -475,7 +436,7 @@ export default function IndividualBatch({ onUpdate }) {
                     onClick={() => sendBatch(true)}
                     className="flex justify-center items-center gap-2 bg-success-600 hover:bg-success-700 py-2 px-5 rounded-lg text-white font-medium border-b-4 border-success-800 hover:border-success-900 transition duration-300"
                 >
-                    {sendTxLoading && <ImSpinner className="animate-spin h-5 w-5" />}
+                    {addToBatchLoading && <ImSpinner className="animate-spin h-5 w-5" />}
                     Add Batch to List
                 </button>
                 {/* <button
