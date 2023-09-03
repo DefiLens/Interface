@@ -710,9 +710,9 @@ export default function NewMainForm() {
                 )}
 
                 <div className="w-full min-h-[calc(100vh-101px)] bg-gradient-to-t from-gray-200 via-white to-gray-200 flex flex-col gap-2 shadow-md shadow-primary-950 rounded-lg cursor-pointer p-10">
-                    <div className="text-black font-semibold text-base md:text-lg lg:text-xl">
-                        Simulation Details :-
-                    </div>
+                    <h1 className="text-lg md:text-xl lg:text-2xl text-center font-extrabold mb-5">
+                        Simulation Detail
+                    </h1>
                     {currentFunc && allNetworkData && (
                         <>
                             <div className="flex justify-start items-baseline gap-3">
