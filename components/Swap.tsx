@@ -219,14 +219,14 @@ export default function Swap() {
                     </div>
 
                     {/* <div style={{margin: "5px"}}>
-            <h1>slippage</h1>
-            <input
-              placeholder="slippage"
-              type="number"
-              value={slippage}
-              onChange={(e: any) => handleSlippage(e.target.value)}
-            />
-          </div> */}
+                        <h1>slippage</h1>
+                        <input
+                        placeholder="slippage"
+                        type="number"
+                        value={slippage}
+                        onChange={(e: any) => handleSlippage(e.target.value)}
+                        />
+                    </div> */}
 
                     <div style={{ margin: "5px" }}>
                         <button onClick={() => sendTx(true)}>SendTx By SmartAccount</button>
