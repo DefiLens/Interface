@@ -382,7 +382,7 @@ export default function Home() {
                                             </span>
                                             <span className="text-gray-300 text-xs">
                                                 {smartAccount &&
-                                                    "SCW : (" +
+                                                    "SmartAccount : (" +
                                                         scwBalance +
                                                         " " +
                                                         `${gasFeesNames[selectedChain]}` +

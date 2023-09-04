@@ -987,7 +987,7 @@ export default function NewMainForm() {
                                     className="flex justify-center items-center gap-2 bg-success-600 hover:bg-success-700 py-2 px-5 rounded-lg text-white font-medium border-b-4 border-success-800 hover:border-success-900 transition duration-300"
                                 >
                                     {sendTxLoading && <ImSpinner className="animate-spin h-5 w-5" />}
-                                    sendTx via SCW
+                                    SendTx via SmartAccount
                                 </button>
                                 <button
                                     type="button"
@@ -995,7 +995,7 @@ export default function NewMainForm() {
                                     className="flex justify-center items-center gap-2 bg-success-600 hover:bg-success-700 py-2 px-5 rounded-lg text-white font-medium border-b-4 border-success-800 hover:border-success-900 transition duration-300"
                                 >
                                     {sendTxLoadingForEoa && <ImSpinner className="animate-spin h-5 w-5" />}
-                                    sendTx via EOA
+                                    SendTx via EOA
                                 </button>
                             </div>
                             {txhash && (

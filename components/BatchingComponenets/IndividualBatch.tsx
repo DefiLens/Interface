@@ -407,7 +407,7 @@ export default function IndividualBatch({ onUpdate }) {
                 <div className="flex justify-between items-center gap-2 text-black font-semibold text-xs md:text-sm pr-2">
                     <span>Total Amount</span>
                     <span>
-                        {`(SCW Balance : ${
+                        {`(SmartAccount Balance : ${
                             fromTokenBalanceForSCW != undefined
                                 ? bg(BigNumber.from(fromTokenBalanceForSCW).toString())
                                       .dividedBy(bg(10).pow(fromTokenDecimal))

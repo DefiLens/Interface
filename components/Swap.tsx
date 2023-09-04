@@ -229,7 +229,7 @@ export default function Swap() {
           </div> */}
 
                     <div style={{ margin: "5px" }}>
-                        <button onClick={() => sendTx(true)}>SendTx By SCW</button>
+                        <button onClick={() => sendTx(true)}>SendTx By SmartAccount</button>
                     </div>
 
                     <div style={{ margin: "5px" }}>

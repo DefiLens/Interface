@@ -332,7 +332,7 @@ export default function Home() {
                                     Current Network: {chain?.name}
                                 </button>
                                 <button className={`${buttonStyle} flex justify-center items-center gap-2`}>
-                                    SCW :{" "}
+                                    SmartAccount :{" "}
                                     <span className="text-sm font-medium">
                                         {smartAccount &&
                                             smartAccount.address.slice(0, 4) +

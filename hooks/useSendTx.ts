@@ -80,7 +80,7 @@ export function useSendTx() {
             const balance = await getErc20Balanceof(USDT, _currentAddress);
 
             if (isSCW) {
-                if (BigNumber.from(balance).lt(BigNumber.from(amountIn))) throw "You don't have enough balance in SCW";
+                if (BigNumber.from(balance).lt(BigNumber.from(amountIn))) throw "You don't have enough balance in SmartAccount";
             } else {
                 if (BigNumber.from(balance).lt(BigNumber.from(amountIn))) throw "You don't have enough balance in EOA";
             }
@@ -198,7 +198,7 @@ export function useSendTx() {
             if (!currentBalance.gt(quoteData[0].add(parseEther("0")))) {
                 throw `Not Enough Balance, You should have at least ${minimumBalanceRequired.toString()} ${
                     gasFeesNames[selectedChain]
-                } in your SCW wallet`;
+                } in your SmartAccount wallet`;
             }
 
             console.log("stargateTx", stargateTx);

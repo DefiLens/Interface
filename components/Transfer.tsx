@@ -189,7 +189,7 @@ export default function Transfer() {
                                 checked={isSCW === "SCW"}
                                 onChange={onOptionChangeForWallet}
                             />
-                            <label htmlFor="scw">SCW to EOA</label>
+                            <label htmlFor="scw">SmartAccount to EOA</label>
 
                             <input
                                 type="radio"
@@ -199,7 +199,7 @@ export default function Transfer() {
                                 checked={isSCW === "EOA"}
                                 onChange={onOptionChangeForWallet}
                             />
-                            <label htmlFor="eoa">EOA to SCW</label>
+                            <label htmlFor="eoa">EOA to SmartAccount</label>
                         </div>
                         <div style={{ marginTop: "2%" }}>
                             <input
@@ -225,7 +225,7 @@ export default function Transfer() {
                         <div className={box1}>
                             {isSCW == "SCW" ? (
                                 <>
-                                    <h3>From SCW Address</h3>
+                                    <h3>From SmartAccount Address</h3>
                                     <h6 style={{ marginBottom: "2%" }}>{shorten(smartAccount.address)}</h6>
                                     <h3>To EOA Address</h3>
                                     <h6 style={{ marginBottom: "2%" }}>{shorten(address)}</h6>
@@ -234,7 +234,7 @@ export default function Transfer() {
                                 <>
                                     <h3>From EOA Address</h3>
                                     <h6 style={{ marginBottom: "2%" }}>{shorten(address)}</h6>
-                                    <h3>To SCW Address</h3>
+                                    <h3>To SmartAccount Address</h3>
                                     <h6 style={{ marginBottom: "2%" }}>{shorten(smartAccount.address)}</h6>
                                 </>
                             )}
@@ -276,7 +276,7 @@ export default function Transfer() {
                             />
                             <button className={buttonload} onClick={(e: any) => send()}>
                                 {sendTxLoading && <i className="fa fa-spinner fa-spin"></i>}
-                                {isSCW == "SCW" ? "Send SCW to EOA" : "Send EOA to SCW"}
+                                {isSCW == "SCW" ? "Send SmartAccount to EOA" : "Send EOA to SmartAccount"}
                             </button>
                             {txhash && (
                                 <div className="flex flex-wrap justify-start items-center gap-3 text-base">
