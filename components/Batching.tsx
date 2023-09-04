@@ -1,18 +1,15 @@
 import * as React from "react";
 import { BigNumber as bg } from "bignumber.js";
 import { ImSpinner } from "react-icons/im";
-import { useAddress } from "@thirdweb-dev/react";
+import { LiaChevronDownSolid, LiaChevronUpSolid } from "react-icons/lia";
+import { BiSolidRightArrowCircle } from "react-icons/bi";
+import { MdDelete } from "react-icons/md";
 import { useAppStore } from "../store/appStore";
 import { shorten } from "../utils/helper";
 import { _functionType, _nonce } from "../utils/constants";
-import { LiaChevronDownSolid, LiaChevronUpSolid } from "react-icons/lia";
-import { RiAddCircleLine, RiDeleteBin5Fill } from "react-icons/ri";
-import { BiSolidRightArrowCircle } from "react-icons/bi";
-import { MdDelete } from "react-icons/md";
 import IndividualBatch from "./BatchingComponenets/IndividualBatch";
 import { useBiconomyProvider } from "../hooks/aaProvider/useBiconomyProvider";
 import { useEoaProvider } from "../hooks/aaProvider/useEoaProvider";
-import { format } from "date-fns";
 bg.config({ DECIMAL_PLACES: 10 });
 
 export default function Batching() {
