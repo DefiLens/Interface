@@ -465,7 +465,7 @@ export default function NewMainForm() {
                 {true && (
                     <div className="w-full min-h-[calc(100vh-101px)] bg-gradient-to-t from-gray-200 via-white to-gray-200 flex flex-col justify-start items-center gap-5 shadow-md shadow-primary-950 rounded-lg cursor-pointer p-10">
                         <h1 className="text-xl md:text-2xl lg:text-3xl text-center font-extrabold mb-7">
-                            Cross-Chain DiFi
+                            Cross-Chain Defi
                         </h1>
 
                         <div className="w-full">
