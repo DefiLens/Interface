@@ -179,7 +179,7 @@ export default function Batching() {
                     {true && (
                         <div className="w-full min-h-[calc(100vh-225px)] bg-gradient-to-t from-gray-200 via-white to-gray-200 flex flex-col gap-5 shadow-md shadow-primary-950 rounded-lg cursor-pointer p-10">
                             <h1 className="text-lg md:text-xl lg:text-2xl text-center font-extrabold mb-5">
-                                Building Batch No: {individualBatch.length - 1}
+                                Building Batch No: {individualBatch.length}
                             </h1>
 
                             {individualBatch.length > 0 && (
