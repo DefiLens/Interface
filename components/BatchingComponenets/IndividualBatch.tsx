@@ -235,7 +235,13 @@ export default function IndividualBatch({ onUpdate }) {
                 address: isSCW ? smartAccount.address : address,
                 provider,
             });
-            onUpdate(txHash);
+            onUpdate(txHash, {
+                fromProtocol,
+                toProtocol,
+                fromToken,
+                toToken,
+                amountIn: bg(BigNumber.from(amountIn).toString()).dividedBy(bg(10).pow(fromTokenDecimal)).toString(),
+            });
             setAddToBatchLoading(false);
             // setSendtxLoadingForEoa(false);
         } catch (error) {
