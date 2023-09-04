@@ -88,7 +88,7 @@ export function useOnChangeFunctions() {
             await simulateTx({ funcIndex, address });
 
         } catch (error) {
-          console.log("onChangeFunctions---error", error);
+          console.log("onChangeFunctions:error: ", error);
         }
     }
 
