@@ -18,18 +18,18 @@ const Index = () => {
             title: "Cross Chain Defi",
             component: <MainForm />,
         },
-        // {
-        //     title: "Swap",
-        //     component: <Swap />,
-        // },
         {
-            title: "Refinance Batching for Lending",
+            title: "Batching Transactions",
             component: <Batching />,
         },
         {
             title: "Transfer Funds",
             component: <Transfer />,
         },
+        // {
+        //     title: "Swap",
+        //     component: <Swap />,
+        // },
     ];
 
     const [activeTab, setActiveTab] = useState(TabList?.[0]?.title);
