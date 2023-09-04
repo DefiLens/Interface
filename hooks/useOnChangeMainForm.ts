@@ -82,7 +82,7 @@ export function useOnChangeFunctions() {
             setSimulateInputData(undefined)
             setSimulation(undefined)
 
-            setIsSimulationOpen(undefined);
+            // setIsSimulationOpen(undefined);
             setIsSimulationSuccessOpen(undefined);
             setIsSimulationErrorOpen(undefined);
             setsimulationErrorMsg("");

@@ -331,6 +331,7 @@ export default function NewMainForm() {
     };
 
     const onChangeFunctions = async (funcIndex: any) => {
+        if(funcIndex == "") return toast.error("Please select operation")
         await onChangeFunctionsHook({ funcIndex, address });
     };
 
@@ -582,7 +583,7 @@ export default function NewMainForm() {
                             </div>
                         </div>
 
-                        {contractIndex && allNetworkData && funcArray && (
+                        {allNetworkData && funcArray && (
                             <div className="w-full mt-3">
                                 <span className="text-black font-semibold text-xs md:text-sm lg:text-base">
                                     Build DestinationChain Method/Calldata to execute after bridge funds
@@ -600,11 +601,10 @@ export default function NewMainForm() {
                                             id="funcNames"
                                             onChange={(e: any) => onChangeFunctions(e.target.value)}
                                         >
-                                            <option key={-1} value="" disabled selected>
-                                                Select Function Name
+                                            <option key={-1} value="" selected>
+                                                Select Operation
                                             </option>
-                                            {funcArray &&
-                                                funcArray.length > 0 &&
+                                            {   funcArray.length > 0 &&
                                                 funcArray.map((funcName: any, funcIndex: any) => (
                                                     <option key={funcIndex} value={funcIndex}>
                                                         {funcName.name}
@@ -675,7 +675,7 @@ export default function NewMainForm() {
                     <h1 className="text-lg md:text-xl lg:text-2xl text-center font-extrabold mb-5">
                         Simulation Detail
                     </h1>
-                    {isSimulationOpen && currentFunc && allNetworkData && (
+                    {currentFunc && allNetworkData && (
                         <>
                             <div className="flex justify-start items-baseline gap-3">
                                 <div className="text-black font-semibold text-sm md:text-base lg:text-lg">Routes :</div>
