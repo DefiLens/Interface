@@ -195,7 +195,7 @@ export const useAppStore = create<AppState>((set) => ({
 
     sendTxLoading: false,
     sendTxLoadingForEoa: false,
-    txhash: false,
+    txhash: "",
 
     showWalletAddress: false,
 
