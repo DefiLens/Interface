@@ -42,28 +42,54 @@ export default function Batching() {
     const [showIndividualBatchList, setShowIndividualBatchList] = React.useState<any>(null);
     const [allTxs, setCollectedValues] = React.useState<any>([]);
 
-    // const addBatch = () => {
-    //     const id = individualBatch.length;
-    //     setIndividualBatch((prevInputBars) => [...prevInputBars, { id, txHash: [] }]);
-
-    //     if (individualBatch[individualBatch.length - 1].txHash.length < 1) {
-    //         alert("Please complete the last input before adding a new one.");
-    //     } else {
-    //         setIndividualBatch((prevInputBars) => [...prevInputBars, { id, txHash: [] }]);
-    //     }
-    // };
-
-    const removeBatch = (id: number) => {
-        setIndividualBatch((prevInputBars) => prevInputBars.filter((bar) => bar.id !== id));
+    const addBatch = () => {
+        setIndividualBatch([])
+        setIndividualBatch([
+            {
+                id: 0,
+                txHash: [],
+                data: {
+                    fromProtocol: "",
+                    toProtocol: "",
+                    fromToken: "",
+                    toToken: "",
+                    amountIn: "",
+                },
+            },
+        ]);
     };
 
-    const updateInputValues = (id: number, txHash: string[], data: any) => {
+    const removeBatch = (index: number) => {
+        // setIndividualBatch((prevInputBars) => prevInputBars.filter((bar) => bar.id !== id));
+        const updatedBatch = [...individualBatch];
+    updatedBatch.splice(index, 1); // Remove the InputBar at the specified index
+    setIndividualBatch(updatedBatch);
+    };
+
+    const updateInputValues = (index: number, txHash: string[], data: any) => {
         console.log("data: ", data, individualBatch);
         if (txHash.length < 1) return alert("Please complete the last input before adding a new one.");
+        // alert("here1--" + individualBatch.length);
+        if (individualBatch.length == 0) {
+            // alert("here");
+            setIndividualBatch([
+                ...individualBatch,
+                {
+                    id: 0,
+                    txHash: [],
+                    data: {
+                        fromProtocol: "",
+                        toProtocol: "",
+                        fromToken: "",
+                        toToken: "",
+                        amountIn: "",
+                    },
+                },
+            ]);
+        }
         const updatedBatch = [...individualBatch];
-        updatedBatch[id].txHash = txHash;
-        updatedBatch[id].data = data;
-        // setIndividualBatch(updatedBatch);
+        updatedBatch[index].txHash = txHash;
+        updatedBatch[index].data = data;
         setIndividualBatch([
             ...updatedBatch,
             {
@@ -84,6 +110,7 @@ export default function Batching() {
 
     const sendBatchAll = async (isSCW: any) => {
         try {
+            // alert(individualBatch.length);
             if (isSCW) {
                 setSendtxLoading(true);
             } else {
@@ -100,6 +127,7 @@ export default function Batching() {
             }
             setSendtxLoading(false);
             setSendtxLoadingForEoa(false);
+            addBatch();
         } catch (error) {
             setSendtxLoading(false);
             setSendtxLoadingForEoa(false);
@@ -118,13 +146,15 @@ export default function Batching() {
         <>
             <div className="flex flex-col gap-3">
                 <div className="flex justify-between items-center gap-3 py-1">
-                    {/* <button
+                    {/* { individualBatch.length < 1 &&
+                        <button
                         type="button"
                         onClick={addBatch}
                         className="flex justify-center items-center gap-2 bg-slate-900 hover:bg-slate-950 py-2 px-5 rounded-lg text-white font-medium border-b-4 border-slate-600 hover:border-slate-700 transition duration-300"
-                    >
-                        <RiAddCircleLine size="20px" /> Add New Batch Bar
-                    </button> */}
+                        >
+                            <RiAddCircleLine size="20px" /> Add New Batch Bar
+                        </button>
+                    } */}
                     <h1 className="flex justify-center items-center gap-2 hover:bg-slate-950 py-2 px-5 rounded-lg font-medium transition duration-300">
                         Batch transactions
                     </h1>
@@ -134,7 +164,7 @@ export default function Batching() {
                         className="flex justify-center items-center gap-2 bg-success-600 hover:bg-success-700 py-2 px-5 rounded-lg text-white font-medium border-b-4 border-success-800 hover:border-success-900 transition duration-300"
                     >
                         {sendTxLoading && <ImSpinner className="animate-spin h-5 w-5" />}
-                        Excecute Batch {!sendTxLoading && <BiSolidRightArrowCircle size="20px" />}
+                        Execute Batch {!sendTxLoading && <BiSolidRightArrowCircle size="20px" />}
                     </button>
                     {/* <button
                         type="button"
@@ -158,7 +188,8 @@ export default function Batching() {
                                     // values={bar.txHash}
                                     onUpdate={(newValues, data) => {
                                         updateInputValues(
-                                            individualBatch[individualBatch.length - 1].id,
+                                            // individualBatch[individualBatch.length - 1].id,
+                                            individualBatch.length - 1,
                                             newValues,
                                             data
                                         );
@@ -171,15 +202,28 @@ export default function Batching() {
                         <h1 className="text-lg md:text-xl lg:text-2xl text-center font-extrabold mb-5">
                             Batching List
                         </h1>
-                        {individualBatch.length > 0 ? (
-                            individualBatch.map((bar) => (
+                        {txhash != "" && (
+                            <div className="flex justify-center items-center gap-3 py-5">
+                                <p>
+                                    <a
+                                        target="_blank"
+                                        href={`https://polygonscan.com/tx/${txhash}`}
+                                        className="text-lg md:text-xl lg:text-1xl text-center text-lime-700 underline underline-offset-1 font-extrabold mb-5"
+                                    >
+                                        Success Batch TxHash : {shorten(txhash)}
+                                    </a>
+                                </p>
+                            </div>
+                        )}
+                        {individualBatch.length > 0 && individualBatch[0].txHash.length > 0 ? (
+                            individualBatch.map((bar, inputBarIndex) => (
                                 <>
                                     {bar.txHash.length > 0 && (
                                         <div key={bar.id} className="relative">
                                             <div className="simulation-success flex justify-between items-center gap-5 bg-black py-2 px-3 rounded-lg text-primary-100 font-medium   transition duration-300">
                                                 <div className="flex justify-start items-baseline gap-2">
                                                     <h1 className="flex justify-center items-center gap-3 text-white font-semibold text-base">
-                                                        {bar.id+1}.
+                                                        {inputBarIndex + 1}.
                                                     </h1>
                                                     <div className="flex justify-center items-center gap-2 text-white text-sm">
                                                         <span>
@@ -195,7 +239,7 @@ export default function Batching() {
                                                         <MdDelete
                                                             color="red"
                                                             size="20px"
-                                                            onClick={() => removeBatch(bar.id)}
+                                                            onClick={() => removeBatch(inputBarIndex)}
                                                         />
                                                     </div>
                                                     <span className="flex justify-center items-center gap-2">
@@ -259,20 +303,10 @@ export default function Batching() {
                                 </>
                             ))
                         ) : (
-                            <div className="text-black font-semibold text-base md:text-lg">No Batches Found !</div>
+                            <div className="text-black font-semibold text-base md:text-lg">{txhash ? "Last Batches executed, Now create new batches" : "No Batches Found !"}</div>
                         )}
                     </div>
                 </div>
-
-                {txhash && (
-                    <div className="flex justify-center items-center gap-3 py-5">
-                        <p>
-                            <a target="_blank" href={`https://polygonscan.com/tx/${txhash}`} style={{ color: "white" }}>
-                                TxHash : {shorten(txhash)}
-                            </a>
-                        </p>
-                    </div>
-                )}
             </div>
         </>
     );
