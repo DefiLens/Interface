@@ -44,6 +44,7 @@ export function useOnChangeFunctions() {
         setGasUsed,
         setSimulateInputData,
         setSimulation,
+        setIsSimulationOpen,
         setIsSimulationSuccessOpen,
         setIsSimulationErrorOpen,
         setsimulationErrorMsg,
@@ -81,11 +82,11 @@ export function useOnChangeFunctions() {
             setSimulateInputData(undefined)
             setSimulation(undefined)
 
-            // setIsSimulationOpen(undefined);
+            setIsSimulationOpen(undefined);
             setIsSimulationSuccessOpen(undefined);
             setIsSimulationErrorOpen(undefined);
             setsimulationErrorMsg("");
-            await simulateTx({ funcIndex, address });
+            // await simulateTx({ funcIndex, address });
 
         } catch (error) {
           console.log("onChangeFunctions:error: ", error);

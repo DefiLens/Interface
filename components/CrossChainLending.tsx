@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useEffect } from "react";
-import { BiSolidChevronDown } from "react-icons/bi";
+import { BiSolidChevronDown, BiSolidRightArrowCircle } from "react-icons/bi";
 import { ImSpinner9, ImSpinner } from "react-icons/im";
 import { FaChevronDown } from "react-icons/fa";
 import { HiOutlineRefresh } from "react-icons/hi";
@@ -603,7 +603,8 @@ export default function NewMainForm() {
                                             <option key={-1} value="" disabled selected>
                                                 Select Function Name
                                             </option>
-                                            {funcArray.length > 0 &&
+                                            {funcArray &&
+                                                funcArray.length > 0 &&
                                                 funcArray.map((funcName: any, funcIndex: any) => (
                                                     <option key={funcIndex} value={funcIndex}>
                                                         {funcName.name}
@@ -618,7 +619,7 @@ export default function NewMainForm() {
                             </div>
                         )}
 
-                        {isSimulationOpen && !allNetworkData ? (
+                        {currentFunc && isSimulationOpen && !allNetworkData ? (
                             <button
                                 type="button"
                                 onClick={() => setIsSimulationOpen(false)}
@@ -630,7 +631,7 @@ export default function NewMainForm() {
                         ) : (
                             <button
                                 type="button"
-                                onClick={() => {
+                                onClick={async () => {
                                     if (!fromChainId) {
                                         toast.error("Select fromNetwork.");
                                         return;
@@ -655,11 +656,16 @@ export default function NewMainForm() {
                                         toast.error("Something went wrong.. refresh page");
                                         return;
                                     }
+                                    if (!currentFuncIndex) {
+                                        toast.error("please select operation");
+                                        return;
+                                    }
                                     setIsSimulationOpen(true);
+                                    await simulate(currentFuncIndex);
                                 }}
                                 className="w-32 flex justify-center items-center gap-2 bg-success-600 hover:bg-success-700 py-1 px-5 rounded-lg text-white font-medium border-b-4 border-success-800 hover:border-success-900 transition duration-300"
                             >
-                                Bridge
+                                Bridge <BiSolidRightArrowCircle size="20px" />
                             </button>
                         )}
                     </div>
@@ -669,7 +675,7 @@ export default function NewMainForm() {
                     <h1 className="text-lg md:text-xl lg:text-2xl text-center font-extrabold mb-5">
                         Simulation Detail
                     </h1>
-                    {currentFunc && allNetworkData && (
+                    {isSimulationOpen && currentFunc && allNetworkData && (
                         <>
                             <div className="flex justify-start items-baseline gap-3">
                                 <div className="text-black font-semibold text-sm md:text-base lg:text-lg">Routes :</div>
@@ -740,6 +746,19 @@ export default function NewMainForm() {
                             ) : (
                                 ""
                             )}
+
+                            {/* {currentFunc && ( */}
+                            <div className="w-full flex justify-center items-center my-3">
+                                <button
+                                    type="button"
+                                    onClick={(e: any) => simulate(currentFuncIndex)}
+                                    className="w-40 flex justify-center items-center gap-2 bg-success-600 hover:bg-success-700 py-2 px-5 rounded-lg text-white font-medium border-b-4 border-success-800 hover:border-success-900 transition duration-300"
+                                >
+                                    {simulateLoading && <ImSpinner className="animate-spin h-5 w-5" />}
+                                    Simulate
+                                </button>
+                            </div>
+                            {/* )} */}
                         </>
                     )}
 
@@ -786,19 +805,6 @@ export default function NewMainForm() {
                                 </div>
                             </>
                         ))} */}
-
-                    {currentFunc && (
-                        <div className="w-full flex justify-center items-center my-3">
-                            <button
-                                type="button"
-                                onClick={(e: any) => simulate(currentFuncIndex)}
-                                className="w-40 flex justify-center items-center gap-2 bg-success-600 hover:bg-success-700 py-2 px-5 rounded-lg text-white font-medium border-b-4 border-success-800 hover:border-success-900 transition duration-300"
-                            >
-                                {simulateLoading && <ImSpinner className="animate-spin h-5 w-5" />}
-                                Simulate
-                            </button>
-                        </div>
-                    )}
 
                     {currentFunc && isSimulationSuccessOpen && (
                         <div className="relative">
