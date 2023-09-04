@@ -40,6 +40,8 @@ export default function IndividualBatch({ onUpdate }) {
         async function onChangeFromProtocol() {
             if (fromProtocol) {
                 if (fromProtocol != "erc20") {
+                    setAmountIn("");
+                    setFromTokenDecimal(undefined);
                     setFromTokenBalanceForSCW(undefined);
                     setFromTokenBalanceForEOA(undefined);
                     const firstFromToken = protocolByNetwork[fromProtocol][0];
@@ -127,6 +129,8 @@ export default function IndividualBatch({ onUpdate }) {
             alert("select from protocol");
             return;
         }
+        setAmountIn("");
+        setFromTokenDecimal(undefined);
         setFromTokenBalanceForSCW(undefined);
         setFromTokenBalanceForEOA(undefined);
         setFromToken(_fromToken);
@@ -164,15 +168,22 @@ export default function IndividualBatch({ onUpdate }) {
             alert("Batching is only supported on polygon as of now");
             return;
         }
+        // console.log('_amountIn', _amountIn.toString())
         if (_amountIn) {
-            let amountInByDecimals = bg(_amountIn);
+            // console.log('_amountIn1', _amountIn.toString())
+            let amountInByDecimals = bg(_amountIn.toString());
+            // console.log('_amountIn2', amountInByDecimals.toString(), fromTokenDecimal.toString())
             amountInByDecimals = amountInByDecimals.multipliedBy(bg(10).pow(fromTokenDecimal));
+            // console.log('_amountIn3', amountInByDecimals.toString())
             if (amountInByDecimals.eq(0)) {
+                // console.log('_amountIn4', _amountIn.toString())
                 setAmountIn(_amountIn);
             } else {
+                // console.log('_amountIn5', amountInByDecimals.toString())
                 setAmountIn(amountInByDecimals.toString());
             }
         } else {
+            // console.log('_amountIn6', _amountIn.toString())
             setAmountIn("");
         }
     };
@@ -223,6 +234,7 @@ export default function IndividualBatch({ onUpdate }) {
                 return;
             }
             const provider = await getProvider("109");
+            console.log('refinanceamoynt', amountIn.toString())
             const txHash = await refinance({
                 isSCW: isSCW,
                 fromProtocol: fromProtocol,
@@ -416,7 +428,8 @@ export default function IndividualBatch({ onUpdate }) {
                 <div className="w-full flex justify-start items-center gap-1 text-secondary-800 bg-white shadow rounded-md overflow-hidden mt-1">
                     <input
                         type="number"
-                        placeholder="amountIn"
+                        placeholder={!fromTokenDecimal ? "amountIn : (wait for FromToken)" : "amountIn"}
+                        disabled={!fromTokenDecimal ? true : false}
                         className="w-full bg-white font-medium outline-none shadow-outline border-2  rounded-md py-1 px-3 block appearance-none leading-normal focus:border-primary-950"
                         value={
                             amountIn != 0 ? bg(amountIn).dividedBy(bg(10).pow(fromTokenDecimal)).toString() : amountIn
