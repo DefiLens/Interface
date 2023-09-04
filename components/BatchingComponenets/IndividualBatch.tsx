@@ -1,25 +1,25 @@
 import * as React from "react";
 import { useEffect } from "react";
+import { BigNumber } from "ethers";
 import { BigNumber as bg } from "bignumber.js";
 import { BiSolidChevronDown } from "react-icons/bi";
+import { toast } from "react-hot-toast";
 import { ImSpinner } from "react-icons/im";
 import { useAddress } from "@thirdweb-dev/react";
+import axios from "axios";
 import { useAppStore, useBatchAppStore } from "../../store/appStore";
 import { _functionType, _nonce, protocolByNetwork, tokenAddressByProtocol } from "../../utils/constants";
 import ChainContext from "../../Context/ChainContext";
-import { toast } from "react-hot-toast";
 import { getContractInstance, getErc20Balanceof, getErc20Decimals, getProvider } from "../../utils/web3Libs/ethers";
 import IERC20 from "../../abis/IERC20.json";
-import { BigNumber } from "ethers";
 import { useRefinance } from "../../hooks/Batching/useRefinance";
-import axios from "axios";
 bg.config({ DECIMAL_PLACES: 10 });
 
 export default function IndividualBatch({ onUpdate }) {
     const address = useAddress(); // Detect the connected address
     const { mutateAsync: refinance } = useRefinance();
-    const { selectedChain, setSelectedChain, selectedChainId, setSelectedChainId } = React.useContext(ChainContext);
-    const { smartAccount, txhash }: any = useAppStore((state) => state);
+    const { selectedChain } = React.useContext(ChainContext);
+    const { smartAccount }: any = useAppStore((state) => state);
     const { setTokensData, tokensData }: any = useBatchAppStore((state) => state);
 
     const [fromProtocol, setFromProtocol] = React.useState<any>();
@@ -30,8 +30,8 @@ export default function IndividualBatch({ onUpdate }) {
     const [fromTokenBalanceForSCW, setFromTokenBalanceForSCW] = React.useState<any>(0);
     const [fromTokenBalanceForEOA, setFromTokenBalanceForEOA] = React.useState<any>(0);
     const [fromTokenDecimal, setFromTokenDecimal] = React.useState<any>(0);
-    const [apys, setApys] = React.useState<any>([]);
-    const [apysTo, setApysForTo] = React.useState<any>([]);
+    // const [apys, setApys] = React.useState<any>([]);
+    // const [apysTo, setApysForTo] = React.useState<any>([]);
 
     const [addToBatchLoading, setAddToBatchLoading] = React.useState<any>();
     // const [sendTxLoadingForEoa, setSendtxLoadingForEoa] = React.useState<any>();
@@ -168,30 +168,17 @@ export default function IndividualBatch({ onUpdate }) {
             alert("Batching is only supported on polygon as of now");
             return;
         }
-        // console.log('_amountIn', _amountIn.toString())
         if (_amountIn) {
-            // console.log('_amountIn1', _amountIn.toString())
             let amountInByDecimals = bg(_amountIn.toString());
-            // console.log('_amountIn2', amountInByDecimals.toString(), fromTokenDecimal.toString())
             amountInByDecimals = amountInByDecimals.multipliedBy(bg(10).pow(fromTokenDecimal));
-            // console.log('_amountIn3', amountInByDecimals.toString())
             if (amountInByDecimals.eq(0)) {
-                // console.log('_amountIn4', _amountIn.toString())
                 setAmountIn(_amountIn);
             } else {
-                // console.log('_amountIn5', amountInByDecimals.toString())
                 setAmountIn(amountInByDecimals.toString());
             }
         } else {
-            // console.log('_amountIn6', _amountIn.toString())
             setAmountIn("");
         }
-    };
-
-    const copyToClipboard = (id: any) => {
-        navigator.clipboard.writeText(id);
-        // Alert the copied text
-        toast.success("Destination Lending CallData Copied");
     };
 
     const sendBatch = async (isSCW: any) => {
@@ -234,7 +221,7 @@ export default function IndividualBatch({ onUpdate }) {
                 return;
             }
             const provider = await getProvider("109");
-            console.log('refinanceamoynt', amountIn.toString())
+            console.log("refinanceamoynt", amountIn.toString());
             const txHash = await refinance({
                 isSCW: isSCW,
                 fromProtocol: fromProtocol,
@@ -265,9 +252,6 @@ export default function IndividualBatch({ onUpdate }) {
     };
     return (
         <>
-            {/* <div className="main-container flex justify-start items-start gap-3">
-                {true && (
-                    <div className="w-full h-[calc(100vh-108px)] bg-gradient-to-r from-primary-950 via-primary-600 to-primary-950 flex flex-col justify-center items-center gap-5 border-2 border-secondary-800 shadow-sm shadow-primary-950 rounded-lg cursor-pointer p-10"> */}
             <div className="w-full">
                 <span className="text-black font-semibold text-xs md:text-sm lg:text-base">From</span>
                 <div className="w-full flex justify-start items-center gap-1 border-2 border-secondary-300 text-secondary-800 bg-white shadow rounded-md overflow-hidden mt-1">
@@ -333,10 +317,6 @@ export default function IndividualBatch({ onUpdate }) {
                     </div>
                 </div>
             </div>
-
-            {/* <div className="text-black -mb-3">
-                <HiOutlineRefresh size="22px" />
-            </div> */}
 
             <div className="w-full">
                 <span className="text-black font-semibold text-xs md:text-sm lg:text-base">To</span>
@@ -447,31 +427,7 @@ export default function IndividualBatch({ onUpdate }) {
                     {addToBatchLoading && <ImSpinner className="animate-spin h-5 w-5" />}
                     Add Batch to List
                 </button>
-                {/* <button
-                    type="button"
-                    onClick={() => sendBatch(false)}
-                    className="flex justify-center items-center gap-2 bg-success-600 hover:bg-success-700 py-2 px-5 rounded-lg text-white font-medium border-b-4 border-success-800 hover:border-success-900 transition duration-300"
-                >
-                    {sendTxLoadingForEoa && <ImSpinner className="animate-spin h-5 w-5" />}
-                    Sendbatch via EOA
-                </button> */}
             </div>
-            {/* <div className="flex justify-center items-center gap-3 py-5">
-                            {txhash && (
-                                <p>
-                                    <a
-                                        target="_blank"
-                                        href={`https://polygonscan.com/tx/${txhash}`}
-                                        style={{ color: "white" }}
-                                    >
-                                        TxHash : {shorten(txhash)}
-                                    </a>
-                                </p>
-                            )}
-                        </div>
-                    </div>
-                )}
-            </div> */}
         </>
     );
 }
