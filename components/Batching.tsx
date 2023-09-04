@@ -224,10 +224,10 @@ export default function Batching() {
                                                     </h1>
                                                     <div className="flex justify-center items-center gap-2 text-white text-sm">
                                                         <span>
-                                                            From {bar.data.fromProtocol} {bar.data.fromToken}
+                                                            {`From ${bar.data.fromProtocol} Protocol of ${bar.data.fromToken} token`}
                                                         </span>
                                                         <span>
-                                                            To {bar.data.toProtocol} {bar.data.toToken}
+                                                            {`To ${bar.data.toProtocol} Protocol of ${bar.data.toToken} token`}
                                                         </span>
                                                     </div>
                                                 </div>
