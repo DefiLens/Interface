@@ -3,13 +3,13 @@ import { useState } from "react";
 import { css } from "@emotion/css";
 import web3 from "web3";
 import { BigNumber, ethers } from "ethers";
+import { useAddress, useSigner } from "@thirdweb-dev/react";
 import { BigNumber as bg } from "bignumber.js";
+import { toast } from "react-hot-toast";
+import { FiCopy } from "react-icons/fi";
 import IERC20 from "../abis/IERC20.json";
 import { useAppStore } from "../store/appStore";
-import { useAddress, useSigner } from "@thirdweb-dev/react";
-import { toast } from "react-hot-toast";
 import { shorten } from "../utils/helper";
-import { FiCopy } from "react-icons/fi";
 
 export default function Transfer() {
     const { smartAccount }: any = useAppStore((state) => state);
