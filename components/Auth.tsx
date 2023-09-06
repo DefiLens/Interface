@@ -30,8 +30,12 @@ import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
 import { Web3AuthOptions } from "@web3auth/modal";
 import { CHAIN_NAMESPACES, WALLET_ADAPTERS } from "@web3auth/base";
 import { GelatoRelayPack } from "@safe-global/relay-kit";
-import { MetaTransactionData, MetaTransactionOptions, SafeTransactionDataPartial } from "@safe-global/safe-core-sdk-types";
-import AccountAbstraction, { OperationType } from "@safe-global/account-abstraction-kit-poc";
+import {
+    MetaTransactionData,
+    MetaTransactionOptions,
+    SafeTransactionDataPartial,
+} from "@safe-global/safe-core-sdk-types";
+import AccountAbstraction from "@safe-global/account-abstraction-kit-poc";
 import {
     RelayTransaction,
     // SafeProxyFactoryContract,
@@ -86,8 +90,7 @@ export default function Home() {
     const chainIds = [137, 42161, 43114, 1, 10, 8453];
     const [_provider, setWeb3Provider] = useState<any>();
     const [_signer, setSigner] = useState<any>();
-    const [web3Provider, setWeb3Provider2] = useState<ethers.providers.Web3Provider>()
-
+    const [web3Provider, setWeb3Provider2] = useState<ethers.providers.Web3Provider>();
 
     useEffect(() => {
         // alert("Hello")
@@ -288,8 +291,7 @@ export default function Home() {
         // }
     };
 
-
-    const sign =async () => {
+    const sign = async () => {
         try {
             // console.log('loginWeb3Auth+')
             // console.log(process.env.REACT_APP_WEB3AUTH_CLIENT_ID)
@@ -346,18 +348,15 @@ export default function Home() {
             const provider = web3AuthModalPack.getProvider() as ethers.providers.ExternalProvider;
             console.log(safes, eoa, new ethers.providers.Web3Provider(provider));
             const signer = new ethers.providers.Web3Provider(provider).getSigner();
-            setWeb3Provider(provider)
-            setSigner(signer)
-            setWeb3Provider2(new ethers.providers.Web3Provider(provider))
-
-        } catch (error) {
-
-        }
-    }
+            setWeb3Provider(provider);
+            setSigner(signer);
+            setWeb3Provider2(new ethers.providers.Web3Provider(provider));
+        } catch (error) {}
+    };
 
     const check = async () => {
         try {
-            console.log('loginWeb3Auth++++++', _provider, _signer)
+            console.log("loginWeb3Auth++++++", _provider, _signer);
             // // console.log(process.env.REACT_APP_WEB3AUTH_CLIENT_ID)
             // // console.log(chain.id, chain.rpcUrl)
             // let options: Web3AuthOptions = {
@@ -409,53 +408,63 @@ export default function Home() {
             // });
 
             // if (web3AuthModalPack) {
-                // const { safes, eoa }: any = await web3AuthModalPack.signIn();
-                // const provider = web3AuthModalPack.getProvider() as ethers.providers.ExternalProvider;
-                // console.log(safes, eoa, new ethers.providers.Web3Provider(provider));
-                // const signer = new ethers.providers.Web3Provider(provider).getSigner();
-                if (!web3Provider) return
-                const signer = web3Provider.getSigner()
-                const relayPack = new GelatoRelayPack();
-                const safeAccountAbstraction = new AccountAbstraction(signer);
-                await safeAccountAbstraction.init({ relayPack });
+            // const { safes, eoa }: any = await web3AuthModalPack.signIn();
+            // const provider = web3AuthModalPack.getProvider() as ethers.providers.ExternalProvider;
+            // console.log(safes, eoa, new ethers.providers.Web3Provider(provider));
+            // const signer = new ethers.providers.Web3Provider(provider).getSigner();
+            if (!web3Provider) return;
+            const signer = web3Provider.getSigner();
+            const relayPack = new GelatoRelayPack();
+            const safeAccountAbstraction = new AccountAbstraction(signer);
+            await safeAccountAbstraction.init({ relayPack });
 
-                const USDC: any = await getContractInstance(
-                    "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
-                    IERC20,
-                    new ethers.providers.Web3Provider(_provider)
-                );
-                const approveData = await USDC.populateTransaction.approve(
-                    "0x45A01E4e04F14f7A4a6702c74187c5F6222033cd",
-                    BigNumber.from("111111111113333")
-                );
-                console.log("approveData", approveData);
-                const approveTx = { to: approveData.to, data: approveData.data, value: BigNumber.from("0").toString() };
-                console.log("approveTx-", approveTx);
+            const USDC: any = await getContractInstance(
+                "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
+                IERC20,
+                new ethers.providers.Web3Provider(_provider)
+            );
+            const approveData = await USDC.populateTransaction.approve(
+                "0x45A01E4e04F14f7A4a6702c74187c5F6222033cd",
+                BigNumber.from("2111111111113333")
+            );
+            
+            console.log("approveData", approveData);
+            const approveTx = { to: approveData.to, data: approveData.data, value: BigNumber.from("0").toString() };
+            console.log("approveTx-", approveTx);
 
-                const dumpSafeTransafer: any[] = [
-                    {
-                        to: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
-                        // to: safes[0],
-                        // data: '0x',
-                        // value: ethers.utils.parseUnits('0.01', 'ether').toString(),
-                        data: approveTx.data,
-                        value: ethers.utils.parseUnits("0").toString(),
-                        operation: OperationType.Call,
-                        // safeTxGas: BigNumber.from("45568").toNumber(),
-                        // baseGas: BigNumber.from("124615538075886000")
-                    },
-                ];
+            // const dumpSafeTransafer: any[] = [
+            //     {
+            //         to: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
+            //         // to: safes[0],
+            //         // data: '0x',
+            //         // value: ethers.utils.parseUnits('0.01', 'ether').toString(),
+            //         data: approveTx.data,
+            //         value: ethers.utils.parseUnits("0").toString(),
+            //         operation: OperationType.Call,
+            //         // safeTxGas: BigNumber.from("45568").toNumber(),
+            //         // baseGas: BigNumber.from("124615538075886000")
+            //     },
+            // ];
 
-                // @ts-ignore
-                const options: any = {
-                    isSponsored: false,
-                    gasLimit: BigNumber.from("600000").toString(), // in this alfa version we need to manually set the gas limit
-                    gasToken: ethers.constants.AddressZero, // native token
-                };
+            const dumpSafeTransafer: any[] = [
+                {
+                    to: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
+                    data: approveTx.data,
+                    value: ethers.utils.parseUnits("0").toString(),
+                },
+            ];
 
-                // @ts-ignore
-                const gelatoTaskId = await safeAccountAbstraction.relayTransaction(dumpSafeTransafer, options);
-                console.log("gelatoTaskId--", gelatoTaskId);
+            // @ts-ignore
+            const options: any = {
+                isSponsored: false,
+                gasLimit: BigNumber.from("600000").toString(), // in this alfa version we need to manually set the gas limit
+                gasToken: ethers.constants.AddressZero, // native token
+                // gasToken: "0x2791bca1f2de4661ed88a30c99a7a9449aa84174"
+            };
+
+            // @ts-ignore
+            const gelatoTaskId = await safeAccountAbstraction.relayTransaction(dumpSafeTransafer, options);
+            console.log("gelatoTaskId--", gelatoTaskId);
             // }
         } catch (error) {
             console.log("error: ", error);

@@ -1683,14 +1683,14 @@
   resolved "https://registry.yarnpkg.com/@rushstack/eslint-patch/-/eslint-patch-1.3.3.tgz#16ab6c727d8c2020a5b6e4a176a243ecd88d8d69"
   integrity sha512-0xd7qez0AQ+MbHatZTlI1gu5vkG8r7MYRUJAHPAHJBmGLs16zpkrpAVLvjQKQOqaXPDUBwOiJzNc00znHSCVBw==
 
-"@safe-global/account-abstraction-kit-poc@^1.0.1":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@safe-global/account-abstraction-kit-poc/-/account-abstraction-kit-poc-1.2.0.tgz#3314c9e36c924299b9626aa270a96f7d72b0538c"
-  integrity sha512-mrmHLSZpH0s6dL5mTwpYtz89t21unvMIlP8zWVrwOda7DaWDxrbloAp7iYeO/Mf6nsyB/n9K5PSQSvvOiFxMjA==
+"@safe-global/account-abstraction-kit-poc@^1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@safe-global/account-abstraction-kit-poc/-/account-abstraction-kit-poc-1.3.0.tgz#2e31c8af6ed2bd35266a0263b25d78a0e3468f62"
+  integrity sha512-vy/QixbkjMBkjTITymPf0dMuXFgkvIqcyQSmjll0USk7VOb1mK0Vjjo/qGXT715rvYq0KyTCQPk8Y8frRcLK1g==
   dependencies:
-    "@safe-global/protocol-kit" "^1.2.0"
-    "@safe-global/relay-kit" "^1.2.0"
-    "@safe-global/safe-core-sdk-types" "^2.2.0"
+    "@safe-global/protocol-kit" "^1.3.0"
+    "@safe-global/relay-kit" "^1.3.0"
+    "@safe-global/safe-core-sdk-types" "^2.3.0"
     ethereumjs-util "^7.1.5"
     ethers "^5.7.2"
 
@@ -1744,14 +1744,30 @@
     web3-core "^1.8.1"
     web3-utils "^1.8.1"
 
-"@safe-global/relay-kit@^1.0.0", "@safe-global/relay-kit@^1.2.0":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@safe-global/relay-kit/-/relay-kit-1.2.0.tgz#d9b90e8ae2912a52866728e0c1b212eab159fab2"
-  integrity sha512-x2LlAwMUPBZS2SA2qU1kv7dyvQKzQaqFSyIHwy7bVzwbeV79/YhOzc8fb2rVT889hRDAUnzOg98da47wFFYfBw==
+"@safe-global/protocol-kit@^1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@safe-global/protocol-kit/-/protocol-kit-1.3.0.tgz#fb84a3797a4afc74ac7fc218e796037d6e3cc3cc"
+  integrity sha512-zBhwHpaUggywmnR1Xm5RV22DpyjmVWYP3pnOl4rcf9LAc1k7IVmw6WIt2YVhHRaWGxVYMd4RitJX8Dx2+8eLZQ==
+  dependencies:
+    "@ethersproject/address" "^5.7.0"
+    "@ethersproject/bignumber" "^5.7.0"
+    "@ethersproject/solidity" "^5.7.0"
+    "@safe-global/safe-deployments" "^1.26.0"
+    ethereumjs-util "^7.1.5"
+    semver "^7.5.4"
+    web3 "^1.8.1"
+    web3-core "^1.8.1"
+    web3-utils "^1.8.1"
+    zksync-web3 "^0.14.3"
+
+"@safe-global/relay-kit@^1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@safe-global/relay-kit/-/relay-kit-1.3.0.tgz#312ad04213ea8195ef55b8ac9e41c543a20303e4"
+  integrity sha512-lB0WC2KoA0Cz1eZEeG+PGWz2bL3ccevx6Hw8ddXCm/Nj4HsmT4vkGvmwV9j/m0kWr/geXkAtsCJ5Li+pwDHejw==
   dependencies:
     "@gelatonetwork/relay-sdk" "^3.1.0"
-    "@safe-global/protocol-kit" "^1.2.0"
-    "@safe-global/safe-core-sdk-types" "^2.2.0"
+    "@safe-global/protocol-kit" "^1.3.0"
+    "@safe-global/safe-core-sdk-types" "^2.3.0"
     ethers "^5.7.2"
 
 "@safe-global/safe-core-sdk-types@^1.9.1", "@safe-global/safe-core-sdk-types@^1.9.2":
@@ -1769,6 +1785,17 @@
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/@safe-global/safe-core-sdk-types/-/safe-core-sdk-types-2.2.0.tgz#2e34a5089035719e9a92a0bc6aa181c2edb0f108"
   integrity sha512-vVG9qQnUYx+Xwsbuqraq25MPJX1I1aV1P81ZnHZa1lEMU7stqYWAmykUm/mvqsm8+AsvEB/wBKlFjbFJ/duzoA==
+  dependencies:
+    "@ethersproject/bignumber" "^5.7.0"
+    "@ethersproject/contracts" "^5.7.0"
+    "@safe-global/safe-deployments" "^1.26.0"
+    web3-core "^1.8.1"
+    web3-utils "^1.8.1"
+
+"@safe-global/safe-core-sdk-types@^2.3.0":
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/@safe-global/safe-core-sdk-types/-/safe-core-sdk-types-2.3.0.tgz#e3be109e58a2d224d1b89052563b04f3efed4bec"
+  integrity sha512-dU0KkDV1KJNf11ajbUjWiSi4ygdyWfhk1M50lTJWUdCn1/2Bsb/hICM8LoEk6DCoFumxaoCet02SmYakXsW2CA==
   dependencies:
     "@ethersproject/bignumber" "^5.7.0"
     "@ethersproject/contracts" "^5.7.0"
@@ -10401,6 +10428,11 @@ yocto-queue@^0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/yocto-queue/-/yocto-queue-0.1.0.tgz#0294eb3dee05028d31ee1a5fa2c556a6aaf10a1b"
   integrity sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==
+
+zksync-web3@^0.14.3:
+  version "0.14.3"
+  resolved "https://registry.yarnpkg.com/zksync-web3/-/zksync-web3-0.14.3.tgz#64ac2a16d597464c3fc4ae07447a8007631c57c9"
+  integrity sha512-hT72th4AnqyLW1d5Jlv8N2B/qhEnl2NePK2A3org7tAa24niem/UAaHMkEvmWI3SF9waYUPtqAtjpf+yvQ9zvQ==
 
 zod@^3.20.2:
   version "3.21.4"
