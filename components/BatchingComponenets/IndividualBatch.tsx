@@ -260,7 +260,7 @@ export default function IndividualBatch({ onUpdate }) {
                             From Protocol
                         </label>
                         <select
-                            className="appearance-none w-full outline-none px-3 py-1 font-medium"
+                            className="appearance-none w-full outline-none px-3 py-2 font-medium"
                             placeholder="Network"
                             name="networks"
                             id="fromNetwork"
@@ -285,7 +285,7 @@ export default function IndividualBatch({ onUpdate }) {
                             Tokens
                         </label>
                         <select
-                            className="appearance-none w-full outline-none px-3 py-1 font-medium"
+                            className="appearance-none w-full outline-none px-3 py-2 font-medium"
                             placeholder="Token"
                             name="networks"
                             id="token"
@@ -326,7 +326,7 @@ export default function IndividualBatch({ onUpdate }) {
                             To Protocols
                         </label>
                         <select
-                            className="appearance-none w-full outline-none px-3 py-1 font-medium"
+                            className="appearance-none w-full outline-none px-3 py-2 font-medium"
                             placeholder="Network"
                             name="networks"
                             id="toNetwork"
@@ -351,7 +351,7 @@ export default function IndividualBatch({ onUpdate }) {
                             To Tokens
                         </label>
                         <select
-                            className="appearance-none w-full outline-none px-3 py-1 font-medium"
+                            className="appearance-none w-full outline-none px-3 py-2 font-medium"
                             placeholder="To Token"
                             name="contractAddresses"
                             id="contractAddresses"
@@ -410,7 +410,7 @@ export default function IndividualBatch({ onUpdate }) {
                         type="number"
                         placeholder={!fromTokenDecimal ? "amountIn : (wait for FromToken)" : "amountIn"}
                         disabled={!fromTokenDecimal ? true : false}
-                        className="w-full bg-white font-medium outline-none shadow-outline border-2  rounded-md py-1 px-3 block appearance-none leading-normal focus:border-primary-950"
+                        className="w-full bg-white font-medium outline-none shadow-outline border-2  rounded-md py-2 px-3 block appearance-none leading-normal focus:border-primary-950"
                         value={
                             amountIn != 0 ? bg(amountIn).dividedBy(bg(10).pow(fromTokenDecimal)).toString() : amountIn
                         }

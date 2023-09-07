@@ -437,7 +437,7 @@ export default function NewMainForm() {
                                         Network
                                     </label>
                                     <select
-                                        className="appearance-none w-full outline-none px-3 py-1 font-medium"
+                                        className="appearance-none w-full outline-none px-3 py-2 font-medium"
                                         placeholder="Network"
                                         name="networks"
                                         id="fromNetwork"
@@ -463,7 +463,7 @@ export default function NewMainForm() {
                                         Token
                                     </label>
                                     <select
-                                        className="appearance-none w-full outline-none px-3 py-1 font-medium"
+                                        className="appearance-none w-full outline-none px-3 py-2 font-medium"
                                         placeholder="Token"
                                         name="networks"
                                         id="token"
@@ -509,7 +509,7 @@ export default function NewMainForm() {
                                 <input
                                     type="number"
                                     placeholder=""
-                                    className="w-full bg-white font-medium outline-none shadow-outline border-2  rounded-md py-1 px-3 block appearance-none leading-normal focus:border-primary-950"
+                                    className="w-full bg-white font-medium outline-none shadow-outline border-2  rounded-md py-2 px-3 block appearance-none leading-normal focus:border-primary-950"
                                     value={
                                         amountIn != 0
                                             ? bg(amountIn).dividedBy(bg(10).pow(tokenInDecimals)).toString()
@@ -532,7 +532,7 @@ export default function NewMainForm() {
                                         Network
                                     </label>
                                     <select
-                                        className="appearance-none w-full outline-none px-3 py-1 font-medium"
+                                        className="appearance-none w-full outline-none px-3 py-2 font-medium"
                                         placeholder="Network"
                                         name="networks"
                                         id="toNetwork"
@@ -558,7 +558,7 @@ export default function NewMainForm() {
                                         Contract Address
                                     </label>
                                     <select
-                                        className="appearance-none w-full outline-none px-3 py-1 font-medium"
+                                        className="appearance-none w-full outline-none px-3 py-2 font-medium"
                                         placeholder="Contract Address"
                                         name="contractAddresses"
                                         id="contractAddresses"
@@ -595,7 +595,7 @@ export default function NewMainForm() {
                                             Select Function Name
                                         </label>
                                         <select
-                                            className="appearance-none w-full outline-none px-3 py-1 font-medium"
+                                            className="appearance-none w-full outline-none px-3 py-2 font-medium"
                                             placeholder=" Select Function Name"
                                             name="funcNames"
                                             id="funcNames"
@@ -623,7 +623,7 @@ export default function NewMainForm() {
                             <button
                                 type="button"
                                 onClick={() => setIsSimulationOpen(false)}
-                                className="w-32 mt-8 flex justify-center items-center gap-2 bg-success-600 hover:bg-success-700 py-1 px-5 rounded-lg text-black font-medium border-b-4 border-success-800 hover:border-success-900 transition duration-300"
+                                className="w-32 mt-8 flex justify-center items-center gap-2 bg-success-600 hover:bg-success-700 py-2 px-5 rounded-lg text-black font-medium border-b-4 border-success-800 hover:border-success-900 transition duration-300"
                             >
                                 <ImSpinner9 className="animate-spin h-5 w-5" />
                                 Bridge
@@ -663,7 +663,7 @@ export default function NewMainForm() {
                                     setIsSimulationOpen(true);
                                     await simulate(currentFuncIndex);
                                 }}
-                                className="w-32 flex justify-center items-center gap-2 bg-success-600 hover:bg-success-700 py-1 px-5 rounded-lg text-white font-medium border-b-4 border-success-800 hover:border-success-900 transition duration-300"
+                                className="w-32 flex justify-center items-center gap-2 bg-success-600 hover:bg-success-700 py-2 px-5 rounded-lg text-white font-medium border-b-4 border-success-800 hover:border-success-900 transition duration-300"
                             >
                                 Bridge <BiSolidRightArrowCircle size="20px" />
                             </button>

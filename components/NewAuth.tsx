@@ -264,7 +264,7 @@ export default function Home() {
                 <li className="flex flex-wrap justify-end items-center gap-2">
                     {!smartAccount && !loading && !connected && (
                         <button
-                            className={`${buttonStyle} flex justify-center items-center gap-2`}
+                            className={`${buttonStyle} border-primary-800 hover:border-primary-900 flex justify-center items-center gap-2`}
                             onClick={handleConnect}
                         >
                             <svg
@@ -287,7 +287,7 @@ export default function Home() {
                     )}
                     {connected && !smartAccount && !loading && (
                         <button
-                            className={`${buttonStyle} flex justify-center items-center gap-2`}
+                            className={`${buttonStyle} border-primary-800 hover:border-primary-900 flex justify-center items-center gap-2`}
                             //   onClick={handleConnect}
                         >
                             <svg
@@ -309,14 +309,14 @@ export default function Home() {
                         </button>
                     )}
                     {loading && (
-                        <button className={`${buttonStyle} flex justify-center items-center gap-2`}>
+                        <button className={`${buttonStyle} border-primary-800 hover:border-primary-900 flex justify-center items-center gap-2`}>
                             <ImSpinner className="animate-spin h-5 w-5" />
                             Loading account details...
                         </button>
                     )}
                     {smartAccount && !loading && (
                         <div className="flex flex-wrap justify-start items-center gap-3 text-base">
-                            <button className="relative wallet-container flex justify-center items-center gap-5 bg-primary-600 py-2 px-5 rounded-lg text-primary-100 font-medium  border-b-4 border-primary-900 transition duration-300">
+                            <button className="relative wallet-container flex justify-center items-center gap-5 bg-primary-600 py-2 px-5 rounded-lg text-primary-100 font-medium  border-b-4 border-primary-800 hover:border-primary-900 transition duration-300">
                                 <span className="text-sm font-medium">
                                     {smartAccount &&
                                         smartAccount.address.slice(0, 5) + "..." + smartAccount.address.slice(-3)}

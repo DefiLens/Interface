@@ -152,7 +152,7 @@ export default function Batching() {
                             <RiAddCircleLine size="20px" /> Add New Batch Bar
                         </button>
                     } */}
-                    <h1 className="flex justify-center items-center gap-2 hover:bg-slate-950 py-2 px-5 rounded-lg font-medium transition duration-300">
+                    <h1 className="flex justify-center items-center gap-2 hover:bg-slate-950 hover:text-white py-2 px-5 rounded-lg font-medium transition duration-300">
                         Batch transactions
                     </h1>
                     <button
