@@ -10,6 +10,7 @@ import { FiCopy } from "react-icons/fi";
 import IERC20 from "../abis/IERC20.json";
 import { useAppStore } from "../store/appStore";
 import { shorten } from "../utils/helper";
+import { ImSpinner } from "react-icons/im";
 
 export default function Transfer() {
     const { smartAccount }: any = useAppStore((state) => state);
@@ -178,115 +179,166 @@ export default function Transfer() {
                 </div>
             )}
             {smartAccount && (
-                <div className={center}>
-                    <div className={box1}>
-                        <div style={{ marginTop: "2%" }}>
-                            <input
-                                type="radio"
-                                name="wallet"
-                                value="SCW"
-                                id="scw"
-                                checked={isSCW === "SCW"}
-                                onChange={onOptionChangeForWallet}
-                            />
-                            <label htmlFor="scw">SmartAccount to EOA</label>
+              <div className="w-full min-h-[calc(100vh-101px)] bg-gradient-to-t from-gray-200 via-white to-gray-200 flex flex-col gap-5 shadow-md shadow-primary-950 rounded-lg cursor-pointer p-10">
+                <div className="w-full flex flex-col justify-center items-center gap-3">
+                    <div className="w-[55%] flex flex-col justify-start items-start gap-1 bg-gray-300 rounded-lg p-5 ">
+                      <div className="flex justify-start items-center gap-2">
+                        <input
+                            type="checkbox"
+                            name="wallet"
+                            value="SCW"
+                            id="scw"
+                            checked={isSCW === "SCW"}
+                            onChange={onOptionChangeForWallet}
+                            className="bg-gray-100"
+                        />
+                        <label htmlFor="scw">SmartAccount to EOA</label>
+                      </div>
+                      <span className="w-full font-bold pl-20">( Or )</span>
+                      <div className="flex justify-start items-center gap-2">
+                        <input
+                            type="checkbox"
+                            name="wallet"
+                            value="EOA"
+                            id="eoa"
+                            checked={isSCW === "EOA"}
+                            onChange={onOptionChangeForWallet}
+                        />
+                        <label htmlFor="eoa">EOA to SmartAccount</label>
+                      </div>
+                    </div>
 
-                            <input
-                                type="radio"
-                                name="wallet"
-                                value="EOA"
-                                id="eoa"
-                                checked={isSCW === "EOA"}
-                                onChange={onOptionChangeForWallet}
-                            />
-                            <label htmlFor="eoa">EOA to SmartAccount</label>
-                        </div>
-                        <div style={{ marginTop: "2%" }}>
-                            <input
-                                type="radio"
-                                name="tokens"
-                                value="Native"
-                                id="native"
-                                checked={isNative === "Native"}
-                                onChange={onOptionChange}
-                            />
-                            <label htmlFor="native">Native Token transfer</label>
+                    <div className="w-[55%] flex flex-col justify-start items-start gap-1 bg-gray-300 rounded-lg p-5 ">
+                      <div className="flex justify-start items-center gap-2">
+                        <input
+                            type="checkbox"
+                            name="tokens"
+                            value="Native"
+                            id="native"
+                            checked={isNative === "Native"}
+                            onChange={onOptionChange}
+                        />
+                        <label htmlFor="native">Native Token transfer</label>
 
-                            <input
-                                type="radio"
-                                name="tokens"
-                                value="ERC20"
-                                id="erc20"
-                                checked={isNative === "ERC20"}
-                                onChange={onOptionChange}
-                            />
-                            <label htmlFor="erc20">ERC20 Token Transfer</label>
-                        </div>
-                        <div className={box1}>
-                            {isSCW == "SCW" ? (
-                                <>
-                                    <h3>From SmartAccount Address</h3>
-                                    <h6 style={{ marginBottom: "2%" }}>{shorten(smartAccount.address)}</h6>
-                                    <h3>To EOA Address</h3>
-                                    <h6 style={{ marginBottom: "2%" }}>{shorten(address)}</h6>
-                                </>
-                            ) : (
-                                <>
-                                    <h3>From EOA Address</h3>
-                                    <h6 style={{ marginBottom: "2%" }}>{shorten(address)}</h6>
-                                    <h3>To SmartAccount Address</h3>
-                                    <h6 style={{ marginBottom: "2%" }}>{shorten(smartAccount.address)}</h6>
-                                </>
-                            )}
+                      </div>
+                      <span className="w-full font-bold pl-20">( Or )</span>
+                      <div className="flex justify-start items-center gap-2">
+                        <input
+                            type="checkbox"
+                            name="tokens"
+                            value="ERC20"
+                            id="erc20"
+                            checked={isNative === "ERC20"}
+                            onChange={onOptionChange}
+                        />
+                        <label htmlFor="erc20">ERC20 Token Transfer</label>
+                      </div>
+                    </div>
 
-                            {isNative != "Native" ? (
-                                <>
-                                    <h3>Token Address: </h3>
+                    <div className="w-full flex flex-col justify-center items-center gap-3 mt-3">
+                        {isSCW == "SCW" ? (
+                            <div className="w-[50%] flex flex-col justify-center items-start px-2 mb-2">
+                                <h3 className="text-black font-bold text-sm md:text-base">
+                                  From 
+                                    <span className="px-1 font-semibold text-xs md:text-sm">
+                                        SmartAccount Address
+                                    </span>
+                                </h3>
+                                <h6 className="text-gray-800 font-medium text-xs md:text-sm">
+                                  {shorten(smartAccount.address)}
+                                </h6>
+                                <h3 className="text-black font-bold text-sm md:text-base mt-2">
+                                  To 
+                                    <span className="px-1 font-semibold text-xs md:text-sm">
+                                    EOA Address
+                                    </span>
+                                </h3>
+                                <h6 className="text-gray-800 font-medium text-xs md:text-sm">
+                                  {shorten(address)}
+                                </h6>
+                            </div>
+                        ) : (
+                            <div className="w-[50%] flex flex-col justify-center items-start px-2 mb-2">
+                              <h3 className="text-black font-bold text-sm md:text-base">
+                                From 
+                                  <span className="px-1 font-semibold text-xs md:text-sm">
+                                  EOA Address
+                                  </span>
+                              </h3>
+                              <h6 className="text-gray-800 font-medium text-xs md:text-sm">
+                                {shorten(address)}
+                              </h6>
+                              <h3 className="text-black font-bold text-sm md:text-base mt-2">
+                                To 
+                                  <span className="px-1 font-semibold text-xs md:text-sm">
+                                  SmartAccount Address
+                                  </span>
+                              </h3>
+                              <h6 className="text-gray-800 font-medium text-xs md:text-sm">
+                                {shorten(smartAccount.address)}
+                              </h6>
+                            </div>
+                        )}
+
+                        {isNative != "Native" && (
+                            <div className="w-[50%]">
+                                <div className="flex justify-between items-center gap-2 text-black font-semibold text-xs md:text-sm px-2">
+                                    <span>
+                                    Token Address: 
+                                    </span>
+                                    <span>
+                                    </span>
+                                </div>
+                                <div className="w-full flex justify-start items-center gap-1 text-secondary-800 bg-white shadow rounded-md overflow-hidden mt-1">
                                     <input
-                                        style={{
-                                            width: "50%",
-                                            height: "50%",
-                                            padding: "10px",
-                                            marginLeft: "20%",
-                                            marginRight: "20%",
-                                            marginBottom: "2%",
-                                        }}
                                         placeholder="Token Address"
                                         value={tokenAddress}
                                         onChange={(e: any) => handleTokenAddress(e.target.value)}
+                                        className="w-full bg-white font-medium outline-none shadow-outline border-2  rounded-md py-2 px-3 block appearance-none leading-normal focus:border-primary-950"
+
                                     />
-                                </>
-                            ) : (
-                                ""
-                            )}
-                            <h3>Amount: </h3>
-                            <input
-                                type="number"
-                                style={{
-                                    width: "50%",
-                                    height: "50%",
-                                    padding: "10px",
-                                    marginLeft: "20%",
-                                    marginRight: "20%",
-                                    marginBottom: "2%",
-                                }}
-                                placeholder="Amount"
-                                value={amountInDecimals}
-                                onChange={(e: any) => handleAmountIn(e.target.value)}
-                            />
-                            <button className={buttonload} onClick={(e: any) => send()}>
-                                {sendTxLoading && <i className="fa fa-spinner fa-spin"></i>}
-                                {isSCW == "SCW" ? "Send SmartAccount to EOA" : "Send EOA to SmartAccount"}
-                            </button>
-                            {txhash && (
-                                <div className="flex flex-wrap justify-start items-center gap-3 text-base">
-                                    <FiCopy onClick={() => copyToClipboard(txhash)} />
-                                    <p>TxHash : {shorten(txhash)}</p>
                                 </div>
-                            )}
+                            </div>
+                        )}
+
+                        <div className="w-[50%]">
+                            <div className="flex justify-between items-center gap-2 text-black font-semibold text-xs md:text-sm px-2">
+                                <span>
+                                Amount :
+                                </span>
+                                <span>
+                                ( Balance : 0 )
+                                </span>
+                            </div>
+                            <div className="w-full flex justify-start items-center gap-1 text-secondary-800 bg-white shadow rounded-md overflow-hidden mt-1">
+                                <input
+                                    type="number"
+                                    placeholder="Amount"
+                                    className="w-full bg-white font-medium outline-none shadow-outline border-2  rounded-md py-2 px-3 block appearance-none leading-normal focus:border-primary-950"
+                                    value={amountInDecimals}
+                                    onChange={(e: any) => handleAmountIn(e.target.value)}
+                                />
+                            </div>
                         </div>
+
+                        <button
+                            type="button"
+                            onClick={(e: any) => send()}
+                            className="flex justify-center items-center gap-2 bg-success-600 hover:bg-success-700 py-2 px-5 rounded-lg text-white font-medium border-b-4 border-success-800 hover:border-success-900 transition duration-300"
+                        >
+                              {sendTxLoading && <ImSpinner className="animate-spin h-5 w-5" />}
+                            {isSCW == "SCW" ? "Send SmartAccount to EOA" : "Send EOA to SmartAccount"}
+                        </button>
+
+                        {txhash && (
+                            <div className="flex flex-wrap justify-start items-center gap-3 text-base">
+                                <FiCopy onClick={() => copyToClipboard(txhash)} />
+                                <p>TxHash : {shorten(txhash)}</p>
+                            </div>
+                        )}
                     </div>
                 </div>
+              </div>
             )}
         </>
     );
