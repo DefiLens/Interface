@@ -93,6 +93,7 @@ interface AppState {
     txhash: any;
 
     showWalletAddress: boolean;
+    showTransferFundToggle: boolean;
 
     setConnected: (connected: any) => void;
     setLoading: (loading: any) => void;
@@ -145,6 +146,7 @@ interface AppState {
     setTxHash: (txhash: any) => void;
 
     setShowWalletAddress: (showWalletAddress: any) => void;
+    setShowTransferFundToggle: (showTransferFundToggle: any) => void;
 }
 
 export const useAppStore = create<AppState>((set) => ({
@@ -198,6 +200,8 @@ export const useAppStore = create<AppState>((set) => ({
     txhash: "",
 
     showWalletAddress: false,
+    showTransferFundToggle: false,
+
 
     setConnected: (connected) => set(() => ({ connected })),
     setLoading: (loading) => set(() => ({ loading })),
@@ -249,6 +253,7 @@ export const useAppStore = create<AppState>((set) => ({
     setTxHash: (txhash) => set(() => ({ txhash })),
 
     setShowWalletAddress: (showWalletAddress: any) => set(() => ({ showWalletAddress })),
+    setShowTransferFundToggle: (showTransferFundToggle: any) => set(() => ({ showTransferFundToggle })),
 }));
 
 interface SwapAppState {

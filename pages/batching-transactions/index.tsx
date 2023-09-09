@@ -4,12 +4,12 @@ import { ImSpinner } from "react-icons/im";
 import { LiaChevronDownSolid, LiaChevronUpSolid } from "react-icons/lia";
 import { BiSolidRightArrowCircle } from "react-icons/bi";
 import { MdDelete } from "react-icons/md";
-import { useAppStore } from "../store/appStore";
-import { shorten } from "../utils/helper";
-import { _functionType, _nonce } from "../utils/constants";
-import IndividualBatch from "./BatchingComponenets/IndividualBatch";
-import { useBiconomyProvider } from "../hooks/aaProvider/useBiconomyProvider";
-import { useEoaProvider } from "../hooks/aaProvider/useEoaProvider";
+import { useAppStore } from "../../store/appStore";
+import { shorten } from "../../utils/helper";
+import { _functionType, _nonce } from "../../utils/constants";
+import IndividualBatch from "../../components/BatchingComponenets/IndividualBatch";
+import { useBiconomyProvider } from "../../hooks/aaProvider/useBiconomyProvider";
+import { useEoaProvider } from "../../hooks/aaProvider/useEoaProvider";
 bg.config({ DECIMAL_PLACES: 10 });
 
 export default function Batching() {
@@ -141,7 +141,7 @@ export default function Batching() {
 
     return (
         <>
-            <div className="flex flex-col gap-3">
+            <div className="h-full flex flex-col gap-3">
                 <div className="flex justify-between items-center gap-3 py-1">
                     {/* { individualBatch.length < 1 &&
                         <button
@@ -172,9 +172,9 @@ export default function Batching() {
                         Send Batches via EOA
                     </button> */}
                 </div>
-                <div className="flex flex-col sm:flex-row justify-center items-start gap-4">
+                <div className="h-full flex flex-col sm:flex-row justify-center items-start gap-4">
                     {true && (
-                        <div className="w-full min-h-[calc(100%-225px)] bg-gradient-to-t from-gray-200 via-white to-gray-200 flex flex-col gap-5 shadow-md shadow-primary-950 rounded-lg cursor-pointer p-10">
+                        <div className="w-full min-h-full bg-gradient-to-t from-gray-200 via-white to-gray-200 flex flex-col gap-5 shadow-md shadow-primary-950 rounded-lg cursor-pointer p-10">
                             <h1 className="text-lg md:text-xl lg:text-2xl text-center font-extrabold mb-5">
                                 Building Batch No: {individualBatch.length}
                             </h1>
@@ -195,7 +195,7 @@ export default function Batching() {
                             )}
                         </div>
                     )}
-                    <div className="w-full min-h-[calc(100%-225px)] bg-gradient-to-t from-gray-200 via-white to-gray-200 text-center flex flex-col gap-3 shadow-md shadow-primary-950 rounded-lg cursor-pointer p-10">
+                    <div className="w-full min-h-full bg-gradient-to-t from-gray-200 via-white to-gray-200 text-center flex flex-col gap-3 shadow-md shadow-primary-950 rounded-lg cursor-pointer p-10">
                         <h1 className="text-lg md:text-xl lg:text-2xl text-center font-extrabold mb-5">
                             Batching List
                         </h1>

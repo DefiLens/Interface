@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { css } from "@emotion/css";
 import web3 from "web3";
 import { BigNumber, ethers } from "ethers";
@@ -11,9 +11,11 @@ import IERC20 from "../abis/IERC20.json";
 import { useAppStore } from "../store/appStore";
 import { shorten } from "../utils/helper";
 import { ImSpinner } from "react-icons/im";
+import axios from "axios";
+import { BiSolidChevronDown } from "react-icons/bi";
 
 export default function Transfer() {
-    const { smartAccount }: any = useAppStore((state) => state);
+    const { smartAccount, scwBalance, eoaBalance, showTransferFundToggle }: any = useAppStore((state) => state);
     const address = useAddress(); // Detect the connected address
     const signer: any = useSigner(); // Detect the connected address
     const [tokenAddress, setTokenAddress] = useState<any>();
@@ -23,6 +25,25 @@ export default function Transfer() {
     const [isSCW, setIsSCW] = useState<any>("SCW");
     const [sendTxLoading, setSendtxLoading] = useState<any>(false);
     const [txhash, setTxHash] = useState<any>(false);
+    const [tokensData, setTokensData] = useState<any>('');
+
+
+    useEffect(() => {
+      async function onChangeFromProtocol() {
+        if(showTransferFundToggle) {
+          const response: any = await axios.get("https://gateway.ipfs.io/ipns/tokens.uniswap.org");
+          const tokensWithChain137 = response.data.tokens?.filter((token) => token.chainId === 137);
+          const filteredTokens = tokensWithChain137.map((token) => {
+              const { extensions, logoURI, ...filteredToken } = token;
+              return filteredToken;
+          });
+          setTokensData(filteredTokens)
+          console.log("TRANSFER FUND :-  filteredTokens: ", filteredTokens);
+        }
+      }
+      setTokenAddress('')
+      onChangeFromProtocol();
+    }, [showTransferFundToggle]);
 
     const onOptionChange = (e) => {
         setIsnative(e.target.value);
@@ -170,225 +191,229 @@ export default function Transfer() {
         toast.success("Transaction Hash Copied");
     };
     return (
-        <>
-            {!smartAccount && (
-                <div className="flex justify-center items-center border-2 border-secondary-800 shadow-sm shadow-primary-950 rounded-lg cursor-pointer">
-                    <h3 className="font-semibold text-lg md:text-2xl text-primary-950 py-4 bg-transparent">
-                        Login First!
-                    </h3>
+      <div className="w-full h-full overflow-scroll bg-gradient-to-t from-gray-900 via-gray-800 to-gray-900 flex flex-col gap-5 shadow-md shadow-primary-950 cursor-pointer p-5">
+        {!smartAccount && (
+          <div className="flex justify-center items-center border-2 border-gray-500 shadow-sm shadow-primary-950 rounded-lg cursor-pointer">
+            <h3 className="font-semibold text-lg md:text-2xl text-gray-200 py-4 bg-transparent">
+              Login First!
+            </h3>
+          </div>
+        )}
+        {smartAccount && (
+          <div className="w-full flex flex-col justify-center items-center gap-3">
+            <h3 className="font-semibold text-lg md:text-2xl text-white">
+              Transfer Fund
+            </h3>
+
+            <div className="w-full flex flex-col justify-start items-start gap-1 bg-gray-300 rounded-lg py-3 px-5">
+              <div className="flex justify-start items-center gap-2">
+                <label className="relative inline-flex items-center mr-5 cursor-pointer">
+                  <input 
+                    type="checkbox"
+                    name="wallet"
+                    value="SCW"
+                    checked={isSCW === "SCW"}
+                    onChange={onOptionChangeForWallet}
+                    className="sr-only peer"
+                  />
+                  <div className="w-11 h-6 rounded-full peer bg-red-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-red-700 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+                  <span className="ml-3 text-sm font-medium text-gray-900">SmartAccount to EOA</span>
+                </label>
+              </div>
+
+              <span className="w-full font-bold pl-24">( Or )</span>
+
+              <div className="flex justify-start items-center gap-2">
+                <label className="relative inline-flex items-center mr-5 cursor-pointer">
+                  <input 
+                     type="checkbox"
+                     name="wallet"
+                     value="EOA"
+                     id="eoa"
+                     checked={isSCW === "EOA"}
+                     onChange={onOptionChangeForWallet}
+                    className="sr-only peer"
+                  />
+                  <div className="w-11 h-6 rounded-full peer bg-red-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-red-700 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+                  <span className="ml-3 text-sm font-medium text-gray-900">EOA to SmartAccount</span>
+                </label>
+              </div>
+            </div>
+
+            <div className="w-full flex flex-col justify-start items-start gap-1 bg-gray-300 rounded-lg py-3 px-5">
+              <div className="flex justify-start items-center gap-2">
+                <label className="relative inline-flex items-center mr-5 cursor-pointer">
+                  <input 
+                    type="checkbox"
+                    name="tokens"
+                    value="Native"
+                    id="native"
+                    checked={isNative === "Native"}
+                    onChange={onOptionChange}
+                    className="sr-only peer"
+                  />
+                  <div className="w-11 h-6 rounded-full peer bg-red-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-red-700 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+                  <span className="ml-3 text-sm font-medium text-gray-900">Native Token transfer</span>
+                </label>
+              </div>
+
+              <span className="w-full font-bold pl-24">( Or )</span>
+
+              <div className="flex justify-start items-center gap-2">
+                <label className="relative inline-flex items-center mr-5 cursor-pointer">
+                  <input 
+                    type="checkbox"
+                    name="tokens"
+                    value="ERC20"
+                    id="erc20"
+                    checked={isNative === "ERC20"}
+                    onChange={onOptionChange}
+                    className="sr-only peer"
+                  />
+                  <div className="w-11 h-6 rounded-full peer bg-red-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-red-700 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+                  <span className="ml-3 text-sm font-medium text-gray-900">ERC20 Token Transfer</span>
+                </label>
+              </div>
+            </div>
+
+            <div className="w-full flex flex-col justify-center items-center gap-3 mt-3">
+              {isSCW == "SCW" ? (
+                  <div className="w-full flex flex-col justify-center items-start px-2 mb-2">
+                      <h3 className="text-gray-100 font-bold text-sm md:text-base">
+                          From 
+                          <span className="px-1 font-semibold text-xs md:text-sm">
+                              SmartAccount Address
+                          </span>
+                      </h3>
+                      <h6 className="text-gray-300 font-medium text-xs md:text-sm">
+                          {shorten(smartAccount.address)}
+                      </h6>
+                      <h3 className="text-gray-100 font-bold text-sm md:text-base mt-2">
+                          To 
+                          <span className="px-1 font-semibold text-xs md:text-sm">
+                          EOA Address
+                          </span>
+                      </h3>
+                      <h6 className="text-gray-300 font-medium text-xs md:text-sm">
+                          {shorten(address)}
+                      </h6>
+                  </div>
+              ) : (
+                  <div className="w-full flex flex-col justify-center items-start px-2 mb-2">
+                      <h3 className="text-gray-100 font-bold text-sm md:text-base">
+                      From 
+                          <span className="px-1 font-semibold text-xs md:text-sm">
+                          EOA Address
+                          </span>
+                      </h3>
+                      <h6 className="text-gray-300 font-medium text-xs md:text-sm">
+                      {shorten(address)}
+                      </h6>
+                      <h3 className="text-gray-100 font-bold text-sm md:text-base mt-2">
+                      To 
+                          <span className="px-1 font-semibold text-xs md:text-sm">
+                          SmartAccount Address
+                          </span>
+                      </h3>
+                      <h6 className="text-gray-300 font-medium text-xs md:text-sm">
+                      {shorten(smartAccount.address)}
+                      </h6>
+                  </div>
+              )}
+
+              {isNative != "Native" && (
+                <div className="w-full relative rounded-md overflow-hidden">
+                    <label htmlFor="tokenAddresses" className="sr-only">
+                        Token Address
+                    </label>
+                    <select
+                      className="w-full bg-white font-medium outline-none shadow-outline border-2 rounded-md py-2 px-3 block appearance-none leading-normal focus:border-transparent"
+                        placeholder="Token Address"
+                        id="tokenAddresses"
+                        value={tokenAddress}
+                        onChange={(e: any) => handleTokenAddress(e.target.value)}
+
+                    >
+                        <option key={"0x"} value="" disabled selected>
+                            Token Address
+                        </option>
+                        {tokensData.length > 0 &&
+                              tokensData.map((token: any, tokenIndex: any) => (
+                                  <option value={token.symbol} key={tokenIndex}>
+                                      {token.symbol}
+                                  </option>
+                              ))}
+                    </select>
+                    <div className="bg-white pointer-events-none absolute right-0 top-0 bottom-0 flex items-center px-2">
+                        <BiSolidChevronDown size="20px" />
+                    </div>
                 </div>
-            )}
-            {smartAccount && (
-              <div className="w-full min-h-[calc(100vh-101px)] bg-gradient-to-t from-gray-200 via-white to-gray-200 flex flex-col gap-5 shadow-md shadow-primary-950 rounded-lg cursor-pointer p-10">
-                <div className="w-full flex flex-col justify-center items-center gap-3">
-                    <div className="w-[55%] flex flex-col justify-start items-start gap-1 bg-gray-300 rounded-lg p-5 ">
-                      <div className="flex justify-start items-center gap-2">
-                        <input
-                            type="checkbox"
-                            name="wallet"
-                            value="SCW"
-                            id="scw"
-                            checked={isSCW === "SCW"}
-                            onChange={onOptionChangeForWallet}
-                            className="bg-gray-100"
-                        />
-                        <label htmlFor="scw">SmartAccount to EOA</label>
-                      </div>
-                      <span className="w-full font-bold pl-20">( Or )</span>
-                      <div className="flex justify-start items-center gap-2">
-                        <input
-                            type="checkbox"
-                            name="wallet"
-                            value="EOA"
-                            id="eoa"
-                            checked={isSCW === "EOA"}
-                            onChange={onOptionChangeForWallet}
-                        />
-                        <label htmlFor="eoa">EOA to SmartAccount</label>
-                      </div>
-                    </div>
+              )}
 
-                    <div className="w-[55%] flex flex-col justify-start items-start gap-1 bg-gray-300 rounded-lg p-5 ">
-                      <div className="flex justify-start items-center gap-2">
-                        <input
-                            type="checkbox"
-                            name="tokens"
-                            value="Native"
-                            id="native"
-                            checked={isNative === "Native"}
-                            onChange={onOptionChange}
-                        />
-                        <label htmlFor="native">Native Token transfer</label>
-
-                      </div>
-                      <span className="w-full font-bold pl-20">( Or )</span>
-                      <div className="flex justify-start items-center gap-2">
-                        <input
-                            type="checkbox"
-                            name="tokens"
-                            value="ERC20"
-                            id="erc20"
-                            checked={isNative === "ERC20"}
-                            onChange={onOptionChange}
-                        />
-                        <label htmlFor="erc20">ERC20 Token Transfer</label>
-                      </div>
-                    </div>
-
-                    <div className="w-full flex flex-col justify-center items-center gap-3 mt-3">
-                        {isSCW == "SCW" ? (
-                            <div className="w-[50%] flex flex-col justify-center items-start px-2 mb-2">
-                                <h3 className="text-black font-bold text-sm md:text-base">
-                                  From 
-                                    <span className="px-1 font-semibold text-xs md:text-sm">
-                                        SmartAccount Address
-                                    </span>
-                                </h3>
-                                <h6 className="text-gray-800 font-medium text-xs md:text-sm">
-                                  {shorten(smartAccount.address)}
-                                </h6>
-                                <h3 className="text-black font-bold text-sm md:text-base mt-2">
-                                  To 
-                                    <span className="px-1 font-semibold text-xs md:text-sm">
-                                    EOA Address
-                                    </span>
-                                </h3>
-                                <h6 className="text-gray-800 font-medium text-xs md:text-sm">
-                                  {shorten(address)}
-                                </h6>
-                            </div>
-                        ) : (
-                            <div className="w-[50%] flex flex-col justify-center items-start px-2 mb-2">
-                              <h3 className="text-black font-bold text-sm md:text-base">
-                                From 
-                                  <span className="px-1 font-semibold text-xs md:text-sm">
-                                  EOA Address
-                                  </span>
-                              </h3>
-                              <h6 className="text-gray-800 font-medium text-xs md:text-sm">
-                                {shorten(address)}
-                              </h6>
-                              <h3 className="text-black font-bold text-sm md:text-base mt-2">
-                                To 
-                                  <span className="px-1 font-semibold text-xs md:text-sm">
-                                  SmartAccount Address
-                                  </span>
-                              </h3>
-                              <h6 className="text-gray-800 font-medium text-xs md:text-sm">
-                                {shorten(smartAccount.address)}
-                              </h6>
-                            </div>
-                        )}
-
-                        {isNative != "Native" && (
-                            <div className="w-[50%]">
-                                <div className="flex justify-between items-center gap-2 text-black font-semibold text-xs md:text-sm px-2">
-                                    <span>
-                                    Token Address: 
-                                    </span>
-                                    <span>
-                                    </span>
-                                </div>
-                                <div className="w-full flex justify-start items-center gap-1 text-secondary-800 bg-white shadow rounded-md overflow-hidden mt-1">
-                                    <input
-                                        placeholder="Token Address"
-                                        value={tokenAddress}
-                                        onChange={(e: any) => handleTokenAddress(e.target.value)}
-                                        className="w-full bg-white font-medium outline-none shadow-outline border-2  rounded-md py-2 px-3 block appearance-none leading-normal focus:border-primary-950"
-
-                                    />
-                                </div>
-                            </div>
-                        )}
-
-                        <div className="w-[50%]">
-                            <div className="flex justify-between items-center gap-2 text-black font-semibold text-xs md:text-sm px-2">
-                                <span>
-                                Amount :
-                                </span>
-                                <span>
-                                ( Balance : 0 )
-                                </span>
-                            </div>
-                            <div className="w-full flex justify-start items-center gap-1 text-secondary-800 bg-white shadow rounded-md overflow-hidden mt-1">
-                                <input
-                                    type="number"
-                                    placeholder="Amount"
-                                    className="w-full bg-white font-medium outline-none shadow-outline border-2  rounded-md py-2 px-3 block appearance-none leading-normal focus:border-primary-950"
-                                    value={amountInDecimals}
-                                    onChange={(e: any) => handleAmountIn(e.target.value)}
-                                />
-                            </div>
-                        </div>
-
-                        <button
-                            type="button"
-                            onClick={(e: any) => send()}
-                            className="flex justify-center items-center gap-2 bg-success-600 hover:bg-success-700 py-2 px-5 rounded-lg text-white font-medium border-b-4 border-success-800 hover:border-success-900 transition duration-300"
-                        >
-                              {sendTxLoading && <ImSpinner className="animate-spin h-5 w-5" />}
-                            {isSCW == "SCW" ? "Send SmartAccount to EOA" : "Send EOA to SmartAccount"}
-                        </button>
-
-                        {txhash && (
-                            <div className="flex flex-wrap justify-start items-center gap-3 text-base">
-                                <FiCopy onClick={() => copyToClipboard(txhash)} />
-                                <p>TxHash : {shorten(txhash)}</p>
-                            </div>
-                        )}
-                    </div>
+              <div className="w-full">
+                <div className="flex justify-between items-center gap-2 text-white font-semibold text-xs md:text-sm px-1">
+                  <span>
+                    Amount :
+                  </span>
+                  <span>
+                  {isSCW === "SCW" ? `( SmartAccount Balance : ${scwBalance} )` : `( EOA Balance : ${eoaBalance} )` }
+                    {/* ( SCW Balance : {scwBalance} || EOA Balance : {eoaBalance} ) */}
+                  </span>
+                </div>
+                <div className="w-full flex justify-start items-center gap-1 text-black shadow rounded-md overflow-hidden mt-1">
+                  <input
+                    type="number"
+                    placeholder="Amount"
+                    className="w-full bg-white font-medium outline-none shadow-outline border-2  rounded-md py-2 px-3 block appearance-none leading-normal focus:border-primary-950"
+                    value={amountInDecimals}
+                    onChange={(e: any) => handleAmountIn(e.target.value)}
+                  />
                 </div>
               </div>
-            )}
-        </>
-    );
-}
 
-const center = css`
-    padding: 60px 0;
-    border: 3px solid green;
-    text-align: center;
-    height: auto;
-`;
-const box1 = css`
-    margin-top: 20px;
-    margin-left: 20%;
-    margin-right: 20%;
-    border: 1px solid black;
-    padding: 15px;
-    background: lightgray;
-    background-clip: border-box;
-`;
-const sendTxcss = css`
-    width: 20%;
-    padding: 10px;
-    background: black;
-    color: white;
-    font-size: 15px;
-`;
-const gridContainer = css`
-    display: grid;
-    grid-template-columns: auto auto auto;
-    background-color: #2196f3;
-    padding: 10px;
-`;
-const gridItem = css`
-    background-color: rgba(255, 255, 255, 0.8);
-    border: 1px solid rgba(0, 0, 0, 0.8);
-    padding: 20px;
-    font-size: 30px;
-    text-align: center;
-`;
-const buttonload = css`
-    background-color: #04aa6d; /* Green background */
-    border: none; /* Remove borders */
-    color: white; /* White text */
-    padding: 12px 24px; /* Some padding */
-    font-size: 16px; /* Set a font-size */
-    margin: 5px;
-`;
-/* Add a right margin to each icon */
-const fa = css`
-    margin-left: -12px;
-    margin-right: 8px;
-`;
+              <div className="w-full flex flex-col justify-center gap-2 border-2 border-gray-400 rounded-lg my-2 px-3 py-2">
+                <div className="flex justify-between items-center gap-1">
+                  <h3 className="text-gray-100 font-bold text-sm md:text-base">
+                      Gas 
+                      <span className="px-1 text-gray-300 font-medium text-xs">
+                          (estimated)
+                      </span>
+                  </h3>
+                  <h6 className="text-gray-200 font-medium text-xs md:text-sm">
+                      0 Matic
+                  </h6>
+                </div>
+                <div className="flex justify-between items-center gap-1">
+                  <h3 className="text-green-400 font-bold text-xs">
+                      Likely in &#60; 30 seconds 
+                  </h3>
+                  <h6 className="text-gray-100 font-semibold text-sm">
+                      Max fee :
+                      <span className="px-1 text-gray-300 font-medium text-xs">
+                          0 Matic
+                      </span>
+                  </h6>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={(e: any) => send()}
+                className="flex justify-center items-center gap-2 bg-success-600 hover:bg-success-700 py-2 px-5 rounded-lg text-white font-medium border-b-4 border-success-800 hover:border-success-900 transition duration-300 mt-3"
+              >
+                {sendTxLoading && <ImSpinner className="animate-spin h-5 w-5" />}
+                {isSCW == "SCW" ? "Send SmartAccount to EOA" : "Send EOA to SmartAccount"}
+              </button>
+
+              {txhash && (
+                <div className="flex flex-wrap justify-start items-center gap-3 text-base">
+                  <FiCopy onClick={() => copyToClipboard(txhash)} />
+                  <p>TxHash : {shorten(txhash)}</p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+};

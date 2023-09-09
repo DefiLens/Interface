@@ -13,7 +13,7 @@ import { ChainId } from "@biconomy/core-types";
 import { IBundler, Bundler } from "@biconomy/bundler";
 import { BiconomySmartAccount, BiconomySmartAccountConfig, DEFAULT_ENTRYPOINT_ADDRESS } from "@biconomy/account";
 import { IPaymaster, BiconomyPaymaster } from "@biconomy/paymaster";
-import { chooseChianId, shorten } from "../utils/helper";
+import { chooseChianId, shorten } from "../../utils/helper";
 import {
     NetworkNameByChainId,
     NetworkNameByStargateChainId,
@@ -24,17 +24,17 @@ import {
     methodWithApi,
     paymasterURLs,
     tokensByNetwork,
-} from "../utils/constants";
-import { fetchMethodParams, getNetworkAndContractData } from "../utils/apis";
-import { getContractInstance, getErc20Balanceof, getProvider } from "../utils/web3Libs/ethers";
-import { useSendTx } from "../hooks/useSendTx";
-import { useSimulate } from "../hooks/useSimulate";
-import { useGenerateAbis } from "../hooks/useGenerateAbis";
-import { useOnChangeFunctions, useOnChangeInput, useOnChangeTokenIn } from "../hooks/useOnChangeMainForm";
-import { useCalculatebalance } from "../hooks/useCalculateBalance";
-import { useAppStore } from "../store/appStore";
-import ChainContext from "../Context/ChainContext";
-import IERC20 from "../abis/IERC20.json";
+} from "../../utils/constants";
+import { fetchMethodParams, getNetworkAndContractData } from "../../utils/apis";
+import { getContractInstance, getErc20Balanceof, getProvider } from "../../utils/web3Libs/ethers";
+import { useSendTx } from "../../hooks/useSendTx";
+import { useSimulate } from "../../hooks/useSimulate";
+import { useGenerateAbis } from "../../hooks/useGenerateAbis";
+import { useOnChangeFunctions, useOnChangeInput, useOnChangeTokenIn } from "../../hooks/useOnChangeMainForm";
+import { useCalculatebalance } from "../../hooks/useCalculateBalance";
+import { useAppStore } from "../../store/appStore";
+import ChainContext from "../../Context/ChainContext";
+import IERC20 from "../../abis/IERC20.json";
 bg.config({ DECIMAL_PLACES: 10 });
 
 export default function NewMainForm() {
@@ -424,7 +424,7 @@ export default function NewMainForm() {
         <>
             <div className="main-container h-full flex flex-col sm:flex-row justify-start items-start gap-4">
                 {true && (
-                    <div className="w-full h-full bg-gradient-to-t from-gray-200 via-white to-gray-200 flex flex-col justify-start items-center gap-5 shadow-md shadow-primary-950 rounded-lg cursor-pointer p-10">
+                    <div className="w-full min-h-full bg-gradient-to-t from-gray-200 via-white to-gray-200 flex flex-col justify-start items-center gap-5 shadow-md shadow-primary-950 rounded-lg cursor-pointer p-10">
                         <h1 className="text-xl md:text-2xl lg:text-3xl text-center font-extrabold mb-7">
                             Cross-Chain Defi
                         </h1>
@@ -671,7 +671,7 @@ export default function NewMainForm() {
                     </div>
                 )}
 
-                <div className="w-full h-full bg-gradient-to-t from-gray-200 via-white to-gray-200 flex flex-col gap-2 shadow-md shadow-primary-950 rounded-lg cursor-pointer p-10">
+                <div className="w-full min-h-full bg-gradient-to-t from-gray-200 via-white to-gray-200 flex flex-col gap-2 shadow-md shadow-primary-950 rounded-lg cursor-pointer p-10">
                     <h1 className="text-lg md:text-xl lg:text-2xl text-center font-extrabold mb-5">
                         Simulation Detail
                     </h1>

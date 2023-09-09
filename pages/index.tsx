@@ -1,69 +1,19 @@
 import * as React from "react";
-import { useState, Suspense } from "react";
-import { Toaster } from "react-hot-toast";
-import dynamic from "next/dynamic";
-import Swap from "../components/Swap";
-import MainForm from "../components/CrossChainLending";
-import Transfer from "../components/Transfer";
-import Batching from "../components/Batching";
 
-const Index = () => {
-    const SocialLoginDynamic = dynamic(() => import("../components/NewAuth").then((res) => res.default), {
-        ssr: false,
-    });
-
-    const TabList = [
-        {
-            title: "Cross Chain Defi",
-            component: <MainForm />,
-        },
-        {
-            title: "Batching Transactions",
-            component: <Batching />,
-        },
-        {
-            title: "Transfer Funds",
-            component: <Transfer />,
-        },
-        // {
-        //     title: "Swap",
-        //     component: <Swap />,
-        // },
-    ];
-
-    const [activeTab, setActiveTab] = useState(TabList?.[0]?.title);
-
-    return (
-        <>
-            <Toaster position="top-right" reverseOrder={false} />
-            <Suspense fallback={<div>Loading...</div>}>
-                <SocialLoginDynamic />
-
-                <div className="w-[100vw] h-[calc(100vh-69px)] flex justify-center items-start">
-                    <div className="w-[250px] h-full flex flex-col justify-start items-center gap-5 p-5 pt-10 text-lg text-light bg-secondary-800 shadow-lg shadow-secondary-500">
-                        {TabList.length > 0 &&
-                            TabList?.map((item) => (
-                                <div
-                                    key={item.title}
-                                    className={`cursor-pointer px-4 py-2 text-sm md:text-base text-center rounded-md hover:bg-secondary-600 transition duration-300 ${
-                                        activeTab === item.title ? "bg-secondary-500" : ""
-                                    } `}
-                                    onClick={() => setActiveTab(item.title)}
-                                >
-                                    {item.title}
-                                </div>
-                            ))}
-                    </div>
-                    <div className="w-full h-[calc(100vh-69px)] overflow-y-scroll  overflow-x-hidden p-4">
-                        {TabList.length > 0 &&
-                            TabList?.map((item) => (
-                                <div key={item.title}>{activeTab === item.title && item.component}</div>
-                            ))}
-                    </div>
-                </div>
-            </Suspense>
-        </>
-    );
-};
+const Index = () => (
+  <div className="w-full flex flex-col justify-center items-center gap-5 p-5 sm:p-10 md:p-14 lg:p-20 pt-14 md:pt-24 lg:pt-28">
+    <h1 className="text-center text-xl md:text-2xl lg:text-4xl font-bold">
+      Simplifying Defi Trading Experiencey
+    </h1>
+    <div className="animate-heading text-center text-4xl md:text-6xl lg:text-7xl font-extrabold lg:font-black py-6">
+      Smart Batching via one-click
+    </div>
+    <h3 className="text-center text-sm md:text-base lg:text-lg font-semibold px-3 md:px-12">
+      DefiLens is pioneering a platform that streamlines trading activities. 
+      To offering the ease of trading experience and swift portfolio management to users, 
+      Defilens provide a solutions like cross-chain trading and efficiently refinancing defi positions using smart batching strategies.
+    </h3>
+  </div>
+);
 
 export default Index;

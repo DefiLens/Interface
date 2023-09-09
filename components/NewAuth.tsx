@@ -9,6 +9,7 @@ import { ImSpinner } from "react-icons/im";
 import { FaChevronDown } from "react-icons/fa";
 import { IBundler, Bundler } from "@biconomy/bundler";
 import { TbSquareRoundedChevronDownFilled } from "react-icons/tb";
+import { RiExchangeFundsFill } from "react-icons/ri";
 import { IPaymaster, BiconomyPaymaster } from "@biconomy/paymaster";
 import { DEFAULT_ENTRYPOINT_ADDRESS, BiconomySmartAccountConfig, BiconomySmartAccount } from "@biconomy/account";
 import { useSwitchChain, useSigner, useConnect, useChain, useAddress, metamaskWallet } from "@thirdweb-dev/react";
@@ -17,6 +18,9 @@ import { useAppStore } from "../store/appStore";
 import ChainContext from "../Context/ChainContext";
 import { useCalculatebalance } from "../hooks/useCalculateBalance";
 import { paymasterURLs, gasFeesNames, buttonStyle, bundlerURLs } from "../utils/constants";
+
+import Transfer from "./Transfer";
+import Link from "next/link";
 
 bg.config({ DECIMAL_PLACES: 5 });
 
@@ -33,6 +37,8 @@ export default function Home() {
         setConnected,
         showWalletAddress,
         setShowWalletAddress,
+        showTransferFundToggle,
+        setShowTransferFundToggle
     }: any = useAppStore((state) => state);
     const { selectedChain, setSelectedChain, selectedChainId, setSelectedChainId } = useContext(ChainContext);
     const { mutateAsync: fetchNativeBalance } = useCalculatebalance();
@@ -234,7 +240,7 @@ export default function Home() {
         <div className="auth-container">
             <ul className="flex justify-between items-center gap-2 bg-primary-950 p-2 shadow-md shadow-secondary-500">
                 <li>
-                    <div className="text-[30px] font-bold flex flex-row justify-center items-center">
+                    <Link href='/' className="text-[30px] font-bold flex flex-row justify-center items-center">
                         <div className="mr-2 p-1">
                             <svg
                                 width="45px"
@@ -259,7 +265,7 @@ export default function Home() {
                             </svg>
                         </div>
                         <div className="text-white">DefiLens</div>
-                    </div>
+                    </Link>
                 </li>
                 <li className="flex flex-wrap justify-end items-center gap-2">
                     {!smartAccount && !loading && !connected && (
@@ -450,6 +456,26 @@ export default function Home() {
                             <TbSquareRoundedChevronDownFilled size="25px" />
                         </div>
                     </div>
+
+                    <div className="flex flex-wrap justify-start items-center gap-3 text-base">
+                            <div className="relative flex justify-center items-center gap-5 bg-white rounded-lg font-medium  transition duration-300">
+                                <span className="flex justify-center items-center gap-2">
+                                    <input
+                                        type="checkbox"
+                                        id="transfer-fund-toggle"
+                                        checked={showTransferFundToggle}
+                                        className="absolute hidden"
+                                        onChange={(e: any) => setShowTransferFundToggle(e.target.checked)}
+                                    />
+                                    <label htmlFor="transfer-fund-toggle" className="transfer-fund-icon">
+                                     <RiExchangeFundsFill className="h-10 w-10 p-1 bg-white hover:bg-gray-200 active:bg-gray-300 rounded-lg cursor-pointer" />
+                                    </label>
+                                </span>
+                            </div>
+                            <div className={`absolute w-96 h-[calc(100%-69px)] top-[69px] z-40 shadow-xl shadow-gray-900 ${showTransferFundToggle ? '!right-0 !translate-x-0 !transition !duration-1000 !ease-out' : '!-right-96 !translate-x-96 !transition !duration-700 !ease-out'} `}>
+                                <Transfer />
+                            </div>
+                        </div>        
                 </li>
             </ul>
         </div>
