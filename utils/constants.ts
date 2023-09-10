@@ -127,12 +127,21 @@ export const gasFeesNames = {
 };
 
 export const gasFeesNamesByChainId = {
-    "109": "polygon",
+    "109": "matic",
     "106": "avax",
     "110": "eth",
     "111": "eth",
     "101": "eth",
     "184": "eth",
+};
+
+export const gasFeesNamesByMainChainId = {
+    "137": "matic",
+    "43114": "avax",
+    "42161": "eth",
+    "10": "eth",
+    "1": "eth",
+    "8453": "eth",
 };
 
 export const richAddressByChainId = {
