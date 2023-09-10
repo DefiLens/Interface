@@ -56,6 +56,10 @@ export default function Transfer() {
 
     const onOptionChange = async (e) => {
         try {
+          setGasCost(0)
+          setAmountIn(0)
+          setAmountInDecimals(0)
+          setTokenAddress("");
             setIsnative(e.target.value);
             if (e.target.value == "Native") {
                 let provider = await new ethers.providers.Web3Provider(web3.givenProvider);
@@ -79,6 +83,10 @@ export default function Transfer() {
     };
 
     const onOptionChangeForWallet = (e) => {
+        setGasCost(0)
+        setAmountIn(0)
+        setAmountInDecimals(0)
+        setTokenAddress("");
         setIsSCW(e.target.value);
     };
 
