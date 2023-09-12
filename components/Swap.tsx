@@ -1,6 +1,5 @@
 import * as React from "react";
 import { BigNumber as bg } from "bignumber.js";
-import { useAppStore, useSwapAppStore } from "../store/appStore";
 import { V3_SWAP_ROUTER_ADDRESS, _functionType, _nonce } from "../utils/constants";
 import { useUniswap } from "../hooks/useUniswap";
 import { BigNumber, ethers } from "ethers";
@@ -10,6 +9,8 @@ import { useBiconomyProvider } from "../hooks/aaProvider/useBiconomyProvider";
 import { getErc20Decimals, getProvider } from "../utils/web3Libs/ethers";
 import IERC20 from "../abis/IERC20.json";
 import { useAddress } from "@thirdweb-dev/react";
+import { iSwap, useSwapStore } from "../store/SwapStore";
+import { iCrossChainDifi, useCrossChainDifiStore } from "../store/CrossChainDifiStore";
 
 export default function Swap() {
     const address = useAddress(); // Detect the connected address
@@ -18,23 +19,26 @@ export default function Swap() {
     const { mutateAsync: sendTxTrditionally } = useEoaProvider();
     const { mutateAsync: sendToBiconomy } = useBiconomyProvider();
 
-    const { smartAccount }: any = useAppStore((state) => state);
-    const [tokenInDecimals, setTokenInDecimals] = React.useState<any>(6);
-    const [tokenOutDecimals, setTokenOutDecimals] = React.useState<any>(6);
-    const [amountOutAfterSlippage, setAmountOutAfterSlippage] = React.useState<any>();
+    const { smartAccount }: iCrossChainDifi = useCrossChainDifiStore((state) => state);
 
     const {
-        setTokenIn,
+        tokenInDecimals,
+        setTokenInDecimals,
+        tokenOutDecimals,
+        setTokenOutDecimals,
+        amountOutAfterSlippage,
+        setAmountOutAfterSlippage,
         tokenIn,
-        setTokenOut,
+        setTokenIn,
         tokenOut,
-        setAmountIn,
+        setTokenOut,
         amountIn,
-        setAmountOut,
+        setAmountIn,
         amountOut,
-        setSlippage,
+        setAmountOut,
         slippage,
-    }: any = useSwapAppStore((state) => state);
+        setSlippage,
+    }: iSwap = useSwapStore((state) => state);
 
     const handleTokenIn = async (_tokenIn: any) => {
         setTokenIn(_tokenIn);
@@ -193,8 +197,9 @@ export default function Swap() {
                     <div style={{ margin: "5px" }}>
                         <h1>amountIn</h1>
                         <input
-                            placeholder="amountIn"
                             type="number"
+                            placeholder="amountIn"
+                            min="0"
                             value={
                                 amountIn != 0
                                     ? bg(amountIn).dividedBy(bg(10).pow(tokenInDecimals)).toString()
@@ -207,8 +212,9 @@ export default function Swap() {
                     <div style={{ margin: "5px" }}>
                         <h1>amountOut</h1>
                         <input
-                            placeholder="amountOut"
                             type="number"
+                            placeholder="amountOut"
+                            min="0"
                             value={
                                 amountOutAfterSlippage != 0
                                     ? bg(amountOutAfterSlippage).dividedBy(bg(10).pow(tokenOutDecimals)).toString()
@@ -221,8 +227,9 @@ export default function Swap() {
                     {/* <div style={{margin: "5px"}}>
                         <h1>slippage</h1>
                         <input
-                        placeholder="slippage"
                         type="number"
+                        placeholder="slippage"
+                        min="0"
                         value={slippage}
                         onChange={(e: any) => handleSlippage(e.target.value)}
                         />

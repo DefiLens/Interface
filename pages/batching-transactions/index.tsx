@@ -4,39 +4,33 @@ import { ImSpinner } from "react-icons/im";
 import { LiaChevronDownSolid, LiaChevronUpSolid } from "react-icons/lia";
 import { BiSolidRightArrowCircle } from "react-icons/bi";
 import { MdDelete } from "react-icons/md";
-import { useAppStore } from "../../store/appStore";
 import { shorten } from "../../utils/helper";
 import { _functionType, _nonce } from "../../utils/constants";
 import IndividualBatch from "../../components/BatchingComponenets/IndividualBatch";
 import { useBiconomyProvider } from "../../hooks/aaProvider/useBiconomyProvider";
 import { useEoaProvider } from "../../hooks/aaProvider/useEoaProvider";
+import { iBatchingTxn, useBatchingTxnStore } from "../../store/BatchingTxnStore";
+import { iCrossChainDifi, useCrossChainDifiStore } from "../../store/CrossChainDifiStore";
 bg.config({ DECIMAL_PLACES: 10 });
 
 export default function Batching() {
     const { mutateAsync: sendToBiconomy } = useBiconomyProvider();
     const { mutateAsync: sendTxTrditionally } = useEoaProvider();
-    const { sendTxLoading, setSendtxLoading, setSendtxLoadingForEoa, txhash }: any = useAppStore((state) => state);
-    const [individualBatch, setIndividualBatch] = React.useState<
-        {
-            id: number;
-            txHash: string[];
-            data: { fromProtocol: string; toProtocol: string; fromToken: string; toToken: string; amountIn: string };
-        }[]
-    >([
-        {
-            id: 0,
-            txHash: [],
-            data: {
-                fromProtocol: "",
-                toProtocol: "",
-                fromToken: "",
-                toToken: "",
-                amountIn: "",
-            },
-        },
-    ]);
+    
+    const { 
+        sendTxLoading,
+        setSendtxLoading,
+        setSendtxLoadingForEoa,
+        txhash
+    }: iCrossChainDifi = useCrossChainDifiStore((state) => state);
 
-    const [showIndividualBatchList, setShowIndividualBatchList] = React.useState<any>(null);
+    const { 
+        individualBatch,
+        setIndividualBatch,
+        showIndividualBatchList,
+        setShowIndividualBatchList,
+    }: iBatchingTxn = useBatchingTxnStore((state) => state);
+
     const [allTxs, setCollectedValues] = React.useState<any>([]);
 
     const addBatch = () => {

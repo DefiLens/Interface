@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { css } from "@emotion/css";
 import web3 from "web3";
 import { BigNumber, ethers } from "ethers";
@@ -8,7 +8,6 @@ import { BigNumber as bg } from "bignumber.js";
 import { toast } from "react-hot-toast";
 import { FiCopy } from "react-icons/fi";
 import IERC20 from "../abis/IERC20.json";
-import { useAppStore } from "../store/appStore";
 import { chooseChianId, shorten } from "../utils/helper";
 import { ImSpinner } from "react-icons/im";
 import axios from "axios";
@@ -16,27 +15,53 @@ import { BiSolidChevronDown } from "react-icons/bi";
 import { getErc20Balanceof, getErc20Decimals } from "../utils/web3Libs/ethers";
 import { gasFeesNamesByChainId, gasFeesNamesByMainChainId } from "../utils/constants";
 import ChainContext from "../Context/ChainContext";
+import { iCrossChainDifi, useCrossChainDifiStore } from "../store/CrossChainDifiStore";
+import { iTransfer, useTransferStore } from "../store/TransferStore";
+import { iGlobal, useGlobalStore } from "../store/GlobalStore";
 bg.config({ DECIMAL_PLACES: 5 });
 
 export default function Transfer() {
     const { selectedChainId } = React.useContext(ChainContext);
-    const { smartAccount, showTransferFundToggle }: any = useAppStore((state) => state);
+
+    const { 
+        smartAccount,
+    }: iCrossChainDifi = useCrossChainDifiStore((state) => state);
+
+    const { 
+        showTransferFundToggle
+    }: iGlobal = useGlobalStore((state) => state);
+
+    const { 
+        tokenAddress,
+        setTokenAddress,
+        amountIn,
+        setAmountIn,
+        amountInDecimals,
+        setAmountInDecimals,
+        isNative,
+        setIsnative,
+        isSCW,
+        setIsSCW,
+        sendTxLoading,
+        setSendtxLoading,
+        txhash,
+        setTxHash,
+        tokensData,
+        setTokensData,
+        scwBalance,
+        setScwTokenInbalance,
+        eoaBalance,
+        setEoaTokenInbalance,
+        tokenInDecimals,
+        setTokenInDecimals,
+        gasCost,
+        setGasCost,
+    }: iTransfer = useTransferStore((state) => state);
+
     const address = useAddress(); // Detect the connected address
     const signer: any = useSigner(); // Detect the connected address
     const chain = useChain();
-    const [tokenAddress, setTokenAddress] = useState<any>();
-    const [amountIn, setAmountIn] = useState<any>(0);
-    const [amountInDecimals, setAmountInDecimals] = useState<any>(0);
-    const [isNative, setIsnative] = useState<any>("Native");
-    const [isSCW, setIsSCW] = useState<any>("SCW");
-    const [sendTxLoading, setSendtxLoading] = useState<any>(false);
-    const [txhash, setTxHash] = useState<any>(false);
-    const [tokensData, setTokensData] = useState<any>("");
-    const [scwBalance, setScwTokenInbalance] = React.useState<any>(0);
-    const [eoaBalance, setEoaTokenInbalance] = React.useState<any>(0);
-    const [tokenInDecimals, setTokenInDecimals] = React.useState<any>(18);
-    const [gasCost, setGasCost] = React.useState<any>(0);
-
+    
     useEffect(() => {
         async function onChangeFromProtocol() {
             if (showTransferFundToggle) {
@@ -67,8 +92,8 @@ export default function Transfer() {
                 if (!address) throw "no metamask connected";
                 const _scwBalance = await provider.getBalance(smartAccount.address);
                 const _eoaBalance = await provider.getBalance(address);
-                setScwTokenInbalance(_scwBalance);
-                setEoaTokenInbalance(_eoaBalance);
+                setScwTokenInbalance(_scwBalance?.toNumber());
+                setEoaTokenInbalance(_eoaBalance?.toNumber());
                 setTokenInDecimals(18);
             } else {
                 setScwTokenInbalance(0);
@@ -103,9 +128,9 @@ export default function Transfer() {
             const decimals = await getErc20Decimals(contract);
 
             console.log("address" + address);
-            setTokenInDecimals(decimals);
-            setScwTokenInbalance(scwBalance);
-            setEoaTokenInbalance(eoaBalance);
+            setTokenInDecimals(decimals?.toNumber());
+            setScwTokenInbalance(scwBalance?.toNumber());
+            setEoaTokenInbalance(eoaBalance?.toNumber());
 
             if (!contract) {
                 alert("Not valid Token address");
@@ -159,9 +184,9 @@ export default function Transfer() {
                     const result = tokenGasPrice.times(feeTokenTransferGas).dividedBy(divisor);
                     const formattedResult = result.toFixed(15);
                     console.log("Token Gas Price in ETH:", formattedResult.toString());
-                    setGasCost(formattedResult.toString());
+                    setGasCost(bg(formattedResult).toNumber());
                 } else {
-                    setGasCost("0");
+                    setGasCost(0);
                 }
             }
         }
@@ -431,6 +456,7 @@ export default function Transfer() {
                             <div className="w-full flex justify-start items-center gap-1 text-black shadow rounded-md overflow-hidden mt-1">
                                 <input
                                     type="number"
+                                    min="0"
                                     placeholder="Amount"
                                     className="w-full bg-white font-medium outline-none shadow-outline border-2  rounded-md py-2 px-3 block appearance-none leading-normal focus:border-primary-950"
                                     value={amountInDecimals}

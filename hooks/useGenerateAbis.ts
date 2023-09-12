@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
-import { useAppStore } from '../store/appStore';
 import { fetchContractDetails } from '../utils/helper';
 import { _functionType, _nonce } from '../utils/constants';
+import { iCrossChainDifi, useCrossChainDifiStore } from '../store/CrossChainDifiStore';
 
 export function useGenerateAbis() {
     const {
@@ -11,7 +11,7 @@ export function useGenerateAbis() {
         allNetworkData,
         setFunctionArray,
         setAbi
-    }: any = useAppStore((state) => state);
+    }: iCrossChainDifi = useCrossChainDifiStore((state) => state);
 
     async function generateAbisForContract() {
         try {

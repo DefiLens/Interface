@@ -1,5 +1,4 @@
 import { useMutation } from "@tanstack/react-query";
-import { useAppStore } from "../store/appStore";
 import { getContractInstance, getErc20Allownace, getErc20Balanceof } from "../utils/web3Libs/ethers";
 import { BigNumber, ethers } from "ethers";
 import { BigNumber as bg } from "bignumber.js";
@@ -14,6 +13,7 @@ import { useBiconomyProvider } from "./aaProvider/useBiconomyProvider";
 import { useEoaProvider } from "./aaProvider/useEoaProvider";
 import ChainContext from "../Context/ChainContext";
 import { useContext } from "react";
+import { iCrossChainDifi, useCrossChainDifiStore } from "../store/CrossChainDifiStore";
 
 export function useSendTx() {
     const {
@@ -35,7 +35,7 @@ export function useSendTx() {
         setSendtxLoadingForEoa,
         setTxHash,
         currentProvider,
-    }: any = useAppStore((state) => state);
+    }: iCrossChainDifi = useCrossChainDifiStore((state) => state);
 
     const { selectedChain } = useContext(ChainContext);
 
@@ -54,7 +54,7 @@ export function useSendTx() {
             if (!smartAccount) throw "You need to login";
             if (!simulation) throw "First simulate then send Tx";
             if (contractIndex == "") throw "Enter contractIndex field";
-            if (amountIn == "") throw "Enter amountIn field";
+            if (!amountIn) throw "Enter amountIn field";
             if (isThisAmount < 0) throw "Select amount field";
             if (!allNetworkData) throw "a need to fetch";
 

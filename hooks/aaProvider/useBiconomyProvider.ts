@@ -1,14 +1,14 @@
 import { useMutation } from '@tanstack/react-query';
-import { useAppStore } from '../../store/appStore';
 import { _functionType, _nonce } from '../../utils/constants';
 import { toast } from 'react-hot-toast';
+import { iCrossChainDifi, useCrossChainDifiStore } from '../../store/CrossChainDifiStore';
 
 export function useBiconomyProvider() {
     const {
-        smartAccount,
-        setSendtxLoading,
-        setTxHash,
-    }: any = useAppStore((state) => state);
+      smartAccount,
+      setSendtxLoading,
+      setTxHash,
+  }: iCrossChainDifi = useCrossChainDifiStore((state) => state);
 
     async function sendToBiconomy(txs) {
         try {

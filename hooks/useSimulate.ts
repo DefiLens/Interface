@@ -1,5 +1,4 @@
 import { useMutation } from "@tanstack/react-query";
-import { useAppStore } from "../store/appStore";
 import { toast } from "react-hot-toast";
 import { getContractInstance, getErc20Balanceof, getProvider } from "../utils/web3Libs/ethers";
 import { BigNumber, ethers } from "ethers";
@@ -10,6 +9,7 @@ import ChainPing from "../abis/ChainPing.json";
 import IStarGateRouter from "../abis/IStarGateRouter.json";
 import { BigNumber as bg } from "bignumber.js";
 import axios from "axios";
+import { iCrossChainDifi, useCrossChainDifiStore } from "../store/CrossChainDifiStore";
 bg.config({ DECIMAL_PLACES: 18 });
 
 export function useSimulate() {
@@ -41,23 +41,23 @@ export function useSimulate() {
         setSendtxLoading,
         setSendtxLoadingForEoa,
         setTxHash,
-    }: any = useAppStore((state) => state);
+    }: iCrossChainDifi = useCrossChainDifiStore((state) => state);
 
     async function simulateTx({ funcIndex, address }) {
         try {
             setSendtxLoading(false);
             setSendtxLoadingForEoa(false);
             setSimulationLoading(true);
-            setGasUsed(undefined);
-            setGasCost(undefined);
-            setBridgeGasCost(undefined);
+            setGasUsed(0);
+            setGasCost(0);
+            setBridgeGasCost(0);
             setSimulateInputData(undefined);
             setSimulation(undefined);
             setTxHash("");
 
             if (!smartAccount) throw "You need to login";
             if (contractIndex == "") throw "Enter contractIndex field";
-            if (amountIn == "") throw "Enter amountIn field";
+            if (!amountIn) throw "Enter amountIn field";
             if (isThisAmount < 0) throw "Select amount field";
             if (!allNetworkData) throw "a need to fetch";
 
@@ -200,12 +200,12 @@ export function useSimulate() {
                         console.log("Token Gas Price in ETH:", formattedResult.toString());
 
                         const _bridgeGasCost = bg(quoteData[0].toString()).dividedBy(1e18);
-                        setGasCost(formattedResult.toString());
-                        setBridgeGasCost(_bridgeGasCost.toString());
+                        setGasCost(bg(formattedResult).toNumber());
+                        setBridgeGasCost(bg(_bridgeGasCost).toNumber());
                     } else {
-                        setGasCost('0');
+                        setGasCost(0);
                         const _bridgeGasCost = bg(quoteData[0].toString()).dividedBy(1e18);
-                        setBridgeGasCost(_bridgeGasCost.toString());
+                        setBridgeGasCost(bg(_bridgeGasCost).toNumber());
                     }
                 }
             }

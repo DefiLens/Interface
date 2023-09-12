@@ -7,43 +7,57 @@ import { toast } from "react-hot-toast";
 import { ImSpinner } from "react-icons/im";
 import { useAddress } from "@thirdweb-dev/react";
 import axios from "axios";
-import { useAppStore, useBatchAppStore } from "../../store/appStore";
+import { iBatchingTxn, useBatchingTxnStore } from "../../store/BatchingTxnStore";
 import { _functionType, _nonce, protocolByNetwork, tokenAddressByProtocol } from "../../utils/constants";
 import ChainContext from "../../Context/ChainContext";
 import { getContractInstance, getErc20Balanceof, getErc20Decimals, getProvider } from "../../utils/web3Libs/ethers";
 import IERC20 from "../../abis/IERC20.json";
 import { useRefinance } from "../../hooks/Batching/useRefinance";
+import { iCrossChainDifi, useCrossChainDifiStore } from "../../store/CrossChainDifiStore";
 bg.config({ DECIMAL_PLACES: 10 });
 
 export default function IndividualBatch({ onUpdate }) {
     const address = useAddress(); // Detect the connected address
     const { mutateAsync: refinance } = useRefinance();
     const { selectedChain } = React.useContext(ChainContext);
-    const { smartAccount }: any = useAppStore((state) => state);
-    const { setTokensData, tokensData }: any = useBatchAppStore((state) => state);
 
-    const [fromProtocol, setFromProtocol] = React.useState<any>();
-    const [toProtocol, setToProtocol] = React.useState<any>();
-    const [fromToken, setFromToken] = React.useState<any>();
-    const [toToken, setToToken] = React.useState<any>();
-    const [amountIn, setAmountIn] = React.useState<any>();
-    const [fromTokenBalanceForSCW, setFromTokenBalanceForSCW] = React.useState<any>(0);
-    const [fromTokenBalanceForEOA, setFromTokenBalanceForEOA] = React.useState<any>(0);
-    const [fromTokenDecimal, setFromTokenDecimal] = React.useState<any>(0);
-    // const [apys, setApys] = React.useState<any>([]);
-    // const [apysTo, setApysForTo] = React.useState<any>([]);
+    const { smartAccount }: iCrossChainDifi = useCrossChainDifiStore((state) => state);
 
-    const [addToBatchLoading, setAddToBatchLoading] = React.useState<any>();
-    // const [sendTxLoadingForEoa, setSendtxLoadingForEoa] = React.useState<any>();
+    const { 
+        tokensData,
+        setTokensData,
+        fromProtocol,
+        setFromProtocol,
+        toProtocol,
+        setToProtocol,
+        fromToken,
+        setFromToken,
+        toToken,
+        setToToken,
+        amountIn,
+        setAmountIn,
+        fromTokenBalanceForSCW,
+        setFromTokenBalanceForSCW,
+        fromTokenBalanceForEOA,
+        setFromTokenBalanceForEOA,
+        fromTokenDecimal,
+        setFromTokenDecimal,
+        addToBatchLoading,
+        setAddToBatchLoading,
+    }: iBatchingTxn  = useBatchingTxnStore((state) => state);
+
+    const [apys, setApys] = React.useState<any>([]);
+    const [apysTo, setApysForTo] = React.useState<any>([]);
+    const [sendTxLoadingForEoa, setSendtxLoadingForEoa] = React.useState<any>();
 
     useEffect(() => {
         async function onChangeFromProtocol() {
             if (fromProtocol) {
                 if (fromProtocol != "erc20") {
                     setAmountIn("");
-                    setFromTokenDecimal(undefined);
-                    setFromTokenBalanceForSCW(undefined);
-                    setFromTokenBalanceForEOA(undefined);
+                    setFromTokenDecimal(0);
+                    setFromTokenBalanceForSCW(0);
+                    setFromTokenBalanceForEOA(0);
                     const firstFromToken = protocolByNetwork[fromProtocol][0];
                     setFromToken(firstFromToken);
                     const provider = await getProvider("109");
@@ -52,9 +66,9 @@ export default function IndividualBatch({ onUpdate }) {
                     const scwBalance = await getErc20Balanceof(erc20, smartAccount.address);
                     const eoaBalance = await getErc20Balanceof(erc20, address);
                     const fromTokendecimal = await getErc20Decimals(erc20);
-                    setFromTokenDecimal(fromTokendecimal);
-                    setFromTokenBalanceForSCW(scwBalance);
-                    setFromTokenBalanceForEOA(eoaBalance);
+                    setFromTokenDecimal(fromTokendecimal?.toNumber());
+                    setFromTokenBalanceForSCW(scwBalance?.toNumber());
+                    setFromTokenBalanceForEOA(eoaBalance?.toNumber());
                 } else {
                     const response: any = await axios.get("https://gateway.ipfs.io/ipns/tokens.uniswap.org");
                     console.log("response: ", response, response.tokens);
@@ -130,21 +144,22 @@ export default function IndividualBatch({ onUpdate }) {
             return;
         }
         setAmountIn("");
-        setFromTokenDecimal(undefined);
-        setFromTokenBalanceForSCW(undefined);
-        setFromTokenBalanceForEOA(undefined);
+        setFromTokenDecimal(0);
+        setFromTokenBalanceForSCW(0);
+        setFromTokenBalanceForEOA(0);
         setFromToken(_fromToken);
         const provider = await getProvider("109");
-        const erc20Address = fromProtocol == "erc20" ? tokensData.filter((token) => token.symbol === _fromToken) : "";
+
+        const erc20Address: any = fromProtocol == "erc20" ? tokensData.filter((token: any) => token.symbol === _fromToken) : "";
         const tokenAddress =
             fromProtocol != "erc20" ? tokenAddressByProtocol[fromProtocol][_fromToken] : erc20Address[0].address;
         const erc20 = await getContractInstance(tokenAddress, IERC20, provider);
         const scwBalance = await getErc20Balanceof(erc20, smartAccount.address);
         const eoaBalance = await getErc20Balanceof(erc20, address);
         const fromTokendecimal = await getErc20Decimals(erc20);
-        setFromTokenDecimal(fromTokendecimal);
-        setFromTokenBalanceForSCW(scwBalance);
-        setFromTokenBalanceForEOA(eoaBalance);
+        setFromTokenDecimal(fromTokendecimal?.toNumber());
+        setFromTokenBalanceForSCW(scwBalance?.toNumber());
+        setFromTokenBalanceForEOA(eoaBalance?.toNumber());
     };
 
     const onChangeToToken = async (_toToken: any) => {
@@ -168,7 +183,7 @@ export default function IndividualBatch({ onUpdate }) {
             alert("Batching is only supported on polygon as of now");
             return;
         }
-        if (_amountIn) {
+        if (_amountIn && fromTokenDecimal) {
             let amountInByDecimals = bg(_amountIn.toString());
             amountInByDecimals = amountInByDecimals.multipliedBy(bg(10).pow(fromTokenDecimal));
             if (amountInByDecimals.eq(0)) {
@@ -239,7 +254,7 @@ export default function IndividualBatch({ onUpdate }) {
                 toProtocol,
                 fromToken,
                 toToken,
-                amountIn: bg(BigNumber.from(amountIn).toString()).dividedBy(bg(10).pow(fromTokenDecimal)).toString(),
+                amountIn: fromTokenDecimal && bg(BigNumber.from(amountIn).toString()).dividedBy(bg(10).pow(fromTokenDecimal)).toString(),
             });
             setAddToBatchLoading(false);
             // setSendtxLoadingForEoa(false);
@@ -388,7 +403,7 @@ export default function IndividualBatch({ onUpdate }) {
                     <span>Total Amount</span>
                     <span>
                         {`(SmartAccount Balance : ${
-                            fromTokenBalanceForSCW != undefined
+                            fromTokenDecimal && fromTokenBalanceForSCW != undefined
                                 ? bg(BigNumber.from(fromTokenBalanceForSCW).toString())
                                       .dividedBy(bg(10).pow(fromTokenDecimal))
                                       .toString()
@@ -396,7 +411,7 @@ export default function IndividualBatch({ onUpdate }) {
                         } ${fromToken ? fromToken : ""})
                                     `}
                         {`|| (EOA Balance : ${
-                            fromTokenBalanceForEOA != undefined
+                            fromTokenDecimal && fromTokenBalanceForEOA != undefined
                                 ? bg(BigNumber.from(fromTokenBalanceForEOA).toString())
                                       .dividedBy(bg(10).pow(fromTokenDecimal))
                                       .toString()
@@ -412,7 +427,7 @@ export default function IndividualBatch({ onUpdate }) {
                         disabled={!fromTokenDecimal ? true : false}
                         className="w-full bg-white font-medium outline-none shadow-outline border-2  rounded-md py-2 px-3 block appearance-none leading-normal focus:border-primary-950"
                         value={
-                            amountIn != 0 ? bg(amountIn).dividedBy(bg(10).pow(fromTokenDecimal)).toString() : amountIn
+                            fromTokenDecimal && amountIn != 0 ? bg(amountIn).dividedBy(bg(10).pow(fromTokenDecimal)).toString() : amountIn
                         }
                         onChange={(e: any) => onChangeAmountIn(e.target.value)}
                     />

@@ -1,5 +1,4 @@
 import { useMutation } from "@tanstack/react-query";
-import { useAppStore, useBatchAppStore } from "../../store/appStore";
 import { fetchContractDetails } from "../../utils/helper";
 import { V3_SWAP_ROUTER_ADDRESS, _functionType, _nonce } from "../../utils/constants";
 import { AlphaRouter, SwapType } from "@uniswap/smart-order-router";
@@ -12,14 +11,22 @@ import { useApprove } from "../useApprove";
 import { useBiconomyProvider } from "../aaProvider/useBiconomyProvider";
 import { useEoaProvider } from "../aaProvider/useEoaProvider";
 import { abiFetcher, abiFetcherNum, buildParams, nativeTokenFetcher, nativeTokenNum } from "./batchingUtils";
+import { iCrossChainDifi, useCrossChainDifiStore } from "../../store/CrossChainDifiStore";
+import { iBatchingTxn, useBatchingTxnStore } from "../../store/BatchingTxnStore";
 
 export function useRefinance() {
     const { mutateAsync: swap } = useUniswap();
     const { mutateAsync: approve } = useApprove();
     const { mutateAsync: sendToBiconomy } = useBiconomyProvider();
     const { mutateAsync: sendTxTrditionally } = useEoaProvider();
-    const { setTxHash, setSendtxLoading, setSendtxLoadingForEoa }: any = useAppStore((state) => state);
-    const { tokensData }: any = useBatchAppStore((state) => state);
+
+    const { 
+        setTxHash,
+        setSendtxLoading,
+        setSendtxLoadingForEoa,
+    }: iCrossChainDifi = useCrossChainDifiStore((state) => state);
+
+    const { tokensData }: iBatchingTxn = useBatchingTxnStore((state) => state);
 
     async function refinance({
         isSCW,

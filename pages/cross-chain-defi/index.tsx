@@ -32,9 +32,9 @@ import { useSimulate } from "../../hooks/useSimulate";
 import { useGenerateAbis } from "../../hooks/useGenerateAbis";
 import { useOnChangeFunctions, useOnChangeInput, useOnChangeTokenIn } from "../../hooks/useOnChangeMainForm";
 import { useCalculatebalance } from "../../hooks/useCalculateBalance";
-import { useAppStore } from "../../store/appStore";
 import ChainContext from "../../Context/ChainContext";
 import IERC20 from "../../abis/IERC20.json";
+import { iCrossChainDifi, useCrossChainDifiStore } from "../../store/CrossChainDifiStore";
 bg.config({ DECIMAL_PLACES: 10 });
 
 export default function NewMainForm() {
@@ -52,6 +52,7 @@ export default function NewMainForm() {
     const { mutateAsync: onChangeInputHook } = useOnChangeInput();
     const { mutateAsync: fetchNativeBalance } = useCalculatebalance();
     const { setSelectedChain, setSelectedChainId } = React.useContext(ChainContext);
+   
     const {
         connected,
         smartAccount,
@@ -124,10 +125,16 @@ export default function NewMainForm() {
         txhash,
         loading,
         setLoading,
-    }: any = useAppStore((state) => state);
 
-    const [scwTokenInBalance, setScwTokenInbalance] = React.useState<any>(0);
-    const [eoaTokenInBalance, setEoaTokenInbalance] = React.useState<any>(0);
+        scwTokenInBalance,
+        setScwTokenInbalance,
+        eoaTokenInBalance,
+        setEoaTokenInbalance,
+
+    }: iCrossChainDifi = useCrossChainDifiStore((state) => state);
+
+    // const [scwTokenInBalance, setScwTokenInbalance] = React.useState<any>(0);
+    // const [eoaTokenInBalance, setEoaTokenInbalance] = React.useState<any>(0);
 
     useEffect(() => {
         setIsSimulationOpen(false);
@@ -154,6 +161,7 @@ export default function NewMainForm() {
                     currentFunc,
                     apiUrl
                 );
+                console.log("🚀 ~ file: index.tsx:239 ~ updateParams ~ response:", response)
                 if (!response.data) throw "api error";
                 let _func = [...params];
                 _func[currentFuncIndex] = response.data.params;
@@ -178,7 +186,7 @@ export default function NewMainForm() {
                 setScwTokenInbalance(scwBalance);
                 setEoaTokenInbalance(eoaBalance);
                 resetField();
-                setAmountIn("");
+                setAmountIn(0);
                 setContractIndex("");
             }
         }
@@ -207,7 +215,7 @@ export default function NewMainForm() {
         setCurrentFuncIndex(0);
         setIsThisFieldAmount(-1);
 
-        setGasUsed(undefined);
+        setGasUsed(0);
         setSimulateInputData(undefined);
         setSimulation(undefined);
         setIsSimulationSuccessOpen(false);
@@ -229,7 +237,7 @@ export default function NewMainForm() {
             setLoading(true);
             setTokenIn("");
             setToChainId("");
-            setData("");
+            setData(null);
             const realChainID = await chooseChianId(_fromNetwork);
             setSelectedChain?.(NetworkNameByChainId[realChainID]);
             setSelectedChainId?.(realChainID);
@@ -323,10 +331,10 @@ export default function NewMainForm() {
             if (amountInByDecimals.eq(0)) {
                 setAmountIn(_amountIn);
             } else {
-                setAmountIn(amountInByDecimals.toString());
+                setAmountIn(bg(amountInByDecimals).toNumber());
             }
         } else {
-            setAmountIn("");
+            setAmountIn(0);
         }
     };
 
@@ -508,6 +516,7 @@ export default function NewMainForm() {
                             <div className="w-full flex justify-start items-center gap-1 text-secondary-800 bg-white shadow rounded-md overflow-hidden mt-1">
                                 <input
                                     type="number"
+                                    min="0"
                                     placeholder=""
                                     className="w-full bg-white font-medium outline-none shadow-outline border-2  rounded-md py-2 px-3 block appearance-none leading-normal focus:border-primary-950"
                                     value={

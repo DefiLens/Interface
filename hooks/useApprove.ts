@@ -1,5 +1,4 @@
 import { useMutation } from '@tanstack/react-query';
-import { useAppStore } from '../store/appStore';
 import { fetchContractDetails } from '../utils/helper';
 import { V3_SWAP_ROUTER_ADDRESS, _functionType, _nonce } from '../utils/constants';
 import { AlphaRouter, SwapType } from '@uniswap/smart-order-router';

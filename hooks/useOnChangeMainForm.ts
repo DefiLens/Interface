@@ -1,13 +1,18 @@
 import { useMutation } from '@tanstack/react-query';
-import { useAppStore } from '../store/appStore';
 import { _functionType, _nonce, methodWithApi, tokensByNetwork } from '../utils/constants';
 import { fetchMethodParams } from '../utils/apis';
 import { useSimulate } from './useSimulate';
+import { iCrossChainDifi, useCrossChainDifiStore } from '../store/CrossChainDifiStore';
 
 export function useOnChangeTokenIn() {
     const {
-        setTokenIn, setTokenInDecimals, setSrcPoolId, setDestPoolId, setAmountIn
-    }: any = useAppStore((state) => state);
+        setTokenIn,
+        setTokenInDecimals,
+        setSrcPoolId,
+        setDestPoolId,
+        setAmountIn
+    }: iCrossChainDifi = useCrossChainDifiStore((state) => state);
+
 
       // for e.g usdt -> usdc
     const onChangeTokenInHook = async ({fromChainId, tokenIn}) => {
@@ -35,6 +40,29 @@ export function useOnChangeTokenIn() {
 }
 
 export function useOnChangeFunctions() {
+    // const {
+    //     setParams,
+    //     setFixParams,
+    //     setCurrentFunc,
+    //     setCurrentFuncIndex,
+    //     setIsThisFieldAmount,
+    //     setGasUsed,
+    //     setSimulateInputData,
+    //     setSimulation,
+    //     setIsSimulationOpen,
+    //     setIsSimulationSuccessOpen,
+    //     setIsSimulationErrorOpen,
+    //     setsimulationErrorMsg,
+    //     smartAccount,
+    //     allNetworkData,
+    //     contractIndex,
+    //     funcArray,
+    //     fromChainId,
+    //     toChainId,
+    //     amountIn,
+    //     params
+    // }: any = useAppStore((state) => state);
+
     const {
         setParams,
         setFixParams,
@@ -56,7 +84,8 @@ export function useOnChangeFunctions() {
         toChainId,
         amountIn,
         params
-    }: any = useAppStore((state) => state);
+    }: iCrossChainDifi = useCrossChainDifiStore((state) => state);
+    
     const { mutateAsync: simulateTx } = useSimulate();
 
       // for e.g usdt -> usdc
@@ -97,13 +126,22 @@ export function useOnChangeFunctions() {
 }
 
 export function useOnChangeInput() {
+    // const {
+    //     setParams,
+    //     setCurrentFunc,
+    //     funcArray,
+    //     amountIn,
+    //     params
+    // }: any = useAppStore((state) => state);
+
     const {
         setParams,
         setCurrentFunc,
         funcArray,
         amountIn,
         params
-    }: any = useAppStore((state) => state);
+    }: iCrossChainDifi = useCrossChainDifiStore((state) => state);
+
 
     const onChangeInputHook = async ({
         funcIndex,

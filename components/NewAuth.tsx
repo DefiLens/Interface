@@ -14,32 +14,39 @@ import { IPaymaster, BiconomyPaymaster } from "@biconomy/paymaster";
 import { DEFAULT_ENTRYPOINT_ADDRESS, BiconomySmartAccountConfig, BiconomySmartAccount } from "@biconomy/account";
 import { useSwitchChain, useSigner, useConnect, useChain, useAddress, metamaskWallet } from "@thirdweb-dev/react";
 
-import { useAppStore } from "../store/appStore";
 import ChainContext from "../Context/ChainContext";
 import { useCalculatebalance } from "../hooks/useCalculateBalance";
 import { paymasterURLs, gasFeesNames, buttonStyle, bundlerURLs } from "../utils/constants";
 
 import Transfer from "./Transfer";
 import Link from "next/link";
+import { useCrossChainDifiStore } from "../store/CrossChainDifiStore";
+import { iGlobal, useGlobalStore } from "../store/GlobalStore";
 
 bg.config({ DECIMAL_PLACES: 5 });
 
 export default function Home() {
+
     const {
-        setSmartAccount,
         smartAccount,
-        setCurrentProvider,
+        setSmartAccount,
         scwBalance,
+        setCurrentProvider,
         eoaBalance,
         loading,
         setLoading,
         connected,
         setConnected,
+    }: any = useCrossChainDifiStore((state) => state);
+
+    const {
         showWalletAddress,
         setShowWalletAddress,
         showTransferFundToggle,
         setShowTransferFundToggle
-    }: any = useAppStore((state) => state);
+    }: iGlobal = useGlobalStore((state) => state);
+
+
     const { selectedChain, setSelectedChain, selectedChainId, setSelectedChainId } = useContext(ChainContext);
     const { mutateAsync: fetchNativeBalance } = useCalculatebalance();
     const switchChain = useSwitchChain();
@@ -407,7 +414,7 @@ export default function Home() {
                             onChange={(e) => switchOnSpecificChain(e.target.value)}
                         >
                             <option value="" disabled selected={selectedChain == "" || !selectedChain ? true : false}>
-                                Selece Network
+                                Select Network
                             </option>
                             <option
                                 value="polygon"
