@@ -1,18 +1,15 @@
-import { useMutation } from "@tanstack/react-query";
-import { fetchContractDetails } from "../../utils/helper";
-import { V3_SWAP_ROUTER_ADDRESS, _functionType, _nonce } from "../../utils/constants";
-import { AlphaRouter, SwapType } from "@uniswap/smart-order-router";
-import { TradeType, Percent, Token, CurrencyAmount } from "@uniswap/sdk-core";
-import { getContractInstance, getErc20Data, getProvider } from "../../utils/web3Libs/ethers";
-import { parseUnits } from "ethers/lib/utils";
 import { ethers } from "ethers";
+
+import { useMutation } from "@tanstack/react-query";
+
 import { useUniswap } from "../useUniswap";
 import { useApprove } from "../useApprove";
-import { useBiconomyProvider } from "../aaProvider/useBiconomyProvider";
 import { useEoaProvider } from "../aaProvider/useEoaProvider";
-import { abiFetcher, abiFetcherNum, buildParams, nativeTokenFetcher, nativeTokenNum } from "./batchingUtils";
-import { iCrossChainDifi, useCrossChainDifiStore } from "../../store/CrossChainDifiStore";
-import { iBatchingTxn, useBatchingTxnStore } from "../../store/BatchingTxnStore";
+import { useBiconomyProvider } from "../aaProvider/useBiconomyProvider";
+import { useBatchingTxnStore, iBatchingTxn } from "../../store/BatchingTxnStore";
+import { V3_SWAP_ROUTER_ADDRESS, _nonce, _functionType } from "../../utils/constants";
+import { useCrossChainDifiStore, iCrossChainDifi } from "../../store/CrossChainDifiStore";
+import { nativeTokenNum, nativeTokenFetcher, buildParams, abiFetcherNum, abiFetcher } from "./batchingUtils";
 
 export function useRefinance() {
     const { mutateAsync: swap } = useUniswap();

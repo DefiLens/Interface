@@ -257,10 +257,10 @@ export const shorten = (text: any) => {
 
 export function setSafeState<T>(
     setStateFunction: (value: T) => void,
-    value: T | undefined,
+    value: T | undefined | null,
     defaultValue: T
   ) {
-    if (value !== undefined) {
+    if (value !== undefined && value !== null) {
       setStateFunction(value);
     } else {
       setStateFunction(defaultValue);

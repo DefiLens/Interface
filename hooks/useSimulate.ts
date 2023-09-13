@@ -1,20 +1,28 @@
-import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
 import { toast } from "react-hot-toast";
-import { getContractInstance, getErc20Balanceof, getProvider } from "../utils/web3Libs/ethers";
-import { BigNumber, ethers } from "ethers";
-import { batch, calculateFees, chooseChianId } from "../utils/helper";
-import { _functionType, _nonce, richAddressByChainId } from "../utils/constants";
+import { ethers, BigNumber } from "ethers";
+import { BigNumber as bg } from "bignumber.js";
+
+import { useMutation } from "@tanstack/react-query";
+
 import IERC20 from "../abis/IERC20.json";
 import ChainPing from "../abis/ChainPing.json";
 import IStarGateRouter from "../abis/IStarGateRouter.json";
-import { BigNumber as bg } from "bignumber.js";
-import axios from "axios";
-import { iCrossChainDifi, useCrossChainDifiStore } from "../store/CrossChainDifiStore";
+import { useGlobalStore, iGlobal } from "../store/GlobalStore";
+import { chooseChianId, calculateFees, batch } from "../utils/helper";
+import { richAddressByChainId, _nonce, _functionType } from "../utils/constants";
+import { useCrossChainDifiStore, iCrossChainDifi } from "../store/CrossChainDifiStore";
+import { getProvider, getErc20Balanceof, getContractInstance } from "../utils/web3Libs/ethers";
+
 bg.config({ DECIMAL_PLACES: 18 });
 
 export function useSimulate() {
+
     const {
         smartAccount,
+    }: iGlobal = useGlobalStore((state) => state);
+
+    const {
         fromChainId,
         toChainId,
         srcPoolId,
@@ -51,14 +59,14 @@ export function useSimulate() {
             setGasUsed(0);
             setGasCost(0);
             setBridgeGasCost(0);
-            setSimulateInputData(undefined);
-            setSimulation(undefined);
+            setSimulateInputData("");
+            setSimulation("");
             setTxHash("");
 
             if (!smartAccount) throw "You need to login";
             if (contractIndex == "") throw "Enter contractIndex field";
             if (!amountIn) throw "Enter amountIn field";
-            if (isThisAmount < 0) throw "Select amount field";
+            if (!isThisAmount) throw "Select amount field";
             if (!allNetworkData) throw "a need to fetch";
 
             const provider = await getProvider(fromChainId);

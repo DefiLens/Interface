@@ -1,20 +1,22 @@
-import { useMutation } from '@tanstack/react-query';
-import { toast } from "react-hot-toast";
-import { getContractInstance, getErc20Balanceof } from '../utils/web3Libs/ethers';
-import { BigNumber, ethers } from 'ethers';
-import { batch, calculateFees, chooseChianId } from '../utils/helper';
-import { _functionType, _nonce, rpscURLS } from '../utils/constants';
-import IERC20 from "../abis/IERC20.json";
-import ChainPing from "../abis/ChainPing.json";
-import { BigNumber as bg } from "bignumber.js";
 import axios from 'axios';
-import { iCrossChainDifi, useCrossChainDifiStore } from '../store/CrossChainDifiStore';
+import { toast } from "react-hot-toast";
+import { BigNumber as bg } from "bignumber.js";
+
+import { useMutation } from '@tanstack/react-query';
+
+import { useGlobalStore, iGlobal } from '../store/GlobalStore';
+import { _nonce, _functionType } from '../utils/constants';
+import { useCrossChainDifiStore, iCrossChainDifi } from '../store/CrossChainDifiStore';
+
 bg.config({ DECIMAL_PLACES: 5 });
 
 export function useCalculateGasCost() {
     const { 
         setScwBalance,
         setEoaBalance,
+    }: iGlobal = useGlobalStore((state) => state);
+
+    const { 
         fromChainId
     }: iCrossChainDifi = useCrossChainDifiStore((state) => state);
 

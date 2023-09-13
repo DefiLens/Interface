@@ -1,28 +1,28 @@
 import { create } from "zustand";
-import { BiconomySmartAccount } from "@biconomy/account";
+import { BigNumber } from "ethers";
 
 interface iContract {
     contractName: string;
     contractAddress: string;
     extraOrShareToken?: string;
-}
+};
 
 interface iContractMetaData {
     methodNames: string[];
     amountFieldIndex: number[];
-}
+};
 
 interface iTokens {
     [tokenName: string]: string;
-}
+};
 
 interface iChainPing {
     [network: string]: string;
-}
+};
 
 interface iStarGateRouter {
     [network: string]: string;
-}
+};
 
 interface iApiResponse {
     contracts: iContract[];
@@ -30,19 +30,17 @@ interface iApiResponse {
     tokens: iTokens;
     chainPing: iChainPing;
     starGateRouter: iStarGateRouter;
-}
+};
+
+interface iFuncArray {
+    name: string;
+    inputs: any[];
+    outputs: any[]; 
+    stateMutability: string;
+    type: string;
+};
 
 export interface iCrossChainDifi {
-    connected: boolean;
-    loading: boolean;
-    smartAccount: BiconomySmartAccount | null | any;
-    // currentSigner: any;
-    // currentAddress: any;
-    scwBalance: string;
-    eoaBalance: string;
-
-    currentProvider: string;
-
     fromChainId: string;
     toChainId: string;
     srcPoolId: number;
@@ -51,7 +49,7 @@ export interface iCrossChainDifi {
     tokenIn: string
     tokenInDecimals: number;
     amountIn: number;
-    isThisAmount: string | number | any;
+    isThisAmount: string | number;
 
     contractIndex: string;
     allNetworkData: iApiResponse | null;
@@ -59,41 +57,32 @@ export interface iCrossChainDifi {
     currentFunc: string;
     currentFuncIndex: number;
 
-    funcArray: any;
-    params: any;
-    fixParams: any;
+    funcArray: iFuncArray[] | null;
+    params: any[][];
+    fixParams: any[][];
 
-    isSimulationOpen: boolean | undefined;
-    isSimulationSuccessOpen: boolean | undefined;
-    isSimulationErrorOpen: boolean | undefined;
+    isSimulationOpen: boolean;
+    isSimulationSuccessOpen: boolean;
+    isSimulationErrorOpen: boolean;
 
     isSimulationSuccessDetailShow: boolean;
     isSimulationErrorDetailShow: boolean;
 
     simulationErrorMsg: string;
-    simulation: string | undefined;
+    simulation: string;
     gasUsed: number;
     gasCost: number;
     bridgeGasCost: number;
-    simulateInputData: string | undefined;
+    simulateInputData: string;
     simulateLoading: boolean;
 
     sendTxLoading: boolean;
     sendTxLoadingForEoa: boolean;
     txhash: string;
 
-    scwTokenInBalance: number | object | undefined;
-    eoaTokenInBalance: number | object | undefined;
+    scwTokenInBalance: BigNumber;
+    eoaTokenInBalance: BigNumber;
 
-    setConnected: (connected: boolean) => void;
-    setLoading: (loading: boolean) => void;
-    setSmartAccount: (smartAccount: BiconomySmartAccount | null) => void;
-    // setCurrentSigner: (currentSigner: any) => void;
-    // setCurrentAddress: (currentAddress: any) => void;
-    setScwBalance: (scwBalance: string) => void;
-    setEoaBalance: (eoaBalance: string) => void;
-
-    setCurrentProvider: (currentProvider: string) => void;
 
     setFromChainId: (fromChainId: string) => void;
     setToChainId: (toChainId: string) => void;
@@ -111,23 +100,23 @@ export interface iCrossChainDifi {
     setCurrentFunc: (currentFunc: string) => void;
     setCurrentFuncIndex: (currentFuncIndex: number) => void;
 
-    setFunctionArray: (funcArray: any) => void;
-    setParams: (params: any) => void;
-    setFixParams: (fixParams: any) => void;
+    setFunctionArray: (funcArray: iFuncArray[] | null) => void;
+    setParams: (params: any[][]) => void;
+    setFixParams: (fixParams: any[][]) => void;
 
-    setIsSimulationOpen: (isSimulationOpen: boolean | undefined) => void;
-    setIsSimulationSuccessOpen: (isSimulationSuccessOpen: boolean | undefined) => void;
-    setIsSimulationErrorOpen: (isSimulationErrorOpen: boolean | undefined) => void;
+    setIsSimulationOpen: (isSimulationOpen: boolean) => void;
+    setIsSimulationSuccessOpen: (isSimulationSuccessOpen: boolean) => void;
+    setIsSimulationErrorOpen: (isSimulationErrorOpen: boolean) => void;
 
     setIsSimulationSuccessDetailShow: (isSimulationSuccessDetailShow: boolean) => void;
     setIsSimulationErrorDetailShow: (isSimulationErrorDetailShow: boolean) => void;
 
     setsimulationErrorMsg: (simulationErrorMsg: string) => void;
-    setSimulation: (simulation: string | undefined) => void;
+    setSimulation: (simulation: string) => void;
     setGasUsed: (gasUsed: number) => void;
     setGasCost: (gasCost: number) => void;
     setBridgeGasCost: (bridgeGasCost: number) => void;
-    setSimulateInputData: (simulateInputData: string | undefined) => void;
+    setSimulateInputData: (simulateInputData: string) => void;
     setSimulationLoading: (simulateLoading: boolean) => void;
 
     setSendtxLoading: (sendTxLoading: boolean) => void;
@@ -135,21 +124,11 @@ export interface iCrossChainDifi {
 
     setTxHash: (txhash: string) => void;
 
-    setScwTokenInbalance: (scwTokenInBalance: number | object | undefined) => void;
-    setEoaTokenInbalance: (eoaTokenInBalance: number | object | undefined) => void;
+    setScwTokenInbalance: (scwTokenInBalance: BigNumber) => void;
+    setEoaTokenInbalance: (eoaTokenInBalance: BigNumber) => void;
 }
 
 export const useCrossChainDifiStore = create<iCrossChainDifi>((set) => ({
-    connected: false,
-    loading: false,
-    smartAccount: null,
-    // currentSigner: "",
-    // currentAddress: "",
-    scwBalance: "",
-    eoaBalance: "",
-
-    currentProvider: "",
-
     fromChainId: "",
     toChainId: "",
     srcPoolId: 1,
@@ -166,7 +145,7 @@ export const useCrossChainDifiStore = create<iCrossChainDifi>((set) => ({
     currentFunc: "",
     currentFuncIndex: 0,
 
-    funcArray: [],
+    funcArray: null,
     params: [[]],
     fixParams: [[]],
 
@@ -189,18 +168,9 @@ export const useCrossChainDifiStore = create<iCrossChainDifi>((set) => ({
     sendTxLoadingForEoa: false,
     txhash: "",
    
-    scwTokenInBalance: 0,
-    eoaTokenInBalance: 0,
+    scwTokenInBalance: BigNumber.from(0),
+    eoaTokenInBalance: BigNumber.from(0),
 
-    setConnected: (connected) => set(() => ({ connected })),
-    setLoading: (loading) => set(() => ({ loading })),
-    setSmartAccount: (smartAccount) => set(() => ({ smartAccount })),
-    // setCurrentSigner: (currentSigner) => set(() => ({ currentSigner })),
-    // setCurrentAddress: (currentAddress) => set(() => ({ currentAddress })),
-    setScwBalance: (scwBalance) => set(() => ({ scwBalance })),
-    setEoaBalance: (eoaBalance) => set(() => ({ eoaBalance })),
-
-    setCurrentProvider: (currentProvider) => set(() => ({ currentProvider })),
 
     setFromChainId: (fromChainId) => set(() => ({ fromChainId })),
     setToChainId: (toChainId) => set(() => ({ toChainId })),

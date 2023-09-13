@@ -1,25 +1,30 @@
 import * as React from "react";
-import { BigNumber as bg } from "bignumber.js";
-import { V3_SWAP_ROUTER_ADDRESS, _functionType, _nonce } from "../utils/constants";
-import { useUniswap } from "../hooks/useUniswap";
-import { BigNumber, ethers } from "ethers";
-import { useApprove } from "../hooks/useApprove";
-import { useEoaProvider } from "../hooks/aaProvider/useEoaProvider";
-import { useBiconomyProvider } from "../hooks/aaProvider/useBiconomyProvider";
-import { getErc20Decimals, getProvider } from "../utils/web3Libs/ethers";
-import IERC20 from "../abis/IERC20.json";
-import { useAddress } from "@thirdweb-dev/react";
-import { iSwap, useSwapStore } from "../store/SwapStore";
-import { iCrossChainDifi, useCrossChainDifiStore } from "../store/CrossChainDifiStore";
 
-export default function Swap() {
+import { ethers, BigNumber } from "ethers";
+import { BigNumber as bg } from "bignumber.js";
+
+import { useAddress } from "@thirdweb-dev/react";
+
+import IERC20 from "../abis/IERC20.json";
+import { setSafeState } from "../utils/helper";
+import { useUniswap } from "../hooks/useUniswap";
+import { useApprove } from "../hooks/useApprove";
+import { useSwapStore, iSwap } from "../store/SwapStore";
+import { useGlobalStore, iGlobal } from "../store/GlobalStore";
+import { useEoaProvider } from "../hooks/aaProvider/useEoaProvider";
+import { getProvider, getErc20Decimals } from "../utils/web3Libs/ethers";
+import { useBiconomyProvider } from "../hooks/aaProvider/useBiconomyProvider";
+import { V3_SWAP_ROUTER_ADDRESS, BIG_ZERO, _nonce, _functionType } from "../utils/constants";
+
+const Swap: React.FC<{}> = () => {
+
     const address = useAddress(); // Detect the connected address
     const { mutateAsync: swap } = useUniswap();
     const { mutateAsync: approve } = useApprove();
     const { mutateAsync: sendTxTrditionally } = useEoaProvider();
     const { mutateAsync: sendToBiconomy } = useBiconomyProvider();
 
-    const { smartAccount }: iCrossChainDifi = useCrossChainDifiStore((state) => state);
+    const { smartAccount }: iGlobal = useGlobalStore((state) => state);
 
     const {
         tokenInDecimals,
@@ -45,14 +50,15 @@ export default function Swap() {
         const web3JsonProvider = await getProvider("109");
         const erc20 = await new ethers.Contract(_tokenIn, IERC20, web3JsonProvider);
         const decimals = await getErc20Decimals(erc20);
-        setTokenInDecimals(decimals);
+        setSafeState(setTokenInDecimals, decimals, 0);
+
     };
     const handleTokenOut = async (_tokenOut: any) => {
         setTokenOut(_tokenOut);
         const web3JsonProvider = await getProvider("109");
         const erc20 = await new ethers.Contract(_tokenOut, IERC20, web3JsonProvider);
         const decimals = await getErc20Decimals(erc20);
-        setTokenOutDecimals(decimals);
+        setSafeState(setTokenOutDecimals, decimals, 0);
     };
     const handleAmountIn = async (_amountIn) => {
         if (!smartAccount) {
@@ -83,7 +89,7 @@ export default function Swap() {
         console.log("amountOut", amountOut.toString());
         const amountAfterSlippage = bg(amountOut).minus(bg(amountOut).multipliedBy(_slippage).div(100));
         console.log("amountAfterSlippage", amountAfterSlippage.toString());
-        setAmountOutAfterSlippage(amountAfterSlippage);
+        setSafeState(setAmountOutAfterSlippage, BigNumber.from(amountAfterSlippage), BIG_ZERO);
     };
 
     const sendTx = async (isScw: boolean) => {
@@ -121,7 +127,7 @@ export default function Swap() {
                             bg(swapData?.amountOutprice).multipliedBy(slippage).div(100)
                         );
                         console.log("amountAfterSlippage-1", amountAfterSlippage.toString());
-                        setAmountOutAfterSlippage(amountAfterSlippage);
+                        setSafeState(setAmountOutAfterSlippage, BigNumber.from(amountAfterSlippage), BIG_ZERO);
                     }
                 } else {
                     setAmountOut(amountOutByDecimals.toString());
@@ -130,7 +136,7 @@ export default function Swap() {
                             bg(amountOutByDecimals).multipliedBy(slippage).div(100)
                         );
                         console.log("amountAfterSlippage-2", amountAfterSlippage.toString());
-                        setAmountOutAfterSlippage(amountAfterSlippage);
+                        setSafeState(setAmountOutAfterSlippage, BigNumber.from(amountAfterSlippage), BIG_ZERO);
                     }
                 }
             } else {
@@ -216,9 +222,9 @@ export default function Swap() {
                             placeholder="amountOut"
                             min="0"
                             value={
-                                amountOutAfterSlippage != 0
-                                    ? bg(amountOutAfterSlippage).dividedBy(bg(10).pow(tokenOutDecimals)).toString()
-                                    : amountOutAfterSlippage
+                                !amountOutAfterSlippage.isZero()
+                                    ? bg(amountOutAfterSlippage.toString()).dividedBy(bg(10).pow(tokenOutDecimals)).toString()
+                                    : amountOutAfterSlippage.toString()
                             }
                             onChange={(e: any) => handleAmountOut(e.target.value)}
                         />
@@ -247,3 +253,5 @@ export default function Swap() {
         </>
     );
 }
+
+export default Swap;

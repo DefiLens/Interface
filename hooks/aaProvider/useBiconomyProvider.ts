@@ -1,11 +1,18 @@
-import { useMutation } from '@tanstack/react-query';
-import { _functionType, _nonce } from '../../utils/constants';
 import { toast } from 'react-hot-toast';
-import { iCrossChainDifi, useCrossChainDifiStore } from '../../store/CrossChainDifiStore';
+
+import { useMutation } from '@tanstack/react-query';
+
+import { _nonce, _functionType } from '../../utils/constants';
+import { useGlobalStore, iGlobal } from '../../store/GlobalStore';
+import { useCrossChainDifiStore, iCrossChainDifi } from '../../store/CrossChainDifiStore';
 
 export function useBiconomyProvider() {
-    const {
-      smartAccount,
+    
+const {
+    smartAccount,
+  }: iGlobal = useGlobalStore((state) => state);
+
+const {
       setSendtxLoading,
       setTxHash,
   }: iCrossChainDifi = useCrossChainDifiStore((state) => state);

@@ -1,28 +1,32 @@
 import * as React from "react";
 import { useEffect } from "react";
+
+import axios from "axios";
 import { BigNumber } from "ethers";
 import { BigNumber as bg } from "bignumber.js";
-import { BiSolidChevronDown } from "react-icons/bi";
-import { toast } from "react-hot-toast";
+
 import { ImSpinner } from "react-icons/im";
 import { useAddress } from "@thirdweb-dev/react";
-import axios from "axios";
-import { iBatchingTxn, useBatchingTxnStore } from "../../store/BatchingTxnStore";
-import { _functionType, _nonce, protocolByNetwork, tokenAddressByProtocol } from "../../utils/constants";
-import ChainContext from "../../Context/ChainContext";
-import { getContractInstance, getErc20Balanceof, getErc20Decimals, getProvider } from "../../utils/web3Libs/ethers";
+import { BiSolidChevronDown } from "react-icons/bi";
+
 import IERC20 from "../../abis/IERC20.json";
-import { useRefinance } from "../../hooks/Batching/useRefinance";
-import { iCrossChainDifi, useCrossChainDifiStore } from "../../store/CrossChainDifiStore";
 import { setSafeState } from "../../utils/helper";
+import ChainContext from "../../Context/ChainContext";
+import { useRefinance } from "../../hooks/Batching/useRefinance";
+import { useGlobalStore, iGlobal } from "../../store/GlobalStore";
+import { useBatchingTxnStore, iBatchingTxn } from "../../store/BatchingTxnStore";
+import { tokenAddressByProtocol, protocolByNetwork, _nonce, _functionType } from "../../utils/constants";
+import { getProvider, getErc20Decimals, getErc20Balanceof, getContractInstance } from "../../utils/web3Libs/ethers";
+
 bg.config({ DECIMAL_PLACES: 10 });
 
-export default function IndividualBatch({ onUpdate }) {
+const IndividualBatch: React.FC<any> = ({onUpdate} : any) => {
+
     const address = useAddress(); // Detect the connected address
     const { mutateAsync: refinance } = useRefinance();
     const { selectedChain } = React.useContext(ChainContext);
 
-    const { smartAccount }: iCrossChainDifi = useCrossChainDifiStore((state) => state);
+    const { smartAccount }: iGlobal = useGlobalStore((state) => state);
 
     const {
         tokensData,
@@ -45,17 +49,19 @@ export default function IndividualBatch({ onUpdate }) {
         setFromTokenDecimal,
         addToBatchLoading,
         setAddToBatchLoading,
+        apys,
+        setApys,
+        apysTo,
+        setApysForTo,
+        sendTxLoadingForEoa,
+        setSendtxLoadingForEoa,
     }: iBatchingTxn  = useBatchingTxnStore((state) => state);
-
-    const [apys, setApys] = React.useState<any>([]);
-    const [apysTo, setApysForTo] = React.useState<any>([]);
-    const [sendTxLoadingForEoa, setSendtxLoadingForEoa] = React.useState<any>();
 
     useEffect(() => {
         async function onChangeFromProtocol() {
             if (fromProtocol) {
                 if (fromProtocol != "erc20") {
-                    setAmountIn("");
+                    setAmountIn(0);
                     setFromTokenDecimal(0);
                     setFromTokenBalanceForSCW(0);
                     setFromTokenBalanceForEOA(0);
@@ -67,10 +73,9 @@ export default function IndividualBatch({ onUpdate }) {
                     const scwBalance = await getErc20Balanceof(erc20, smartAccount.address);
                     const eoaBalance = await getErc20Balanceof(erc20, address);
                     const fromTokendecimal = await getErc20Decimals(erc20);
-                    // setFromTokenDecimal(fromTokendecimal?.toNumber());
                     setSafeState(setFromTokenDecimal, fromTokendecimal, 0);
-                    setFromTokenBalanceForSCW(scwBalance?.toNumber());
-                    setFromTokenBalanceForEOA(eoaBalance?.toNumber());
+                    setSafeState(setFromTokenBalanceForSCW, scwBalance?.toNumber(), 0);
+                    setSafeState(setFromTokenBalanceForEOA, eoaBalance?.toNumber(), 0);
                 } else {
                     const response: any = await axios.get("https://gateway.ipfs.io/ipns/tokens.uniswap.org");
                     console.log("response: ", response, response.tokens);
@@ -145,7 +150,7 @@ export default function IndividualBatch({ onUpdate }) {
             alert("select from protocol");
             return;
         }
-        setAmountIn("");
+        setAmountIn(0);
         setFromTokenDecimal(0);
         setFromTokenBalanceForSCW(0);
         setFromTokenBalanceForEOA(0);
@@ -159,10 +164,9 @@ export default function IndividualBatch({ onUpdate }) {
         const scwBalance = await getErc20Balanceof(erc20, smartAccount.address);
         const eoaBalance = await getErc20Balanceof(erc20, address);
         const fromTokendecimal = await getErc20Decimals(erc20);
-        // setFromTokenDecimal(fromTokendecimal?.toNumber());
         setSafeState(setFromTokenDecimal, fromTokendecimal, 0);
-        setFromTokenBalanceForSCW(scwBalance?.toNumber());
-        setFromTokenBalanceForEOA(eoaBalance?.toNumber());
+        setSafeState(setFromTokenBalanceForSCW, scwBalance?.toNumber(), 0);
+        setSafeState(setFromTokenBalanceForEOA, eoaBalance?.toNumber(), 0);
     };
 
     const onChangeToToken = async (_toToken: any) => {
@@ -192,10 +196,10 @@ export default function IndividualBatch({ onUpdate }) {
             if (amountInByDecimals.eq(0)) {
                 setAmountIn(_amountIn);
             } else {
-                setAmountIn(amountInByDecimals.toString());
+                setAmountIn(amountInByDecimals.toNumber());
             }
         } else {
-            setAmountIn("");
+            setAmountIn(0);
         }
     };
 
@@ -426,6 +430,7 @@ export default function IndividualBatch({ onUpdate }) {
                 <div className="w-full flex justify-start items-center gap-1 text-secondary-800 bg-white shadow rounded-md overflow-hidden mt-1">
                     <input
                         type="number"
+                        min="0"
                         placeholder={!fromTokenDecimal ? "amountIn : (wait for FromToken)" : "amountIn"}
                         disabled={!fromTokenDecimal ? true : false}
                         className="w-full bg-white font-medium outline-none shadow-outline border-2  rounded-md py-2 px-3 block appearance-none leading-normal focus:border-primary-950"
@@ -449,3 +454,5 @@ export default function IndividualBatch({ onUpdate }) {
         </>
     );
 }
+
+export default IndividualBatch;

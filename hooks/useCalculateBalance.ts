@@ -1,19 +1,17 @@
-import { useMutation } from "@tanstack/react-query";
+import { ethers } from "ethers";
 import { toast } from "react-hot-toast";
-import { getContractInstance, getErc20Balanceof } from "../utils/web3Libs/ethers";
-import { BigNumber, ethers } from "ethers";
-import { batch, calculateFees, chooseChianId } from "../utils/helper";
-import { _functionType, _nonce, rpscURLS } from "../utils/constants";
-import IERC20 from "../abis/IERC20.json";
-import ChainPing from "../abis/ChainPing.json";
 import { BigNumber as bg } from "bignumber.js";
-import { iCrossChainDifi, useCrossChainDifiStore } from "../store/CrossChainDifiStore";
+
+import { useMutation } from "@tanstack/react-query";
+
+import { useGlobalStore, iGlobal } from "../store/GlobalStore";
+import { rpscURLS, _nonce, _functionType } from "../utils/constants";
 
 export function useCalculatebalance() {
     const { 
         setScwBalance,
         setEoaBalance
-    }: iCrossChainDifi = useCrossChainDifiStore((state) => state);
+    }: iGlobal = useGlobalStore((state) => state);
 
     async function fetchNativeBalance({ chainId, eoaAddress, scwAddress }) {
         try {

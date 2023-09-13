@@ -1,45 +1,40 @@
+import { useEffect } from "react";
 import { useContext } from "react";
-import { useState, useRef, useEffect } from "react";
 
 import { toast } from "react-hot-toast";
 import { BigNumber as bg } from "bignumber.js";
 
+import Link from "next/link";
 import { FiCopy } from "react-icons/fi";
 import { ImSpinner } from "react-icons/im";
 import { FaChevronDown } from "react-icons/fa";
+import { RiExchangeFundsFill } from "react-icons/ri";
 import { IBundler, Bundler } from "@biconomy/bundler";
 import { TbSquareRoundedChevronDownFilled } from "react-icons/tb";
-import { RiExchangeFundsFill } from "react-icons/ri";
 import { IPaymaster, BiconomyPaymaster } from "@biconomy/paymaster";
 import { DEFAULT_ENTRYPOINT_ADDRESS, BiconomySmartAccountConfig, BiconomySmartAccount } from "@biconomy/account";
 import { useSwitchChain, useSigner, useConnect, useChain, useAddress, metamaskWallet } from "@thirdweb-dev/react";
 
+import Transfer from "./Transfer";
 import ChainContext from "../Context/ChainContext";
+import { useGlobalStore, iGlobal } from "../store/GlobalStore";
 import { useCalculatebalance } from "../hooks/useCalculateBalance";
 import { paymasterURLs, gasFeesNames, buttonStyle, bundlerURLs } from "../utils/constants";
 
-import Transfer from "./Transfer";
-import Link from "next/link";
-import { useCrossChainDifiStore } from "../store/CrossChainDifiStore";
-import { iGlobal, useGlobalStore } from "../store/GlobalStore";
-
 bg.config({ DECIMAL_PLACES: 5 });
 
-export default function Home() {
-
+const AuthHeader: React.FC<{}> = () => {
+   
     const {
+        connected,
+        setConnected,
+        loading,
+        setLoading,
         smartAccount,
         setSmartAccount,
         scwBalance,
         setCurrentProvider,
         eoaBalance,
-        loading,
-        setLoading,
-        connected,
-        setConnected,
-    }: any = useCrossChainDifiStore((state) => state);
-
-    const {
         showWalletAddress,
         setShowWalletAddress,
         showTransferFundToggle,
@@ -55,8 +50,6 @@ export default function Home() {
     const address: any = useAddress(); // Detect the connected address
     const signer: any = useSigner(); // Detect the connected address
     const chain = useChain();
-    const [interval, enableInterval] = useState(false);
-    const [isWrongNetwork, setisWrongNetwork] = useState(false);
 
     useEffect(() => {
         async function changeWallet() {
@@ -102,10 +95,8 @@ export default function Home() {
         try {
             const chainIds = [137, 42161, 10, 1, 43114, 8453];
             if (chainIds.includes(chainId)) {
-                setisWrongNetwork(false);
                 await fetchNativeBalance({ chainId: chainId, eoaAddress: address, scwAddress: smartAccountAddress });
             } else {
-                setisWrongNetwork(true);
             }
         } catch (error) {
             console.log("isNetworkCorrect:error: ", error);
@@ -130,7 +121,6 @@ export default function Home() {
         // if (!sdkRef.current.provider) {
         //     // sdkRef.current.showConnectModal()
         //     sdkRef.current.showWallet();
-        //     enableInterval(true);
         // } else {
         return setupSmartAccount(chainId);
         // }
@@ -163,7 +153,6 @@ export default function Home() {
         try {
             setLoading(true);
             setSmartAccount(null);
-            enableInterval(false);
             // setSelectedChain?.(chainName)
             await changeChain(chainName);
             setLoading(false);
@@ -240,7 +229,9 @@ export default function Home() {
             .then(() => {
                 setConnected(true);
             })
-            .catch(setConnected(false));
+            .catch(() => {
+                setConnected(false);
+            });
     };
 
     return (
@@ -488,3 +479,5 @@ export default function Home() {
         </div>
     );
 }
+
+export default AuthHeader;

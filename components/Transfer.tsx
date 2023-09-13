@@ -1,33 +1,32 @@
 import * as React from "react";
 import { useEffect } from "react";
-import { css } from "@emotion/css";
+
 import web3 from "web3";
-import { BigNumber, ethers } from "ethers";
-import { useAddress, useChain, useSigner } from "@thirdweb-dev/react";
-import { BigNumber as bg } from "bignumber.js";
-import { toast } from "react-hot-toast";
-import { FiCopy } from "react-icons/fi";
-import IERC20 from "../abis/IERC20.json";
-import { chooseChianId, setSafeState, shorten } from "../utils/helper";
-import { ImSpinner } from "react-icons/im";
 import axios from "axios";
+import { toast } from "react-hot-toast";
+import { ethers, BigNumber } from "ethers";
+import { BigNumber as bg } from "bignumber.js";
+
+import { FiCopy } from "react-icons/fi";
+import { ImSpinner } from "react-icons/im";
 import { BiSolidChevronDown } from "react-icons/bi";
-import { getErc20Balanceof, getErc20Decimals } from "../utils/web3Libs/ethers";
-import { BIG_ZERO, gasFeesNamesByChainId, gasFeesNamesByMainChainId } from "../utils/constants";
+import { useSigner, useChain, useAddress } from "@thirdweb-dev/react";
+
+import IERC20 from "../abis/IERC20.json";
 import ChainContext from "../Context/ChainContext";
-import { iCrossChainDifi, useCrossChainDifiStore } from "../store/CrossChainDifiStore";
-import { iTransfer, useTransferStore } from "../store/TransferStore";
-import { iGlobal, useGlobalStore } from "../store/GlobalStore";
+import { useGlobalStore, iGlobal } from "../store/GlobalStore";
+import { useTransferStore, iTransfer } from "../store/TransferStore";
+import { shorten, setSafeState, chooseChianId } from "../utils/helper";
+import { getErc20Decimals, getErc20Balanceof } from "../utils/web3Libs/ethers";
+import { gasFeesNamesByMainChainId, gasFeesNamesByChainId, BIG_ZERO } from "../utils/constants";
+
 bg.config({ DECIMAL_PLACES: 5 });
 
-export default function Transfer() {
+const Transfer: React.FC<{}> = () => {
     const { selectedChainId } = React.useContext(ChainContext);
 
     const {
         smartAccount,
-    }: iCrossChainDifi = useCrossChainDifiStore((state) => state);
-
-    const {
         showTransferFundToggle
     }: iGlobal = useGlobalStore((state) => state);
 
@@ -508,3 +507,5 @@ export default function Transfer() {
         </div>
     );
 }
+
+export default Transfer;

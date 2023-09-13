@@ -1,37 +1,38 @@
 import * as React from "react";
+
 import { BigNumber as bg } from "bignumber.js";
-import { ImSpinner } from "react-icons/im";
-import { LiaChevronDownSolid, LiaChevronUpSolid } from "react-icons/lia";
-import { BiSolidRightArrowCircle } from "react-icons/bi";
+
 import { MdDelete } from "react-icons/md";
+import { ImSpinner } from "react-icons/im";
+import { BiSolidRightArrowCircle } from "react-icons/bi";
+import { LiaChevronUpSolid, LiaChevronDownSolid } from "react-icons/lia";
+
 import { shorten } from "../../utils/helper";
-import { _functionType, _nonce } from "../../utils/constants";
-import IndividualBatch from "../../components/BatchingComponenets/IndividualBatch";
-import { useBiconomyProvider } from "../../hooks/aaProvider/useBiconomyProvider";
+import { _nonce, _functionType } from "../../utils/constants";
 import { useEoaProvider } from "../../hooks/aaProvider/useEoaProvider";
-import { iBatchingTxn, useBatchingTxnStore } from "../../store/BatchingTxnStore";
-import { iCrossChainDifi, useCrossChainDifiStore } from "../../store/CrossChainDifiStore";
+import { useBiconomyProvider } from "../../hooks/aaProvider/useBiconomyProvider";
+import { useBatchingTxnStore, iBatchingTxn } from "../../store/BatchingTxnStore";
+import IndividualBatch from "../../components/BatchingComponenets/IndividualBatch";
+
 bg.config({ DECIMAL_PLACES: 10 });
 
-export default function Batching() {
+const Batching: React.FC<{}> = () => {
+
     const { mutateAsync: sendToBiconomy } = useBiconomyProvider();
     const { mutateAsync: sendTxTrditionally } = useEoaProvider();
     
-    const { 
-        sendTxLoading,
-        setSendtxLoading,
-        setSendtxLoadingForEoa,
-        txhash
-    }: iCrossChainDifi = useCrossChainDifiStore((state) => state);
-
     const { 
         individualBatch,
         setIndividualBatch,
         showIndividualBatchList,
         setShowIndividualBatchList,
+        allTxs,
+        setCollectedValues,
+        sendTxLoading,
+        setSendtxLoading,
+        setSendtxLoadingForEoa,
+        txhash
     }: iBatchingTxn = useBatchingTxnStore((state) => state);
-
-    const [allTxs, setCollectedValues] = React.useState<any>([]);
 
     const addBatch = () => {
         setIndividualBatch([])
@@ -302,3 +303,5 @@ export default function Batching() {
         </>
     );
 }
+
+export default Batching;

@@ -1,12 +1,9 @@
+import { ethers, BigNumber } from 'ethers';
+
 import { useMutation } from '@tanstack/react-query';
-import { fetchContractDetails } from '../utils/helper';
-import { V3_SWAP_ROUTER_ADDRESS, _functionType, _nonce } from '../utils/constants';
-import { AlphaRouter, SwapType } from '@uniswap/smart-order-router';
-import { TradeType, Percent, Token, CurrencyAmount } from '@uniswap/sdk-core';
-import { getContractInstance, getErc20Allownace, getErc20Data, getProvider } from '../utils/web3Libs/ethers';
-import { parseUnits } from 'ethers/lib/utils';
-import { BigNumber, ethers } from 'ethers';
+
 import IERC20 from "../abis/IERC20.json";
+import { getProvider, getErc20Data, getErc20Allownace, getContractInstance } from '../utils/web3Libs/ethers';
 
 export function useApprove() {
     async function approve({tokenIn, spender, amountIn, address, web3JsonProvider}: any) {

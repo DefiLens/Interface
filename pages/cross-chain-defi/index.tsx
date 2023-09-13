@@ -1,43 +1,39 @@
 import * as React from "react";
 import { useEffect } from "react";
-import { BiSolidChevronDown, BiSolidRightArrowCircle } from "react-icons/bi";
-import { ImSpinner9, ImSpinner } from "react-icons/im";
-import { FaChevronDown } from "react-icons/fa";
-import { HiOutlineRefresh } from "react-icons/hi";
-import { FiCopy } from "react-icons/fi";
+
+import { BigNumber } from "ethers";
 import { toast } from "react-hot-toast";
 import { BigNumber as bg } from "bignumber.js";
-import { BigNumber } from "ethers";
-import { useSigner, useAddress, useChain, useSwitchChain, useConnect, metamaskWallet } from "@thirdweb-dev/react";
+
+import { FiCopy } from "react-icons/fi";
+import { FaChevronDown } from "react-icons/fa";
 import { ChainId } from "@biconomy/core-types";
+import { HiOutlineRefresh } from "react-icons/hi";
 import { IBundler, Bundler } from "@biconomy/bundler";
-import { BiconomySmartAccount, BiconomySmartAccountConfig, DEFAULT_ENTRYPOINT_ADDRESS } from "@biconomy/account";
+import { ImSpinner9, ImSpinner } from "react-icons/im";
 import { IPaymaster, BiconomyPaymaster } from "@biconomy/paymaster";
-import { chooseChianId, shorten } from "../../utils/helper";
-import {
-    NetworkNameByChainId,
-    NetworkNameByStargateChainId,
-    _functionType,
-    _nonce,
-    bundlerURLs,
-    gasFeesNamesByChainId,
-    methodWithApi,
-    paymasterURLs,
-    tokensByNetwork,
-} from "../../utils/constants";
-import { fetchMethodParams, getNetworkAndContractData } from "../../utils/apis";
-import { getContractInstance, getErc20Balanceof, getProvider } from "../../utils/web3Libs/ethers";
+import { BiSolidRightArrowCircle, BiSolidChevronDown } from "react-icons/bi";
+import { DEFAULT_ENTRYPOINT_ADDRESS, BiconomySmartAccountConfig, BiconomySmartAccount } from "@biconomy/account";
+import { useSwitchChain, useSigner, useConnect, useChain, useAddress, metamaskWallet } from "@thirdweb-dev/react";
+
+import IERC20 from "../../abis/IERC20.json";
 import { useSendTx } from "../../hooks/useSendTx";
 import { useSimulate } from "../../hooks/useSimulate";
-import { useGenerateAbis } from "../../hooks/useGenerateAbis";
-import { useOnChangeFunctions, useOnChangeInput, useOnChangeTokenIn } from "../../hooks/useOnChangeMainForm";
-import { useCalculatebalance } from "../../hooks/useCalculateBalance";
 import ChainContext from "../../Context/ChainContext";
-import IERC20 from "../../abis/IERC20.json";
-import { iCrossChainDifi, useCrossChainDifiStore } from "../../store/CrossChainDifiStore";
+import { useGenerateAbis } from "../../hooks/useGenerateAbis";
+import { useGlobalStore, iGlobal } from "../../store/GlobalStore";
+import { useCalculatebalance } from "../../hooks/useCalculateBalance";
+import { shorten, setSafeState, chooseChianId } from "../../utils/helper";
+import { getNetworkAndContractData, fetchMethodParams } from "../../utils/apis";
+import { useCrossChainDifiStore, iCrossChainDifi } from "../../store/CrossChainDifiStore";
+import { getProvider, getErc20Balanceof, getContractInstance } from "../../utils/web3Libs/ethers";
+import { useOnChangeTokenIn, useOnChangeInput, useOnChangeFunctions } from "../../hooks/useOnChangeMainForm";
+import { tokensByNetwork, paymasterURLs, NetworkNameByStargateChainId, NetworkNameByChainId, methodWithApi, gasFeesNamesByChainId, bundlerURLs, BIG_ZERO, _nonce, _functionType } from "../../utils/constants";
+
 bg.config({ DECIMAL_PLACES: 10 });
 
-export default function NewMainForm() {
+const CrossChainDefi: React.FC<{}> = () => {
+
     const chain = useChain(); // Detect the connected address
     const switchChain = useSwitchChain();
     const address = useAddress(); // Detect the connected address
@@ -54,19 +50,19 @@ export default function NewMainForm() {
     const { setSelectedChain, setSelectedChainId } = React.useContext(ChainContext);
    
     const {
+        loading,
+        setLoading,
         connected,
         smartAccount,
         setSmartAccount,
         setCurrentProvider,
+    }: iGlobal = useGlobalStore((state) => state);
 
+    const {
         fromChainId,
         setFromChainId,
         toChainId,
         setToChainId,
-        srcPoolId,
-        setSrcPoolId,
-        destPoolId,
-        setDestPoolId,
 
         tokenIn,
         setTokenIn,
@@ -81,7 +77,6 @@ export default function NewMainForm() {
         setContractIndex,
         allNetworkData,
         setData,
-        currentAbi,
         setAbi,
         currentFunc,
         setCurrentFunc,
@@ -123,18 +118,13 @@ export default function NewMainForm() {
         sendTxLoading,
         sendTxLoadingForEoa,
         txhash,
-        loading,
-        setLoading,
-
+        
         scwTokenInBalance,
         setScwTokenInbalance,
         eoaTokenInBalance,
         setEoaTokenInbalance,
 
     }: iCrossChainDifi = useCrossChainDifiStore((state) => state);
-
-    // const [scwTokenInBalance, setScwTokenInbalance] = React.useState<any>(0);
-    // const [eoaTokenInBalance, setEoaTokenInbalance] = React.useState<any>(0);
 
     useEffect(() => {
         setIsSimulationOpen(false);
@@ -145,10 +135,10 @@ export default function NewMainForm() {
     useEffect(() => {
         async function updateParams() {
             if (currentFuncIndex) {
-                setParams("");
-                setFixParams("");
+                setParams([]);
+                setFixParams([]);
                 const contractAddress = allNetworkData?.contracts[contractIndex].contractAddress;
-                const apiUrl = methodWithApi[toChainId][contractAddress][funcArray[currentFuncIndex].name];
+                const apiUrl = methodWithApi[toChainId][contractAddress][funcArray?.[currentFuncIndex].name];
 
                 const response: any = await fetchMethodParams(
                     fromChainId,
@@ -183,8 +173,10 @@ export default function NewMainForm() {
                 const scwBalance = await getErc20Balanceof(erc20, smartAccount.address);
                 const eoaBalance = await getErc20Balanceof(erc20, address);
                 console.log("address" + address);
-                setScwTokenInbalance(scwBalance);
-                setEoaTokenInbalance(eoaBalance);
+
+                setSafeState(setScwTokenInbalance, BigNumber.from(scwBalance), BIG_ZERO);
+                setSafeState(setEoaTokenInbalance, BigNumber.from(eoaBalance), BIG_ZERO);
+
                 resetField();
                 setAmountIn(0);
                 setContractIndex("");
@@ -208,16 +200,16 @@ export default function NewMainForm() {
     }, [contractIndex]);
 
     const resetField = async () => {
-        setFunctionArray([]);
-        setParams("");
-        setFixParams("");
+        setFunctionArray(null);
+        setParams([]);
+        setFixParams([]);
         setCurrentFunc("");
         setCurrentFuncIndex(0);
         setIsThisFieldAmount(-1);
 
         setGasUsed(0);
-        setSimulateInputData(undefined);
-        setSimulation(undefined);
+        setSimulateInputData("");
+        setSimulation("");
         setIsSimulationSuccessOpen(false);
         setIsSimulationErrorOpen(false);
     };
@@ -310,8 +302,9 @@ export default function NewMainForm() {
         console.log("scwBalance++", scwBalance?.toString());
         console.log("eoaBalance++", eoaBalance?.toString());
 
-        setScwTokenInbalance(scwBalance);
-        setEoaTokenInbalance(eoaBalance);
+        setSafeState(setScwTokenInbalance, BigNumber.from(scwBalance), BIG_ZERO);
+        setSafeState(setEoaTokenInbalance, BigNumber.from(eoaBalance), BIG_ZERO);
+
         await onChangeTokenInHook({ fromChainId, tokenIn });
     };
 
@@ -497,14 +490,14 @@ export default function NewMainForm() {
                                 <span>Total Amount</span>
                                 <span>
                                     {`SmartAccount Balance : ${
-                                        scwTokenInBalance != 0
+                                        !scwTokenInBalance.isZero()
                                             ? bg(BigNumber.from(scwTokenInBalance).toString())
                                                   .dividedBy(bg(10).pow(tokenInDecimals))
                                                   .toString()
                                             : "0"
                                     }
                                     || EOA Balance : ${
-                                        eoaTokenInBalance != 0
+                                        !eoaTokenInBalance.isZero()
                                             ? bg(BigNumber.from(eoaTokenInBalance).toString())
                                                   .dividedBy(bg(10).pow(tokenInDecimals))
                                                   .toString()
@@ -1000,3 +993,5 @@ export default function NewMainForm() {
         </>
     );
 }
+
+export default CrossChainDefi;

@@ -1,22 +1,22 @@
-import "../styles/globals.css";
 import * as React from "react";
 import { Suspense } from "react";
+
 import { Toaster } from "react-hot-toast";
 
-import { usePathname } from 'next/navigation'
-import type { AppProps } from "next/app";
-// import $ from 'jquery';
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ThirdwebProvider, metamaskWallet, useChain } from "@thirdweb-dev/react";
-import "@biconomy/web3-auth/dist/src/style.css";
-import { Ethereum, Polygon, Avalanche, Arbitrum, Optimism, Base } from "@thirdweb-dev/chains";
-
-import { Inter } from "next/font/google";
-const inter = Inter({ subsets: ["latin"] });
-import ChainContext from "../Context/ChainContext";
-import NewAuth from "../components/NewAuth";
-import dynamic from "next/dynamic";
 import Link from "next/link";
+import { Inter } from "next/font/google";
+import type, { AppProps } from "next/app";
+import { usePathname } from 'next/navigation'
+import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
+import { ThirdwebProvider, metamaskWallet } from "@thirdweb-dev/react";
+import { Polygon, Optimism, Ethereum, Base, Avalanche, Arbitrum } from "@thirdweb-dev/chains";
+
+import AuthHeader from "../components/AuthHeader";
+import ChainContext from "../Context/ChainContext";
+
+import "@biconomy/web3-auth/dist/src/style.css";
+
+import "../styles/globals.css";
 
 export default function App({ Component, pageProps }: AppProps) {
     const pathname = usePathname()
@@ -30,10 +30,6 @@ export default function App({ Component, pageProps }: AppProps) {
                 cacheTime: 1000 * 60 * 60 * 24, // 24 hours
             },
         },
-    });
-
-    const SocialLoginDynamic = dynamic(() => import("../components/NewAuth").then((res) => res.default), {
-        ssr: false,
     });
     
     const TabList = [
@@ -65,8 +61,7 @@ export default function App({ Component, pageProps }: AppProps) {
                     <Toaster position="top-right" reverseOrder={false} />
                       <Suspense fallback={<div>Loading...</div>}>
 
-                        {/* <SocialLoginDynamic /> */}
-                        <NewAuth />
+                        <AuthHeader />
 
                         <div className="w-screen h-[calc(100%-69px)] flex justify-center items-start">
                             <aside className="w-[250px] h-full flex flex-col justify-start items-center gap-5 p-5 pt-10 text-lg text-light bg-secondary-800 shadow-lg shadow-secondary-500">

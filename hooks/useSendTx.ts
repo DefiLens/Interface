@@ -1,23 +1,32 @@
-import { useMutation } from "@tanstack/react-query";
-import { getContractInstance, getErc20Allownace, getErc20Balanceof } from "../utils/web3Libs/ethers";
-import { BigNumber, ethers } from "ethers";
-import { BigNumber as bg } from "bignumber.js";
-import { batch, calculateFees, chooseChianId } from "../utils/helper";
-import { _functionType, _nonce, gasFeesNames } from "../utils/constants";
-import { parseEther } from "ethers/lib/utils";
-import IERC20 from "../abis/IERC20.json";
-import IStarGateRouter from "../abis/IStarGateRouter.json";
-import ChainPing from "../abis/ChainPing.json";
-import { toast } from "react-hot-toast";
-import { useBiconomyProvider } from "./aaProvider/useBiconomyProvider";
-import { useEoaProvider } from "./aaProvider/useEoaProvider";
-import ChainContext from "../Context/ChainContext";
 import { useContext } from "react";
-import { iCrossChainDifi, useCrossChainDifiStore } from "../store/CrossChainDifiStore";
+
+import { toast } from "react-hot-toast";
+import { ethers, BigNumber } from "ethers";
+import { BigNumber as bg } from "bignumber.js";
+
+import { parseEther } from "ethers/lib/utils";
+import { useMutation } from "@tanstack/react-query";
+
+import IERC20 from "../abis/IERC20.json";
+import ChainPing from "../abis/ChainPing.json";
+import ChainContext from "../Context/ChainContext";
+import IStarGateRouter from "../abis/IStarGateRouter.json";
+import { useEoaProvider } from "./aaProvider/useEoaProvider";
+import { useGlobalStore, iGlobal } from "../store/GlobalStore";
+import { chooseChianId, calculateFees, batch } from "../utils/helper";
+import { useBiconomyProvider } from "./aaProvider/useBiconomyProvider";
+import { gasFeesNames, _nonce, _functionType } from "../utils/constants";
+import { useCrossChainDifiStore, iCrossChainDifi } from "../store/CrossChainDifiStore";
+import { getErc20Balanceof, getErc20Allownace, getContractInstance } from "../utils/web3Libs/ethers";
 
 export function useSendTx() {
+
     const {
         smartAccount,
+        currentProvider,
+    }: iGlobal = useGlobalStore((state) => state);
+
+    const {
         fromChainId,
         toChainId,
         srcPoolId,
@@ -34,7 +43,6 @@ export function useSendTx() {
         setSendtxLoading,
         setSendtxLoadingForEoa,
         setTxHash,
-        currentProvider,
     }: iCrossChainDifi = useCrossChainDifiStore((state) => state);
 
     const { selectedChain } = useContext(ChainContext);
@@ -55,7 +63,7 @@ export function useSendTx() {
             if (!simulation) throw "First simulate then send Tx";
             if (contractIndex == "") throw "Enter contractIndex field";
             if (!amountIn) throw "Enter amountIn field";
-            if (isThisAmount < 0) throw "Select amount field";
+            if (!isThisAmount) throw "Select amount field";
             if (!allNetworkData) throw "a need to fetch";
 
             let _currentAddress;

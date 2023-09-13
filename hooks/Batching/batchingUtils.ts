@@ -1,9 +1,9 @@
 import { ethers } from "ethers";
-import { getContractInstance } from "../../utils/web3Libs/ethers";
 import { BigNumber as bg } from "bignumber.js";
+
 import aave_v2_Abi from "../../abis/defi/aave_v2.json";
 import compound_Abi from "../../abis/defi/compound.json";
-import dForce_Abi from "../../abis/defi/dForce.json";
+import { getContractInstance } from "../../utils/web3Libs/ethers";
 
 bg.config({ DECIMAL_PLACES: 20 });
 

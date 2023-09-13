@@ -1,11 +1,17 @@
 import { useMutation } from '@tanstack/react-query';
+
 import { fetchContractDetails } from '../utils/helper';
-import { _functionType, _nonce } from '../utils/constants';
-import { iCrossChainDifi, useCrossChainDifiStore } from '../store/CrossChainDifiStore';
+import { _nonce, _functionType } from '../utils/constants';
+import { useGlobalStore, iGlobal } from '../store/GlobalStore';
+import { useCrossChainDifiStore, iCrossChainDifi } from '../store/CrossChainDifiStore';
 
 export function useGenerateAbis() {
+
     const {
         smartAccount,
+    }: iGlobal = useGlobalStore((state) => state);
+
+    const {
         toChainId,
         contractIndex,
         allNetworkData,

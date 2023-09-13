@@ -1,14 +1,19 @@
-import { useMutation } from "@tanstack/react-query";
-import { _functionType, _nonce } from "../../utils/constants";
-import { toast } from "react-hot-toast";
-import { useSigner } from "@thirdweb-dev/react";
 import { BigNumber } from "ethers";
-import { iCrossChainDifi, useCrossChainDifiStore } from "../../store/CrossChainDifiStore";
+import { toast } from "react-hot-toast";
+
+import { useSigner } from "@thirdweb-dev/react";
+import { useMutation } from "@tanstack/react-query";
+
+import { _nonce, _functionType } from "../../utils/constants";
+import { useCrossChainDifiStore, iCrossChainDifi } from "../../store/CrossChainDifiStore";
 
 export function useEoaProvider() {
     const signer: any = useSigner(); // Detect the connected address
 
-    const { setSendtxLoadingForEoa, setTxHash }: iCrossChainDifi = useCrossChainDifiStore((state) => state);
+    const { 
+        setSendtxLoadingForEoa,
+        setTxHash
+    }: iCrossChainDifi = useCrossChainDifiStore((state) => state);
 
     async function sendTxTrditionally(txs) {
         let confirmToastId;

@@ -1,11 +1,11 @@
-import { useMutation } from "@tanstack/react-query";
-import { fetchContractDetails } from "../utils/helper";
-import { V3_SWAP_ROUTER_ADDRESS, _functionType, _nonce } from "../utils/constants";
-import { AlphaRouter, SwapType } from "@uniswap/smart-order-router";
-import { TradeType, Percent, Token, CurrencyAmount } from "@uniswap/sdk-core";
-import { getContractInstance, getErc20Data, getErc20Decimals, getProvider } from "../utils/web3Libs/ethers";
 import { parseUnits } from "ethers/lib/utils";
+import { useMutation } from "@tanstack/react-query";
+import { SwapType, AlphaRouter } from "@uniswap/smart-order-router";
+import { TradeType, Token, Percent, CurrencyAmount } from "@uniswap/sdk-core";
+
 import IERC20 from "../abis/IERC20.json";
+import { V3_SWAP_ROUTER_ADDRESS, _nonce, _functionType } from "../utils/constants";
+import { getProvider, getErc20Decimals, getErc20Data, getContractInstance } from "../utils/web3Libs/ethers";
 
 export function useUniswap() {
     async function swap({ tokenIn, tokenOut, amountIn, address, type }: any) {

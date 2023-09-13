@@ -1,8 +1,11 @@
 import { useMutation } from '@tanstack/react-query';
-import { _functionType, _nonce, methodWithApi, tokensByNetwork } from '../utils/constants';
-import { fetchMethodParams } from '../utils/apis';
+
 import { useSimulate } from './useSimulate';
-import { iCrossChainDifi, useCrossChainDifiStore } from '../store/CrossChainDifiStore';
+import { setSafeState } from '../utils/helper';
+import { fetchMethodParams } from '../utils/apis';
+import { useGlobalStore, iGlobal } from '../store/GlobalStore';
+import { useCrossChainDifiStore, iCrossChainDifi } from '../store/CrossChainDifiStore';
+import { tokensByNetwork, methodWithApi, _nonce, _functionType } from '../utils/constants';
 
 export function useOnChangeTokenIn() {
     const {
@@ -12,7 +15,6 @@ export function useOnChangeTokenIn() {
         setDestPoolId,
         setAmountIn
     }: iCrossChainDifi = useCrossChainDifiStore((state) => state);
-
 
       // for e.g usdt -> usdc
     const onChangeTokenInHook = async ({fromChainId, tokenIn}) => {
@@ -34,34 +36,16 @@ export function useOnChangeTokenIn() {
         //     setSrcPoolId(3)
         //     setDestPoolId(3)
         // }
-        setAmountIn("")
+        setAmountIn(0)
     }
     return useMutation(onChangeTokenInHook);
 }
 
 export function useOnChangeFunctions() {
-    // const {
-    //     setParams,
-    //     setFixParams,
-    //     setCurrentFunc,
-    //     setCurrentFuncIndex,
-    //     setIsThisFieldAmount,
-    //     setGasUsed,
-    //     setSimulateInputData,
-    //     setSimulation,
-    //     setIsSimulationOpen,
-    //     setIsSimulationSuccessOpen,
-    //     setIsSimulationErrorOpen,
-    //     setsimulationErrorMsg,
-    //     smartAccount,
-    //     allNetworkData,
-    //     contractIndex,
-    //     funcArray,
-    //     fromChainId,
-    //     toChainId,
-    //     amountIn,
-    //     params
-    // }: any = useAppStore((state) => state);
+
+    const {
+        smartAccount,
+      }: iGlobal = useGlobalStore((state) => state);
 
     const {
         setParams,
@@ -76,7 +60,6 @@ export function useOnChangeFunctions() {
         setIsSimulationSuccessOpen,
         setIsSimulationErrorOpen,
         setsimulationErrorMsg,
-        smartAccount,
         allNetworkData,
         contractIndex,
         funcArray,
@@ -91,29 +74,29 @@ export function useOnChangeFunctions() {
       // for e.g usdt -> usdc
       const onChangeFunctionsHook = async ({funcIndex, address}) => {
         try {
-            setParams("")
-            setFixParams("")
+            setParams([])
+            setFixParams([])
 
             const contractAddress = allNetworkData?.contracts[contractIndex].contractAddress
-            const apiUrl = methodWithApi[toChainId][contractAddress][funcArray[funcIndex].name]
-            const response: any = await fetchMethodParams(fromChainId, toChainId, funcArray, amountIn, smartAccount, address, funcIndex, funcArray[funcIndex].name, apiUrl)
+            const apiUrl = methodWithApi[toChainId][contractAddress][funcArray?.[funcIndex].name]
+            const response: any = await fetchMethodParams(fromChainId, toChainId, funcArray, amountIn, smartAccount, address, funcIndex, funcArray?.[funcIndex].name, apiUrl)
             if (!response.data) throw ("api error")
 
             let _func = [...params]
             _func[funcIndex] = response.data.params
             setParams(_func)
             setFixParams(response.data.fixParams)
-            setCurrentFunc(funcArray[funcIndex].name)
+            setSafeState(setCurrentFunc, funcArray?.[funcIndex].name, "");
             setCurrentFuncIndex(funcIndex)
             setIsThisFieldAmount(response.data.amountFieldIndex)
 
-            setGasUsed(undefined)
-            setSimulateInputData(undefined)
-            setSimulation(undefined)
+            setGasUsed(0)
+            setSimulateInputData("")
+            setSimulation("")
 
-            // setIsSimulationOpen(undefined);
-            setIsSimulationSuccessOpen(undefined);
-            setIsSimulationErrorOpen(undefined);
+            // setIsSimulationOpen(false);
+            setIsSimulationSuccessOpen(false);
+            setIsSimulationErrorOpen(false);
             setsimulationErrorMsg("");
             // await simulateTx({ funcIndex, address });
 
@@ -126,14 +109,7 @@ export function useOnChangeFunctions() {
 }
 
 export function useOnChangeInput() {
-    // const {
-    //     setParams,
-    //     setCurrentFunc,
-    //     funcArray,
-    //     amountIn,
-    //     params
-    // }: any = useAppStore((state) => state);
-
+   
     const {
         setParams,
         setCurrentFunc,
@@ -150,7 +126,8 @@ export function useOnChangeInput() {
     }) => {
         try {
             if (!amountIn) throw ("Enter amountIn field above")
-            setCurrentFunc(funcArray[funcIndex].name)
+            setSafeState(setCurrentFunc, funcArray?.[funcIndex].name, "");
+
             let _params: any = []
 
             if (params[funcIndex] != undefined) {
