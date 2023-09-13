@@ -1,3 +1,4 @@
+import { BigNumber } from "ethers";
 import { create } from "zustand";
 
 export interface iTransfer {
@@ -9,8 +10,8 @@ export interface iTransfer {
     sendTxLoading: boolean;
     txhash:boolean | string;
     tokensData: object[];
-    scwBalance: number | undefined;
-    eoaBalance: number | undefined;
+    scwBalance: BigNumber;
+    eoaBalance: BigNumber;
     tokenInDecimals: number | undefined | any;
     gasCost: number;
 
@@ -22,8 +23,8 @@ export interface iTransfer {
     setSendtxLoading: (sendTxLoading: boolean) => void;
     setTxHash: (txhash: boolean | string) => void;
     setTokensData: (tokensData: object[]) => void;
-    setScwTokenInbalance: (scwBalance: number | undefined) => void;
-    setEoaTokenInbalance: (eoaBalance: number | undefined) => void;
+    setScwTokenInbalance: (scwBalance: BigNumber) => void;
+    setEoaTokenInbalance: (eoaBalance: BigNumber) => void;
     setTokenInDecimals: (tokenInDecimals: number | undefined) => void;
     setGasCost: (gasCost: number) => void;
 
@@ -38,8 +39,8 @@ export const useTransferStore = create<iTransfer>((set) => ({
     sendTxLoading: false,
     txhash: false,
     tokensData: [],
-    scwBalance: 0,
-    eoaBalance: 0,
+    scwBalance: BigNumber.from(0),
+    eoaBalance: BigNumber.from(0),
     tokenInDecimals: 18,
     gasCost: 0,
 

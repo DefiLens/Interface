@@ -52,7 +52,7 @@ export const getErc20Balanceof = async (erc20, address): Promise<BigNumber | und
     }
 };
 
-export const getErc20Decimals = async (erc20): Promise<BigNumber | undefined> => {
+export const getErc20Decimals = async (erc20): Promise<number | undefined> => {
     try {
         console.log('erc20', erc20);
         return await erc20.decimals();

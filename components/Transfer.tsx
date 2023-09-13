@@ -8,12 +8,12 @@ import { BigNumber as bg } from "bignumber.js";
 import { toast } from "react-hot-toast";
 import { FiCopy } from "react-icons/fi";
 import IERC20 from "../abis/IERC20.json";
-import { chooseChianId, shorten } from "../utils/helper";
+import { chooseChianId, setSafeState, shorten } from "../utils/helper";
 import { ImSpinner } from "react-icons/im";
 import axios from "axios";
 import { BiSolidChevronDown } from "react-icons/bi";
 import { getErc20Balanceof, getErc20Decimals } from "../utils/web3Libs/ethers";
-import { gasFeesNamesByChainId, gasFeesNamesByMainChainId } from "../utils/constants";
+import { BIG_ZERO, gasFeesNamesByChainId, gasFeesNamesByMainChainId } from "../utils/constants";
 import ChainContext from "../Context/ChainContext";
 import { iCrossChainDifi, useCrossChainDifiStore } from "../store/CrossChainDifiStore";
 import { iTransfer, useTransferStore } from "../store/TransferStore";
@@ -23,15 +23,15 @@ bg.config({ DECIMAL_PLACES: 5 });
 export default function Transfer() {
     const { selectedChainId } = React.useContext(ChainContext);
 
-    const { 
+    const {
         smartAccount,
     }: iCrossChainDifi = useCrossChainDifiStore((state) => state);
 
-    const { 
+    const {
         showTransferFundToggle
     }: iGlobal = useGlobalStore((state) => state);
 
-    const { 
+    const {
         tokenAddress,
         setTokenAddress,
         amountIn,
@@ -61,7 +61,7 @@ export default function Transfer() {
     const address = useAddress(); // Detect the connected address
     const signer: any = useSigner(); // Detect the connected address
     const chain = useChain();
-    
+
     useEffect(() => {
         async function onChangeFromProtocol() {
             if (showTransferFundToggle) {
@@ -92,12 +92,12 @@ export default function Transfer() {
                 if (!address) throw "no metamask connected";
                 const _scwBalance = await provider.getBalance(smartAccount.address);
                 const _eoaBalance = await provider.getBalance(address);
-                setScwTokenInbalance(_scwBalance?.toNumber());
-                setEoaTokenInbalance(_eoaBalance?.toNumber());
+                setScwTokenInbalance(BigNumber.from(_scwBalance));
+                setEoaTokenInbalance(BigNumber.from(_eoaBalance));
                 setTokenInDecimals(18);
             } else {
-                setScwTokenInbalance(0);
-                setEoaTokenInbalance(0);
+                setScwTokenInbalance(BIG_ZERO);
+                setEoaTokenInbalance(BIG_ZERO);
                 setTokenInDecimals(0);
             }
         } catch (error) {
@@ -123,14 +123,18 @@ export default function Transfer() {
 
             // const provider = await getProvider(fromChainId);
             // const erc20 = await getContractInstance(token.usdc, IERC20, provider);
-            const scwBalance = await getErc20Balanceof(contract, smartAccount.address);
-            const eoaBalance = await getErc20Balanceof(contract, address);
-            const decimals = await getErc20Decimals(contract);
+            const _scwBalance: BigNumber | undefined = await getErc20Balanceof(contract, smartAccount.address);
+            const _eoaBalance: BigNumber | undefined = await getErc20Balanceof(contract, address);
+            const decimals: number | undefined = await getErc20Decimals(contract);
 
-            console.log("address" + address);
-            setTokenInDecimals(decimals?.toNumber());
-            setScwTokenInbalance(scwBalance?.toNumber());
-            setEoaTokenInbalance(eoaBalance?.toNumber());
+            console.log("address====" + address, decimals?.toString(), decimals);
+            // setTokenInDecimals(BigNumber.from(decimals)?.toNumber());
+            // setScwTokenInbalance(BigNumber.from(_scwBalance));
+            // setEoaTokenInbalance(BigNumber.from(_eoaBalance));
+
+            setSafeState(setTokenInDecimals, decimals, 0);
+            setSafeState(setScwTokenInbalance, BigNumber.from(_scwBalance), BIG_ZERO);
+            setSafeState(setEoaTokenInbalance, BigNumber.from(_eoaBalance), BIG_ZERO);
 
             if (!contract) {
                 alert("Not valid Token address");
@@ -437,14 +441,14 @@ export default function Transfer() {
                                 <span>
                                     {isSCW === "SCW"
                                         ? `( SmartAccount Balance : ${
-                                              scwBalance != 0
+                                              !scwBalance.isZero()
                                                   ? bg(BigNumber.from(scwBalance).toString())
                                                         .dividedBy(bg(10).pow(tokenInDecimals))
                                                         .toString()
                                                   : "0"
                                           } )`
                                         : `( EOA Balance : ${
-                                              eoaBalance != 0
+                                              !eoaBalance.isZero()
                                                   ? bg(BigNumber.from(eoaBalance).toString())
                                                         .dividedBy(bg(10).pow(tokenInDecimals))
                                                         .toString()

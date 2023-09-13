@@ -254,3 +254,16 @@ function getTxSequence(userAddress: any, token: any, chainPingContract: any, txd
 export const shorten = (text: any) => {
     return text.substring(0, 6) + "..." + text.substring(text.length - 4, text.length);
 };
+
+export function setSafeState<T>(
+    setStateFunction: (value: T) => void,
+    value: T | undefined,
+    defaultValue: T
+  ) {
+    if (value !== undefined) {
+      setStateFunction(value);
+    } else {
+      setStateFunction(defaultValue);
+      // Optionally, you can log an error or handle it in another way.
+    }
+  }
