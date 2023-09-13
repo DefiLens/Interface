@@ -14,13 +14,9 @@ import { nativeTokenNum, nativeTokenFetcher, buildParams, abiFetcherNum, abiFetc
 export function useRefinance() {
     const { mutateAsync: swap } = useUniswap();
     const { mutateAsync: approve } = useApprove();
-    const { mutateAsync: sendToBiconomy } = useBiconomyProvider();
-    const { mutateAsync: sendTxTrditionally } = useEoaProvider();
 
-    const { 
+    const {
         setTxHash,
-        setSendtxLoading,
-        setSendtxLoadingForEoa,
     }: iCrossChainDifi = useCrossChainDifiStore((state) => state);
 
     const { tokensData }: iBatchingTxn = useBatchingTxnStore((state) => state);
@@ -39,11 +35,6 @@ export function useRefinance() {
     }: any) {
         try {
             setTxHash("");
-            // if (isSCW) {
-            //     setSendtxLoading(true);
-            // } else {
-            //     setSendtxLoadingForEoa(true);
-            // }
             const tempTxs: any = [];
 
             let abiNum,
@@ -167,19 +158,8 @@ export function useRefinance() {
                 tempTxs.push(tx2);
                 console.log("tempTxs", tempTxs);
             }
-
-            // if (isSCW) {
-            //     await sendToBiconomy(tempTxs);
-            // } else {
-            //     await sendTxTrditionally(tempTxs);
-            // }
-            // setSendtxLoading(false);
-            // setSendtxLoadingForEoa(false);
-
             return tempTxs;
         } catch (error) {
-            // setSendtxLoading(false);
-            // setSendtxLoadingForEoa(false);
             console.log("refinance-error", error);
         }
     }

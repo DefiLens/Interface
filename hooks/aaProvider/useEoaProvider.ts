@@ -5,15 +5,9 @@ import { useSigner } from "@thirdweb-dev/react";
 import { useMutation } from "@tanstack/react-query";
 
 import { _nonce, _functionType } from "../../utils/constants";
-import { useCrossChainDifiStore, iCrossChainDifi } from "../../store/CrossChainDifiStore";
 
 export function useEoaProvider() {
     const signer: any = useSigner(); // Detect the connected address
-
-    const { 
-        setSendtxLoadingForEoa,
-        setTxHash
-    }: iCrossChainDifi = useCrossChainDifiStore((state) => state);
 
     async function sendTxTrditionally(txs) {
         let confirmToastId;
@@ -32,10 +26,8 @@ export function useEoaProvider() {
             }
             toast.dismiss(confirmToastId);
             toast.success(`Tx Succefully done: ${tempTxhash?.hash}`);
-            setTxHash(tempTxhash?.hash);
-            setSendtxLoadingForEoa(false);
+            return tempTxhash?.hash;
         } catch (error: any) {
-            setSendtxLoadingForEoa(false);
             console.log("sendTxTrditionally-error: ", error);
             if (error.message) {
                 toast.error(error.message);

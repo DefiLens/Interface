@@ -30,22 +30,22 @@ const IndividualBatch: React.FC<any> = ({ onUpdate }: any) => {
     const {
         tokensData,
         setTokensData,
-        fromProtocol,
-        setFromProtocol,
-        toProtocol,
-        setToProtocol,
-        fromToken,
-        setFromToken,
-        toToken,
-        setToToken,
-        amountIn,
-        setAmountIn,
-        fromTokenBalanceForSCW,
-        setFromTokenBalanceForSCW,
-        fromTokenBalanceForEOA,
-        setFromTokenBalanceForEOA,
-        fromTokenDecimal,
-        setFromTokenDecimal,
+        // fromProtocol,
+        // setFromProtocol,
+        // toProtocol,
+        // setToProtocol,
+        // fromToken,
+        // setFromToken,
+        // toToken,
+        // setToToken,
+        // amountIn,
+        // setAmountIn,
+        // fromTokenBalanceForSCW,
+        // setFromTokenBalanceForSCW,
+        // fromTokenBalanceForEOA,
+        // setFromTokenBalanceForEOA,
+        // fromTokenDecimal,
+        // setFromTokenDecimal,
         addToBatchLoading,
         setAddToBatchLoading,
         apys,
@@ -56,11 +56,21 @@ const IndividualBatch: React.FC<any> = ({ onUpdate }: any) => {
         setSendtxLoadingForEoa,
     }: iBatchingTxn = useBatchingTxnStore((state) => state);
 
+    const [fromProtocol, setFromProtocol] = React.useState<string>();
+    const [toProtocol, setToProtocol] = React.useState<string>();
+    const [fromToken, setFromToken] = React.useState<string>();
+    const [toToken, setToToken] = React.useState<string>();
+    const [amountIn, setAmountIn] = React.useState<string>();
+    const [fromTokenBalanceForSCW, setFromTokenBalanceForSCW] = React.useState<BigNumber>(BigNumber.from(0));
+    const [fromTokenBalanceForEOA, setFromTokenBalanceForEOA] = React.useState<BigNumber>(BigNumber.from(0));
+    const [fromTokenDecimal, setFromTokenDecimal] = React.useState<number>();
+
     useEffect(() => {
         async function onChangeFromProtocol() {
             if (fromProtocol) {
                 if (fromProtocol != "erc20") {
-                    setAmountIn(BIG_ZERO);
+                    setAmountIn("");
+                    // setAmountIn(BIG_ZERO);
                     setFromTokenDecimal(0);
                     setFromTokenBalanceForSCW(BIG_ZERO);
                     setFromTokenBalanceForEOA(BIG_ZERO);
@@ -149,7 +159,8 @@ const IndividualBatch: React.FC<any> = ({ onUpdate }: any) => {
             alert("select from protocol");
             return;
         }
-        setAmountIn(BIG_ZERO);
+        // setAmountIn(BIG_ZERO);
+        setAmountIn("");
         setFromTokenDecimal(0);
         setFromTokenBalanceForSCW(BIG_ZERO);
         setFromTokenBalanceForEOA(BIG_ZERO);
@@ -193,14 +204,21 @@ const IndividualBatch: React.FC<any> = ({ onUpdate }: any) => {
         if (_amountIn && fromTokenDecimal) {
             let amountInByDecimals = bg(_amountIn.toString());
             amountInByDecimals = amountInByDecimals.multipliedBy(bg(10).pow(fromTokenDecimal));
-            if (amountInByDecimals.eq(0)) {
-                setAmountIn(BigNumber.from(_amountIn));
-            } else {
-                const amountInByDecimalsString = amountInByDecimals.toString(10);
-                setAmountIn(BigNumber.from(amountInByDecimalsString.toString()));
-            }
+            // if (typeof _amountIn !== 'undefined' && amountInByDecimals.eq(0)) {
+            // const amountInString = _amountIn.toString();
+            // const amountInString = Number.isNaN(_amountIn) ? '0' : _amountIn.toString();
+            // console.log('amountInString-', amountInString)
+            setAmountIn(_amountIn);
+            // } else {
+            //     console.log('amountInByDecimals-', amountInByDecimals.toString())
+            //     // const amountInByDecimalsString = amountInByDecimals.toString(10);
+            //     const amountInByDecimalsString = amountInByDecimals.toFixed(fromTokenDecimal); // 18 decimal places, adjust as needed
+            //     console.log('amountInByDecimalsString-', amountInByDecimalsString)
+            //     setAmountIn(BigNumber.from(amountInByDecimalsString.toString()));
+            // }
         } else {
-            setAmountIn(BIG_ZERO);
+            // setAmountIn(BIG_ZERO);
+            setAmountIn("");
         }
     };
 
@@ -243,9 +261,17 @@ const IndividualBatch: React.FC<any> = ({ onUpdate }: any) => {
                 throw "select amountIn";
                 return;
             }
+            if (!fromTokenDecimal) {
+                throw "select amountIn";
+                return;
+            }
             const provider = await getProvider("109");
-            alert(fromToken + toToken);
-            console.log("refinanceamoynt", amountIn.toString());
+            console.log(
+                "refinanceamoynt",
+                amountIn.toString(),
+                bg(amountIn).multipliedBy(bg(10).pow(fromTokenDecimal)).toString()
+            );
+            const _tempAmount = BigNumber.from(bg(amountIn).multipliedBy(bg(10).pow(fromTokenDecimal)).toString());
             const txHash = await refinance({
                 isSCW: isSCW,
                 fromProtocol: fromProtocol,
@@ -254,7 +280,8 @@ const IndividualBatch: React.FC<any> = ({ onUpdate }: any) => {
                 tokenInName: fromToken,
                 tokenOut: "",
                 tokenOutName: toToken,
-                amount: amountIn,
+                // amount: amountIn,
+                amount: _tempAmount,
                 address: isSCW ? smartAccount.address : address,
                 provider,
             });
@@ -263,9 +290,9 @@ const IndividualBatch: React.FC<any> = ({ onUpdate }: any) => {
                 toProtocol,
                 fromToken,
                 toToken,
-                amountIn:
-                    fromTokenDecimal &&
-                    bg(BigNumber.from(amountIn).toString()).dividedBy(bg(10).pow(fromTokenDecimal)).toString(),
+                amountIn: amountIn,
+                // fromTokenDecimal &&
+                // bg(BigNumber.from(amountIn).toString()).dividedBy(bg(10).pow(fromTokenDecimal)).toString(),
             });
             setAddToBatchLoading(false);
             // setSendtxLoadingForEoa(false);
@@ -434,14 +461,15 @@ const IndividualBatch: React.FC<any> = ({ onUpdate }: any) => {
                 <div className="w-full flex justify-start items-center gap-1 text-secondary-800 bg-white shadow rounded-md overflow-hidden mt-1">
                     <input
                         type="number"
-                        // min="0"
+                        min="0"
                         placeholder={!fromTokenDecimal ? "amountIn : (wait for FromToken)" : "amountIn"}
                         disabled={!fromTokenDecimal ? true : false}
                         className="w-full bg-white font-medium outline-none shadow-outline border-2  rounded-md py-2 px-3 block appearance-none leading-normal focus:border-primary-950"
                         value={
-                            fromTokenDecimal && BigNumber.from(amountIn).gt(0)
-                                ? bg(amountIn.toString()).dividedBy(bg(10).pow(fromTokenDecimal)).toString()
-                                : amountIn.toString()
+                            // fromTokenDecimal && BigNumber.from(amountIn).gt(0)
+                            //     ? bg(amountIn.toString()).dividedBy(bg(10).pow(fromTokenDecimal)).toString()
+                            //     : amountIn.toString()
+                            fromTokenDecimal && amountIn && bg(amountIn).isGreaterThan(0) ? amountIn : amountIn
                         }
                         onChange={(e: any) => onChangeAmountIn(e.target.value)}
                     />

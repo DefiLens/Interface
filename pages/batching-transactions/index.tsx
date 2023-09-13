@@ -31,6 +31,7 @@ const Batching: React.FC<{}> = () => {
         setSendtxLoading,
         setSendtxLoadingForEoa,
         txhash,
+        setTxHash,
     }: iBatchingTxn = useBatchingTxnStore((state) => state);
 
     const addBatch = () => {
@@ -44,7 +45,7 @@ const Batching: React.FC<{}> = () => {
                     toProtocol: "",
                     fromToken: "",
                     toToken: "",
-                    amountIn: BIG_ZERO,
+                    amountIn: "",
                 },
             },
         ]);
@@ -60,9 +61,7 @@ const Batching: React.FC<{}> = () => {
     const updateInputValues = (index: number, txHash: string[], data: any) => {
         console.log("data: ", data, individualBatch);
         if (txHash.length < 1) return alert("Please complete the last input before adding a new one.");
-        // alert("here1--" + individualBatch.length);
         if (individualBatch.length == 0) {
-            // alert("here");
             setIndividualBatch([
                 ...individualBatch,
                 {
@@ -73,7 +72,7 @@ const Batching: React.FC<{}> = () => {
                         toProtocol: "",
                         fromToken: "",
                         toToken: "",
-                        amountIn: BIG_ZERO,
+                        amountIn: "",
                     },
                 },
             ]);
@@ -91,7 +90,7 @@ const Batching: React.FC<{}> = () => {
                     toProtocol: "",
                     fromToken: "",
                     toToken: "",
-                    amountIn: BIG_ZERO,
+                    amountIn: "",
                 },
             },
         ]);
@@ -101,7 +100,6 @@ const Batching: React.FC<{}> = () => {
 
     const sendBatchAll = async (isSCW: any) => {
         try {
-            // alert(individualBatch.length);
             if (isSCW) {
                 setSendtxLoading(true);
             } else {
@@ -111,10 +109,14 @@ const Batching: React.FC<{}> = () => {
             await individualBatch.map((bar) => bar.txHash.map((hash) => mergeArray.push(hash)));
             console.log("mergedArray--: ", mergeArray);
             // setCollectedValues(mergeArray);
+            let tempTxhash = "";
             if (isSCW) {
-                await sendToBiconomy(mergeArray);
+                tempTxhash = await sendToBiconomy(mergeArray);
             } else {
-                await sendTxTrditionally(mergeArray);
+                tempTxhash = await sendTxTrditionally(mergeArray);
+            }
+            if (tempTxhash) {
+                setTxHash(tempTxhash);
             }
             setSendtxLoading(false);
             setSendtxLoadingForEoa(false);
@@ -264,7 +266,7 @@ const Batching: React.FC<{}> = () => {
                                                     <div className="w-full flex justify-start items-baseline gap-2 text-white">
                                                         <div className="w-60 font-medium text-sm">Amount</div>
                                                         <div className="w-full font-normal text-xs">
-                                                            {bar.data.amountIn.toString()}
+                                                            {bar.data.amountIn}
                                                         </div>
                                                     </div>
                                                     {/* <div className="w-full flex justify-start items-baseline gap-1 text-base font-medium text-white">

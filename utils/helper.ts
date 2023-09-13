@@ -252,7 +252,11 @@ function getTxSequence(userAddress: any, token: any, chainPingContract: any, txd
 }
 
 export const shorten = (text: any) => {
-    return text.substring(0, 6) + "..." + text.substring(text.length - 4, text.length);
+    if (text) {
+        return text.substring(0, 6) + "..." + text.substring(text.length - 4, text.length);
+    } else {
+        return
+    }
 };
 
 export function setSafeState<T>(

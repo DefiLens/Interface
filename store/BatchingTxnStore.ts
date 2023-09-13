@@ -5,7 +5,7 @@ import { BIG_ZERO } from "../utils/constants";
 interface iIndividualBatch {
     id: number;
     txHash: string[];
-    data: { fromProtocol: string; toProtocol: string; fromToken: string; toToken: string; amountIn: BigNumber };
+    data: { fromProtocol: string; toProtocol: string; fromToken: string; toToken: string; amountIn: string };
 }
 
 interface iTokenData {
@@ -17,14 +17,14 @@ interface iTokenData {
 }
 export interface iBatchingTxn {
     tokensData: iTokenData[];
-    fromProtocol: string;
-    toProtocol: string;
-    fromToken: string;
-    toToken: string;
-    amountIn: BigNumber;
-    fromTokenBalanceForSCW: BigNumber;
-    fromTokenBalanceForEOA: BigNumber;
-    fromTokenDecimal: number;
+    // fromProtocol: string;
+    // toProtocol: string;
+    // fromToken: string;
+    // toToken: string;
+    // amountIn: string;
+    // fromTokenBalanceForSCW: BigNumber;
+    // fromTokenBalanceForEOA: BigNumber;
+    // fromTokenDecimal: number;
     addToBatchLoading: boolean;
 
     individualBatch: iIndividualBatch[];
@@ -38,14 +38,14 @@ export interface iBatchingTxn {
     allTxs: any[];
 
     setTokensData: (tokensData: iTokenData[]) => void;
-    setFromProtocol: (fromProtocol: string) => void;
-    setToProtocol: (toProtocol: string) => void;
-    setFromToken: (fromToken: string) => void;
-    setToToken: (toToken: string) => void;
-    setAmountIn: (amountIn: BigNumber) => void;
-    setFromTokenBalanceForSCW: (fromTokenBalanceForSCW: BigNumber) => void;
-    setFromTokenBalanceForEOA: (fromTokenBalanceForEOA: BigNumber) => void;
-    setFromTokenDecimal: (fromTokenDecimal: number) => void;
+    // setFromProtocol: (fromProtocol: string) => void;
+    // setToProtocol: (toProtocol: string) => void;
+    // setFromToken: (fromToken: string) => void;
+    // setToToken: (toToken: string) => void;
+    // setAmountIn: (amountIn: string) => void;
+    // setFromTokenBalanceForSCW: (fromTokenBalanceForSCW: BigNumber) => void;
+    // setFromTokenBalanceForEOA: (fromTokenBalanceForEOA: BigNumber) => void;
+    // setFromTokenDecimal: (fromTokenDecimal: number) => void;
     setAddToBatchLoading: (addToBatchLoading: boolean) => void;
 
     setIndividualBatch: (individualBatch: iIndividualBatch[]) => void;
@@ -61,14 +61,14 @@ export interface iBatchingTxn {
 
 export const useBatchingTxnStore = create<iBatchingTxn>((set) => ({
     tokensData: [],
-    fromProtocol: "",
-    toProtocol: "",
-    fromToken: "",
-    toToken: "",
-    amountIn: BIG_ZERO,
-    fromTokenBalanceForSCW: BIG_ZERO,
-    fromTokenBalanceForEOA: BIG_ZERO,
-    fromTokenDecimal: 0,
+    // fromProtocol: "",
+    // toProtocol: "",
+    // fromToken: "",
+    // toToken: "",
+    // amountIn: "0",
+    // fromTokenBalanceForSCW: BIG_ZERO,
+    // fromTokenBalanceForEOA: BIG_ZERO,
+    // fromTokenDecimal: 0,
     addToBatchLoading: false,
 
     individualBatch: [
@@ -80,7 +80,7 @@ export const useBatchingTxnStore = create<iBatchingTxn>((set) => ({
                 toProtocol: "",
                 fromToken: "",
                 toToken: "",
-                amountIn: BIG_ZERO,
+                amountIn: "",
             },
         },
     ],
@@ -94,14 +94,14 @@ export const useBatchingTxnStore = create<iBatchingTxn>((set) => ({
     allTxs: [],
 
     setTokensData: (tokensData) => set(() => ({ tokensData })),
-    setFromProtocol: (fromProtocol) => set(() => ({ fromProtocol })),
-    setToProtocol: (toProtocol) => set(() => ({ toProtocol })),
-    setFromToken: (fromToken) => set(() => ({ fromToken })),
-    setToToken: (toToken) => set(() => ({ toToken })),
-    setAmountIn: (amountIn) => set(() => ({ amountIn })),
-    setFromTokenBalanceForSCW: (fromTokenBalanceForSCW) => set(() => ({ fromTokenBalanceForSCW })),
-    setFromTokenBalanceForEOA: (fromTokenBalanceForEOA) => set(() => ({ fromTokenBalanceForEOA })),
-    setFromTokenDecimal: (fromTokenDecimal) => set(() => ({ fromTokenDecimal })),
+    // setFromProtocol: (fromProtocol) => set(() => ({ fromProtocol })),
+    // setToProtocol: (toProtocol) => set(() => ({ toProtocol })),
+    // setFromToken: (fromToken) => set(() => ({ fromToken })),
+    // setToToken: (toToken) => set(() => ({ toToken })),
+    // setAmountIn: (amountIn) => set(() => ({ amountIn })),
+    // setFromTokenBalanceForSCW: (fromTokenBalanceForSCW) => set(() => ({ fromTokenBalanceForSCW })),
+    // setFromTokenBalanceForEOA: (fromTokenBalanceForEOA) => set(() => ({ fromTokenBalanceForEOA })),
+    // setFromTokenDecimal: (fromTokenDecimal) => set(() => ({ fromTokenDecimal })),
     setAddToBatchLoading: (addToBatchLoading) => set(() => ({ addToBatchLoading })),
 
     setIndividualBatch: (individualBatch) => set(() => ({ individualBatch })),

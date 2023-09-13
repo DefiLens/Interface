@@ -28,12 +28,22 @@ import { getNetworkAndContractData, fetchMethodParams } from "../../utils/apis";
 import { useCrossChainDifiStore, iCrossChainDifi } from "../../store/CrossChainDifiStore";
 import { getProvider, getErc20Balanceof, getContractInstance } from "../../utils/web3Libs/ethers";
 import { useOnChangeTokenIn, useOnChangeInput, useOnChangeFunctions } from "../../hooks/useOnChangeMainForm";
-import { tokensByNetwork, paymasterURLs, NetworkNameByStargateChainId, NetworkNameByChainId, methodWithApi, gasFeesNamesByChainId, bundlerURLs, BIG_ZERO, _nonce, _functionType } from "../../utils/constants";
+import {
+    tokensByNetwork,
+    paymasterURLs,
+    NetworkNameByStargateChainId,
+    NetworkNameByChainId,
+    methodWithApi,
+    gasFeesNamesByChainId,
+    bundlerURLs,
+    BIG_ZERO,
+    _nonce,
+    _functionType,
+} from "../../utils/constants";
 
 bg.config({ DECIMAL_PLACES: 10 });
 
 const CrossChainDefi: React.FC<{}> = () => {
-
     const chain = useChain(); // Detect the connected address
     const switchChain = useSwitchChain();
     const address = useAddress(); // Detect the connected address
@@ -48,15 +58,9 @@ const CrossChainDefi: React.FC<{}> = () => {
     const { mutateAsync: onChangeInputHook } = useOnChangeInput();
     const { mutateAsync: fetchNativeBalance } = useCalculatebalance();
     const { setSelectedChain, setSelectedChainId } = React.useContext(ChainContext);
-   
-    const {
-        loading,
-        setLoading,
-        connected,
-        smartAccount,
-        setSmartAccount,
-        setCurrentProvider,
-    }: iGlobal = useGlobalStore((state) => state);
+
+    const { loading, setLoading, connected, smartAccount, setSmartAccount, setCurrentProvider }: iGlobal =
+        useGlobalStore((state) => state);
 
     const {
         fromChainId,
@@ -118,12 +122,11 @@ const CrossChainDefi: React.FC<{}> = () => {
         sendTxLoading,
         sendTxLoadingForEoa,
         txhash,
-        
+
         scwTokenInBalance,
         setScwTokenInbalance,
         eoaTokenInBalance,
         setEoaTokenInbalance,
-
     }: iCrossChainDifi = useCrossChainDifiStore((state) => state);
 
     useEffect(() => {
@@ -140,18 +143,20 @@ const CrossChainDefi: React.FC<{}> = () => {
                 const contractAddress = allNetworkData?.contracts[contractIndex].contractAddress;
                 const apiUrl = methodWithApi[toChainId][contractAddress][funcArray?.[currentFuncIndex].name];
 
+                const _tempAmount = BigNumber.from(bg(amountIn).multipliedBy(bg(10).pow(tokenInDecimals)).toString());
+
                 const response: any = await fetchMethodParams(
                     fromChainId,
                     toChainId,
                     funcArray,
-                    amountIn,
+                    _tempAmount,
                     smartAccount,
                     address,
                     currentFuncIndex,
                     currentFunc,
                     apiUrl
                 );
-                console.log("🚀 ~ file: index.tsx:239 ~ updateParams ~ response:", response)
+                console.log("🚀 ~ file: index.tsx:239 ~ updateParams ~ response:", response);
                 if (!response.data) throw "api error";
                 let _func = [...params];
                 _func[currentFuncIndex] = response.data.params;
@@ -178,7 +183,7 @@ const CrossChainDefi: React.FC<{}> = () => {
                 setSafeState(setEoaTokenInbalance, BigNumber.from(eoaBalance), BIG_ZERO);
 
                 resetField();
-                setAmountIn(0);
+                setAmountIn("");
                 setContractIndex("");
             }
         }
@@ -320,19 +325,19 @@ const CrossChainDefi: React.FC<{}> = () => {
         }
         if (_amountIn) {
             let amountInByDecimals = bg(_amountIn);
-            amountInByDecimals = amountInByDecimals.multipliedBy(bg(10).pow(tokenInDecimals));
-            if (amountInByDecimals.eq(0)) {
-                setAmountIn(_amountIn);
-            } else {
-                setAmountIn(bg(amountInByDecimals).toNumber());
-            }
+            // amountInByDecimals = amountInByDecimals.multipliedBy(bg(10).pow(tokenInDecimals));
+            // if (amountInByDecimals.eq(0)) {
+            setAmountIn(_amountIn);
+            // } else {
+            //     setAmountIn(bg(amountInByDecimals).toNumber());
+            // }
         } else {
-            setAmountIn(0);
+            setAmountIn("");
         }
     };
 
-    const onChangeFunctions = async (funcIndex: any) => {
-        if(funcIndex == "") return toast.error("Please select operation")
+    const onChangeFunctions = async (funcIndex) => {
+        if (funcIndex == "") return toast.error("Please select operation");
         await onChangeFunctionsHook({ funcIndex, address });
     };
 
@@ -513,8 +518,11 @@ const CrossChainDefi: React.FC<{}> = () => {
                                     placeholder=""
                                     className="w-full bg-white font-medium outline-none shadow-outline border-2  rounded-md py-2 px-3 block appearance-none leading-normal focus:border-primary-950"
                                     value={
-                                        amountIn != 0
-                                            ? bg(amountIn).dividedBy(bg(10).pow(tokenInDecimals)).toString()
+                                        // amountIn != 0
+                                        //     ? bg(amountIn).dividedBy(bg(10).pow(tokenInDecimals)).toString()
+                                        //     : amountIn
+                                        tokenInDecimals && amountIn && bg(amountIn).isGreaterThan(0)
+                                            ? amountIn
                                             : amountIn
                                     }
                                     onChange={(e: any) => handleAmountIn(e.target.value)}
@@ -606,7 +614,7 @@ const CrossChainDefi: React.FC<{}> = () => {
                                             <option key={-1} value="" selected>
                                                 Select Operation
                                             </option>
-                                            {   funcArray.length > 0 &&
+                                            {funcArray.length > 0 &&
                                                 funcArray.map((funcName: any, funcIndex: any) => (
                                                     <option key={funcIndex} value={funcIndex}>
                                                         {funcName.name}
@@ -702,9 +710,12 @@ const CrossChainDefi: React.FC<{}> = () => {
 
                             <div className="flex justify-start items-baseline gap-3">
                                 <div className="text-black font-semibold text-sm md:text-base lg:text-lg">Amount :</div>
-                                <div className="text-black font-medium text-xs md:text-sm">{`${bg(amountIn)
-                                    .dividedBy(bg(10).pow(tokenInDecimals))
-                                    .toString()} USDC`}</div>
+                                <div className="text-black font-medium text-xs md:text-sm">
+                                    {/* {`
+                                        ${bg(amountIn).dividedBy(bg(10).pow(tokenInDecimals)).toString()} USDC`} */}
+                                    {`
+                                        ${amountIn} USDC`}
+                                </div>
                             </div>
 
                             <div className="flex justify-start items-baseline gap-3">
@@ -968,9 +979,9 @@ const CrossChainDefi: React.FC<{}> = () => {
                                         <a
                                             target="_blank"
                                             href={`https://socketscan.io/tx/${txhash}`}
-                                            style={{ color: "white" }}
+                                            style={{ color: "green", fontWeight: "bold" }}
                                         >
-                                            TxHash : {shorten(txhash)}
+                                            TxHash: {shorten(txhash)}
                                         </a>
                                     </p>
                                 </div>
@@ -992,6 +1003,6 @@ const CrossChainDefi: React.FC<{}> = () => {
             </div>
         </>
     );
-}
+};
 
 export default CrossChainDefi;

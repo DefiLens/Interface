@@ -20,11 +20,7 @@ import { useCrossChainDifiStore, iCrossChainDifi } from "../store/CrossChainDifi
 import { getErc20Balanceof, getErc20Allownace, getContractInstance } from "../utils/web3Libs/ethers";
 
 export function useSendTx() {
-
-    const {
-        smartAccount,
-        currentProvider,
-    }: iGlobal = useGlobalStore((state) => state);
+    const { smartAccount, currentProvider }: iGlobal = useGlobalStore((state) => state);
 
     const {
         fromChainId,
@@ -33,6 +29,7 @@ export function useSendTx() {
         destPoolId,
         tokenIn,
         amountIn,
+        tokenInDecimals,
         isThisAmount,
         contractIndex,
         allNetworkData,
@@ -66,6 +63,8 @@ export function useSendTx() {
             if (!isThisAmount) throw "Select amount field";
             if (!allNetworkData) throw "a need to fetch";
 
+            const _tempAmount = BigNumber.from(bg(amountIn).multipliedBy(bg(10).pow(tokenInDecimals)).toString());
+
             let _currentAddress;
             let _currentProvider;
             if (isSCW) {
@@ -88,15 +87,17 @@ export function useSendTx() {
             const balance = await getErc20Balanceof(USDT, _currentAddress);
 
             if (isSCW) {
-                if (BigNumber.from(balance).lt(BigNumber.from(amountIn))) throw "You don't have enough balance in SmartAccount";
+                if (BigNumber.from(balance).lt(BigNumber.from(_tempAmount)))
+                    throw "You don't have enough balance in SmartAccount";
             } else {
-                if (BigNumber.from(balance).lt(BigNumber.from(amountIn))) throw "You don't have enough balance in EOA";
+                if (BigNumber.from(balance).lt(BigNumber.from(_tempAmount)))
+                    throw "You don't have enough balance in EOA";
             }
 
             let approveTx;
             const allowance = await getErc20Allownace(USDT, _currentAddress, fromStarGateRouter);
-            if (!BigNumber.from(allowance).gte(BigNumber.from(amountIn))) {
-                const approveData = await USDT.populateTransaction.approve(fromStarGateRouter, amountIn);
+            if (!BigNumber.from(allowance).gte(BigNumber.from(_tempAmount))) {
+                const approveData = await USDT.populateTransaction.approve(fromStarGateRouter, _tempAmount);
                 approveTx = { to: approveData.to, data: approveData.data };
             }
             console.log("approveTx", approveTx);
@@ -104,7 +105,7 @@ export function useSendTx() {
             console.log("params1", params[funcIndex]);
             const amountAfterSlippage = await calculateFees(
                 address,
-                amountIn,
+                _tempAmount,
                 srcPoolId,
                 destPoolId,
                 toChainId,
@@ -178,7 +179,7 @@ export function useSendTx() {
                 data,
                 lzParams
             );
-            console.log("quoteData", quoteData.toString(), amountIn);
+            console.log("quoteData", quoteData.toString(), _tempAmount);
             console.log("srcPoolId-destPoolId", srcPoolId, destPoolId);
 
             let stargateTx = await stargateRouter.populateTransaction.swap(
@@ -186,7 +187,7 @@ export function useSendTx() {
                 srcPoolId,
                 destPoolId,
                 _currentAddress,
-                amountIn,
+                _tempAmount,
                 0,
                 lzParams,
                 packedToAddress,
@@ -211,20 +212,25 @@ export function useSendTx() {
 
             console.log("stargateTx", stargateTx);
             const sendTx = { to: stargateTx.to, data: stargateTx.data, value: stargateTx.value };
-
+            let tempTxhash = "";
             if (approveTx) {
                 if (isSCW) {
-                    await sendToBiconomy([approveTx, sendTx]);
+                    tempTxhash = await sendToBiconomy([approveTx, sendTx]);
                 } else {
-                    await sendTxTrditionally([approveTx, sendTx]);
+                    tempTxhash = await sendTxTrditionally([approveTx, sendTx]);
                 }
             } else {
                 if (isSCW) {
-                    await sendToBiconomy([sendTx]);
+                    tempTxhash = await sendToBiconomy([sendTx]);
                 } else {
-                    await sendTxTrditionally([sendTx]);
+                    tempTxhash = await sendTxTrditionally([sendTx]);
                 }
             }
+            if (tempTxhash) {
+                setTxHash(tempTxhash);
+            }
+            setSendtxLoading(false);
+            setSendtxLoadingForEoa(false);
         } catch (error: any) {
             setSendtxLoading(false);
             setSendtxLoadingForEoa(false);

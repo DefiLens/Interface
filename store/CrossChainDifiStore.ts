@@ -35,7 +35,7 @@ interface iApiResponse {
 interface iFuncArray {
     name: string;
     inputs: any[];
-    outputs: any[]; 
+    outputs: any[];
     stateMutability: string;
     type: string;
 };
@@ -48,7 +48,7 @@ export interface iCrossChainDifi {
 
     tokenIn: string
     tokenInDecimals: number;
-    amountIn: number;
+    amountIn: string;
     isThisAmount: string | number;
 
     contractIndex: string;
@@ -91,7 +91,7 @@ export interface iCrossChainDifi {
 
     setTokenIn: (tokenIn: string) => void;
     setTokenInDecimals: (tokenInDecimals: number) => void;
-    setAmountIn: (amountIn: number) => void;
+    setAmountIn: (amountIn: string) => void;
     setIsThisFieldAmount: (isThisAmount: string | number) => void;
 
     setContractIndex: (contractIndex: string) => void;
@@ -136,7 +136,7 @@ export const useCrossChainDifiStore = create<iCrossChainDifi>((set) => ({
 
     tokenIn: "",
     tokenInDecimals: 6,
-    amountIn: 100000,
+    amountIn: "",
     isThisAmount: "",
 
     contractIndex: "",
@@ -167,7 +167,7 @@ export const useCrossChainDifiStore = create<iCrossChainDifi>((set) => ({
     sendTxLoading: false,
     sendTxLoadingForEoa: false,
     txhash: "",
-   
+
     scwTokenInBalance: BigNumber.from(0),
     eoaTokenInBalance: BigNumber.from(0),
 

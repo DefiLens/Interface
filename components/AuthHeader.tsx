@@ -24,7 +24,6 @@ import { paymasterURLs, gasFeesNames, buttonStyle, bundlerURLs } from "../utils/
 bg.config({ DECIMAL_PLACES: 5 });
 
 const AuthHeader: React.FC<{}> = () => {
-   
     const {
         connected,
         setConnected,
@@ -38,9 +37,8 @@ const AuthHeader: React.FC<{}> = () => {
         showWalletAddress,
         setShowWalletAddress,
         showTransferFundToggle,
-        setShowTransferFundToggle
+        setShowTransferFundToggle,
     }: iGlobal = useGlobalStore((state) => state);
-
 
     const { selectedChain, setSelectedChain, selectedChainId, setSelectedChainId } = useContext(ChainContext);
     const { mutateAsync: fetchNativeBalance } = useCalculatebalance();
@@ -238,7 +236,7 @@ const AuthHeader: React.FC<{}> = () => {
         <div className="auth-container">
             <ul className="flex justify-between items-center gap-2 bg-primary-950 p-2 shadow-md shadow-secondary-500">
                 <li>
-                    <Link href='/' className="text-[30px] font-bold flex flex-row justify-center items-center">
+                    <Link href="/" className="text-[30px] font-bold flex flex-row justify-center items-center">
                         <div className="mr-2 p-1">
                             <svg
                                 width="45px"
@@ -313,7 +311,9 @@ const AuthHeader: React.FC<{}> = () => {
                         </button>
                     )}
                     {loading && (
-                        <button className={`${buttonStyle} border-primary-800 hover:border-primary-900 flex justify-center items-center gap-2`}>
+                        <button
+                            className={`${buttonStyle} border-primary-800 hover:border-primary-900 flex justify-center items-center gap-2`}
+                        >
                             <ImSpinner className="animate-spin h-5 w-5" />
                             Loading account details...
                         </button>
@@ -371,7 +371,9 @@ const AuthHeader: React.FC<{}> = () => {
                                     <button className="w-full flex justify-between items-center gap-2">
                                         <div className="flex flex-col justify-center items-start">
                                             <span className="text-white text-base font-medium">
-                                                {smartAccount && address.slice(0, 13) + "..." + address.slice(-3)}
+                                                {smartAccount &&
+                                                    address &&
+                                                    address.slice(0, 13) + "..." + address.slice(-3)}
                                             </span>
                                             <span className="text-gray-300 text-xs">
                                                 {smartAccount &&
@@ -456,28 +458,34 @@ const AuthHeader: React.FC<{}> = () => {
                     </div>
 
                     <div className="flex flex-wrap justify-start items-center gap-3 text-base">
-                            <div className="relative flex justify-center items-center gap-5 bg-white rounded-lg font-medium  transition duration-300">
-                                <span className="flex justify-center items-center gap-2">
-                                    <input
-                                        type="checkbox"
-                                        id="transfer-fund-toggle"
-                                        checked={showTransferFundToggle}
-                                        className="absolute hidden"
-                                        onChange={(e: any) => setShowTransferFundToggle(e.target.checked)}
-                                    />
-                                    <label htmlFor="transfer-fund-toggle" className="transfer-fund-icon">
-                                     <RiExchangeFundsFill className="h-10 w-10 p-1 bg-white hover:bg-gray-200 active:bg-gray-300 rounded-lg cursor-pointer" />
-                                    </label>
-                                </span>
-                            </div>
-                            <div className={`absolute w-96 h-[calc(100%-69px)] top-[69px] z-40 shadow-xl shadow-gray-900 ${showTransferFundToggle ? '!right-0 !translate-x-0 !transition !duration-1000 !ease-out' : '!-right-96 !translate-x-96 !transition !duration-700 !ease-out'} `}>
-                                <Transfer />
-                            </div>
-                        </div>        
+                        <div className="relative flex justify-center items-center gap-5 bg-white rounded-lg font-medium  transition duration-300">
+                            <span className="flex justify-center items-center gap-2">
+                                <input
+                                    type="checkbox"
+                                    id="transfer-fund-toggle"
+                                    checked={showTransferFundToggle}
+                                    className="absolute hidden"
+                                    onChange={(e: any) => setShowTransferFundToggle(e.target.checked)}
+                                />
+                                <label htmlFor="transfer-fund-toggle" className="transfer-fund-icon">
+                                    <RiExchangeFundsFill className="h-10 w-10 p-1 bg-white hover:bg-gray-200 active:bg-gray-300 rounded-lg cursor-pointer" />
+                                </label>
+                            </span>
+                        </div>
+                        <div
+                            className={`absolute w-96 h-[calc(100%-69px)] top-[69px] z-40 shadow-xl shadow-gray-900 ${
+                                showTransferFundToggle
+                                    ? "!right-0 !translate-x-0 !transition !duration-1000 !ease-out"
+                                    : "!-right-96 !translate-x-96 !transition !duration-700 !ease-out"
+                            } `}
+                        >
+                            <Transfer />
+                        </div>
+                    </div>
                 </li>
             </ul>
         </div>
     );
-}
+};
 
 export default AuthHeader;

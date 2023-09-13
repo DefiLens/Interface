@@ -17,10 +17,7 @@ import { getProvider, getErc20Balanceof, getContractInstance } from "../utils/we
 bg.config({ DECIMAL_PLACES: 18 });
 
 export function useSimulate() {
-
-    const {
-        smartAccount,
-    }: iGlobal = useGlobalStore((state) => state);
+    const { smartAccount }: iGlobal = useGlobalStore((state) => state);
 
     const {
         fromChainId,
@@ -29,6 +26,7 @@ export function useSimulate() {
         destPoolId,
         tokenIn,
         amountIn,
+        tokenInDecimals,
         isThisAmount,
         contractIndex,
         allNetworkData,
@@ -68,6 +66,7 @@ export function useSimulate() {
             if (!amountIn) throw "Enter amountIn field";
             if (!isThisAmount) throw "Select amount field";
             if (!allNetworkData) throw "a need to fetch";
+            const _tempAmount = BigNumber.from(bg(amountIn).multipliedBy(bg(10).pow(tokenInDecimals)).toString());
 
             const provider = await getProvider(fromChainId);
             const fromStarGateRouter = allNetworkData.starGateRouter;
@@ -80,14 +79,14 @@ export function useSimulate() {
             const balance = await getErc20Balanceof(USDT, smartAccount.address);
             // if (BigNumber.from(balance).lt(BigNumber.from(amountIn))) throw "You don't have enough balance"
 
-            const approveData = await USDT.populateTransaction.approve(fromStarGateRouter, amountIn);
+            const approveData = await USDT.populateTransaction.approve(fromStarGateRouter, _tempAmount);
             const approveTx = { to: approveData.to, data: approveData.data };
             console.log("approveTx", approveTx);
 
             console.log("params1", params[funcIndex]);
             const amountAfterSlippage = await calculateFees(
                 address,
-                amountIn,
+                _tempAmount,
                 srcPoolId,
                 destPoolId,
                 toChainId,
@@ -176,7 +175,7 @@ export function useSimulate() {
                 data,
                 lzParams
             );
-            console.log("quoteData", quoteData.toString(), amountIn);
+            console.log("quoteData", quoteData.toString(), _tempAmount);
             console.log("srcPoolId-destPoolId", srcPoolId, destPoolId);
 
             let stargateTx = await stargateRouter.populateTransaction.swap(
@@ -184,7 +183,7 @@ export function useSimulate() {
                 srcPoolId,
                 destPoolId,
                 smartAccount.address,
-                amountIn,
+                _tempAmount,
                 0,
                 lzParams,
                 packedToAddress,
@@ -193,8 +192,10 @@ export function useSimulate() {
             );
             console.log("stargateTx", stargateTx, fromChainId);
 
-            const biconomyGasInfo = await axios.get(`https://sdk-relayer.prod.biconomy.io/api/v1/relay/feeOptions?chainId=${chooseChianId(fromChainId)}`)
-            console.log('biconomyGasInfo: ', biconomyGasInfo)
+            const biconomyGasInfo = await axios.get(
+                `https://sdk-relayer.prod.biconomy.io/api/v1/relay/feeOptions?chainId=${chooseChianId(fromChainId)}`
+            );
+            console.log("biconomyGasInfo: ", biconomyGasInfo);
 
             if (biconomyGasInfo && biconomyGasInfo.data && biconomyGasInfo.data.data) {
                 if (biconomyGasInfo.data.data.response.length > 0) {
@@ -202,7 +203,7 @@ export function useSimulate() {
                     if (firstObject.tokenGasPrice && firstObject.feeTokenTransferGas) {
                         const tokenGasPrice = new bg(firstObject.tokenGasPrice.toString());
                         const feeTokenTransferGas = new bg(firstObject.feeTokenTransferGas.toString());
-                        const divisor = new bg('1e18');
+                        const divisor = new bg("1e18");
                         const result = tokenGasPrice.times(feeTokenTransferGas).dividedBy(divisor);
                         const formattedResult = result.toFixed(15);
                         console.log("Token Gas Price in ETH:", formattedResult.toString());
@@ -240,8 +241,6 @@ export function useSimulate() {
             // // const decimalRepresentation = new bg(gasCost.toString()).toString();
 
             // console.log("Token Gas Price in ETH:", formattedResult.toString());
-
-
 
             // // const richSigner = new ethers.VoidSigner(richAddressByChainId[fromChainId], provider)
             // // console.log("richSigner", fromChainId, richSigner, richAddressByChainId[fromChainId]);
