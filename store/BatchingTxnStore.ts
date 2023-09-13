@@ -1,10 +1,12 @@
+import { BigNumber } from "ethers";
 import { create } from "zustand";
+import { BIG_ZERO } from "../utils/constants";
 
-interface iIndividualBatch  {
+interface iIndividualBatch {
     id: number;
     txHash: string[];
-    data: { fromProtocol: string; toProtocol: string; fromToken: string; toToken: string; amountIn: string };
-};
+    data: { fromProtocol: string; toProtocol: string; fromToken: string; toToken: string; amountIn: BigNumber };
+}
 
 interface iTokenData {
     symbol: string;
@@ -12,25 +14,25 @@ interface iTokenData {
     chainId: number;
     decimals: number;
     name: string;
-};
+}
 export interface iBatchingTxn {
     tokensData: iTokenData[];
     fromProtocol: string;
     toProtocol: string;
     fromToken: string;
     toToken: string;
-    amountIn: number;
-    fromTokenBalanceForSCW: number;
-    fromTokenBalanceForEOA: number;
+    amountIn: BigNumber;
+    fromTokenBalanceForSCW: BigNumber;
+    fromTokenBalanceForEOA: BigNumber;
     fromTokenDecimal: number;
     addToBatchLoading: boolean;
 
-    individualBatch : iIndividualBatch[];
+    individualBatch: iIndividualBatch[];
     showIndividualBatchList: number | null;
 
     apys: any[];
     apysTo: any[];
-    sendTxLoadingForEoa: boolean
+    sendTxLoadingForEoa: boolean;
     sendTxLoading: boolean;
     txhash: string;
     allTxs: any[];
@@ -40,9 +42,9 @@ export interface iBatchingTxn {
     setToProtocol: (toProtocol: string) => void;
     setFromToken: (fromToken: string) => void;
     setToToken: (toToken: string) => void;
-    setAmountIn: (amountIn: number) => void;
-    setFromTokenBalanceForSCW: (fromTokenBalanceForSCW: number) => void;
-    setFromTokenBalanceForEOA: (fromTokenBalanceForEOA: number) => void;
+    setAmountIn: (amountIn: BigNumber) => void;
+    setFromTokenBalanceForSCW: (fromTokenBalanceForSCW: BigNumber) => void;
+    setFromTokenBalanceForEOA: (fromTokenBalanceForEOA: BigNumber) => void;
     setFromTokenDecimal: (fromTokenDecimal: number) => void;
     setAddToBatchLoading: (addToBatchLoading: boolean) => void;
 
@@ -55,7 +57,6 @@ export interface iBatchingTxn {
     setSendtxLoading: (sendTxLoading: boolean) => void;
     setTxHash: (txhash: string) => void;
     setCollectedValues: (allTxs: any[]) => void;
-
 }
 
 export const useBatchingTxnStore = create<iBatchingTxn>((set) => ({
@@ -64,13 +65,13 @@ export const useBatchingTxnStore = create<iBatchingTxn>((set) => ({
     toProtocol: "",
     fromToken: "",
     toToken: "",
-    amountIn: 0,
-    fromTokenBalanceForSCW: 0,
-    fromTokenBalanceForEOA: 0,
+    amountIn: BIG_ZERO,
+    fromTokenBalanceForSCW: BIG_ZERO,
+    fromTokenBalanceForEOA: BIG_ZERO,
     fromTokenDecimal: 0,
     addToBatchLoading: false,
 
-    individualBatch : [
+    individualBatch: [
         {
             id: 0,
             txHash: [],
@@ -79,7 +80,7 @@ export const useBatchingTxnStore = create<iBatchingTxn>((set) => ({
                 toProtocol: "",
                 fromToken: "",
                 toToken: "",
-                amountIn: "",
+                amountIn: BIG_ZERO,
             },
         },
     ],
@@ -91,7 +92,6 @@ export const useBatchingTxnStore = create<iBatchingTxn>((set) => ({
     sendTxLoading: false,
     txhash: "",
     allTxs: [],
-
 
     setTokensData: (tokensData) => set(() => ({ tokensData })),
     setFromProtocol: (fromProtocol) => set(() => ({ fromProtocol })),

@@ -15,13 +15,12 @@ import ChainContext from "../../Context/ChainContext";
 import { useRefinance } from "../../hooks/Batching/useRefinance";
 import { useGlobalStore, iGlobal } from "../../store/GlobalStore";
 import { useBatchingTxnStore, iBatchingTxn } from "../../store/BatchingTxnStore";
-import { tokenAddressByProtocol, protocolByNetwork, _nonce, _functionType } from "../../utils/constants";
+import { tokenAddressByProtocol, protocolByNetwork, _nonce, _functionType, BIG_ZERO } from "../../utils/constants";
 import { getProvider, getErc20Decimals, getErc20Balanceof, getContractInstance } from "../../utils/web3Libs/ethers";
 
 bg.config({ DECIMAL_PLACES: 10 });
 
-const IndividualBatch: React.FC<any> = ({onUpdate} : any) => {
-
+const IndividualBatch: React.FC<any> = ({ onUpdate }: any) => {
     const address = useAddress(); // Detect the connected address
     const { mutateAsync: refinance } = useRefinance();
     const { selectedChain } = React.useContext(ChainContext);
@@ -55,16 +54,16 @@ const IndividualBatch: React.FC<any> = ({onUpdate} : any) => {
         setApysForTo,
         sendTxLoadingForEoa,
         setSendtxLoadingForEoa,
-    }: iBatchingTxn  = useBatchingTxnStore((state) => state);
+    }: iBatchingTxn = useBatchingTxnStore((state) => state);
 
     useEffect(() => {
         async function onChangeFromProtocol() {
             if (fromProtocol) {
                 if (fromProtocol != "erc20") {
-                    setAmountIn(0);
+                    setAmountIn(BIG_ZERO);
                     setFromTokenDecimal(0);
-                    setFromTokenBalanceForSCW(0);
-                    setFromTokenBalanceForEOA(0);
+                    setFromTokenBalanceForSCW(BIG_ZERO);
+                    setFromTokenBalanceForEOA(BIG_ZERO);
                     const firstFromToken = protocolByNetwork[fromProtocol][0];
                     setFromToken(firstFromToken);
                     const provider = await getProvider("109");
@@ -74,8 +73,8 @@ const IndividualBatch: React.FC<any> = ({onUpdate} : any) => {
                     const eoaBalance = await getErc20Balanceof(erc20, address);
                     const fromTokendecimal = await getErc20Decimals(erc20);
                     setSafeState(setFromTokenDecimal, fromTokendecimal, 0);
-                    setSafeState(setFromTokenBalanceForSCW, scwBalance?.toNumber(), 0);
-                    setSafeState(setFromTokenBalanceForEOA, eoaBalance?.toNumber(), 0);
+                    setSafeState(setFromTokenBalanceForSCW, BigNumber.from(scwBalance), BIG_ZERO);
+                    setSafeState(setFromTokenBalanceForEOA, BigNumber.from(eoaBalance), BIG_ZERO);
                 } else {
                     const response: any = await axios.get("https://gateway.ipfs.io/ipns/tokens.uniswap.org");
                     console.log("response: ", response, response.tokens);
@@ -150,14 +149,15 @@ const IndividualBatch: React.FC<any> = ({onUpdate} : any) => {
             alert("select from protocol");
             return;
         }
-        setAmountIn(0);
+        setAmountIn(BIG_ZERO);
         setFromTokenDecimal(0);
-        setFromTokenBalanceForSCW(0);
-        setFromTokenBalanceForEOA(0);
+        setFromTokenBalanceForSCW(BIG_ZERO);
+        setFromTokenBalanceForEOA(BIG_ZERO);
         setFromToken(_fromToken);
         const provider = await getProvider("109");
 
-        const erc20Address: any = fromProtocol == "erc20" ? tokensData.filter((token: any) => token.symbol === _fromToken) : "";
+        const erc20Address: any =
+            fromProtocol == "erc20" ? tokensData.filter((token: any) => token.symbol === _fromToken) : "";
         const tokenAddress =
             fromProtocol != "erc20" ? tokenAddressByProtocol[fromProtocol][_fromToken] : erc20Address[0].address;
         const erc20 = await getContractInstance(tokenAddress, IERC20, provider);
@@ -165,8 +165,8 @@ const IndividualBatch: React.FC<any> = ({onUpdate} : any) => {
         const eoaBalance = await getErc20Balanceof(erc20, address);
         const fromTokendecimal = await getErc20Decimals(erc20);
         setSafeState(setFromTokenDecimal, fromTokendecimal, 0);
-        setSafeState(setFromTokenBalanceForSCW, scwBalance?.toNumber(), 0);
-        setSafeState(setFromTokenBalanceForEOA, eoaBalance?.toNumber(), 0);
+        setSafeState(setFromTokenBalanceForSCW, BigNumber.from(scwBalance), BIG_ZERO);
+        setSafeState(setFromTokenBalanceForEOA, BigNumber.from(eoaBalance), BIG_ZERO);
     };
 
     const onChangeToToken = async (_toToken: any) => {
@@ -194,12 +194,13 @@ const IndividualBatch: React.FC<any> = ({onUpdate} : any) => {
             let amountInByDecimals = bg(_amountIn.toString());
             amountInByDecimals = amountInByDecimals.multipliedBy(bg(10).pow(fromTokenDecimal));
             if (amountInByDecimals.eq(0)) {
-                setAmountIn(_amountIn);
+                setAmountIn(BigNumber.from(_amountIn));
             } else {
-                setAmountIn(amountInByDecimals.toNumber());
+                const amountInByDecimalsString = amountInByDecimals.toString(10);
+                setAmountIn(BigNumber.from(amountInByDecimalsString.toString()));
             }
         } else {
-            setAmountIn(0);
+            setAmountIn(BIG_ZERO);
         }
     };
 
@@ -243,6 +244,7 @@ const IndividualBatch: React.FC<any> = ({onUpdate} : any) => {
                 return;
             }
             const provider = await getProvider("109");
+            alert(fromToken + toToken);
             console.log("refinanceamoynt", amountIn.toString());
             const txHash = await refinance({
                 isSCW: isSCW,
@@ -261,7 +263,9 @@ const IndividualBatch: React.FC<any> = ({onUpdate} : any) => {
                 toProtocol,
                 fromToken,
                 toToken,
-                amountIn: fromTokenDecimal && bg(BigNumber.from(amountIn).toString()).dividedBy(bg(10).pow(fromTokenDecimal)).toString(),
+                amountIn:
+                    fromTokenDecimal &&
+                    bg(BigNumber.from(amountIn).toString()).dividedBy(bg(10).pow(fromTokenDecimal)).toString(),
             });
             setAddToBatchLoading(false);
             // setSendtxLoadingForEoa(false);
@@ -430,12 +434,14 @@ const IndividualBatch: React.FC<any> = ({onUpdate} : any) => {
                 <div className="w-full flex justify-start items-center gap-1 text-secondary-800 bg-white shadow rounded-md overflow-hidden mt-1">
                     <input
                         type="number"
-                        min="0"
+                        // min="0"
                         placeholder={!fromTokenDecimal ? "amountIn : (wait for FromToken)" : "amountIn"}
                         disabled={!fromTokenDecimal ? true : false}
                         className="w-full bg-white font-medium outline-none shadow-outline border-2  rounded-md py-2 px-3 block appearance-none leading-normal focus:border-primary-950"
                         value={
-                            fromTokenDecimal && amountIn != 0 ? bg(amountIn).dividedBy(bg(10).pow(fromTokenDecimal)).toString() : amountIn
+                            fromTokenDecimal && BigNumber.from(amountIn).gt(0)
+                                ? bg(amountIn.toString()).dividedBy(bg(10).pow(fromTokenDecimal)).toString()
+                                : amountIn.toString()
                         }
                         onChange={(e: any) => onChangeAmountIn(e.target.value)}
                     />
@@ -453,6 +459,6 @@ const IndividualBatch: React.FC<any> = ({onUpdate} : any) => {
             </div>
         </>
     );
-}
+};
 
 export default IndividualBatch;

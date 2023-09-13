@@ -8,7 +8,7 @@ import { BiSolidRightArrowCircle } from "react-icons/bi";
 import { LiaChevronUpSolid, LiaChevronDownSolid } from "react-icons/lia";
 
 import { shorten } from "../../utils/helper";
-import { _nonce, _functionType } from "../../utils/constants";
+import { _nonce, _functionType, BIG_ZERO } from "../../utils/constants";
 import { useEoaProvider } from "../../hooks/aaProvider/useEoaProvider";
 import { useBiconomyProvider } from "../../hooks/aaProvider/useBiconomyProvider";
 import { useBatchingTxnStore, iBatchingTxn } from "../../store/BatchingTxnStore";
@@ -17,11 +17,10 @@ import IndividualBatch from "../../components/BatchingComponenets/IndividualBatc
 bg.config({ DECIMAL_PLACES: 10 });
 
 const Batching: React.FC<{}> = () => {
-
     const { mutateAsync: sendToBiconomy } = useBiconomyProvider();
     const { mutateAsync: sendTxTrditionally } = useEoaProvider();
-    
-    const { 
+
+    const {
         individualBatch,
         setIndividualBatch,
         showIndividualBatchList,
@@ -31,11 +30,11 @@ const Batching: React.FC<{}> = () => {
         sendTxLoading,
         setSendtxLoading,
         setSendtxLoadingForEoa,
-        txhash
+        txhash,
     }: iBatchingTxn = useBatchingTxnStore((state) => state);
 
     const addBatch = () => {
-        setIndividualBatch([])
+        setIndividualBatch([]);
         setIndividualBatch([
             {
                 id: 0,
@@ -45,7 +44,7 @@ const Batching: React.FC<{}> = () => {
                     toProtocol: "",
                     fromToken: "",
                     toToken: "",
-                    amountIn: "",
+                    amountIn: BIG_ZERO,
                 },
             },
         ]);
@@ -54,8 +53,8 @@ const Batching: React.FC<{}> = () => {
     const removeBatch = (index: number) => {
         // setIndividualBatch((prevInputBars) => prevInputBars.filter((bar) => bar.id !== id));
         const updatedBatch = [...individualBatch];
-    updatedBatch.splice(index, 1); // Remove the InputBar at the specified index
-    setIndividualBatch(updatedBatch);
+        updatedBatch.splice(index, 1); // Remove the InputBar at the specified index
+        setIndividualBatch(updatedBatch);
     };
 
     const updateInputValues = (index: number, txHash: string[], data: any) => {
@@ -74,7 +73,7 @@ const Batching: React.FC<{}> = () => {
                         toProtocol: "",
                         fromToken: "",
                         toToken: "",
-                        amountIn: "",
+                        amountIn: BIG_ZERO,
                     },
                 },
             ]);
@@ -92,7 +91,7 @@ const Batching: React.FC<{}> = () => {
                     toProtocol: "",
                     fromToken: "",
                     toToken: "",
-                    amountIn: "",
+                    amountIn: BIG_ZERO,
                 },
             },
         ]);
@@ -265,7 +264,7 @@ const Batching: React.FC<{}> = () => {
                                                     <div className="w-full flex justify-start items-baseline gap-2 text-white">
                                                         <div className="w-60 font-medium text-sm">Amount</div>
                                                         <div className="w-full font-normal text-xs">
-                                                            {bar.data.amountIn}
+                                                            {bar.data.amountIn.toString()}
                                                         </div>
                                                     </div>
                                                     {/* <div className="w-full flex justify-start items-baseline gap-1 text-base font-medium text-white">
@@ -295,13 +294,15 @@ const Batching: React.FC<{}> = () => {
                                 </>
                             ))
                         ) : (
-                            <div className="text-black font-semibold text-base md:text-lg">{txhash ? "Last Batches executed, Now create new batches" : "No Batches Found !"}</div>
+                            <div className="text-black font-semibold text-base md:text-lg">
+                                {txhash ? "Last Batches executed, Now create new batches" : "No Batches Found !"}
+                            </div>
                         )}
                     </div>
                 </div>
             </div>
         </>
     );
-}
+};
 
 export default Batching;
