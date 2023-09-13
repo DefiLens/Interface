@@ -15,7 +15,7 @@ export interface iBatchingTxn {
     amountIn: number | string;
     fromTokenBalanceForSCW: number | undefined;
     fromTokenBalanceForEOA: number | undefined;
-    fromTokenDecimal: number | undefined;
+    fromTokenDecimal: number;
     addToBatchLoading: boolean;
 
     individualBatch : iIndividualBatch[];
@@ -30,9 +30,9 @@ export interface iBatchingTxn {
     setAmountIn: (amountIn: number | string) => void;
     setFromTokenBalanceForSCW: (fromTokenBalanceForSCW: number | undefined) => void;
     setFromTokenBalanceForEOA: (fromTokenBalanceForEOA: number | undefined) => void;
-    setFromTokenDecimal: (fromTokenDecimal: number | undefined) => void;
+    setFromTokenDecimal: (fromTokenDecimal: number) => void;
     setAddToBatchLoading: (addToBatchLoading: boolean) => void;
-    
+
     setIndividualBatch: (individualBatch: iIndividualBatch[]) => void;
     setShowIndividualBatchList: (showIndividualBatchList: number | null) => void;
 
@@ -76,7 +76,7 @@ export const useBatchingTxnStore = create<iBatchingTxn>((set) => ({
     setFromTokenBalanceForEOA: (fromTokenBalanceForEOA) => set(() => ({ fromTokenBalanceForEOA })),
     setFromTokenDecimal: (fromTokenDecimal) => set(() => ({ fromTokenDecimal })),
     setAddToBatchLoading: (addToBatchLoading) => set(() => ({ addToBatchLoading })),
-   
+
     setIndividualBatch: (individualBatch) => set(() => ({ individualBatch })),
     setShowIndividualBatchList: (showIndividualBatchList) => set(() => ({ showIndividualBatchList })),
 }));

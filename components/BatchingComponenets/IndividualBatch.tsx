@@ -14,6 +14,7 @@ import { getContractInstance, getErc20Balanceof, getErc20Decimals, getProvider }
 import IERC20 from "../../abis/IERC20.json";
 import { useRefinance } from "../../hooks/Batching/useRefinance";
 import { iCrossChainDifi, useCrossChainDifiStore } from "../../store/CrossChainDifiStore";
+import { setSafeState } from "../../utils/helper";
 bg.config({ DECIMAL_PLACES: 10 });
 
 export default function IndividualBatch({ onUpdate }) {
@@ -23,7 +24,7 @@ export default function IndividualBatch({ onUpdate }) {
 
     const { smartAccount }: iCrossChainDifi = useCrossChainDifiStore((state) => state);
 
-    const { 
+    const {
         tokensData,
         setTokensData,
         fromProtocol,
@@ -66,7 +67,8 @@ export default function IndividualBatch({ onUpdate }) {
                     const scwBalance = await getErc20Balanceof(erc20, smartAccount.address);
                     const eoaBalance = await getErc20Balanceof(erc20, address);
                     const fromTokendecimal = await getErc20Decimals(erc20);
-                    setFromTokenDecimal(fromTokendecimal?.toNumber());
+                    // setFromTokenDecimal(fromTokendecimal?.toNumber());
+                    setSafeState(setFromTokenDecimal, fromTokendecimal, 0);
                     setFromTokenBalanceForSCW(scwBalance?.toNumber());
                     setFromTokenBalanceForEOA(eoaBalance?.toNumber());
                 } else {
@@ -157,7 +159,8 @@ export default function IndividualBatch({ onUpdate }) {
         const scwBalance = await getErc20Balanceof(erc20, smartAccount.address);
         const eoaBalance = await getErc20Balanceof(erc20, address);
         const fromTokendecimal = await getErc20Decimals(erc20);
-        setFromTokenDecimal(fromTokendecimal?.toNumber());
+        // setFromTokenDecimal(fromTokendecimal?.toNumber());
+        setSafeState(setFromTokenDecimal, fromTokendecimal, 0);
         setFromTokenBalanceForSCW(scwBalance?.toNumber());
         setFromTokenBalanceForEOA(eoaBalance?.toNumber());
     };

@@ -12,7 +12,7 @@ export interface iTransfer {
     tokensData: object[];
     scwBalance: BigNumber;
     eoaBalance: BigNumber;
-    tokenInDecimals: number | undefined | any;
+    tokenInDecimals: number;
     gasCost: number;
 
     setTokenAddress: (tokenAddress: number | string) => void;
@@ -25,7 +25,7 @@ export interface iTransfer {
     setTokensData: (tokensData: object[]) => void;
     setScwTokenInbalance: (scwBalance: BigNumber) => void;
     setEoaTokenInbalance: (eoaBalance: BigNumber) => void;
-    setTokenInDecimals: (tokenInDecimals: number | undefined) => void;
+    setTokenInDecimals: (tokenInDecimals: number) => void;
     setGasCost: (gasCost: number) => void;
 
 }
