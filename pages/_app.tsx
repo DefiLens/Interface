@@ -58,7 +58,15 @@ export default function App({ Component, pageProps }: AppProps) {
                     activeChain={selectedChain}
                 >
                     <QueryClientProvider client={queryClient}>
-                    <Toaster position="top-right" reverseOrder={false} />
+                    <Toaster 
+                      toastOptions={{
+                        style: {
+                          height:'100%',
+                          width: '100%',
+                        },
+                      }}
+                      position="top-right" 
+                    />
                       <Suspense fallback={<div>Loading...</div>}>
 
                         <AuthHeader />

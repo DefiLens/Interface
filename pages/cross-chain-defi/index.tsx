@@ -695,7 +695,7 @@ const CrossChainDefi: React.FC<{}> = () => {
 
                                 <div className="flex justify-start items-baseline gap-3">
                                     <div className="text-black font-bold text-sm md:text-base">
-                                        Lending Protocol:
+                                        Lending Protocol :
                                     </div>
                                     <div className="text-black font-medium text-xs md:text-sm">
                                         {allNetworkData?.contracts[contractIndex].contractName}
@@ -704,7 +704,7 @@ const CrossChainDefi: React.FC<{}> = () => {
 
                                 <div className="flex justify-start items-baseline gap-3">
                                     <div className="text-black font-bold text-sm md:text-base">
-                                        Destination lending method:
+                                        Destination lending method :
                                     </div>
                                     <div className="text-black font-medium text-xs md:text-sm">{currentFunc}</div>
                                 </div>
@@ -721,7 +721,7 @@ const CrossChainDefi: React.FC<{}> = () => {
 
                                 <div className="flex justify-start items-baseline gap-3">
                                     <div className="text-black font-bold text-sm md:text-base">
-                                        Recipient:
+                                        Recipient :
                                     </div>
                                     <div className="text-black font-medium text-xs md:text-sm">{shorten(address)}</div>
                                 </div>
@@ -730,7 +730,7 @@ const CrossChainDefi: React.FC<{}> = () => {
                                     <>
                                         <div className="flex justify-start items-baseline gap-3">
                                             <div className="text-black font-bold text-sm md:text-base">
-                                                Gas Cost:
+                                                Gas Cost :
                                             </div>
                                             <div className="text-black font-medium text-xs md:text-sm">
                                                 {`${gasCost} ${gasFeesNamesByChainId[fromChainId]}`}
@@ -739,7 +739,7 @@ const CrossChainDefi: React.FC<{}> = () => {
 
                                         <div className="flex justify-start items-baseline gap-3">
                                             <div className="text-black font-bold text-sm md:text-base">
-                                                Bridge Gas Cost:
+                                                Bridge Gas Cost :
                                             </div>
                                             <div className="text-black font-medium text-xs md:text-sm">
                                                 {`${bridgeGasCost} ${gasFeesNamesByChainId[fromChainId]}`}
@@ -748,7 +748,7 @@ const CrossChainDefi: React.FC<{}> = () => {
 
                                         <div className="flex justify-start items-baseline gap-3">
                                             <div className="text-black font-bold text-sm md:text-base">
-                                                Total Gas Cost:
+                                                Total Gas Cost :
                                             </div>
                                             <div className="text-black font-medium text-xs md:text-sm">
                                                 {`${
