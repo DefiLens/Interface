@@ -84,8 +84,8 @@ const Transfer: React.FC<{}> = () => {
           setAmountIn(0)
           setAmountInDecimals(0)
           setTokenAddress("");
-            setIsnative(e.target.value);
-            if (e.target.value == "Native") {
+            setIsnative(!isNative);
+            if (isNative) {
                 let provider = await new ethers.providers.Web3Provider(web3.givenProvider);
                 if (!provider) throw "no provider";
                 if (!address) throw "no metamask connected";
@@ -111,7 +111,7 @@ const Transfer: React.FC<{}> = () => {
         setAmountIn(0)
         setAmountInDecimals(0)
         setTokenAddress("");
-        setIsSCW(e.target.value);
+        setIsSCW(!isSCW);
     };
 
     const handleTokenAddress = async (_tokenAddress) => {
@@ -145,7 +145,7 @@ const Transfer: React.FC<{}> = () => {
     const handleAmountIn = async (_amountIn) => {
         console.log("hello");
         setAmountInDecimals(_amountIn);
-        if (isNative == "Native") {
+        if (isNative) {
             let amountInByDecimals = bg(_amountIn);
             amountInByDecimals = amountInByDecimals.multipliedBy(bg(10).pow(18));
             if (amountInByDecimals.eq(0)) {
@@ -215,9 +215,9 @@ const Transfer: React.FC<{}> = () => {
                 throw "Enter valid Amount";
             }
             let tx;
-            const _fromAddress = isSCW == "SCW" ? smartAccount.address : address;
-            const _toAdress = isSCW == "SCW" ? address : smartAccount.address;
-            if (isNative == "Native") {
+            const _fromAddress = isSCW ? smartAccount.address : address;
+            const _toAdress = isSCW ? address : smartAccount.address;
+            if (isNative) {
                 let provider = await new ethers.providers.Web3Provider(web3.givenProvider);
                 if (!provider) throw "no provider";
 
@@ -246,7 +246,7 @@ const Transfer: React.FC<{}> = () => {
                 console.log("tx", tx);
             }
 
-            if (isSCW == "SCW") {
+            if (isSCW) {
                 console.log("biconomySmartAccount-----------2: ", smartAccount, tx);
                 const userOp = await smartAccount.buildUserOp([tx]);
                 userOp.paymasterAndData = "0x";
@@ -308,8 +308,7 @@ const Transfer: React.FC<{}> = () => {
                                 <input
                                     type="checkbox"
                                     name="wallet"
-                                    value="SCW"
-                                    checked={isSCW === "SCW"}
+                                    checked={isSCW}
                                     onChange={onOptionChangeForWallet}
                                     className="sr-only peer"
                                 />
@@ -325,9 +324,8 @@ const Transfer: React.FC<{}> = () => {
                                 <input
                                     type="checkbox"
                                     name="wallet"
-                                    value="EOA"
                                     id="eoa"
-                                    checked={isSCW === "EOA"}
+                                    checked={!isSCW}
                                     onChange={onOptionChangeForWallet}
                                     className="sr-only peer"
                                 />
@@ -343,9 +341,8 @@ const Transfer: React.FC<{}> = () => {
                                 <input
                                     type="checkbox"
                                     name="tokens"
-                                    value="Native"
                                     id="native"
-                                    checked={isNative === "Native"}
+                                    checked={isNative}
                                     onChange={onOptionChange}
                                     className="sr-only peer"
                                 />
@@ -361,9 +358,8 @@ const Transfer: React.FC<{}> = () => {
                                 <input
                                     type="checkbox"
                                     name="tokens"
-                                    value="ERC20"
                                     id="erc20"
-                                    checked={isNative === "ERC20"}
+                                    checked={!isNative}
                                     onChange={onOptionChange}
                                     className="sr-only peer"
                                 />
@@ -374,7 +370,7 @@ const Transfer: React.FC<{}> = () => {
                     </div>
 
                     <div className="w-full flex flex-col justify-center items-center gap-3 mt-3">
-                        {isSCW == "SCW" ? (
+                        {isSCW ? (
                             <div className="w-full flex flex-col justify-center items-start px-2 mb-2">
                                 <h3 className="text-gray-100 font-bold text-sm md:text-base">
                                     From
@@ -406,7 +402,7 @@ const Transfer: React.FC<{}> = () => {
                             </div>
                         )}
 
-                        {isNative != "Native" && (
+                        {!isNative && (
                             <div className="w-full relative rounded-md overflow-hidden">
                                 <label htmlFor="tokenAddresses" className="sr-only">
                                     Token Address
@@ -438,7 +434,7 @@ const Transfer: React.FC<{}> = () => {
                             <div className="flex justify-between items-center gap-2 text-white font-semibold text-xs md:text-sm px-1">
                                 <span>Amount :</span>
                                 <span>
-                                    {isSCW === "SCW"
+                                    {isSCW
                                         ? `( SmartAccount Balance : ${
                                               !scwBalance.isZero()
                                                   ? bg(BigNumber.from(scwBalance).toString())
@@ -492,7 +488,7 @@ const Transfer: React.FC<{}> = () => {
                             className="flex justify-center items-center gap-2 bg-success-600 hover:bg-success-700 py-2 px-5 rounded-lg text-white font-medium border-b-4 border-success-800 hover:border-success-900 transition duration-300 mt-3"
                         >
                             {sendTxLoading && <ImSpinner className="animate-spin h-5 w-5" />}
-                            {isSCW == "SCW" ? "Send SmartAccount to EOA" : "Send EOA to SmartAccount"}
+                            {isSCW ? "Send SmartAccount to EOA" : "Send EOA to SmartAccount"}
                         </button>
 
                         {txhash && (

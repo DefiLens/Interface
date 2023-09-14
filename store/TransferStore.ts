@@ -5,8 +5,8 @@ export interface iTransfer {
     tokenAddress: number | string;
     amountIn: number | string;
     amountInDecimals: number;
-    isNative: string;
-    isSCW: string;
+    isNative: boolean;
+    isSCW: boolean;
     sendTxLoading: boolean;
     txhash:boolean | string;
     tokensData: object[];
@@ -18,8 +18,8 @@ export interface iTransfer {
     setTokenAddress: (tokenAddress: number | string) => void;
     setAmountIn: (amountIn: number | string) => void;
     setAmountInDecimals: (amountInDecimals: number) => void;
-    setIsnative: (isNative: string) => void;
-    setIsSCW: (isSCW: string) => void;
+    setIsnative: (isNative: boolean) => void;
+    setIsSCW: (isSCW: boolean) => void;
     setSendtxLoading: (sendTxLoading: boolean) => void;
     setTxHash: (txhash: boolean | string) => void;
     setTokensData: (tokensData: object[]) => void;
@@ -34,8 +34,8 @@ export const useTransferStore = create<iTransfer>((set) => ({
     tokenAddress: 0,
     amountIn: 0,
     amountInDecimals: 0,
-    isNative: "Native",
-    isSCW: "SCW",
+    isNative: true,
+    isSCW: true,
     sendTxLoading: false,
     txhash: false,
     tokensData: [],

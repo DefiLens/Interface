@@ -687,80 +687,81 @@ const CrossChainDefi: React.FC<{}> = () => {
                     </h1>
                     {currentFunc && allNetworkData && (
                         <>
-                            <div className="flex justify-start items-baseline gap-3">
-                                <div className="text-black font-semibold text-sm md:text-base lg:text-lg">Routes :</div>
-                                <div className="text-black font-medium text-xs md:text-sm">{`${NetworkNameByStargateChainId[fromChainId]} -> ${NetworkNameByStargateChainId[toChainId]}`}</div>
-                            </div>
-
-                            <div className="flex justify-start items-baseline gap-3">
-                                <div className="text-black font-semibold text-sm md:text-base lg:text-lg">
-                                    Lending Protocol:
+                            <div className="bg-slate-300 rounded-lg px-4 py-2">
+                                <div className="flex justify-start items-baseline gap-3">
+                                    <div className="text-black font-bold text-sm md:text-base">Routes :</div>
+                                    <div className="text-black font-medium text-xs md:text-sm">{`${NetworkNameByStargateChainId[fromChainId]} -> ${NetworkNameByStargateChainId[toChainId]}`}</div>
                                 </div>
-                                <div className="text-black font-medium text-xs md:text-sm">
-                                    {allNetworkData?.contracts[contractIndex].contractName}
-                                </div>
-                            </div>
 
-                            <div className="flex justify-start items-baseline gap-3">
-                                <div className="text-black font-semibold text-sm md:text-base lg:text-lg">
-                                    Destination lending method:
-                                </div>
-                                <div className="text-black font-medium text-xs md:text-sm">{currentFunc}</div>
-                            </div>
-
-                            <div className="flex justify-start items-baseline gap-3">
-                                <div className="text-black font-semibold text-sm md:text-base lg:text-lg">Amount :</div>
-                                <div className="text-black font-medium text-xs md:text-sm">
-                                    {/* {`
-                                        ${bg(amountIn).dividedBy(bg(10).pow(tokenInDecimals)).toString()} USDC`} */}
-                                    {`
-                                        ${amountIn} USDC`}
-                                </div>
-                            </div>
-
-                            <div className="flex justify-start items-baseline gap-3">
-                                <div className="text-black font-semibold text-sm md:text-base lg:text-lg">
-                                    Recipient:
-                                </div>
-                                <div className="text-black font-medium text-xs md:text-sm">{shorten(address)}</div>
-                            </div>
-
-                            {gasCost && bridgeGasCost && fromChainId ? (
-                                <>
-                                    <div className="flex justify-start items-baseline gap-3">
-                                        <div className="text-black font-semibold text-sm md:text-base lg:text-lg">
-                                            Gas Cost:
-                                        </div>
-                                        <div className="text-black font-medium text-xs md:text-sm">
-                                            {`${gasCost} ${gasFeesNamesByChainId[fromChainId]}`}
-                                        </div>
+                                <div className="flex justify-start items-baseline gap-3">
+                                    <div className="text-black font-bold text-sm md:text-base">
+                                        Lending Protocol:
                                     </div>
-
-                                    <div className="flex justify-start items-baseline gap-3">
-                                        <div className="text-black font-semibold text-sm md:text-base lg:text-lg">
-                                            Bridge Gas Cost:
-                                        </div>
-                                        <div className="text-black font-medium text-xs md:text-sm">
-                                            {`${bridgeGasCost} ${gasFeesNamesByChainId[fromChainId]}`}
-                                        </div>
+                                    <div className="text-black font-medium text-xs md:text-sm">
+                                        {allNetworkData?.contracts[contractIndex].contractName}
                                     </div>
+                                </div>
 
-                                    <div className="flex justify-start items-baseline gap-3">
-                                        <div className="text-black font-semibold text-sm md:text-base lg:text-lg">
-                                            Total Gas Cost:
-                                        </div>
-                                        <div className="text-black font-medium text-xs md:text-sm">
-                                            {`${
-                                                bridgeGasCost && gasCost && bg(bridgeGasCost).plus(gasCost).toString()
-                                            } ${gasFeesNamesByChainId[fromChainId]}`}{" "}
-                                        </div>
+                                <div className="flex justify-start items-baseline gap-3">
+                                    <div className="text-black font-bold text-sm md:text-base">
+                                        Destination lending method:
                                     </div>
-                                </>
-                            ) : (
-                                ""
-                            )}
+                                    <div className="text-black font-medium text-xs md:text-sm">{currentFunc}</div>
+                                </div>
 
-                            {/* {currentFunc && ( */}
+                                <div className="flex justify-start items-baseline gap-3">
+                                    <div className="text-black font-bold text-sm md:text-base">Amount :</div>
+                                    <div className="text-black font-medium text-xs md:text-sm">
+                                        {/* {`
+                                            ${bg(amountIn).dividedBy(bg(10).pow(tokenInDecimals)).toString()} USDC`} */}
+                                        {`
+                                            ${amountIn} USDC`}
+                                    </div>
+                                </div>
+
+                                <div className="flex justify-start items-baseline gap-3">
+                                    <div className="text-black font-bold text-sm md:text-base">
+                                        Recipient:
+                                    </div>
+                                    <div className="text-black font-medium text-xs md:text-sm">{shorten(address)}</div>
+                                </div>
+
+                                {gasCost && bridgeGasCost && fromChainId ? (
+                                    <>
+                                        <div className="flex justify-start items-baseline gap-3">
+                                            <div className="text-black font-bold text-sm md:text-base">
+                                                Gas Cost:
+                                            </div>
+                                            <div className="text-black font-medium text-xs md:text-sm">
+                                                {`${gasCost} ${gasFeesNamesByChainId[fromChainId]}`}
+                                            </div>
+                                        </div>
+
+                                        <div className="flex justify-start items-baseline gap-3">
+                                            <div className="text-black font-bold text-sm md:text-base">
+                                                Bridge Gas Cost:
+                                            </div>
+                                            <div className="text-black font-medium text-xs md:text-sm">
+                                                {`${bridgeGasCost} ${gasFeesNamesByChainId[fromChainId]}`}
+                                            </div>
+                                        </div>
+
+                                        <div className="flex justify-start items-baseline gap-3">
+                                            <div className="text-black font-bold text-sm md:text-base">
+                                                Total Gas Cost:
+                                            </div>
+                                            <div className="text-black font-medium text-xs md:text-sm">
+                                                {`${
+                                                    bridgeGasCost && gasCost && bg(bridgeGasCost).plus(gasCost).toString()
+                                                } ${gasFeesNamesByChainId[fromChainId]}`}{" "}
+                                            </div>
+                                        </div>
+                                    </>
+                                ) : (
+                                    ""
+                                )}
+                            </div>
+
                             <div className="w-full flex justify-center items-center my-3">
                                 <button
                                     type="button"
@@ -771,7 +772,6 @@ const CrossChainDefi: React.FC<{}> = () => {
                                     Simulate
                                 </button>
                             </div>
-                            {/* )} */}
                         </>
                     )}
 
