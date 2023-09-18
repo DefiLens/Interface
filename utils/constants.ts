@@ -27,6 +27,25 @@ interface Tokens {
 export const fetchNetworkDataURL = `${netlifyNodeURL}/common/getNetworkAndContractData`;
 export const fetchContractMetadataURL = `${netlifyNodeURL}/common/getContractMetaData`;
 
+export const NavigationList = [
+    {
+      title: "Cross Chain Defi",
+      route: '/cross-chain-defi',
+    },
+    {
+      title: "Batching Transactions",
+      route: '/batching-transactions',
+    },
+    {
+      title: "Swap",
+      route: '/swap',
+    },
+    {
+      title: "Trade",
+      route: '/trade',
+    },
+];
+
 export const methodWithApi = {
     "109": {
         "0x794a61358D6845594F94dc1DB02A252b5b4814aD": {
