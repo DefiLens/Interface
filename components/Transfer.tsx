@@ -19,16 +19,15 @@ import { useTransferStore, iTransfer } from "../store/TransferStore";
 import { shorten, setSafeState, chooseChianId } from "../utils/helper";
 import { getErc20Decimals, getErc20Balanceof } from "../utils/web3Libs/ethers";
 import { gasFeesNamesByMainChainId, gasFeesNamesByChainId, BIG_ZERO } from "../utils/constants";
+import { useCalculateGasCost } from "../hooks/useCalculateGasCost";
 
 bg.config({ DECIMAL_PLACES: 5 });
 
 const Transfer: React.FC<{}> = () => {
     const { selectedChainId } = React.useContext(ChainContext);
+    const { mutateAsync: calculategasCost } = useCalculateGasCost();
 
-    const {
-        smartAccount,
-        showTransferFundToggle
-    }: iGlobal = useGlobalStore((state) => state);
+    const { smartAccount, showTransferFundToggle }: iGlobal = useGlobalStore((state) => state);
 
     const {
         tokenAddress,
@@ -80,10 +79,10 @@ const Transfer: React.FC<{}> = () => {
 
     const onOptionChange = async (e) => {
         try {
-          setGasCost(0)
-          setAmountIn(0)
-          setAmountInDecimals(0)
-          setTokenAddress("");
+            setGasCost(0);
+            setAmountIn(0);
+            setAmountInDecimals(0);
+            setTokenAddress("");
             setIsnative(e.target.value);
             if (e.target.value == "Native") {
                 let provider = await new ethers.providers.Web3Provider(web3.givenProvider);
@@ -107,9 +106,9 @@ const Transfer: React.FC<{}> = () => {
     };
 
     const onOptionChangeForWallet = (e) => {
-        setGasCost(0)
-        setAmountIn(0)
-        setAmountInDecimals(0)
+        setGasCost(0);
+        setAmountIn(0);
+        setAmountInDecimals(0);
         setTokenAddress("");
         setIsSCW(e.target.value);
     };
@@ -143,55 +142,39 @@ const Transfer: React.FC<{}> = () => {
         }
     };
     const handleAmountIn = async (_amountIn) => {
-        console.log("hello");
-        setAmountInDecimals(_amountIn);
-        if (isNative == "Native") {
-            let amountInByDecimals = bg(_amountIn);
-            amountInByDecimals = amountInByDecimals.multipliedBy(bg(10).pow(18));
-            if (amountInByDecimals.eq(0)) {
-                setAmountIn(_amountIn);
-            } else {
-                setAmountIn(amountInByDecimals.toString());
-            }
-            console.log("amountInByDecimals-native", amountInByDecimals.toString());
-        } else {
-            const contract = await getContract(tokenAddress);
-            if (!contract) {
-                alert("Not valid token address");
-                return;
-            }
-            let decimal = await contract.decimals();
-            let amountInByDecimals = bg(_amountIn);
-            amountInByDecimals = amountInByDecimals.multipliedBy(bg(10).pow(decimal.toString()));
-            console.log("amountInByDecimals", amountInByDecimals.toString(), _amountIn.toString());
-            if (amountInByDecimals.eq(0)) {
-                setAmountIn(_amountIn);
-            } else {
-                setAmountIn(amountInByDecimals.toString());
-            }
-            console.log("amountInByDecimals-erc20", amountInByDecimals.toString());
-        }
-
-        const biconomyGasInfo = await axios.get(
-            `https://sdk-relayer.prod.biconomy.io/api/v1/relay/feeOptions?chainId=${chain?.chainId}`
-        );
-        console.log("biconomyGasInfo: ", biconomyGasInfo);
-
-        if (biconomyGasInfo && biconomyGasInfo.data && biconomyGasInfo.data.data) {
-            if (biconomyGasInfo.data.data.response.length > 0) {
-                const firstObject: any = biconomyGasInfo.data.data.response[0];
-                if (firstObject.tokenGasPrice && firstObject.feeTokenTransferGas) {
-                    const tokenGasPrice = new bg(firstObject.tokenGasPrice.toString());
-                    const feeTokenTransferGas = new bg(firstObject.feeTokenTransferGas.toString());
-                    const divisor = new bg("1e18");
-                    const result = tokenGasPrice.times(feeTokenTransferGas).dividedBy(divisor);
-                    const formattedResult = result.toFixed(15);
-                    console.log("Token Gas Price in ETH:", formattedResult.toString());
-                    setGasCost(bg(formattedResult).toNumber());
+        try {
+            setAmountInDecimals(_amountIn);
+            if (isNative == "Native") {
+                let amountInByDecimals = bg(_amountIn);
+                amountInByDecimals = amountInByDecimals.multipliedBy(bg(10).pow(18));
+                if (amountInByDecimals.eq(0)) {
+                    setAmountIn(_amountIn);
                 } else {
-                    setGasCost(0);
+                    setAmountIn(amountInByDecimals.toString());
                 }
+                console.log("amountInByDecimals-native", amountInByDecimals.toString());
+            } else {
+                const contract = await getContract(tokenAddress);
+                if (!contract) {
+                    alert("Not valid token address");
+                    return;
+                }
+                let decimal = await contract.decimals();
+                let amountInByDecimals = bg(_amountIn);
+                amountInByDecimals = amountInByDecimals.multipliedBy(bg(10).pow(decimal.toString()));
+                console.log("amountInByDecimals", amountInByDecimals.toString(), _amountIn.toString());
+                if (amountInByDecimals.eq(0)) {
+                    setAmountIn(_amountIn);
+                } else {
+                    setAmountIn(amountInByDecimals.toString());
+                }
+                console.log("amountInByDecimals-erc20", amountInByDecimals.toString());
             }
+            const gasCost: number | undefined = await calculategasCost(chain?.chainId);
+            console.log("gasCost: ", gasCost?.toString());
+            setGasCost(gasCost!);
+        } catch (error) {
+            console.log("handleAmountIn-error: ", error)
         }
     };
     const getContract = async (_tokenAddress) => {
@@ -506,6 +489,6 @@ const Transfer: React.FC<{}> = () => {
             )}
         </div>
     );
-}
+};
 
 export default Transfer;

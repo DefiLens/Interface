@@ -7,33 +7,49 @@ import { useMutation } from '@tanstack/react-query';
 import { useGlobalStore, iGlobal } from '../store/GlobalStore';
 import { _nonce, _functionType } from '../utils/constants';
 import { useCrossChainDifiStore, iCrossChainDifi } from '../store/CrossChainDifiStore';
+import { BICONOMY_GAS_PRICE_URL } from '../utils/keys';
+import { chooseChianId } from '../utils/helper';
 
 bg.config({ DECIMAL_PLACES: 5 });
 
 export function useCalculateGasCost() {
-    const { 
+    const {
         setScwBalance,
         setEoaBalance,
     }: iGlobal = useGlobalStore((state) => state);
 
-    const { 
-        fromChainId
-    }: iCrossChainDifi = useCrossChainDifiStore((state) => state);
-
-    async function calculategasCost() {
+    async function calculategasCost(fromChainId) {
         try {
-            const biconomyGasInfo = await axios.get(`https://sdk-relayer.prod.biconomy.io/api/v1/relay/feeOptions?chainId=${fromChainId}`)
-            console.log(biconomyGasInfo)
-            const firstObject: any = biconomyGasInfo.data.response[0];
-            const tokenGasPrice: number = firstObject.tokenGasPrice;
-            const feeTokenTransferGas: number = firstObject.feeTokenTransferGas;
+            const biconomyGasInfo = await axios.get(`${BICONOMY_GAS_PRICE_URL}${fromChainId}`)
+            // console.log(biconomyGasInfo)
+            // const firstObject: any = biconomyGasInfo.data.response[0];
+            // const tokenGasPrice: number = firstObject.tokenGasPrice;
+            // const feeTokenTransferGas: number = firstObject.feeTokenTransferGas;
 
-            const gasCost = bg(tokenGasPrice).multipliedBy(feeTokenTransferGas).dividedBy(1e18)
-            console.log("Token Gas Price in ETH:", gasCost);
+            // const gasCost = bg(tokenGasPrice).multipliedBy(feeTokenTransferGas).dividedBy(1e18)
+            // console.log("Token Gas Price in ETH:", gasCost);
+
+            if (biconomyGasInfo && biconomyGasInfo.data && biconomyGasInfo.data.data) {
+                if (biconomyGasInfo.data.data.response.length > 0) {
+                    const firstObject: any = biconomyGasInfo.data.data.response[0];
+                    if (firstObject.tokenGasPrice && firstObject.feeTokenTransferGas) {
+                        const tokenGasPrice = new bg(firstObject.tokenGasPrice.toString());
+                        const feeTokenTransferGas = new bg(firstObject.feeTokenTransferGas.toString());
+                        const divisor = new bg("1e18");
+                        const result = tokenGasPrice.times(feeTokenTransferGas).dividedBy(divisor);
+                        const formattedResult = result.toFixed(15);
+                        console.log("Token Gas Price in ETH:", formattedResult.toString());
+                        return bg(formattedResult).toNumber();
+                    } else {
+                        return 0
+                    }
+                }
+            }
+
         } catch (error: any) {
             console.log("useCalculatebalance:Error: " + error);
             toast.error(error);
-            return;
+            return 0;
         }
     }
     return useMutation(calculategasCost);

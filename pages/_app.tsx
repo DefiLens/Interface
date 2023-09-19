@@ -22,6 +22,7 @@ export default function App({ Component, pageProps }: AppProps) {
     const pathname = usePathname()
     const metamaskConfig = metamaskWallet({});
     const [selectedChain, setSelectedChain] = React.useState("");
+    const [selectedChainId, setSelectedChainId] = React.useState("");
 
     const queryClient = new QueryClient({
         defaultOptions: {
@@ -31,7 +32,7 @@ export default function App({ Component, pageProps }: AppProps) {
             },
         },
     });
-    
+
     const TabList = [
         {
           title: "Cross Chain Defi",
@@ -50,7 +51,7 @@ export default function App({ Component, pageProps }: AppProps) {
     return (
         <>
             {/* @ts-ignore */}
-            <ChainContext.Provider value={{ selectedChain, setSelectedChain }}>
+            <ChainContext.Provider value={{ selectedChain, setSelectedChain, selectedChainId, setSelectedChainId }}>
                 <ThirdwebProvider
                     supportedWallets={[metamaskConfig]}
                     supportedChains={[Polygon, Arbitrum, Avalanche, Ethereum, Base, Optimism]}
@@ -73,7 +74,7 @@ export default function App({ Component, pageProps }: AppProps) {
                                           className={`cursor-pointer px-4 py-2 text-sm md:text-base text-center rounded-md hover:bg-secondary-600 transition duration-300 ${
                                             pathname === item.route ? "bg-secondary-500" : ""
                                           } `}
-                                        > 
+                                        >
                                           {item.title}
                                         </Link>
                                     ))}
