@@ -64,7 +64,7 @@ const Transfer: React.FC<{}> = () => {
         async function onChangeFromProtocol() {
             if (showTransferFundToggle) {
                 const response: any = await axios.get("https://gateway.ipfs.io/ipns/tokens.uniswap.org");
-                const tokensWithChain137 = response.data.tokens?.filter((token) => token.chainId === 137);
+                const tokensWithChain137 = response.data.tokens?.filter((token) => token.chainId.toString() === selectedChainId.toString());
                 const filteredTokens = tokensWithChain137.map((token) => {
                     const { extensions, logoURI, ...filteredToken } = token;
                     return filteredToken;
@@ -115,6 +115,7 @@ const Transfer: React.FC<{}> = () => {
 
     const handleTokenAddress = async (_tokenAddress) => {
         try {
+            console.log('_tokenAddress', _tokenAddress)
             setAmountIn(0);
             setTokenAddress(_tokenAddress);
             const contract = await getContract(_tokenAddress);

@@ -33,7 +33,7 @@ export const methodWithApi = {
             supply: `${netlifyNodeURL}/aave/aavev3/supply`,
         },
         "0xF25212E676D1F7F89Cd72fFEe66158f541246445": {
-            supply: `${netlifyNodeURL}/compound/109/compound/supply`,
+            supply: `${netlifyNodeURL}/compound/compoundv3/supply`,
         },
     },
     "106": {
@@ -71,6 +71,12 @@ export const methodWithApi = {
     "184": {
         "0x8184285DfaB372201AFb8B5d6D4718467179E33d": {
             mint: `${netlifyNodeURL}/swirllend/184/swirllend/mint/`,
+        },
+        "0xA238Dd80C259a72e81d7e4664a9801593F98d1c5": {
+            supply: `${netlifyNodeURL}/aave/aavev3/supply`,
+        },
+        "0x9c4ec768c28520b50860ea7a15bd7213a9ff58bf": {
+            supply: `${netlifyNodeURL}/compound/compoundv3/supply`,
         },
     },
 };
