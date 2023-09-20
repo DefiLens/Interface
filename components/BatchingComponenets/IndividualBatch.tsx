@@ -6,7 +6,7 @@ import { BigNumber } from "ethers";
 import { BigNumber as bg } from "bignumber.js";
 
 import { ImSpinner } from "react-icons/im";
-import { useAddress } from "@thirdweb-dev/react";
+import { useAddress, useChain } from "@thirdweb-dev/react";
 import { BiSolidChevronDown } from "react-icons/bi";
 
 import IERC20 from "../../abis/IERC20.json";
@@ -15,15 +15,27 @@ import ChainContext from "../../Context/ChainContext";
 import { useRefinance } from "../../hooks/Batching/useRefinance";
 import { useGlobalStore, iGlobal } from "../../store/GlobalStore";
 import { useBatchingTxnStore, iBatchingTxn } from "../../store/BatchingTxnStore";
-import { tokenAddressByProtocol, protocolByNetwork, _nonce, _functionType, BIG_ZERO } from "../../utils/constants";
+import {
+    tokenAddressByProtocol,
+    protocolByNetwork,
+    _nonce,
+    _functionType,
+    BIG_ZERO,
+    protocolNames,
+} from "../../utils/constants";
 import { getProvider, getErc20Decimals, getErc20Balanceof, getContractInstance } from "../../utils/web3Libs/ethers";
 
 bg.config({ DECIMAL_PLACES: 10 });
 
 const IndividualBatch: React.FC<any> = ({ onUpdate }: any) => {
     const address = useAddress(); // Detect the connected address
+    const chain = useChain(); // Detect the connected address
     const { mutateAsync: refinance } = useRefinance();
-    const { selectedChain } = React.useContext(ChainContext);
+    const { selectedChain, selectedChainId } = React.useContext(ChainContext);
+
+    useEffect(() => {
+        // alert(selectedChain)
+    }, []);
 
     const { smartAccount }: iGlobal = useGlobalStore((state) => state);
 
@@ -74,10 +86,10 @@ const IndividualBatch: React.FC<any> = ({ onUpdate }: any) => {
                     setFromTokenDecimal(0);
                     setFromTokenBalanceForSCW(BIG_ZERO);
                     setFromTokenBalanceForEOA(BIG_ZERO);
-                    const firstFromToken = protocolByNetwork[fromProtocol][0];
+                    const firstFromToken = protocolByNetwork[selectedChain][fromProtocol][0];
                     setFromToken(firstFromToken);
-                    const provider = await getProvider("109");
-                    const tokenAddress = tokenAddressByProtocol[fromProtocol][firstFromToken];
+                    const provider = await getProvider(selectedChainId);
+                    const tokenAddress = tokenAddressByProtocol[selectedChain][fromProtocol][firstFromToken];
                     const erc20 = await getContractInstance(tokenAddress, IERC20, provider);
                     const scwBalance = await getErc20Balanceof(erc20, smartAccount.address);
                     const eoaBalance = await getErc20Balanceof(erc20, address);
@@ -88,7 +100,7 @@ const IndividualBatch: React.FC<any> = ({ onUpdate }: any) => {
                 } else {
                     const response: any = await axios.get("https://gateway.ipfs.io/ipns/tokens.uniswap.org");
                     console.log("response: ", response, response.tokens);
-                    const tokensWithChain137 = response.data.tokens?.filter((token) => token.chainId === 137);
+                    const tokensWithChain137 = response.data.tokens?.filter((token) => token.chainId === chain?.chainId);
                     const filteredTokens = tokensWithChain137.map((token) => {
                         const { extensions, logoURI, ...filteredToken } = token;
                         return filteredToken;
@@ -125,8 +137,8 @@ const IndividualBatch: React.FC<any> = ({ onUpdate }: any) => {
             alert("wait, tx loading");
             return;
         }
-        if (selectedChain != "polygon") {
-            alert("Batching is only supported on polygon as of now");
+        if (!(selectedChain == "polygon" || selectedChain == "base")) {
+            alert("Batching is only supported on polygon and base as of now");
             return;
         }
         setFromProtocol("");
@@ -138,8 +150,8 @@ const IndividualBatch: React.FC<any> = ({ onUpdate }: any) => {
             alert("wait, tx loading");
             return;
         }
-        if (selectedChain != "polygon") {
-            alert("Batching is only supported on polygon as of now");
+        if (!(selectedChain == "polygon" || selectedChain == "base")) {
+            alert("Batching is only supported on polygon and base as of now");
             return;
         }
         setToToken("");
@@ -151,7 +163,8 @@ const IndividualBatch: React.FC<any> = ({ onUpdate }: any) => {
             alert("wait, tx loading");
             return;
         }
-        if (selectedChain != "polygon") {
+        // if (selectedChain != "polygon") {
+        if (!(selectedChain == "polygon" || selectedChain == "base")) {
             alert("Batching is only supported on polygon as of now");
             return;
         }
@@ -165,12 +178,14 @@ const IndividualBatch: React.FC<any> = ({ onUpdate }: any) => {
         setFromTokenBalanceForSCW(BIG_ZERO);
         setFromTokenBalanceForEOA(BIG_ZERO);
         setFromToken(_fromToken);
-        const provider = await getProvider("109");
+        const provider = await getProvider(selectedChainId);
 
         const erc20Address: any =
             fromProtocol == "erc20" ? tokensData.filter((token: any) => token.symbol === _fromToken) : "";
         const tokenAddress =
-            fromProtocol != "erc20" ? tokenAddressByProtocol[fromProtocol][_fromToken] : erc20Address[0].address;
+            fromProtocol != "erc20"
+                ? tokenAddressByProtocol[selectedChain][fromProtocol][_fromToken]
+                : erc20Address[0].address;
         const erc20 = await getContractInstance(tokenAddress, IERC20, provider);
         const scwBalance = await getErc20Balanceof(erc20, smartAccount.address);
         const eoaBalance = await getErc20Balanceof(erc20, address);
@@ -185,7 +200,8 @@ const IndividualBatch: React.FC<any> = ({ onUpdate }: any) => {
             alert("wait, tx loading");
             return;
         }
-        if (selectedChain != "polygon") {
+        // if (selectedChain != "polygon") {
+        if (!(selectedChain == "polygon" || selectedChain == "base")) {
             alert("Batching is only supported on polygon as of now");
             return;
         }
@@ -197,7 +213,8 @@ const IndividualBatch: React.FC<any> = ({ onUpdate }: any) => {
             alert("wait, tx loading");
             return;
         }
-        if (selectedChain != "polygon") {
+        // if (selectedChain != "polygon") {
+        if (!(selectedChain == "polygon" || selectedChain == "base")) {
             alert("Batching is only supported on polygon as of now");
             return;
         }
@@ -233,7 +250,8 @@ const IndividualBatch: React.FC<any> = ({ onUpdate }: any) => {
                 throw "fromToken and toToken should not same-";
                 return;
             }
-            if (selectedChain != "polygon") {
+            // if (selectedChain != "polygon") {
+            if (!(selectedChain == "polygon" || selectedChain == "base")) {
                 alert("Batching is only supported on polygon as of now");
                 return;
             }
@@ -265,7 +283,7 @@ const IndividualBatch: React.FC<any> = ({ onUpdate }: any) => {
                 throw "select amountIn";
                 return;
             }
-            const provider = await getProvider("109");
+            const provider = await getProvider(selectedChainId);
             console.log(
                 "refinanceamoynt",
                 amountIn.toString(),
@@ -323,11 +341,18 @@ const IndividualBatch: React.FC<any> = ({ onUpdate }: any) => {
                             <option value="" disabled selected>
                                 Protocols
                             </option>
-                            <option value="aaveV2">AAVE V2</option>
+                            {/* <option value="aaveV2">AAVE V2</option>
                             <option value="aaveV3">AAVE V3</option>
                             <option value="compoundV3">Compound V3</option>
                             <option value="dForce">dForce</option>
-                            <option value="erc20">ERC20</option>
+                            <option value="erc20">ERC20</option> */}
+
+                            {selectedChain &&
+                                protocolNames[selectedChain].key.map((protocol: any, protocolIndex: any) => (
+                                    <option value={protocol} key={protocolIndex}>
+                                        {protocolNames[selectedChain].value[protocolIndex]}
+                                    </option>
+                                ))}
                         </select>
                         <div className="bg-white pointer-events-none absolute right-0 top-0 bottom-0 flex items-center px-2">
                             <BiSolidChevronDown size="20px" />
@@ -350,7 +375,7 @@ const IndividualBatch: React.FC<any> = ({ onUpdate }: any) => {
                             </option>
 
                             {fromProtocol && fromProtocol != "erc20"
-                                ? protocolByNetwork[fromProtocol].map((token: any, tokenIndex: any) => (
+                                ? protocolByNetwork[selectedChain][fromProtocol].map((token: any, tokenIndex: any) => (
                                       // <option value={token} key={tokenIndex}>{token} {apys[tokenIndex] ? (`(APY: ${apys[tokenIndex]} %)`) : "(APY: Not Available)"}</option>
                                       <option value={token} key={tokenIndex}>
                                           {token}
@@ -389,11 +414,18 @@ const IndividualBatch: React.FC<any> = ({ onUpdate }: any) => {
                             <option value="" disabled selected>
                                 Protocols
                             </option>
-                            <option value="aaveV2">AAVE V2</option>
+                            {/* <option value="aaveV2">AAVE V2</option>
                             <option value="aaveV3">AAVE V3</option>
                             <option value="compoundV3">Compound V3</option>
                             <option value="dForce">dForce</option>
-                            <option value="erc20">ERC20</option>
+                            <option value="erc20">ERC20</option> */}
+
+                            {selectedChain &&
+                                protocolNames[selectedChain].key.map((protocol: any, protocolIndex: any) => (
+                                    <option value={protocol} key={protocolIndex}>
+                                        {protocolNames[selectedChain].value[protocolIndex]}
+                                    </option>
+                                ))}
                         </select>
                         <div className="bg-white pointer-events-none absolute right-0 top-0 bottom-0 flex items-center px-2">
                             <BiSolidChevronDown size="20px" />
@@ -415,7 +447,7 @@ const IndividualBatch: React.FC<any> = ({ onUpdate }: any) => {
                                 To Tokens
                             </option>
                             {toProtocol && toProtocol != "erc20"
-                                ? protocolByNetwork[toProtocol].map((token: any, tokenIndex: any) => (
+                                ? protocolByNetwork[selectedChain][toProtocol].map((token: any, tokenIndex: any) => (
                                       <option value={token} key={tokenIndex}>
                                           {token}
                                       </option>

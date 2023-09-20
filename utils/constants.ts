@@ -126,6 +126,15 @@ export const NetworkNameByStargateChainId = {
     "184": "Base",
 };
 
+export const chainIdByStargateChainId = {
+    "109": "137",
+    "106": "43114",
+    "110": "42161",
+    "111": "10",
+    "101": "1",
+    "184": "8453",
+};
+
 export const gasFeesNames = {
     polygon: "polygon",
     avalanche: "avax",
@@ -162,7 +171,6 @@ export const richAddressByChainId = {
     "184": "0x76db18f9FBA2F757530E8bae30D0DB5B937c5b98",
 };
 
-
 export const tokensByNetwork: Record<string, Tokens> = {
     "109": {
         usdc: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
@@ -188,61 +196,69 @@ export const tokensByNetwork: Record<string, Tokens> = {
 export const UniversalRouter = "0x4C60051384bd2d3C01bfc845Cf5F4b44bcbE9de5"; // polygon
 export const V3_SWAP_ROUTER_ADDRESS = "0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45";
 
+export const protocolNames = {
+    "base": {
+        key: ["aaveV3", "compoundV3", "erc20"],
+        value: ["AAVE V3", "Compound V3", "ERC20"],
+    },
+    "polygon": {
+        key: ["aaveV2", "aaveV3", "compoundV3", "dForce", "erc20"],
+        value: ["AAVE V2", "AAVE V3", "Compound V3", "dForce", "ERC20"],
+    }
+};
+
+
 export const protocolByNetwork = {
-    aaveV2: [
-        "aUSDC",
-        "aUSDT",
-        "aDAI",
-        "aWETH",
-        "aWMATIC",
-        "aAAVE",
-        "aWBTC",
-    ],
-    aaveV3: [
-        "aUSDCv3",
-        "aUSDTv3",
-        "aDAIv3",
-        "aWETHv3",
-        "aWMATICv3",
-        "aAAVEv3",
-        "aWBTCv3",
-        "aBALv3",
-    ],
-    compoundV3: [
-        'cUSDC'
-    ],
-    dForce: [
-        'dForceUSDC'
-    ]
-}
+    base: {
+        aaveV3: ["aBasUSDbC", "aBasWETH"],
+        compoundV3: ["cUSDbCv3"],
+    },
+    polygon: {
+        aaveV2: ["aUSDC", "aUSDT", "aDAI", "aWETH", "aWMATIC", "aAAVE", "aWBTC"],
+        aaveV3: ["aUSDCv3", "aUSDTv3", "aDAIv3", "aWETHv3", "aWMATICv3", "aAAVEv3", "aWBTCv3", "aBALv3"],
+        compoundV3: ["cUSDC"],
+        dForce: ["dForceUSDC"],
+    }
+};
 
 export const tokenAddressByProtocol = {
-    aaveV2: {
-        "aUSDC": "0x1a13F4Ca1d028320A707D99520AbFefca3998b7F",
-        "aUSDT": "0x60D55F02A771d515e077c9C2403a1ef324885CeC",
-        "aDAI": "0x27F8D03b3a2196956ED754baDc28D73be8830A6e",
-        "aWETH": "0x28424507fefb6f7f8E9D3860F56504E4e5f5f390",
-        "aWMATIC": "0x8dF3aad3a84da6b69A4DA8aeC3eA40d9091B2Ac4",
-        "aAAVE": "0x1d2a0E5EC8E5bBDCA5CB219e649B565d8e5c3360",
-        "aWBTC": "0x5c2ed810328349100A66B82b78a1791B101C9D61",
+    base: {
+        aaveV3: {
+            aBasUSDbC: "0x0a1d576f3eFeF75b330424287a95A366e8281D54",
+            aBasWETH: "0xD4a0e0b9149BCee3C920d2E00b5dE09138fd8bb7"
+        },
+        compoundV3: {
+            cUSDbCv3: "0x9c4ec768c28520B50860ea7a15bd7213a9fF58bf"
+        }
     },
-    aaveV3: {
-        "aUSDCv3": "0x625E7708f30cA75bfd92586e17077590C60eb4cD",
-        "aUSDTv3": "0x6ab707Aca953eDAeFBc4fD23bA73294241490620",
-        "aDAIv3": "0x82E64f49Ed5EC1bC6e43DAD4FC8Af9bb3A2312EE",
-        "aWETHv3": "0xe50fA9b3c56FfB159cB0FCA61F5c9D750e8128c8",
-        "aWMATICv3": "0x6d80113e533a2C0fe82EaBD35f1875DcEA89Ea97",
-        "aAAVEv3": "0xf329e36C7bF6E5E86ce2150875a84Ce77f477375",
-        "aWBTCv3": "0x078f358208685046a11C85e8ad32895DED33A249",
-        "aBALv3": "0x8ffDf2DE812095b1D19CB146E4c004587C0A0692"
+    polygon: {
+        aaveV2: {
+            aUSDC: "0x1a13F4Ca1d028320A707D99520AbFefca3998b7F",
+            aUSDT: "0x60D55F02A771d515e077c9C2403a1ef324885CeC",
+            aDAI: "0x27F8D03b3a2196956ED754baDc28D73be8830A6e",
+            aWETH: "0x28424507fefb6f7f8E9D3860F56504E4e5f5f390",
+            aWMATIC: "0x8dF3aad3a84da6b69A4DA8aeC3eA40d9091B2Ac4",
+            aAAVE: "0x1d2a0E5EC8E5bBDCA5CB219e649B565d8e5c3360",
+            aWBTC: "0x5c2ed810328349100A66B82b78a1791B101C9D61",
+        },
+        aaveV3: {
+            aUSDCv3: "0x625E7708f30cA75bfd92586e17077590C60eb4cD",
+            aUSDTv3: "0x6ab707Aca953eDAeFBc4fD23bA73294241490620",
+            aDAIv3: "0x82E64f49Ed5EC1bC6e43DAD4FC8Af9bb3A2312EE",
+            aWETHv3: "0xe50fA9b3c56FfB159cB0FCA61F5c9D750e8128c8",
+            aWMATICv3: "0x6d80113e533a2C0fe82EaBD35f1875DcEA89Ea97",
+            aAAVEv3: "0xf329e36C7bF6E5E86ce2150875a84Ce77f477375",
+            aWBTCv3: "0x078f358208685046a11C85e8ad32895DED33A249",
+            aBALv3: "0x8ffDf2DE812095b1D19CB146E4c004587C0A0692",
+        },
+        compoundV3: {
+            cUSDC: "0xF25212E676D1F7F89Cd72fFEe66158f541246445",
+        },
+        dForce: {
+            dForceUSDC: "0x5268b3c4afb0860D365a093C184985FCFcb65234",
+        },
     },
-    compoundV3: {
-        'cUSDC': "0xF25212E676D1F7F89Cd72fFEe66158f541246445"
-    },
-    dForce: {
-        'dForceUSDC': '0x5268b3c4afb0860D365a093C184985FCFcb65234'
-    }
-}
+};
 
 // export const contractDataByNetwork = [
 //     {

@@ -14,11 +14,14 @@ import { richAddressByChainId, _nonce, _functionType } from "../utils/constants"
 import { useCrossChainDifiStore, iCrossChainDifi } from "../store/CrossChainDifiStore";
 import { getProvider, getErc20Balanceof, getContractInstance } from "../utils/web3Libs/ethers";
 import { useCalculateGasCost } from "./useCalculateGasCost";
+import React from "react";
+import ChainContext from "../Context/ChainContext";
 
 bg.config({ DECIMAL_PLACES: 18 });
 
 export function useSimulate() {
     const { mutateAsync: calculategasCost } = useCalculateGasCost();
+    const { selectedChainId } = React.useContext(ChainContext);
 
     const { smartAccount }: iGlobal = useGlobalStore((state) => state);
 
@@ -71,7 +74,7 @@ export function useSimulate() {
             if (!allNetworkData) throw "a need to fetch";
             const _tempAmount = BigNumber.from(bg(amountIn).multipliedBy(bg(10).pow(tokenInDecimals)).toString());
 
-            const provider = await getProvider(fromChainId);
+            const provider = await getProvider(selectedChainId);
             const fromStarGateRouter = allNetworkData.starGateRouter;
             const toUsdc = allNetworkData.tokens.usdc;
             const toChainPing = allNetworkData.chainPing;

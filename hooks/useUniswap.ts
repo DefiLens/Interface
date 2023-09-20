@@ -6,11 +6,15 @@ import { TradeType, Token, Percent, CurrencyAmount } from "@uniswap/sdk-core";
 import IERC20 from "../abis/IERC20.json";
 import { V3_SWAP_ROUTER_ADDRESS, _nonce, _functionType } from "../utils/constants";
 import { getProvider, getErc20Decimals, getErc20Data, getContractInstance } from "../utils/web3Libs/ethers";
+import React from "react";
+import ChainContext from "../Context/ChainContext";
 
 export function useUniswap() {
+    const { selectedChainId } = React.useContext(ChainContext);
+
     async function swap({ tokenIn, tokenOut, amountIn, address, type }: any) {
         try {
-            const web3JsonProvider = await getProvider("109");
+            const web3JsonProvider = await getProvider(selectedChainId);
             if (!web3JsonProvider) throw "No provider";
             const router = new AlphaRouter({
                 chainId: 137,

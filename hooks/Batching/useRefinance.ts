@@ -10,10 +10,13 @@ import { useBatchingTxnStore, iBatchingTxn } from "../../store/BatchingTxnStore"
 import { V3_SWAP_ROUTER_ADDRESS, _nonce, _functionType } from "../../utils/constants";
 import { useCrossChainDifiStore, iCrossChainDifi } from "../../store/CrossChainDifiStore";
 import { nativeTokenNum, nativeTokenFetcher, buildParams, abiFetcherNum, abiFetcher } from "./batchingUtils";
+import ChainContext from "../../Context/ChainContext";
+import React from "react";
 
 export function useRefinance() {
     const { mutateAsync: swap } = useUniswap();
     const { mutateAsync: approve } = useApprove();
+    const { selectedChain } = React.useContext(ChainContext);
 
     const { setTxHash }: iCrossChainDifi = useCrossChainDifiStore((state) => state);
     const { tokensData }: iBatchingTxn = useBatchingTxnStore((state) => state);
@@ -31,6 +34,9 @@ export function useRefinance() {
         provider,
     }: any) {
         try {
+            if (!selectedChain) {
+                alert("Chain is not selected!!")
+            }
             setTxHash("");
             const tempTxs: any = [];
 
@@ -56,23 +62,23 @@ export function useRefinance() {
             }
 
             if (toProtocol != "erc20") {
-                const tokenOutNum = nativeTokenNum[tokenOutName];
-                nativeTokenOut = nativeTokenFetcher[tokenOutNum].nativeToken;
+                const tokenOutNum = nativeTokenNum[selectedChain][tokenOutName];
+                nativeTokenOut = nativeTokenFetcher[selectedChain][tokenOutNum].nativeToken;
                 console.log("nativeTokenOut", nativeTokenOut);
             }
 
             if (fromProtocol != "erc20") {
-                abiNum = abiFetcherNum[tokenInName];
-                abi = abiFetcher[abiNum]["withdrawAbi"];
-                methodName = abiFetcher[abiNum]["withdrawMethodName"];
-                paramDetailsMethod = abiFetcher[abiNum]["withdrawParamDetailsMethod"];
-                tokenInContractAddress = abiFetcher[abiNum]["contractAddress"];
+                abiNum = abiFetcherNum[selectedChain][tokenInName];
+                abi = abiFetcher[selectedChain][abiNum]["withdrawAbi"];
+                methodName = abiFetcher[selectedChain][abiNum]["withdrawMethodName"];
+                paramDetailsMethod = abiFetcher[selectedChain][abiNum]["withdrawParamDetailsMethod"];
+                tokenInContractAddress = abiFetcher[selectedChain][abiNum]["contractAddress"];
 
                 console.log("tokenInName", tokenInName, tokenInContractAddress);
 
-                const tokenInNum = nativeTokenNum[tokenInName];
+                const tokenInNum = nativeTokenNum[selectedChain][tokenInName];
                 console.log("tokenInNum", tokenInNum);
-                nativeTokenIn = nativeTokenFetcher[tokenInNum].nativeToken;
+                nativeTokenIn = nativeTokenFetcher[selectedChain][tokenInNum].nativeToken;
                 console.log("nativeTokenIn", nativeTokenIn);
 
                 abiInterface = new ethers.utils.Interface([abi]);
@@ -117,11 +123,11 @@ export function useRefinance() {
                 const newTokenIn = isSwap ? nativeTokenOut : nativeTokenIn;
                 const newAmount = isSwap ? swapData.amountOutprice : amount;
 
-                abiNum = abiFetcherNum[tokenOutName];
-                abi = abiFetcher[abiNum]["depositAbi"];
-                methodName = abiFetcher[abiNum]["depositMethodName"];
-                paramDetailsMethod = abiFetcher[abiNum]["depositParamDetailsMethod"];
-                const tokenOutContractAddress = abiFetcher[abiNum]["contractAddress"];
+                abiNum = abiFetcherNum[selectedChain][tokenOutName];
+                abi = abiFetcher[selectedChain][abiNum]["depositAbi"];
+                methodName = abiFetcher[selectedChain][abiNum]["depositMethodName"];
+                paramDetailsMethod = abiFetcher[selectedChain][abiNum]["depositParamDetailsMethod"];
+                const tokenOutContractAddress = abiFetcher[selectedChain][abiNum]["contractAddress"];
                 console.log(
                     "tokenOutContractAddress",
                     tokenOutContractAddress,

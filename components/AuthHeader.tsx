@@ -52,6 +52,7 @@ const AuthHeader: React.FC<{}> = () => {
     useEffect(() => {
         async function changeWallet() {
             if (address && smartAccount && chain) {
+                console.log("Metamask new address", address)
                 if (smartAccount.owner == address) return;
                 // console.log("ChainDetails: ", selectedChainId, selectedChain, chain);
                 const _smartAccount = await login(chain?.chainId);
@@ -60,6 +61,12 @@ const AuthHeader: React.FC<{}> = () => {
                 await isNetworkCorrect(chain?.chainId, _smartAccount.address);
                 setSelectedChain?.(chain.slug);
                 setSelectedChainId?.(chain?.chainId.toString());
+            } else {
+                setSmartAccount(null)
+                setConnected(false)
+                setSelectedChain("")
+                setSelectedChainId("")
+                console.log("Metamask logout", address)
             }
         }
         changeWallet();

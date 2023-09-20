@@ -16,7 +16,7 @@ import IStarGateFactory from "../abis/IStarGateFactory.json";
 import IStarGateFeeLibrary from "../abis/IStarGateFeeLibrary.json";
 import IStarGatePool from "../abis/IStarGatePool.json";
 import IStarGateRouter from "../abis/IStarGateRouter.json";
-import { implementation_slot, rpscURLS } from "./constants";
+import { chainIdByStargateChainId, implementation_slot, rpscURLS } from "./constants";
 import { getContractInstance, getProvider } from "./web3Libs/ethers";
 
 interface FunctionABI {
@@ -77,7 +77,7 @@ export const fetchContractDetails = async (
         }
         let contractAbis = await getAbiUsingExplorereUrl(toChainId, contractAddress);
         let abi = JSON.parse(contractAbis.ABI);
-        const newprovider = await getProvider(toChainId);
+        const newprovider = await getProvider(chainIdByStargateChainId[toChainId]);
 
         const { isProxy, currentImplAddress }: any = await checkIfContractIsProxy(abi, contractAddress, newprovider);
         console.log("isProxy: ", isProxy, currentImplAddress);
@@ -255,19 +255,34 @@ export const shorten = (text: any) => {
     if (text) {
         return text.substring(0, 6) + "..." + text.substring(text.length - 4, text.length);
     } else {
-        return
+        return;
     }
 };
 
-export function setSafeState<T>(
-    setStateFunction: (value: T) => void,
-    value: T | undefined | null,
-    defaultValue: T
-  ) {
+export function setSafeState<T>(setStateFunction: (value: T) => void, value: T | undefined | null, defaultValue: T) {
     if (value !== undefined && value !== null) {
-      setStateFunction(value);
+        setStateFunction(value);
     } else {
-      setStateFunction(defaultValue);
-      // Optionally, you can log an error or handle it in another way.
+        setStateFunction(defaultValue);
+        // Optionally, you can log an error or handle it in another way.
     }
-  }
+}
+
+export const buildTxHash = (chainId: string, txhash: string, isSocketScan?: boolean) => {
+    if (isSocketScan) {
+        return `https://socketscan.io/tx/${txhash}`
+    }
+    if (chainId == "137") {
+        return `https://polygonscan.com/tx/${txhash}`;
+    } else if (chainId == "43114") {
+        return `https://snowtrace.io/tx/${txhash}`;
+    } else if (chainId == "42161") {
+        return `https://arbiscan.io/tx/${txhash}`;
+    } else if (chainId == "10") {
+        return `https://polygonscan.com/tx/${txhash}`;
+    } else if (chainId == "1") {
+        return `https://etherscan.io/tx/${txhash}`;
+    } else if (chainId == "8453") {
+        return `https://basescan.org/tx/${txhash}`;
+    }
+};

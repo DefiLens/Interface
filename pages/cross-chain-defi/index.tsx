@@ -23,7 +23,7 @@ import ChainContext from "../../Context/ChainContext";
 import { useGenerateAbis } from "../../hooks/useGenerateAbis";
 import { useGlobalStore, iGlobal } from "../../store/GlobalStore";
 import { useCalculatebalance } from "../../hooks/useCalculateBalance";
-import { shorten, setSafeState, chooseChianId } from "../../utils/helper";
+import { shorten, setSafeState, chooseChianId, buildTxHash } from "../../utils/helper";
 import { getNetworkAndContractData, fetchMethodParams } from "../../utils/apis";
 import { useCrossChainDifiStore, iCrossChainDifi } from "../../store/CrossChainDifiStore";
 import { getProvider, getErc20Balanceof, getContractInstance } from "../../utils/web3Libs/ethers";
@@ -57,9 +57,9 @@ const CrossChainDefi: React.FC<{}> = () => {
     const { mutateAsync: onChangeFunctionsHook } = useOnChangeFunctions();
     const { mutateAsync: onChangeInputHook } = useOnChangeInput();
     const { mutateAsync: fetchNativeBalance } = useCalculatebalance();
-    const { setSelectedChain, setSelectedChainId } = React.useContext(ChainContext);
+    const { selectedChainId, setSelectedChain, setSelectedChainId } = React.useContext(ChainContext);
 
-    const { loading, setLoading, connected, smartAccount, setSmartAccount, setCurrentProvider }: iGlobal =
+    const { loading, setLoading, connected, smartAccount, setSmartAccount, setCurrentProvider, setConnected }: iGlobal =
         useGlobalStore((state) => state);
 
     const {
@@ -130,6 +130,25 @@ const CrossChainDefi: React.FC<{}> = () => {
     }: iCrossChainDifi = useCrossChainDifiStore((state) => state);
 
     useEffect(() => {
+        async function changeWallet() {
+            if (!address) {
+                setTokenIn("")
+                setFromChainId("")
+                setToChainId("")
+                setAmountIn("")
+                setContractIndex("")
+                setFunctionArray([])
+                setSmartAccount(null)
+                setConnected(false)
+                setSelectedChain("")
+                setSelectedChainId("")
+                console.log("Metamask logout", address)
+            }
+        }
+        changeWallet();
+    }, [address])
+
+    useEffect(() => {
         setIsSimulationOpen(false);
         setIsSimulationSuccessOpen(false);
         setIsSimulationErrorOpen(false);
@@ -137,7 +156,7 @@ const CrossChainDefi: React.FC<{}> = () => {
 
     useEffect(() => {
         async function updateParams() {
-            if (currentFuncIndex) {
+            if (amountIn && currentFuncIndex && contractIndex) {
                 setParams([]);
                 setFixParams([]);
                 const contractAddress = allNetworkData?.contracts[contractIndex].contractAddress;
@@ -169,23 +188,36 @@ const CrossChainDefi: React.FC<{}> = () => {
 
     useEffect(() => {
         async function onChangeFromChainId() {
-            if (fromChainId) {
-                const token: any = tokensByNetwork[fromChainId];
-                setTokenIn(token.usdc);
-                setTokenInDecimals(6);
-                const provider = await getProvider(fromChainId);
-                const erc20 = await getContractInstance(token.usdc, IERC20, provider);
-                const scwBalance = await getErc20Balanceof(erc20, smartAccount.address);
-                const eoaBalance = await getErc20Balanceof(erc20, address);
-                console.log("address" + address);
+            try {
+                if (fromChainId && address) {
+                    const token: any = tokensByNetwork[fromChainId];
+                    setTokenIn(token.usdc);
+                    setTokenInDecimals(6);
+                    console.log("selectedChainId", selectedChainId, fromChainId);
+                    const provider = await getProvider(selectedChainId);
+                    console.log("provider", provider?.toString());
 
-                setSafeState(setScwTokenInbalance, BigNumber.from(scwBalance), BIG_ZERO);
-                setSafeState(setEoaTokenInbalance, BigNumber.from(eoaBalance), BIG_ZERO);
+                    const erc20 = await getContractInstance(token.usdc, IERC20, provider);
+                    console.log("erc20" + erc20?.toString());
 
-                resetField();
-                setAmountIn("");
-                setContractIndex("");
+                    const scwBalance = await getErc20Balanceof(erc20, smartAccount.address);
+                    const eoaBalance = await getErc20Balanceof(erc20, address);
+                    console.log("address", address);
+
+                    setSafeState(setScwTokenInbalance, BigNumber.from(scwBalance), BIG_ZERO);
+                    setSafeState(setEoaTokenInbalance, BigNumber.from(eoaBalance), BIG_ZERO);
+
+                    resetField();
+                    setAmountIn("");
+                    setContractIndex("");
+                }
+            } catch (error) {
+                setFromChainId("");
+                setTokenIn("");
+                setTokenInDecimals(0);
+                console.log('onChangeFromChainId-error: ', error)
             }
+
         }
         onChangeFromChainId();
     }, [fromChainId]);
@@ -299,7 +331,7 @@ const CrossChainDefi: React.FC<{}> = () => {
             return;
         }
         if (!fromChainId) return alert("From network is not selecetd yet");
-        const provider = await getProvider(fromChainId);
+        const provider = await getProvider(selectedChainId);
         const token = tokensByNetwork[fromChainId];
         const erc20 = await getContractInstance(token.usdc, IERC20, provider);
         const scwBalance = await getErc20Balanceof(erc20, smartAccount.address);
@@ -593,7 +625,7 @@ const CrossChainDefi: React.FC<{}> = () => {
                             </div>
                         </div>
 
-                        {allNetworkData && funcArray && (
+                        {allNetworkData && (
                             <div className="w-full mt-3">
                                 <span className="text-black font-semibold text-xs md:text-sm lg:text-base">
                                     Build DestinationChain Method/Calldata to execute after bridge funds
@@ -614,7 +646,7 @@ const CrossChainDefi: React.FC<{}> = () => {
                                             <option key={-1} value="" selected>
                                                 Select Operation
                                             </option>
-                                            {funcArray.length > 0 &&
+                                            { funcArray && funcArray.length > 0 &&
                                                 funcArray.map((funcName: any, funcIndex: any) => (
                                                     <option key={funcIndex} value={funcIndex}>
                                                         {funcName.name}
@@ -685,7 +717,7 @@ const CrossChainDefi: React.FC<{}> = () => {
                     <h1 className="text-lg md:text-xl lg:text-2xl text-center font-extrabold mb-5">
                         Simulation Detail
                     </h1>
-                    {currentFunc && allNetworkData && (
+                    {currentFunc && allNetworkData && contractIndex && (
                         <>
                             <div className="flex justify-start items-baseline gap-3">
                                 <div className="text-black font-semibold text-sm md:text-base lg:text-lg">Routes :</div>
@@ -711,10 +743,8 @@ const CrossChainDefi: React.FC<{}> = () => {
                             <div className="flex justify-start items-baseline gap-3">
                                 <div className="text-black font-semibold text-sm md:text-base lg:text-lg">Amount :</div>
                                 <div className="text-black font-medium text-xs md:text-sm">
-                                    {/* {`
-                                        ${bg(amountIn).dividedBy(bg(10).pow(tokenInDecimals)).toString()} USDC`} */}
-                                    {`
-                                        ${amountIn} USDC`}
+                                    {/* {`${bg(amountIn).dividedBy(bg(10).pow(tokenInDecimals)).toString()} USDC`} */}
+                                    {`${amountIn} USDC`}
                                 </div>
                             </div>
 
@@ -760,7 +790,6 @@ const CrossChainDefi: React.FC<{}> = () => {
                                 ""
                             )}
 
-                            {/* {currentFunc && ( */}
                             <div className="w-full flex justify-center items-center my-3">
                                 <button
                                     type="button"
@@ -771,11 +800,10 @@ const CrossChainDefi: React.FC<{}> = () => {
                                     Simulate
                                 </button>
                             </div>
-                            {/* )} */}
                         </>
                     )}
 
-                    {/* {currentFunc &&
+                    {/* {currentFunc && funcArray &&
                         currentFuncIndex >= 0 &&
                         funcArray.length > 0 &&
                         funcArray[currentFuncIndex].inputs.map((input: any, inputIndex: any) => (
@@ -787,7 +815,7 @@ const CrossChainDefi: React.FC<{}> = () => {
                                                 {input.name} :
                                             </div>
                                             <button
-                                                onClick={(e: any) => isThisFieldAmount(inputIndex)}
+                                                // onClick={(e: any) => isThisFieldAmount(inputIndex)}
                                                 className="py-1 px-3 text-xs font-normal bg-black rounded-lg"
                                             >
                                                 isThisAmountField
@@ -978,7 +1006,7 @@ const CrossChainDefi: React.FC<{}> = () => {
                                     <p>
                                         <a
                                             target="_blank"
-                                            href={`https://socketscan.io/tx/${txhash}`}
+                                            href={buildTxHash("0", txhash, true)}
                                             style={{ color: "green", fontWeight: "bold" }}
                                         >
                                             TxHash: {shorten(txhash)}
