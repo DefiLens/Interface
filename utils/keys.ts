@@ -26,3 +26,5 @@ export const PIMLICO_API_KEY = process.env.NEXT_PUBLUC_PIMLICO_API_KEY;
 export const NETLIFY_NODE_URL = "https://apichainping.defilens.tech/.netlify/functions/server"
 
 export const STACKUP_POLYGON_MAINNET_RPC_NODE_URL: any = process.env.NEXT_PUBLIC_STACKUP_POLYGON_MAINNET_RPC_NODE_URL;
+
+export const BICONOMY_GAS_PRICE_URL = "https://sdk-relayer.prod.biconomy.io/api/v1/relay/feeOptions?chainId="

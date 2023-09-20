@@ -15,10 +15,7 @@ export function useRefinance() {
     const { mutateAsync: swap } = useUniswap();
     const { mutateAsync: approve } = useApprove();
 
-    const {
-        setTxHash,
-    }: iCrossChainDifi = useCrossChainDifiStore((state) => state);
-
+    const { setTxHash }: iCrossChainDifi = useCrossChainDifiStore((state) => state);
     const { tokensData }: iBatchingTxn = useBatchingTxnStore((state) => state);
 
     async function refinance({
@@ -165,5 +162,3 @@ export function useRefinance() {
     }
     return useMutation(refinance);
 }
-
-// tokenIn -> aUSDC -> withdraw

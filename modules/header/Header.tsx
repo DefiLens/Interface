@@ -39,7 +39,7 @@ const Header: React.FC<any> = ({
     const address: any = useAddress(); // Detect the connected address
 
     return (
-        <div className="auth-container">
+        <div className="header-container">
                 <ul className="flex justify-between items-center gap-2 bg-primary-950 p-2 shadow-md shadow-secondary-500">
                     <li>
                         <Link href="/" className="text-[30px] font-bold flex flex-row justify-center items-center">

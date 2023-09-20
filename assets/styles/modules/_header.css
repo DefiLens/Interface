@@ -1,0 +1,12 @@
+.header-container .wallet-container #dropdown-toggle {
+    position: absolute;
+    display: none;
+}
+
+.header-container .wallet-container :checked ~ .drop-down {
+    rotate: 180deg !important;
+}
+
+.header-container .wallet-container .drop-down {
+    transition: all 0.4s ease-in-out;
+}
