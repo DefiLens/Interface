@@ -27,6 +27,25 @@ interface Tokens {
 export const fetchNetworkDataURL = `${netlifyNodeURL}/common/getNetworkAndContractData`;
 export const fetchContractMetadataURL = `${netlifyNodeURL}/common/getContractMetaData`;
 
+export const NavigationList = [
+    {
+      title: "Cross Chain Defi",
+      route: '/cross-chain-defi',
+    },
+    {
+      title: "Batching Transactions",
+      route: '/batching-transactions',
+    },
+    {
+      title: "Swap",
+      route: '/swap',
+    },
+    {
+      title: "Trade",
+      route: '/trade',
+    },
+];
+
 export const methodWithApi = {
     "109": {
         "0x794a61358D6845594F94dc1DB02A252b5b4814aD": {
@@ -195,6 +214,12 @@ export const tokensByNetwork: Record<string, Tokens> = {
 // Dex
 export const UniversalRouter = "0x4C60051384bd2d3C01bfc845Cf5F4b44bcbE9de5"; // polygon
 export const V3_SWAP_ROUTER_ADDRESS = "0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45";
+
+export const uniswapSwapRouterByChainId = {
+    "137": "0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45",
+    "8453": "0x2626664c2603336E57B271c5C0b26F421741e481",
+};
+
 
 export const protocolNames = {
     "base": {

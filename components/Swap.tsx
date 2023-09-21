@@ -14,7 +14,7 @@ import { useGlobalStore, iGlobal } from "../store/GlobalStore";
 import { useEoaProvider } from "../hooks/aaProvider/useEoaProvider";
 import { getProvider, getErc20Decimals } from "../utils/web3Libs/ethers";
 import { useBiconomyProvider } from "../hooks/aaProvider/useBiconomyProvider";
-import { V3_SWAP_ROUTER_ADDRESS, BIG_ZERO, _nonce, _functionType } from "../utils/constants";
+import { V3_SWAP_ROUTER_ADDRESS, BIG_ZERO, _nonce, _functionType, uniswapSwapRouterByChainId } from "../utils/constants";
 import ChainContext from "../Context/ChainContext";
 
 const Swap: React.FC<{}> = () => {
@@ -104,7 +104,7 @@ const Swap: React.FC<{}> = () => {
             alert("_address: " + _address);
             const approveData = await approve({
                 tokenIn,
-                spender: V3_SWAP_ROUTER_ADDRESS,
+                spender: uniswapSwapRouterByChainId[selectedChainId],
                 amountIn,
                 address: _address,
                 web3JsonProvider: _provider,

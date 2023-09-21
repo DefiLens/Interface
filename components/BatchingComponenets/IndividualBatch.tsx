@@ -100,8 +100,8 @@ const IndividualBatch: React.FC<any> = ({ onUpdate }: any) => {
                 } else {
                     const response: any = await axios.get("https://gateway.ipfs.io/ipns/tokens.uniswap.org");
                     console.log("response: ", response, response.tokens);
-                    const tokensWithChain137 = response.data.tokens?.filter((token) => token.chainId === chain?.chainId);
-                    const filteredTokens = tokensWithChain137.map((token) => {
+                    const tokensWithChainId = response.data.tokens?.filter((token) => token.chainId === chain?.chainId);
+                    const filteredTokens = tokensWithChainId.map((token) => {
                         const { extensions, logoURI, ...filteredToken } = token;
                         return filteredToken;
                     });
@@ -115,18 +115,21 @@ const IndividualBatch: React.FC<any> = ({ onUpdate }: any) => {
 
     useEffect(() => {
         async function onChangeFromProtocol() {
+            console.log('toProtocol-0', toProtocol, tokensData)
             if (toProtocol) {
-                if (toProtocol == "erc20" && !tokensData) {
+                if (toProtocol == "erc20" && tokensData.length <1) {
+                    console.log("toProtocol-1", toProtocol)
                     const response: any = await axios.get("https://gateway.ipfs.io/ipns/tokens.uniswap.org");
                     console.log("response: ", response, response.tokens);
-                    const tokensWithChain137 = response.data.tokens?.filter((token) => token.chainId === 137);
-                    const filteredTokens = tokensWithChain137.map((token) => {
+                    const tokensWithChainId = response.data.tokens?.filter((token) => token.chainId === BigNumber.from(selectedChainId).toNumber());
+                    const filteredTokens = tokensWithChainId.map((token) => {
                         const { extensions, logoURI, ...filteredToken } = token;
                         return filteredToken;
                     });
                     console.log("filteredTokens: ", filteredTokens);
                     setTokensData(filteredTokens);
                 }
+                console.log("toProtocol-2", toProtocol)
             }
         }
         onChangeFromProtocol();

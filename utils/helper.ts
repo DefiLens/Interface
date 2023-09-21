@@ -1,23 +1,16 @@
 import axios from "axios";
+import toast from "react-hot-toast";
+import { ethers, BigNumber } from "ethers";
+
 import { getImplementationAddress } from "@openzeppelin/upgrades-core";
-import {
-    ARBITRUM_ETHERSCAN_API_KEY,
-    AVAX_ETHERSCAN_API_KEY,
-    BASE_ETHERSCAN_API_KEY,
-    ETHERSCAN_API_KEY,
-    OPTIMISM_ETHERSCAN_API_KEY,
-    POLYGON_ETHERSCAN_API_KEY,
-    TENDERLY_ACCESS_KEY,
-    TENDERLY_PROJECT,
-    TENDERLY_USER,
-} from "./keys";
-import { BigNumber, ethers } from "ethers";
-import IStarGateFactory from "../abis/IStarGateFactory.json";
-import IStarGateFeeLibrary from "../abis/IStarGateFeeLibrary.json";
+
 import IStarGatePool from "../abis/IStarGatePool.json";
 import IStarGateRouter from "../abis/IStarGateRouter.json";
-import { chainIdByStargateChainId, implementation_slot, rpscURLS } from "./constants";
-import { getContractInstance, getProvider } from "./web3Libs/ethers";
+import { rpscURLS, implementation_slot, chainIdByStargateChainId } from "./constants";
+import IStarGateFactory from "../abis/IStarGateFactory.json";
+import IStarGateFeeLibrary from "../abis/IStarGateFeeLibrary.json";
+import { getProvider, getContractInstance } from "./web3Libs/ethers";
+import { TENDERLY_USER, TENDERLY_PROJECT, TENDERLY_ACCESS_KEY, POLYGON_ETHERSCAN_API_KEY, OPTIMISM_ETHERSCAN_API_KEY, ETHERSCAN_API_KEY, BASE_ETHERSCAN_API_KEY, AVAX_ETHERSCAN_API_KEY, ARBITRUM_ETHERSCAN_API_KEY } from "./keys";
 
 interface FunctionABI {
     name: string;
@@ -285,4 +278,10 @@ export const buildTxHash = (chainId: string, txhash: string, isSocketScan?: bool
     } else if (chainId == "8453") {
         return `https://basescan.org/tx/${txhash}`;
     }
+};
+
+ export const copyToClipboard = (id: any, message: string) => {
+    navigator.clipboard.writeText(id);
+    // Alert the copied text
+    toast.success(message);
 };

@@ -7,7 +7,7 @@ import { useApprove } from "../useApprove";
 import { useEoaProvider } from "../aaProvider/useEoaProvider";
 import { useBiconomyProvider } from "../aaProvider/useBiconomyProvider";
 import { useBatchingTxnStore, iBatchingTxn } from "../../store/BatchingTxnStore";
-import { V3_SWAP_ROUTER_ADDRESS, _nonce, _functionType } from "../../utils/constants";
+import { V3_SWAP_ROUTER_ADDRESS, _nonce, _functionType, uniswapSwapRouterByChainId } from "../../utils/constants";
 import { useCrossChainDifiStore, iCrossChainDifi } from "../../store/CrossChainDifiStore";
 import { nativeTokenNum, nativeTokenFetcher, buildParams, abiFetcherNum, abiFetcher } from "./batchingUtils";
 import ChainContext from "../../Context/ChainContext";
@@ -16,7 +16,7 @@ import React from "react";
 export function useRefinance() {
     const { mutateAsync: swap } = useUniswap();
     const { mutateAsync: approve } = useApprove();
-    const { selectedChain } = React.useContext(ChainContext);
+    const { selectedChain, selectedChainId } = React.useContext(ChainContext);
 
     const { setTxHash }: iCrossChainDifi = useCrossChainDifiStore((state) => state);
     const { tokensData }: iBatchingTxn = useBatchingTxnStore((state) => state);
@@ -103,7 +103,7 @@ export function useRefinance() {
                 console.log("isSwap", isSwap);
                 const approveData = await approve({
                     tokenIn: nativeTokenIn,
-                    spender: V3_SWAP_ROUTER_ADDRESS,
+                    spender: uniswapSwapRouterByChainId[selectedChainId],
                     amountIn: amount,
                     address,
                     web3JsonProvider: provider,

@@ -4,10 +4,11 @@ import { SwapType, AlphaRouter } from "@uniswap/smart-order-router";
 import { TradeType, Token, Percent, CurrencyAmount } from "@uniswap/sdk-core";
 
 import IERC20 from "../abis/IERC20.json";
-import { V3_SWAP_ROUTER_ADDRESS, _nonce, _functionType } from "../utils/constants";
+import { _nonce, _functionType, uniswapSwapRouterByChainId } from "../utils/constants";
 import { getProvider, getErc20Decimals, getErc20Data, getContractInstance } from "../utils/web3Libs/ethers";
 import React from "react";
 import ChainContext from "../Context/ChainContext";
+import { BigNumber } from "ethers";
 
 export function useUniswap() {
     const { selectedChainId } = React.useContext(ChainContext);
@@ -17,7 +18,7 @@ export function useUniswap() {
             const web3JsonProvider = await getProvider(selectedChainId);
             if (!web3JsonProvider) throw "No provider";
             const router = new AlphaRouter({
-                chainId: 137,
+                chainId: BigNumber.from(selectedChainId).toNumber(),
                 provider: web3JsonProvider,
             });
 
@@ -48,8 +49,8 @@ export function useUniswap() {
                 type: SwapType.SWAP_ROUTER_02,
             };
 
-            const currencyIn = new Token(137, tokenIn, tokenInDecimals);
-            const currencyOut = new Token(137, tokenOut, tokenOutDecimals);
+            const currencyIn = new Token(BigNumber.from(selectedChainId).toNumber(), tokenIn, tokenInDecimals);
+            const currencyOut = new Token(BigNumber.from(selectedChainId).toNumber(), tokenOut, tokenOutDecimals);
 
             const baseCurrency = type === "exactIn" ? currencyIn : currencyOut;
             const quoteCurrency = type === "exactIn" ? currencyOut : currencyIn;
@@ -67,7 +68,7 @@ export function useUniswap() {
             amountOutprice = parseUnits(amountOutprice, tokenOutDecimals);
             console.log("amountOutprice", amountOutprice.toString());
             const swapTx = {
-                to: V3_SWAP_ROUTER_ADDRESS,
+                to: uniswapSwapRouterByChainId[selectedChainId],
                 data: route.methodParameters?.calldata,
             };
             console.log("swapUniV3-swapTx", swapTx);
