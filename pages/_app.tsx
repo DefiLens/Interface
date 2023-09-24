@@ -51,13 +51,15 @@ export default function App({ Component, pageProps }: AppProps) {
                         toastOptions={{
                           style: {
                             height:'100%',
-                            width: '100%',
+                            minWidth: '30%',
                           },
                         }}
                         position="top-right"
                       >
                         {(t) => (
-                          <ToastBar toast={t}>
+                          <ToastBar 
+                            toast={t}
+                          >
                             {({ icon, message }) => (
                               <>
                                 {icon}

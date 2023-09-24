@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useRef } from "react";
 
 import Link from "next/link";
 import { FiCopy } from "react-icons/fi";
@@ -13,7 +13,11 @@ import { copyToClipboard } from "../../utils/helper";
 import ChainContext from "../../Context/ChainContext";
 import TransferContainer from "../transfer/TransferContainer";
 import { useGlobalStore, iGlobal } from "../../store/GlobalStore";
-import { gasFeesNames, buttonStyle } from "../../utils/constants";
+import { gasFeesNames } from "../../utils/constants";
+import Image from "next/image";
+import { metamask, wallet } from "../../assets/images";
+import SelectNetwork from "../../components/SelectNetwork/SelectNetwork";
+import useClickOutside from "../../hooks/useClickOutside";
 
 const Header: React.FC<any> = ({
     handleConnect,
@@ -35,12 +39,24 @@ const Header: React.FC<any> = ({
     const {
         selectedChain,
     } = useContext(ChainContext);
+        console.log("🚀 ~ file: Header.tsx:42 ~ selectedChain:", selectedChain)
 
     const address: any = useAddress(); // Detect the connected address
 
+    const walletAddressRef = useRef(null);
+    const transferModuleRef = useRef(null);
+
+    useClickOutside([walletAddressRef], () => {
+        setShowWalletAddress(false);
+      });
+
+    useClickOutside([transferModuleRef], () => {
+        setShowTransferFundToggle(false);
+    });
+
     return (
         <div className="header-container">
-                <ul className="flex justify-between items-center gap-2 bg-primary-950 p-2 shadow-md shadow-secondary-500">
+                <ul className="flex justify-between items-center gap-3 bg-primary-950 p-2 shadow-md shadow-secondary-500">
                     <li>
                         <Link href="/" className="text-[30px] font-bold flex flex-row justify-center items-center">
                             <div className="mr-2 p-1">
@@ -69,10 +85,10 @@ const Header: React.FC<any> = ({
                             <div className="text-white">DefiLens</div>
                         </Link>
                     </li>
-                    <li className="flex flex-wrap justify-end items-center gap-2">
+                    <li className="flex flex-wrap justify-end items-center gap-3">
                         {!smartAccount && !loading && !connected && (
                             <button
-                                className={`${buttonStyle} border-primary-800 hover:border-primary-900 flex justify-center items-center gap-2`}
+                                className="bg-primary-600 hover:bg-primary-700 py-1 px-5 rounded-lg text-primary-100 font-medium border-b-4 transition duration-300 border-primary-800 hover:border-primary-900 flex justify-center items-center gap-2"
                                 onClick={handleConnect}
                             >
                                 <svg
@@ -95,7 +111,7 @@ const Header: React.FC<any> = ({
                         )}
                         {connected && !smartAccount && !loading && (
                             <button
-                                className={`${buttonStyle} border-primary-800 hover:border-primary-900 flex justify-center items-center gap-2`}
+                                className="g-primary-600 hover:bg-primary-700 py-1 px-5 rounded-lg text-primary-100 font-medium border-b-4 transition duration-300 border-primary-800 hover:border-primary-900 flex justify-center items-center gap-2"
                                 //   onClick={handleConnect}
                             >
                                 <svg
@@ -118,7 +134,7 @@ const Header: React.FC<any> = ({
                         )}
                         {loading && (
                             <button
-                                className={`${buttonStyle} border-primary-800 hover:border-primary-900 flex justify-center items-center gap-2`}
+                                className="bg-primary-600 hover:bg-primary-700 py-1 px-5 rounded-lg text-primary-100 font-medium border-b-4 transition duration-300 border-primary-800 hover:border-primary-900 flex justify-center items-center gap-2"
                             >
                                 <ImSpinner className="animate-spin h-5 w-5" />
                                 Loading account details...
@@ -126,7 +142,16 @@ const Header: React.FC<any> = ({
                         )}
                         {smartAccount && !loading && (
                             <div className="flex flex-wrap justify-start items-center gap-3 text-base">
-                                <button className="relative wallet-container flex justify-center items-center gap-5 bg-primary-600 py-2 px-5 rounded-lg text-primary-100 font-medium  border-b-4 border-primary-800 hover:border-primary-900 transition duration-300">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowWalletAddress(!showWalletAddress)}
+                                    className="relative wallet-container flex justify-center items-center gap-5 bg-slate-700 p-2 pr-4 rounded-3xl text-primary-100 font-medium transition duration-300"
+                                >
+                                    <Image
+                                      src={metamask}
+                                      alt="close"
+                                      className="h-7 w-7 p-1 bg-white rounded-full cursor-pointer"
+                                    />
                                     <span className="text-sm font-medium">
                                         {smartAccount &&
                                             smartAccount.address.slice(0, 5) + "..." + smartAccount.address.slice(-3)}
@@ -136,7 +161,7 @@ const Header: React.FC<any> = ({
                                             className="text-white hover:text-gray-300 active:text-gray-500"
                                             onClick={() => copyToClipboard(smartAccount.address, 'Smart account address Copied')}
                                         />
-                                        <input
+                                        {/* <input
                                             type="checkbox"
                                             id="dropdown-toggle"
                                             checked={showWalletAddress}
@@ -144,12 +169,15 @@ const Header: React.FC<any> = ({
                                         />
                                         <label htmlFor="dropdown-toggle" className="drop-down">
                                             <FaChevronDown className="arrow cursor-pointer" />
-                                        </label>
+                                        </label> */}
                                     </span>
                                 </button>
 
                                 {showWalletAddress && smartAccount && !loading && (
-                                    <div className="w-80 absolute top-16 z-50 flex flex-col justify-center items-start gap-4 bg-gray-800 border-2 border-gray-700 shadow-md shadow-gray-500 p-3 rounded-lg">
+                                    <div 
+                                        ref={walletAddressRef} 
+                                        className="w-80 absolute top-16 right-28 z-50 flex flex-col justify-center items-start gap-4 bg-slate-800 border-2 border-slate-700 shadow-md shadow-slate-950 p-3 rounded-lg"
+                                    >
                                         <button className="w-full relative flex justify-between items-center gap-2">
                                             <div className="flex flex-col justify-center items-start">
                                                 <span className="text-white text-base font-medium">
@@ -201,7 +229,13 @@ const Header: React.FC<any> = ({
                                 )}
                             </div>
                         )}
-                        <div className="relative border-2 border-secondary-300 text-secondary-800 bg-white shadow-md rounded-md">
+
+                        <SelectNetwork
+                            selectedChain={selectedChain}
+                            switchOnSpecificChain={switchOnSpecificChain}
+                        />
+                        
+                        {/* <div className="relative border-2 border-secondary-300 text-secondary-800 bg-white shadow-md rounded-md">
                             <label htmlFor="fromNetwork" className="sr-only">
                                 Connect Network
                             </label>
@@ -261,10 +295,10 @@ const Header: React.FC<any> = ({
                             <div className="absolute right-0 top-0 bottom-0 pointer-events-none flex items-center px-1">
                                 <TbSquareRoundedChevronDownFilled size="25px" />
                             </div>
-                        </div>
+                        </div> */}
 
                         <div className="flex flex-wrap justify-start items-center gap-3 text-base">
-                            <div className="relative flex justify-center items-center gap-5 bg-white rounded-lg font-medium  transition duration-300">
+                            <div className="relative flex justify-center items-center gap-5 bg-white rounded-full font-medium  transition duration-300 overflow-hidden">
                                 <span className="flex justify-center items-center gap-2">
                                     <input
                                         type="checkbox"
@@ -274,11 +308,16 @@ const Header: React.FC<any> = ({
                                         onChange={(e: any) => setShowTransferFundToggle(e.target.checked)}
                                     />
                                     <label htmlFor="transfer-fund-toggle" className="transfer-fund-icon">
-                                        <RiExchangeFundsFill className="h-10 w-10 p-1 bg-white hover:bg-gray-200 active:bg-gray-300 rounded-lg cursor-pointer" />
+                                        <Image
+                                            src={wallet}
+                                            alt="close"
+                                            className="h-10 w-10 p-2 bg-white hover:bg-gray-200 active:bg-gray-300 rounded-lg cursor-pointer"
+                                        />
                                     </label>
                                 </span>
                             </div>
                             <div
+                                ref={transferModuleRef}
                                 className={`absolute w-96 h-[calc(100%-69px)] top-[69px] z-40 shadow-xl shadow-gray-900 ${
                                     showTransferFundToggle
                                         ? "!right-0 !translate-x-0 !transition !duration-1000 !ease-out"

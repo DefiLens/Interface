@@ -10,6 +10,7 @@ import {
     OPTIMISM_BICONOMY_AA_KEY,
     POLYGON_BICONOMY_AA_KEY,
 } from "./keys";
+import { arbitrum, avalanche, base, ethereum, optimism, polygon } from "../assets/images";
 
 export const BIG_ZERO = BigNumber.from(0);
 
@@ -36,13 +37,52 @@ export const NavigationList = [
       title: "Batching Transactions",
       route: '/batching-transactions',
     },
-    {
-      title: "Swap",
-      route: '/swap',
-    },
+    // {
+    //   title: "Swap",
+    //   route: '/swap',
+    // },
     {
       title: "Trade",
       route: '/trade',
+    },
+];
+
+export const NETWORK_LIST = [
+    {
+        key: "Polygon",
+        chainName: "polygon",
+        chainId: "137",
+        icon: polygon,
+    },
+    {
+        key: "Arbitrum",
+        chainName: "arbitrum",
+        chainId: "42161",
+        icon: arbitrum,
+    },
+    {
+        key: "Avalanche",
+        chainName: "avalanche",
+        chainId: "43114",
+        icon: avalanche,
+    },
+    {
+        key: "Optimism",
+        chainName: "optimism",
+        chainId: "10",
+        icon: optimism,
+    },
+    {
+        key: "Ethereum",
+        chainName: "ethereum",
+        chainId: "1",
+        icon: ethereum,
+    },
+    {
+        key: "Base",
+        chainName: "base",
+        chainId: "8453",
+        icon: base,
     },
 ];
 
@@ -134,6 +174,15 @@ export const NetworkNameByChainId = {
     "10": "optimism",
     "1": "ethereum",
     "8453": "base",
+};
+
+export const NetworkLogoByChainId = {
+    "137": polygon,
+    "43114": avalanche,
+    "42161": arbitrum,
+    "10": optimism,
+    "1": ethereum,
+    "8453": base,
 };
 
 export const NetworkNameByStargateChainId = {

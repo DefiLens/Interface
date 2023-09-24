@@ -1,29 +1,22 @@
 import * as React from "react";
 import { useEffect } from "react";
 
-import axios from "axios";
 import { BigNumber } from "ethers";
 import { BigNumber as bg } from "bignumber.js";
 
 import { ImSpinner } from "react-icons/im";
-import { useAddress, useChain } from "@thirdweb-dev/react";
 import { BiSolidChevronDown } from "react-icons/bi";
+import { useChain, useAddress } from "@thirdweb-dev/react";
 
 import IERC20 from "../../abis/IERC20.json";
 import { setSafeState } from "../../utils/helper";
 import ChainContext from "../../Context/ChainContext";
+import UNISWAP_TOKENS from "../../abis/tokens/Uniswap.json";
 import { useRefinance } from "../../hooks/Batching/useRefinance";
 import { useGlobalStore, iGlobal } from "../../store/GlobalStore";
 import { useBatchingTxnStore, iBatchingTxn } from "../../store/BatchingTxnStore";
-import {
-    tokenAddressByProtocol,
-    protocolByNetwork,
-    _nonce,
-    _functionType,
-    BIG_ZERO,
-    protocolNames,
-} from "../../utils/constants";
 import { getProvider, getErc20Decimals, getErc20Balanceof, getContractInstance } from "../../utils/web3Libs/ethers";
+import { tokenAddressByProtocol, protocolNames, protocolByNetwork, BIG_ZERO, _nonce, _functionType } from "../../utils/constants";
 
 bg.config({ DECIMAL_PLACES: 10 });
 
@@ -98,9 +91,7 @@ const IndividualBatch: React.FC<any> = ({ onUpdate }: any) => {
                     setSafeState(setFromTokenBalanceForSCW, BigNumber.from(scwBalance), BIG_ZERO);
                     setSafeState(setFromTokenBalanceForEOA, BigNumber.from(eoaBalance), BIG_ZERO);
                 } else {
-                    const response: any = await axios.get("https://gateway.ipfs.io/ipns/tokens.uniswap.org");
-                    console.log("response: ", response, response.tokens);
-                    const tokensWithChainId = response.data.tokens?.filter((token) => token.chainId === chain?.chainId);
+                    const tokensWithChainId = UNISWAP_TOKENS.tokens?.filter((token) => token.chainId === chain?.chainId);
                     const filteredTokens = tokensWithChainId.map((token) => {
                         const { extensions, logoURI, ...filteredToken } = token;
                         return filteredToken;
@@ -119,9 +110,7 @@ const IndividualBatch: React.FC<any> = ({ onUpdate }: any) => {
             if (toProtocol) {
                 if (toProtocol == "erc20" && tokensData.length <1) {
                     console.log("toProtocol-1", toProtocol)
-                    const response: any = await axios.get("https://gateway.ipfs.io/ipns/tokens.uniswap.org");
-                    console.log("response: ", response, response.tokens);
-                    const tokensWithChainId = response.data.tokens?.filter((token) => token.chainId === BigNumber.from(selectedChainId).toNumber());
+                    const tokensWithChainId = UNISWAP_TOKENS.tokens?.filter((token) => token.chainId === BigNumber.from(selectedChainId).toNumber());
                     const filteredTokens = tokensWithChainId.map((token) => {
                         const { extensions, logoURI, ...filteredToken } = token;
                         return filteredToken;

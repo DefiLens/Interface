@@ -12,8 +12,10 @@ import { useSwitchChain, useSigner, useConnect, useChain, useAddress, metamaskWa
 import Header from "./Header";
 import ChainContext from "../../Context/ChainContext";
 import { useGlobalStore, iGlobal } from "../../store/GlobalStore";
-import { paymasterURLs, bundlerURLs } from "../../utils/constants";
+import { paymasterURLs, bundlerURLs, NetworkLogoByChainId } from "../../utils/constants";
 import { useCalculatebalance } from "../../hooks/useCalculateBalance";
+import { iTrade, useTradeStore } from "../../store/TradeStore";
+import { arbitrum, avalanche, base, ethereum, optimism, polygon } from "../../assets/images";
 
 bg.config({ DECIMAL_PLACES: 5 });
 
@@ -26,6 +28,10 @@ const HeaderContainer: React.FC<any> = () => {
         setSmartAccount,
         setCurrentProvider,
     }: iGlobal = useGlobalStore((state) => state);
+
+    const {
+        setSelectedNetwork,
+    }: iTrade = useTradeStore((state) => state);
 
     const {
         setSelectedChain,
@@ -144,6 +150,81 @@ const HeaderContainer: React.FC<any> = () => {
         toast.success("Wallet address Copied");
     };
 
+    // const switchOnSpecificChain = async (chainName) => {
+    //     try {
+    //         setLoading(true);
+    //         setSmartAccount(null);
+    //         // setSelectedChain?.(chainName)
+    //         await changeChain(chainName);
+    //         setLoading(false);
+    //     } catch (error) {
+    //         setLoading(false);
+    //         console.log("switchToChain-error: ", error);
+    //     }
+    // };
+
+    // async function changeChain(chainName) {
+    //     try {
+    //         await handleConnect();
+    //         if (chain?.slug != chainName) {
+    //             // await logout()
+    //             if (chainName == "polygon") {
+    //                 await switchChain(137);
+    //                 const _smartAccount = await login(137);
+    //                 // @ts-ignore
+    //                 await isNetworkCorrect(137, _smartAccount.address);
+    //                 setSelectedChain?.(chainName);
+    //                 setSelectedChainId?.("137");
+    //             } else if (chainName == "arbitrum") {
+    //                 await switchChain?.(42161);
+    //                 const _smartAccount = await login(42161);
+    //                 // @ts-ignore
+    //                 await isNetworkCorrect(42161, _smartAccount.address);
+    //                 setSelectedChain?.(chainName);
+    //                 setSelectedChainId?.("42161");
+    //             } else if (chainName == "avalanche") {
+    //                 await switchChain(43114);
+    //                 const _smartAccount = await login(43114);
+    //                 // @ts-ignore
+    //                 await isNetworkCorrect(43114, _smartAccount.address);
+    //                 setSelectedChain?.(chainName);
+    //                 setSelectedChainId?.("43114");
+    //             } else if (chainName == "optimism") {
+    //                 await switchChain?.(10);
+    //                 const _smartAccount = await login(10);
+    //                 // @ts-ignore
+    //                 await isNetworkCorrect(10, _smartAccount.address);
+    //                 setSelectedChain?.(chainName);
+    //                 setSelectedChainId?.("10");
+    //             } else if (chainName == "ethereum") {
+    //                 await switchChain(1);
+    //                 const _smartAccount = await login(1);
+    //                 // @ts-ignore
+    //                 await isNetworkCorrect(1, _smartAccount.address);
+    //                 setSelectedChain?.(chainName);
+    //                 setSelectedChainId?.("1");
+    //             } else if (chainName == "base") {
+    //                 await switchChain?.(8453);
+    //                 const _smartAccount = await login(8453);
+    //                 // @ts-ignore
+    //                 await isNetworkCorrect(8453, _smartAccount.address);
+    //                 setSelectedChain?.(chainName);
+    //                 setSelectedChainId?.("8453");
+    //             }
+    //         } else {
+    //             if (chain) {
+    //                 const _smartAccount = await login(chain?.chainId);
+    //                 setSelectedChain?.(chain?.slug);
+    //                 setSelectedChainId?.(chain?.chainId.toString());
+    //                 // @ts-ignore
+    //                 await isNetworkCorrect(chain?.chainId, _smartAccount.address);
+    //             }
+    //         }
+    //     } catch (error: any) {
+    //         console.log("changeChain-error", error);
+    //     }
+    // }
+
     const switchOnSpecificChain = async (chainName) => {
         try {
             setLoading(true);
@@ -167,49 +248,106 @@ const HeaderContainer: React.FC<any> = () => {
                     const _smartAccount = await login(137);
                     // @ts-ignore
                     await isNetworkCorrect(137, _smartAccount.address);
-                    setSelectedChain?.(chainName);
-                    setSelectedChainId?.("137");
+
+                    setSelectedNetwork({
+                        key: "Polygon",
+                        chainName: chainName,
+                        chainId: "137",
+                        icon: polygon,
+                    })
+
+                    // setSelectedChain?.(chainName);
+                    // setSelectedChainId?.("137");
                 } else if (chainName == "arbitrum") {
                     await switchChain?.(42161);
                     const _smartAccount = await login(42161);
                     // @ts-ignore
                     await isNetworkCorrect(42161, _smartAccount.address);
-                    setSelectedChain?.(chainName);
-                    setSelectedChainId?.("42161");
+
+                    setSelectedNetwork({
+                        key: "Arbitrum",
+                        chainName: chainName,
+                        chainId: "42161",
+                        icon: arbitrum,
+                    })
+
+                    // setSelectedChain?.(chainName);
+                    // setSelectedChainId?.("42161");
                 } else if (chainName == "avalanche") {
                     await switchChain(43114);
                     const _smartAccount = await login(43114);
                     // @ts-ignore
                     await isNetworkCorrect(43114, _smartAccount.address);
-                    setSelectedChain?.(chainName);
-                    setSelectedChainId?.("43114");
+
+                    setSelectedNetwork({
+                        key: "Avalanche",
+                        chainName: chainName,
+                        chainId: "43114",
+                        icon: avalanche,
+                    })
+
+                    // setSelectedChain?.(chainName);
+                    // setSelectedChainId?.("43114");
                 } else if (chainName == "optimism") {
                     await switchChain?.(10);
                     const _smartAccount = await login(10);
                     // @ts-ignore
                     await isNetworkCorrect(10, _smartAccount.address);
-                    setSelectedChain?.(chainName);
-                    setSelectedChainId?.("10");
+
+                    setSelectedNetwork({
+                        key: "Optimism",
+                        chainName: chainName,
+                        chainId: "10",
+                        icon: optimism,
+                    })
+                    
+                    // setSelectedChain?.(chainName);
+                    // setSelectedChainId?.("10");
                 } else if (chainName == "ethereum") {
                     await switchChain(1);
                     const _smartAccount = await login(1);
                     // @ts-ignore
                     await isNetworkCorrect(1, _smartAccount.address);
-                    setSelectedChain?.(chainName);
-                    setSelectedChainId?.("1");
+
+                    setSelectedNetwork({
+                        key: "Ethereum",
+                        chainName: chainName,
+                        chainId: "1",
+                        icon: ethereum,
+                    })
+
+                    // setSelectedChain?.(chainName);
+                    // setSelectedChainId?.("1");
                 } else if (chainName == "base") {
                     await switchChain?.(8453);
                     const _smartAccount = await login(8453);
                     // @ts-ignore
                     await isNetworkCorrect(8453, _smartAccount.address);
-                    setSelectedChain?.(chainName);
-                    setSelectedChainId?.("8453");
+
+                    setSelectedNetwork({
+                        key: "Base",
+                        chainName: chainName,
+                        chainId: "8453",
+                        icon: base,
+                    })
+
+                    // setSelectedChain?.(chainName);
+                    // setSelectedChainId?.("8453");
                 }
             } else {
                 if (chain) {
+                    console.log("🚀 HeaderContainer.tsx:339 ~ changeChain ~ chain:", chain)
                     const _smartAccount = await login(chain?.chainId);
-                    setSelectedChain?.(chain?.slug);
-                    setSelectedChainId?.(chain?.chainId.toString());
+
+                    setSelectedNetwork({
+                        key: chain?.chain,
+                        chainName: chain?.slug,
+                        chainId: chain?.chainId.toString(),
+                        icon: NetworkLogoByChainId[chain?.chainId.toString()],
+                    })
+
+                    // setSelectedChain?.(chain?.slug);
+                    // setSelectedChainId?.(chain?.chainId.toString());
                     // @ts-ignore
                     await isNetworkCorrect(chain?.chainId, _smartAccount.address);
                 }

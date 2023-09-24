@@ -39,7 +39,9 @@ import {
     BIG_ZERO,
     _nonce,
     _functionType,
+    NetworkLogoByChainId,
 } from "../../utils/constants";
+import { iTrade, useTradeStore } from "../../store/TradeStore";
 
 bg.config({ DECIMAL_PLACES: 10 });
 
@@ -61,6 +63,11 @@ const CrossChainDefi: React.FC<{}> = () => {
 
     const { loading, setLoading, connected, smartAccount, setSmartAccount, setCurrentProvider, setConnected }: iGlobal =
         useGlobalStore((state) => state);
+
+    const {
+        selectedNetwork,
+        setSelectedNetwork,
+    }: iTrade = useTradeStore((state) => state);
 
     const {
         fromChainId,
@@ -140,8 +147,16 @@ const CrossChainDefi: React.FC<{}> = () => {
                 setFunctionArray([])
                 setSmartAccount(null)
                 setConnected(false)
-                setSelectedChain("")
-                setSelectedChainId("")
+
+                setSelectedNetwork({
+                    key: "",
+                    chainName: "",
+                    chainId: "",
+                    icon: "",
+                })
+
+                // setSelectedChain("")
+                // setSelectedChainId("")
                 console.log("Metamask logout", address)
             }
         }
@@ -194,7 +209,8 @@ const CrossChainDefi: React.FC<{}> = () => {
                     setTokenIn(token.usdc);
                     setTokenInDecimals(6);
                     console.log("selectedChainId", selectedChainId, fromChainId);
-                    const provider = await getProvider(selectedChainId);
+                    // const provider = await getProvider(selectedChainId);
+                    const provider = await getProvider(selectedNetwork.chainId);
                     console.log("provider", provider?.toString());
 
                     const erc20 = await getContractInstance(token.usdc, IERC20, provider);
@@ -268,8 +284,16 @@ const CrossChainDefi: React.FC<{}> = () => {
             setToChainId("");
             setData(null);
             const realChainID = await chooseChianId(_fromNetwork);
-            setSelectedChain?.(NetworkNameByChainId[realChainID]);
-            setSelectedChainId?.(realChainID);
+
+            setSelectedNetwork({
+                key: NetworkNameByChainId[realChainID],
+                chainName: NetworkNameByChainId[realChainID],
+                chainId: realChainID,
+                icon: NetworkLogoByChainId[realChainID],
+            })
+
+            // setSelectedChain?.(NetworkNameByChainId[realChainID]);
+            // setSelectedChainId?.(realChainID);
 
             await switchChain(Number(realChainID))
                 .then(async () => {
@@ -331,7 +355,9 @@ const CrossChainDefi: React.FC<{}> = () => {
             return;
         }
         if (!fromChainId) return alert("From network is not selecetd yet");
-        const provider = await getProvider(selectedChainId);
+        // const provider = await getProvider(selectedChainId);
+        const provider = await getProvider(selectedNetwork.chainId);
+
         const token = tokensByNetwork[fromChainId];
         const erc20 = await getContractInstance(token.usdc, IERC20, provider);
         const scwBalance = await getErc20Balanceof(erc20, smartAccount.address);
@@ -425,8 +451,16 @@ const CrossChainDefi: React.FC<{}> = () => {
                     const smartAccount = await createAccount(_fromN);
                     setSmartAccount(smartAccount);
                     setCurrentProvider("Biconomy");
-                    setSelectedChain?.(NetworkNameByChainId[_fromN]);
-                    setSelectedChainId?.(_fromN);
+
+                    setSelectedNetwork({
+                        key: NetworkNameByChainId[_fromN],
+                        chainName: NetworkNameByChainId[_fromN],
+                        chainId: _fromN,
+                        icon: NetworkNameByChainId[_fromN],
+                    })
+
+                    // setSelectedChain?.(NetworkNameByChainId[_fromN]);
+                    // setSelectedChainId?.(_fromN);
                     await sendTxToChain({ funcIndex, address, isSCW });
                 })
                 .catch();
