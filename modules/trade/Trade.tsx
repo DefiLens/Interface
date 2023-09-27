@@ -160,28 +160,32 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                                                     </div>
                                                 </div>
                                                 
-                                                {selectedFromProtocol === item &&
-                                                    protocolByNetwork[selectedFromNetwork.chainName][selectedFromProtocol]?.map((token: any, tokenIndex: any) => (
-                                                        <div
-                                                            key={tokenIndex}
-                                                            onClick={() => setSelectedFromToken(token)}
-                                                            className="w-full flex justify-start items-center gap-3 hover:bg-slate-300 active:bg-slate-200 py-2 px-3 rounded-lg cursor-pointer"
-                                                        >
-                                                            {token}
-                                                        </div>
-                                                    )) 
-                                                }
-                                                {selectedFromProtocol === "erc20" && tokensData &&
-                                                    tokensData?.map((token: any, tokenIndex: any) => (
-                                                        <div 
-                                                            key={tokenIndex}
-                                                            onClick={() => setSelectedFromToken(token.symbol)}
-                                                            className="w-full flex justify-start items-center gap-3 hover:bg-slate-300 active:bg-slate-200 py-2 px-3 rounded-lg cursor-pointer"
-                                                        >
-                                                            {token.symbol}
-                                                        </div>
-                                                    ))
-                                                }
+                                                {selectedFromProtocol === item && (
+                                                    <div className="bg-blue-200 rounded-lg p-3 my-1">
+                                                        {protocolByNetwork[selectedFromNetwork.chainName][selectedFromProtocol]?.map((token: any, tokenIndex: any) => (
+                                                            <div
+                                                                key={tokenIndex}
+                                                                onClick={() => setSelectedFromToken(token)}
+                                                                className="w-full flex justify-start items-center gap-3 hover:bg-slate-300 active:bg-slate-200 py-2 px-3 rounded-lg cursor-pointer"
+                                                            >
+                                                                {token}
+                                                            </div>
+                                                        ))} 
+                                                    </div>
+                                                )}
+                                                {selectedFromProtocol === "erc20" && tokensData && (
+                                                    <div className="bg-blue-200 rounded-lg p-3 my-1">
+                                                        {tokensData?.map((token: any, tokenIndex: any) => (
+                                                            <div 
+                                                                key={tokenIndex}
+                                                                onClick={() => setSelectedFromToken(token.symbol)}
+                                                                className="w-full flex justify-start items-center gap-3 hover:bg-slate-300 active:bg-slate-200 py-2 px-3 rounded-lg cursor-pointer"
+                                                            >
+                                                                {token.symbol}
+                                                            </div>
+                                                        ))} 
+                                                    </div>
+                                                )}
                                             </div>
                                     ))}
 
@@ -205,28 +209,32 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                                                         {protocolNames[selectedToNetwork.chainName].value[protocolIndex]}
                                                     </div>
                                                 </div>
-                                                {selectedToNetwork === item &&
-                                                    protocolByNetwork[selectedToNetwork.chainName][selectedToProtocol]?.map((token: any, tokenIndex: any) => (
-                                                        <div
-                                                            key={tokenIndex}
-                                                            onClick={() => setSelectedToToken(token)}
-                                                            className="w-full flex justify-start items-center gap-3 hover:bg-slate-300 active:bg-slate-200 py-2 px-3 rounded-lg cursor-pointer"
-                                                        >
-                                                            {token}
-                                                        </div>
-                                                    )) 
-                                                }
-                                                {selectedToProtocol === "erc20" && tokensData &&
-                                                    tokensData?.map((token: any, tokenIndex: any) => (
-                                                        <div 
-                                                            key={tokenIndex}
-                                                            onClick={() => setSelectedToToken(token.symbol)}
-                                                            className="w-full flex justify-start items-center gap-3 hover:bg-slate-300 active:bg-slate-200 py-2 px-3 rounded-lg cursor-pointer"
-                                                        >
-                                                            {token.symbol}
-                                                        </div>
-                                                    ))
-                                                }
+                                                {selectedToNetwork === item && (
+                                                    <div className="bg-blue-200 rounded-lg p-3 my-1">
+                                                        {protocolByNetwork[selectedToNetwork.chainName][selectedToProtocol]?.map((token: any, tokenIndex: any) => (
+                                                            <div
+                                                                key={tokenIndex}
+                                                                onClick={() => setSelectedToToken(token)}
+                                                                className="w-full flex justify-start items-center gap-3 hover:bg-slate-300 active:bg-slate-200 py-2 px-3 rounded-lg cursor-pointer"
+                                                            >
+                                                                {token}
+                                                            </div>
+                                                        ))} 
+                                                    </div>
+                                                )}
+                                                {selectedToProtocol === "erc20" && tokensData && (
+                                                    <div className="bg-blue-200 rounded-lg p-3 my-1">
+                                                        {tokensData?.map((token: any, tokenIndex: any) => (
+                                                            <div 
+                                                                key={tokenIndex}
+                                                                onClick={() => setSelectedToToken(token.symbol)}
+                                                                className="w-full flex justify-start items-center gap-3 hover:bg-slate-300 active:bg-slate-200 py-2 px-3 rounded-lg cursor-pointer"
+                                                            >
+                                                                {token.symbol}
+                                                            </div>
+                                                        ))} 
+                                                    </div>
+                                                )}
                                             </div>
                                     ))}
                                 </div>
