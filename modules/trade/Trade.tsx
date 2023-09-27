@@ -9,11 +9,9 @@ import UNISWAP_TOKENS from "../../abis/tokens/Uniswap.json";
 import { useChain } from "@thirdweb-dev/react";
 import { BigNumber } from "ethers";
 
-
 const Trade: React.FC<any> = ({}: tTrade) => {
 
     const chain = useChain(); // Detect the connected address
-
 
     const [selectedFromNetwork, setSelectedFromNetwork] = useState({
         key: "",
@@ -48,6 +46,8 @@ const Trade: React.FC<any> = ({}: tTrade) => {
 
     const [tokensData, setTokensData] = useState<any>("")
     const [amountIn, setAmountIn] = useState("")
+    const [filterFromToken, setFilterFromToken] = useState("")
+    const [filterToToken, setFilterToToken] = useState("")
 
     useEffect(() => {
         if (selectedFromNetwork.chainName && selectedFromProtocol && selectedFromToken) {
@@ -57,7 +57,7 @@ const Trade: React.FC<any> = ({}: tTrade) => {
 
     useEffect(() => {
         if (selectedToNetwork.chainName && selectedToProtocol && selectedToToken) {
-            setShowFromSelectionMenu(false)
+            setShowToSelectionMenu(false)
         }
     }, [selectedToNetwork, selectedToProtocol, selectedToToken])
 
@@ -79,20 +79,19 @@ const Trade: React.FC<any> = ({}: tTrade) => {
 
     useEffect(() => {
         async function onChangeselectedToProtocol() {
-            if (selectedFromProtocol) {
-                if (selectedFromProtocol == "erc20" && tokensData.length <1) {
+            if (selectedToProtocol) {
+                if (selectedToProtocol == "erc20" && tokensData.length < 1) {
                     const tokensWithChainId = UNISWAP_TOKENS.tokens?.filter((token) => token.chainId === BigNumber.from(selectedToNetwork.chainId).toNumber());
                     const filteredTokens = tokensWithChainId.map((token) => {
                         const { extensions, logoURI, ...filteredToken } = token;
                         return filteredToken;
                     });
-                    console.log("filteredTokens: ", filteredTokens);
                     setTokensData(filteredTokens);
                 }
             }
         }
         onChangeselectedToProtocol();
-    }, [selectedToNetwork]);
+    }, [selectedToProtocol]);
 
     return (
         <div className="w-full flex flex-col justify-center items-center py-5">
@@ -132,7 +131,12 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                                 </div>
                                 <div className="w-full flex justify-start items-center gap-2 bg-white border-2 border-slate-200 rounded-md py-2 px-5">
                                     <input 
-                                        type="text" 
+                                        type="text"
+                                        value={showFromSelectionMenu ? filterFromToken : filterToToken}
+                                        onChange={showFromSelectionMenu 
+                                            ? (e) => setFilterFromToken(e.target.value)
+                                            : (e) => setFilterToToken(e.target.value)
+                                        }
                                         placeholder="Search by token name or address"
                                         className="w-full text-sm md:text-base outline-none"
                                     />
@@ -289,7 +293,7 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                                                     {selectedFromNetwork.key}
                                                 </div>
                                                 <div className="text-xs text-slate-500 font-medium">
-                                                    on {selectedFromProtocol} Chain
+                                                    on {selectedFromProtocol} Chain ( {selectedFromToken} )
                                                 </div>
                                             </div>
                                         ) : (
@@ -344,7 +348,7 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                                             {selectedToNetwork.key}
                                         </div>
                                         <div className="text-xs text-slate-500 font-medium">
-                                            on {selectedToProtocol} Chain
+                                            on {selectedToProtocol} Chain ( {selectedToToken} )
                                         </div>
                                     </div>
                                 ) : (
