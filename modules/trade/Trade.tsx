@@ -8,6 +8,7 @@ import { swap, warning } from "../../assets/images";
 import UNISWAP_TOKENS from "../../abis/tokens/Uniswap.json";
 import { useChain } from "@thirdweb-dev/react";
 import { BigNumber } from "ethers";
+import { ImSpinner } from "react-icons/im";
 
 const Trade: React.FC<any> = ({}: tTrade) => {
 
@@ -48,6 +49,9 @@ const Trade: React.FC<any> = ({}: tTrade) => {
     const [amountIn, setAmountIn] = useState("")
     const [filterFromToken, setFilterFromToken] = useState("")
     const [filterToToken, setFilterToToken] = useState("")
+
+    const [addToBatchLoading, setAddToBatchLoading] = useState(false)
+    const [showBatchList, setShowBatchList] = useState(false)
 
     useEffect(() => {
         if (selectedFromNetwork.chainName && selectedFromProtocol && selectedFromToken) {
@@ -108,9 +112,22 @@ const Trade: React.FC<any> = ({}: tTrade) => {
         setSelectedToToken(tempToken);
     }
 
+    const sendBatch = async (isSCW: any) => {
+        try {
+            if (isSCW) {
+                setAddToBatchLoading(true);
+                setShowBatchList(true)
+            } 
+            setAddToBatchLoading(false);
+        } catch (error) {
+            setAddToBatchLoading(false);
+            alert(error);
+        }
+    };
+
     return (
         <div className="w-full h-full flex flex-col justify-center items-center py-5">
-            <div className="w-[50%] h-full flex flex-col lg:flex-row justify-center items-center gap-4">
+            <div className={`${showBatchList ? '!w-full' : '!w-[50%]'} h-full flex flex-col lg:flex-row justify-center items-center gap-4`}>
                 <div className="w-full min-h-full">
                     {showFromSelectionMenu || showToSelectionMenu ? (
                         <div className="w-full bg-gray-50 flex flex-col gap-2 shadow-md shadow-primary-950 rounded-lg cursor-pointer p-3">
@@ -335,12 +352,21 @@ const Trade: React.FC<any> = ({}: tTrade) => {
 
                                 <div 
                                     onClick={handleSwap}
-                                    className="absolute flex justify-center items-center border-2 bg-white rounded-full"
+                                    className="absolute flex justify-center items-center border-2 bg-white hover:bg-slate-50 active:bg-slate-100 rounded-full"
                                 >
                                     <Image
                                         src={swap}
                                         alt=""
-                                        className="h-12 w-12 p-3"
+                                        className={`h-12 w-12 p-3 rotate-90 ${
+                                            selectedToNetwork.chainName 
+                                            && selectedToProtocol 
+                                            &&selectedToToken
+                                            && selectedFromNetwork.chainName 
+                                            && selectedFromProtocol 
+                                            &&selectedFromToken
+                                            ? 'rotate-90'
+                                            : 'rotate-0' 
+                                            }`}
                                     />
                                 </div>
 
@@ -475,8 +501,10 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                             <div className="w-full flex justify-center items-center gap-3">
                                 <button
                                     type="button"
+                                    onClick={() => sendBatch(true)}
                                     className="w-full flex justify-center items-center gap-2 bg-purple-900 hover:bg-purple-950 py-2 px-5 rounded-full text-white font-medium border-b-4 border-purple-950 transition duration-300"
                                 >
+                                    {addToBatchLoading && <ImSpinner className="animate-spin h-5 w-5" />}
                                     Add Batch to List
                                 </button>
                             </div>
@@ -485,11 +513,21 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                         </div>
                     )}
                 </div>
-
-                {/* <div className="w-full min-h-full bg-gray-50 flex flex-col gap-5 shadow-md shadow-primary-950 rounded-lg cursor-pointer p-10">
-                    <h1 className="text-lg md:text-xl lg:text-2xl text-center font-extrabold mb-5">
-                    </h1>
-                </div> */}
+                {/* <div className={`w-full min-h-full ${showBatchList
+                        ? "opacity-100"
+                        : "opacity-0"
+                    } transition-all delay-100 duration-300 ease-linear`}> */}
+                    {showBatchList && (
+                        <div className="w-full min-h-full bg-gray-50 flex flex-col justify-start items-center gap-5 shadow-md shadow-primary-950 rounded-lg cursor-pointer p-10">
+                            <h1 className="text-lg md:text-xl lg:text-2xl text-center font-extrabold mb-5">
+                                Batchig List
+                            </h1>
+                            <div className="text-slate-600 font-semibold text-base md:text-lg">
+                               No Batches Found !
+                            </div>
+                        </div>
+                    )}
+                {/* </div> */}
             </div>
         </div>
     );
