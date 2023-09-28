@@ -357,15 +357,15 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                                     <Image
                                         src={swap}
                                         alt=""
-                                        className={`h-12 w-12 p-3 rotate-90 ${
+                                        className={`h-12 w-12 p-3 ${
                                             selectedToNetwork.chainName 
                                             && selectedToProtocol 
                                             &&selectedToToken
                                             && selectedFromNetwork.chainName 
                                             && selectedFromProtocol 
                                             &&selectedFromToken
-                                            ? 'rotate-90'
-                                            : 'rotate-0' 
+                                            ? '!rotate-90'
+                                            : '!rotate-0' 
                                             }`}
                                     />
                                 </div>
