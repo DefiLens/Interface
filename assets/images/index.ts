@@ -8,6 +8,7 @@ import optimism from './optimism.svg';
 import polygon from './polygon.svg';
 import wallet from './wallet.png';
 import warning from './warning.png';
+import swap from './swap.png';
 
 export {
   closeNarrow,
@@ -20,4 +21,5 @@ export {
   polygon,
   wallet,
   warning,
+  swap,
 };

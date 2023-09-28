@@ -111,7 +111,7 @@ const Header: React.FC<any> = ({
                         )}
                         {connected && !smartAccount && !loading && (
                             <button
-                                className="g-primary-600 hover:bg-primary-700 py-1 px-5 rounded-lg text-primary-100 font-medium border-b-4 transition duration-300 border-primary-800 hover:border-primary-900 flex justify-center items-center gap-2"
+                                className="bg-primary-600 hover:bg-primary-700 py-1 px-5 rounded-lg text-primary-100 font-medium border-b-4 transition duration-300 border-primary-800 hover:border-primary-900 flex justify-center items-center gap-2"
                                 //   onClick={handleConnect}
                             >
                                 <svg

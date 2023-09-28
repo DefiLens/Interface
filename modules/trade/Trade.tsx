@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { MdOutlineArrowBack } from "react-icons/md";
 import { AiOutlineSearch } from "react-icons/ai";
 import { NETWORK_LIST, protocolByNetwork, protocolNames } from "../../utils/constants";
-import { warning } from "../../assets/images";
+import { swap, warning } from "../../assets/images";
 import UNISWAP_TOKENS from "../../abis/tokens/Uniswap.json";
 import { useChain } from "@thirdweb-dev/react";
 import { BigNumber } from "ethers";
@@ -93,9 +93,24 @@ const Trade: React.FC<any> = ({}: tTrade) => {
         onChangeselectedToProtocol();
     }, [selectedToProtocol]);
 
+    const handleSwap = () => {
+        let tempNetwork = selectedFromNetwork;
+        let tempProtocol = selectedFromToken;
+        let tempToken = selectedFromToken;
+
+        setSelectedFromNetwork(selectedToNetwork);
+        setSelectedToNetwork(tempNetwork);
+
+        setSelectedFromProtocol(selectedToProtocol);
+        setSelectedToProtocol(tempProtocol);
+
+        setSelectedFromToken(selectedToToken);
+        setSelectedToToken(tempToken);
+    }
+
     return (
-        <div className="w-full flex flex-col justify-center items-center py-5">
-            <div className="w-full h-full flex flex-col lg:flex-row justify-center items-start gap-4">
+        <div className="w-full h-full flex flex-col justify-center items-center py-5">
+            <div className="w-[50%] h-full flex flex-col lg:flex-row justify-center items-center gap-4">
                 <div className="w-full min-h-full">
                     {showFromSelectionMenu || showToSelectionMenu ? (
                         <div className="w-full bg-gray-50 flex flex-col gap-2 shadow-md shadow-primary-950 rounded-lg cursor-pointer p-3">
@@ -134,6 +149,10 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                                         type="text"
                                         value={showFromSelectionMenu ? filterFromToken : filterToToken}
                                         onChange={showFromSelectionMenu 
+
+
+
+
                                             ? (e) => setFilterFromToken(e.target.value)
                                             : (e) => setFilterToToken(e.target.value)
                                         }
@@ -143,104 +162,100 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                                     <AiOutlineSearch />
                                 </div>
                                 <div className="w-full overflow-auto flex flex-col justify-center items-center py-3">
-                                    {showFromSelectionMenu && selectedFromNetwork.chainName &&
-                                        protocolNames[selectedFromNetwork.chainName]?.key.map((item: any, protocolIndex: any) => (
-                                            <div
-                                                key={item}
-                                                className="w-full"
-                                            >
+                                    {showFromSelectionMenu && selectedFromNetwork.chainName && (
+                                        <div className="w-full max-h-96">
+                                            {protocolNames[selectedFromNetwork.chainName]?.key.map((item: any, protocolIndex: any) => (
                                                 <div
                                                     key={item}
-                                                    onClick={() => setSelectedFromProtocol(item)}
-                                                    className="w-full flex justify-start items-center gap-3 hover:bg-slate-300 active:bg-slate-200 py-2 px-3 rounded-lg cursor-pointer"
+                                                    className="w-full"
+                                                >
+                                                    <div
+                                                        key={item}
+                                                        onClick={() => setSelectedFromProtocol(item)}
+                                                        className="w-full flex justify-start items-center gap-3 hover:bg-slate-300 active:bg-slate-200 py-2 px-3 rounded-lg cursor-pointer"
                                                     >
-                                                    {/* <Image
-                                                        src={item.icon}
-                                                        alt=""
-                                                        className="h-8 w-8 rounded-full"
-                                                    /> */}
-                                                    <div>
-                                                        {protocolNames[selectedFromNetwork.chainName].value[protocolIndex]}
+                                                        <div>
+                                                            {protocolNames[selectedFromNetwork.chainName].value[protocolIndex]}
+                                                        </div>
                                                     </div>
+                                                    
+                                                    {selectedFromProtocol === item && (
+                                                        <div className="bg-blue-200 rounded-lg p-3 my-1">
+                                                            {protocolByNetwork[selectedFromNetwork.chainName][selectedFromProtocol]?.map((token: any, tokenIndex: any) => (
+                                                                <div
+                                                                    key={tokenIndex}
+                                                                    onClick={() => setSelectedFromToken(token)}
+                                                                    className="w-full flex justify-start items-center gap-3 hover:bg-slate-300 active:bg-slate-200 py-2 px-3 rounded-lg cursor-pointer"
+                                                                >
+                                                                    {token}
+                                                                </div>
+                                                            ))} 
+                                                        </div>
+                                                    )}
+                                                    {selectedFromProtocol === "erc20" && tokensData && (
+                                                        <div className="bg-blue-200 rounded-lg p-3 my-1">
+                                                            {tokensData?.map((token: any, tokenIndex: any) => (
+                                                                <div 
+                                                                    key={tokenIndex}
+                                                                    onClick={() => setSelectedFromToken(token.symbol)}
+                                                                    className="w-full flex justify-start items-center gap-3 hover:bg-slate-300 active:bg-slate-200 py-2 px-3 rounded-lg cursor-pointer"
+                                                                >
+                                                                    {token.symbol}
+                                                                </div>
+                                                            ))} 
+                                                        </div>
+                                                    )}
                                                 </div>
-                                                
-                                                {selectedFromProtocol === item && (
-                                                    <div className="bg-blue-200 rounded-lg p-3 my-1">
-                                                        {protocolByNetwork[selectedFromNetwork.chainName][selectedFromProtocol]?.map((token: any, tokenIndex: any) => (
-                                                            <div
-                                                                key={tokenIndex}
-                                                                onClick={() => setSelectedFromToken(token)}
-                                                                className="w-full flex justify-start items-center gap-3 hover:bg-slate-300 active:bg-slate-200 py-2 px-3 rounded-lg cursor-pointer"
-                                                            >
-                                                                {token}
-                                                            </div>
-                                                        ))} 
-                                                    </div>
-                                                )}
-                                                {selectedFromProtocol === "erc20" && tokensData && (
-                                                    <div className="bg-blue-200 rounded-lg p-3 my-1">
-                                                        {tokensData?.map((token: any, tokenIndex: any) => (
-                                                            <div 
-                                                                key={tokenIndex}
-                                                                onClick={() => setSelectedFromToken(token.symbol)}
-                                                                className="w-full flex justify-start items-center gap-3 hover:bg-slate-300 active:bg-slate-200 py-2 px-3 rounded-lg cursor-pointer"
-                                                            >
-                                                                {token.symbol}
-                                                            </div>
-                                                        ))} 
-                                                    </div>
-                                                )}
-                                            </div>
-                                    ))}
+                                            ))}
+                                        </div>
+                                    )}
 
-                                    {showToSelectionMenu && selectedToNetwork.chainName &&
-                                        protocolNames[selectedToNetwork.chainName]?.key.map((item: any, protocolIndex: any) => (
-                                            <div
-                                                key={item}
-                                                className="w-full"
-                                            >
+                                    {showToSelectionMenu && selectedToNetwork.chainName && (
+                                        <div className="w-full max-h-96">
+                                            {protocolNames[selectedToNetwork.chainName]?.key.map((item: any, protocolIndex: any) => (
                                                 <div
                                                     key={item}
-                                                    onClick={() => setSelectedToProtocol(item)}
-                                                    className="w-full flex justify-start items-center gap-3 hover:bg-slate-300 active:bg-slate-200 py-2 px-3 rounded-lg cursor-pointer"
+                                                    className="w-full"
+                                                >
+                                                    <div
+                                                        key={item}
+                                                        onClick={() => setSelectedToProtocol(item)}
+                                                        className="w-full flex justify-start items-center gap-3 hover:bg-slate-300 active:bg-slate-200 py-2 px-3 rounded-lg cursor-pointer"
                                                     >
-                                                    {/* <Image
-                                                        src={item.icon}
-                                                        alt=""
-                                                        className="h-8 w-8 rounded-full"
-                                                    /> */}
-                                                    <div>
-                                                        {protocolNames[selectedToNetwork.chainName].value[protocolIndex]}
+                                                        <div>
+                                                            {protocolNames[selectedToNetwork.chainName].value[protocolIndex]}
+                                                        </div>
                                                     </div>
+                                                    {selectedToNetwork === item && (
+                                                        <div className="bg-blue-200 rounded-lg p-3 my-1">
+                                                            {protocolByNetwork[selectedToNetwork.chainName][selectedToProtocol]?.map((token: any, tokenIndex: any) => (
+                                                                <div
+                                                                    key={tokenIndex}
+                                                                    onClick={() => setSelectedToToken(token)}
+                                                                    className="w-full flex justify-start items-center gap-3 hover:bg-slate-300 active:bg-slate-200 py-2 px-3 rounded-lg cursor-pointer"
+                                                                >
+                                                                    {token}
+                                                                </div>
+                                                            ))} 
+                                                        </div>
+                                                    )}
+                                                    {selectedToProtocol === "erc20" && tokensData && (
+                                                        <div className="bg-blue-200 rounded-lg p-3 my-1">
+                                                            {tokensData?.map((token: any, tokenIndex: any) => (
+                                                                <div 
+                                                                    key={tokenIndex}
+                                                                    onClick={() => setSelectedToToken(token.symbol)}
+                                                                    className="w-full flex justify-start items-center gap-3 hover:bg-slate-300 active:bg-slate-200 py-2 px-3 rounded-lg cursor-pointer"
+                                                                >
+                                                                    {token.symbol}
+                                                                </div>
+                                                            ))} 
+                                                        </div>
+                                                    )}
                                                 </div>
-                                                {selectedToNetwork === item && (
-                                                    <div className="bg-blue-200 rounded-lg p-3 my-1">
-                                                        {protocolByNetwork[selectedToNetwork.chainName][selectedToProtocol]?.map((token: any, tokenIndex: any) => (
-                                                            <div
-                                                                key={tokenIndex}
-                                                                onClick={() => setSelectedToToken(token)}
-                                                                className="w-full flex justify-start items-center gap-3 hover:bg-slate-300 active:bg-slate-200 py-2 px-3 rounded-lg cursor-pointer"
-                                                            >
-                                                                {token}
-                                                            </div>
-                                                        ))} 
-                                                    </div>
-                                                )}
-                                                {selectedToProtocol === "erc20" && tokensData && (
-                                                    <div className="bg-blue-200 rounded-lg p-3 my-1">
-                                                        {tokensData?.map((token: any, tokenIndex: any) => (
-                                                            <div 
-                                                                key={tokenIndex}
-                                                                onClick={() => setSelectedToToken(token.symbol)}
-                                                                className="w-full flex justify-start items-center gap-3 hover:bg-slate-300 active:bg-slate-200 py-2 px-3 rounded-lg cursor-pointer"
-                                                            >
-                                                                {token.symbol}
-                                                            </div>
-                                                        ))} 
-                                                    </div>
-                                                )}
-                                            </div>
-                                    ))}
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -250,115 +265,141 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                                 Building Batch
                             </h1>
 
-                            {/* ---------- FROM Section START ---------- */}
                             <div 
-                                onClick={() => setShowFromSelectionMenu(true)}
-                                className="bg-white border border-slate-300 shadow rounded-lg px-5 py-3"
+                                className={`w-full relative flex justify-center items-center gap-5 ${
+                                    selectedToNetwork.chainName 
+                                    && selectedToProtocol 
+                                    &&selectedToToken
+                                    && selectedFromNetwork.chainName 
+                                    && selectedFromProtocol 
+                                    &&selectedFromToken
+                                    ? 'flex-row' 
+                                    : 'flex-col'
+                                    }`
+                                }
                             >
-                                <h5 className="text-sm md:text-base lg:text-lg font-medium md:font-semibold text-slate-800">
-                                    From
-                                </h5>
-                                <div className="flex flex-row justify-start items-center gap-8 py-3">
-                                    {selectedFromNetwork.chainName ? (
-                                        <div className="relative">
-                                            <Image
-                                                src={selectedFromNetwork.icon}
-                                                alt=""
-                                                className="h-12 w-12 bg-slate-200 rounded-full cursor-pointer"
-                                                />
-                                            <div className="absolute -bottom-1 -right-1 bg-white h-6 w-6 flex justify-center items-center rounded-full">
+                                {/* ---------- FROM Section START ---------- */}
+                                <div 
+                                    onClick={() => setShowFromSelectionMenu(true)}
+                                    className="w-full bg-white border border-slate-300 shadow rounded-lg px-5 py-3"
+                                >
+                                    <h5 className="text-sm md:text-base lg:text-lg font-medium md:font-semibold text-slate-800">
+                                        From
+                                    </h5>
+                                    <div className="flex flex-row justify-start items-center gap-8 py-3">
+                                        {selectedFromNetwork.chainName ? (
+                                            <div className="relative">
                                                 <Image
                                                     src={selectedFromNetwork.icon}
                                                     alt=""
-                                                    className="h-5 w-5 bg-slate-200 rounded-full cursor-pointer"
-                                                />
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <div className="relative">
-                                        <div
-                                            className="h-12 w-12 bg-slate-200 rounded-full cursor-pointer"
-                                        />
-                                        <div className="absolute -bottom-1 -right-1 bg-white h-6 w-6 flex justify-center items-center rounded-full">
-                                                <div
-                                                    className="h-5 w-5 bg-slate-200 rounded-full cursor-pointer"
-                                                />
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {selectedFromNetwork.chainName ? (
-                                            <div className="text-slate-400">
-                                                <div className="text-base md:text-lg text-black font-semibold">
-                                                    {selectedFromNetwork.key}
-                                                </div>
-                                                <div className="text-xs text-slate-500 font-medium">
-                                                    on {selectedFromProtocol} Chain ( {selectedFromToken} )
+                                                    className="h-12 w-12 bg-slate-200 rounded-full cursor-pointer"
+                                                    />
+                                                <div className="absolute -bottom-1 -right-1 bg-white h-6 w-6 flex justify-center items-center rounded-full">
+                                                    <Image
+                                                        src={selectedFromNetwork.icon}
+                                                        alt=""
+                                                        className="h-5 w-5 bg-slate-200 rounded-full cursor-pointer"
+                                                    />
                                                 </div>
                                             </div>
                                         ) : (
-                                            <div className="text-base md:text-lg text-slate-400">
-                                                Select Chain and token
-                                            </div>
-                                        )}
-                                </div>
-                            </div>
-                            {/* ---------- FROM Section END ---------- */}
-
-                            {/* ---------- To Section START ---------- */}
-                            <div 
-                                onClick={() => setShowToSelectionMenu(true)}
-                                className="bg-white border border-slate-300 shadow rounded-lg px-5 py-3"
-                            >
-                                <h5 className="text-sm md:text-base lg:text-lg font-medium md:font-semibold text-slate-800">
-                                    To
-                                </h5>
-                                <div className="flex flex-row justify-start items-center gap-8 py-3">
-                                    {selectedToNetwork.chainName ? (
-                                        <div className="relative">
-                                            <Image
-                                                src={selectedToNetwork.icon}
-                                                alt=""
-                                                className="h-12 w-12 bg-slate-200 rounded-full cursor-pointer"
-                                            />
-                                            <div className="absolute -bottom-1 -right-1 bg-white h-6 w-6 flex justify-center items-center rounded-full">
-                                                <Image
-                                                    src={selectedToNetwork.icon}
-                                                    alt=""
-                                                    className="h-5 w-5 bg-slate-200 rounded-full cursor-pointer"
-                                                />
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <div className="relative">
+                                            <div className="relative">
                                             <div
                                                 className="h-12 w-12 bg-slate-200 rounded-full cursor-pointer"
                                             />
                                             <div className="absolute -bottom-1 -right-1 bg-white h-6 w-6 flex justify-center items-center rounded-full">
-                                                <div
-                                                    className="h-5 w-5 bg-slate-200 rounded-full cursor-pointer"
+                                                    <div
+                                                        className="h-5 w-5 bg-slate-200 rounded-full cursor-pointer"
+                                                    />
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {selectedFromNetwork.chainName ? (
+                                                <div className="text-slate-400">
+                                                    <div className="text-base md:text-lg text-black font-semibold">
+                                                        {selectedFromNetwork.key}
+                                                    </div>
+                                                    <div className="text-xs text-slate-500 font-medium">
+                                                        on {selectedFromProtocol} Chain ( {selectedFromToken} )
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <div className="text-base md:text-lg text-slate-400">
+                                                    Select Chain and token
+                                                </div>
+                                            )}
+                                    </div>
+                                </div>
+                                {/* ---------- FROM Section END ---------- */}
+
+                                <div 
+                                    onClick={handleSwap}
+                                    className="absolute flex justify-center items-center border-2 bg-white rounded-full"
+                                >
+                                    <Image
+                                        src={swap}
+                                        alt=""
+                                        className="h-12 w-12 p-3"
+                                    />
+                                </div>
+
+                                {/* ---------- To Section START ---------- */}
+                                <div 
+                                    onClick={() => setShowToSelectionMenu(true)}
+                                    className="w-full bg-white border border-slate-300 shadow rounded-lg px-5 py-3"
+                                >
+                                    <h5 className="text-sm md:text-base lg:text-lg font-medium md:font-semibold text-slate-800">
+                                        To
+                                    </h5>
+                                    <div className="flex flex-row justify-start items-center gap-8 py-3">
+                                        {selectedToNetwork.chainName ? (
+                                            <div className="relative">
+                                                <Image
+                                                    src={selectedToNetwork.icon}
+                                                    alt=""
+                                                    className="h-12 w-12 bg-slate-200 rounded-full cursor-pointer"
                                                 />
+                                                <div className="absolute -bottom-1 -right-1 bg-white h-6 w-6 flex justify-center items-center rounded-full">
+                                                    <Image
+                                                        src={selectedToNetwork.icon}
+                                                        alt=""
+                                                        className="h-5 w-5 bg-slate-200 rounded-full cursor-pointer"
+                                                    />
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <div className="relative">
+                                                <div
+                                                    className="h-12 w-12 bg-slate-200 rounded-full cursor-pointer"
+                                                />
+                                                <div className="absolute -bottom-1 -right-1 bg-white h-6 w-6 flex justify-center items-center rounded-full">
+                                                    <div
+                                                        className="h-5 w-5 bg-slate-200 rounded-full cursor-pointer"
+                                                    />
+                                                </div>
+                                            </div>
+                                        )}
+
+                                    {selectedToNetwork.chainName ? (
+                                        <div className="text-slate-400">
+                                            <div className="text-base md:text-lg text-black font-semibold">
+                                                {selectedToNetwork.key}
+                                            </div>
+                                            <div className="text-xs text-slate-500 font-medium">
+                                                on {selectedToProtocol} Chain ( {selectedToToken} )
                                             </div>
                                         </div>
+                                    ) : (
+                                        <div className="text-base md:text-lg text-slate-400">
+                                            Select Chain and token
+                                        </div>
                                     )}
-
-                                {selectedToNetwork.chainName ? (
-                                    <div className="text-slate-400">
-                                        <div className="text-base md:text-lg text-black font-semibold">
-                                            {selectedToNetwork.key}
-                                        </div>
-                                        <div className="text-xs text-slate-500 font-medium">
-                                            on {selectedToProtocol} Chain ( {selectedToToken} )
-                                        </div>
                                     </div>
-                                ) : (
-                                    <div className="text-base md:text-lg text-slate-400">
-                                        Select Chain and token
-                                    </div>
-                                )}
                                 </div>
+                                {/* ---------- To Section END ---------- */}
                             </div>
-                            {/* ---------- To Section END ---------- */}
+
 
                             {/* ---------- YOU PAY Section START ---------- */}
                             <div 
@@ -367,7 +408,7 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                                 <h5 className="text-sm md:text-base lg:text-lg font-medium md:font-semibold text-slate-800">
                                     You Pay
                                 </h5>
-                                <div className="flex flex-row justify-start items-center gap-8 py-3">
+                                <div className="relative flex flex-row justify-start items-center gap-8 py-3">
                                     {selectedFromNetwork.chainName ? (
                                         <div className="relative">
                                             <Image
@@ -408,6 +449,14 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                                     <div className="text-xs md:text-sm text-slate-500 font-medium">
                                         $0.00
                                     </div>
+                                    <div className="absolute right-0 bottom-0 flex flex-col justify-center items-end gap-1">
+                                        <span className="text-xs md:text-sm text-purple-100 font-medium bg-purple-700 rounded-xl px-3 py-1">
+                                            Max
+                                        </span>
+                                        <span className="text-xs md:text-sm text-slate-600 font-medium ">
+                                            / 0
+                                        </span>
+                                    </div>
                                 </div>
                                 </div>
                             </div>
@@ -423,10 +472,10 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                                 You don&#39;t have enough funds to complete transaction.
                             </div>
 
-                            <div className="flex justify-center items-center gap-3">
+                            <div className="w-full flex justify-center items-center gap-3">
                                 <button
                                     type="button"
-                                    className="flex justify-center items-center gap-2 bg-success-600 hover:bg-success-700 py-2 px-5 rounded-lg text-white font-medium border-b-4 border-success-800 hover:border-success-900 transition duration-300"
+                                    className="w-full flex justify-center items-center gap-2 bg-purple-900 hover:bg-purple-950 py-2 px-5 rounded-full text-white font-medium border-b-4 border-purple-950 transition duration-300"
                                 >
                                     Add Batch to List
                                 </button>
@@ -437,10 +486,10 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                     )}
                 </div>
 
-                <div className="w-full min-h-full bg-gray-50 flex flex-col gap-5 shadow-md shadow-primary-950 rounded-lg cursor-pointer p-10">
+                {/* <div className="w-full min-h-full bg-gray-50 flex flex-col gap-5 shadow-md shadow-primary-950 rounded-lg cursor-pointer p-10">
                     <h1 className="text-lg md:text-xl lg:text-2xl text-center font-extrabold mb-5">
                     </h1>
-                </div>
+                </div> */}
             </div>
         </div>
     );
