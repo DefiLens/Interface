@@ -30,11 +30,11 @@ export const fetchContractMetadataURL = `${netlifyNodeURL}/common/getContractMet
 
 export const NavigationList = [
     {
-      title: "Cross Chain Defi",
+      title: "Cross Chain",
       route: '/cross-chain-defi',
     },
     {
-      title: "Batching Transactions",
+      title: "Batching",
       route: '/batching-transactions',
     },
     // {

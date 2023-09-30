@@ -3,17 +3,14 @@ import { Suspense } from "react";
 
 import { Toaster, ToastBar, toast } from 'react-hot-toast';
 
-import Link from "next/link";
 import Image from "next/image";
 import { AppProps } from "next/app";
-import { usePathname } from 'next/navigation'
 import { ThirdwebProvider, metamaskWallet } from "@thirdweb-dev/react";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { Polygon, Optimism, Ethereum, Base, Avalanche, Arbitrum } from "@thirdweb-dev/chains";
 
 import { closeNarrow } from "../assets/images";
 import ChainContext from "../Context/ChainContext";
-import { NavigationList } from "../utils/constants";
 import HeaderContainer from "../modules/header/HeaderContainer";
 
 import "@biconomy/web3-auth/dist/src/style.css";
@@ -21,7 +18,6 @@ import "@biconomy/web3-auth/dist/src/style.css";
 import "../assets/styles/index.css";
 
 export default function App({ Component, pageProps }: AppProps) {
-    const pathname = usePathname()
     const metamaskConfig = metamaskWallet({});
     const [selectedChain, setSelectedChain] = React.useState("");
     const [selectedChainId, setSelectedChainId] = React.useState("");
@@ -87,20 +83,6 @@ export default function App({ Component, pageProps }: AppProps) {
                        <HeaderContainer />
 
                         <div className="w-screen h-[calc(100%-69px)] flex justify-center items-start">
-                            <aside className="w-[250px] h-full flex flex-col justify-start items-center gap-5 p-5 pt-10 text-lg text-light bg-secondary-800 shadow-lg shadow-secondary-500">
-                                {NavigationList.length > 0 &&
-                                    NavigationList?.map((item) => (
-                                        <Link
-                                          href={item.route}
-                                          key={item.title}
-                                          className={`cursor-pointer px-4 py-2 text-sm md:text-base text-center rounded-md hover:bg-secondary-600 transition duration-300 ${
-                                            pathname === item.route ? "bg-secondary-500" : ""
-                                          } `}
-                                        >
-                                          {item.title}
-                                        </Link>
-                                    ))}
-                            </aside>
                             <main className="w-full h-full overflow-y-scroll  overflow-x-hidden p-4">
                               <Component {...pageProps} />
                             </main>
