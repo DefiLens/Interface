@@ -9,6 +9,9 @@ import polygon from './polygon.svg';
 import wallet from './wallet.png';
 import warning from './warning.png';
 import swap from './swap.png';
+import gas from './gas.png';
+import bridgeCost from './bridgeCost.png';
+import downLine from './downLine.png';
 
 export {
   closeNarrow,
@@ -22,4 +25,7 @@ export {
   wallet,
   warning,
   swap,
+  gas,
+  bridgeCost,
+  downLine,
 };
