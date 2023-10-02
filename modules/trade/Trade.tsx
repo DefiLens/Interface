@@ -32,9 +32,9 @@ const Trade: React.FC<any> = ({}: tTrade) => {
     const { mutateAsync: sendTxTrditionally } = useEoaProvider();
     const { mutateAsync: refinance } = useRefinance();
 
-    const { 
+    const {
         scwBalance,
-        smartAccount, 
+        smartAccount,
     }: iGlobal = useGlobalStore((state) => state);
 
     const [selectedFromNetwork, setSelectedFromNetwork] = useState({
@@ -268,7 +268,7 @@ const Trade: React.FC<any> = ({}: tTrade) => {
         try {
             if (isSCW) {
                 setAddToBatchLoading(true);
-            } 
+            }
             if (selectedFromToken == selectedToToken) {
                 throw "fromToken and toToken should not same";
             }
@@ -318,7 +318,7 @@ const Trade: React.FC<any> = ({}: tTrade) => {
 
             updateInputValues(
                 individualBatch.length - 1,
-                txHash, 
+                txHash,
                 {
                     fromNetwork: selectedFromNetwork.chainName,
                     toNetwork: selectedToNetwork.chainName,
@@ -329,7 +329,7 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                     amountIn: amountIn,
                 }
             )
-           
+
             setAddToBatchLoading(false);
             setShowBatchList(true);
         } catch (error) {
@@ -374,10 +374,10 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                 <div className="w-full">
                     {showFromSelectionMenu || showToSelectionMenu ? (
                         <div className="w-full bg-gray-50 flex flex-col gap-2 shadow-md shadow-primary-950 rounded-lg cursor-pointer p-3">
-                            <MdOutlineArrowBack 
+                            <MdOutlineArrowBack
                                 onClick={
-                                    showFromSelectionMenu 
-                                    ? () => setShowFromSelectionMenu(false) 
+                                    showFromSelectionMenu
+                                    ? () => setShowFromSelectionMenu(false)
                                     : () => setShowToSelectionMenu(false)
                                 }
                                 className="rounded-full h-10 w-10 p-2 hover:bg-gray-100 active:bg-gray-200  text-black"
@@ -389,8 +389,8 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                                             <div
                                                 key={item.chainName}
                                                 onClick={
-                                                    showFromSelectionMenu 
-                                                    ? () => handleSelectFromNetwork(item) 
+                                                    showFromSelectionMenu
+                                                    ? () => handleSelectFromNetwork(item)
                                                     : () => handleSelectToNetwork(item)
                                                 }
                                                 className="h-14 w-14 flex justify-center items-center gap-3 bg-white hover:bg-slate-100 active:bg-slate-200 border-2 border-slate-200 hover:border-slate-300 shadow-sm rounded-md cursor-pointer"
@@ -405,10 +405,10 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                                     })}
                                 </div>
                                 <div className="w-full flex justify-start items-center gap-2 bg-white border-2 border-slate-200 rounded-md py-2 px-5">
-                                    <input 
+                                    <input
                                         type="text"
                                         value={showFromSelectionMenu ? filterFromToken : filterToToken}
-                                        onChange={showFromSelectionMenu 
+                                        onChange={showFromSelectionMenu
 
 
 
@@ -438,7 +438,7 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                                                             {protocolNames[selectedFromNetwork.chainName].value[protocolIndex]}
                                                         </div>
                                                     </div>
-                                                    
+
                                                     {selectedFromProtocol === item && (
                                                         <div className="bg-blue-200 rounded-lg p-3 my-1">
                                                             {protocolByNetwork[selectedFromNetwork.chainName][selectedFromProtocol]?.map((token: any, tokenIndex: any) => (
@@ -449,20 +449,20 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                                                                 >
                                                                     {token}
                                                                 </div>
-                                                            ))} 
+                                                            ))}
                                                         </div>
                                                     )}
                                                     {selectedFromProtocol === "erc20" && tokensData && (
                                                         <div className="bg-blue-200 rounded-lg p-3 my-1">
                                                             {tokensData?.map((token: any, tokenIndex: any) => (
-                                                                <div 
+                                                                <div
                                                                     key={tokenIndex}
                                                                     onClick={() => setSelectedFromToken(token.symbol)}
                                                                     className="w-full flex justify-start items-center gap-3 hover:bg-slate-300 active:bg-slate-200 py-2 px-3 rounded-lg cursor-pointer"
                                                                 >
                                                                     {token.symbol}
                                                                 </div>
-                                                            ))} 
+                                                            ))}
                                                         </div>
                                                     )}
                                                 </div>
@@ -486,7 +486,7 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                                                             {protocolNames[selectedToNetwork.chainName].value[protocolIndex]}
                                                         </div>
                                                     </div>
-                                                    {selectedToNetwork === item && (
+                                                    {selectedToProtocol === item && (
                                                         <div className="bg-blue-200 rounded-lg p-3 my-1">
                                                             {protocolByNetwork[selectedToNetwork.chainName][selectedToProtocol]?.map((token: any, tokenIndex: any) => (
                                                                 <div
@@ -496,20 +496,20 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                                                                 >
                                                                     {token}
                                                                 </div>
-                                                            ))} 
+                                                            ))}
                                                         </div>
                                                     )}
                                                     {selectedToProtocol === "erc20" && tokensData && (
                                                         <div className="bg-blue-200 rounded-lg p-3 my-1">
                                                             {tokensData?.map((token: any, tokenIndex: any) => (
-                                                                <div 
+                                                                <div
                                                                     key={tokenIndex}
                                                                     onClick={() => setSelectedToToken(token.symbol)}
                                                                     className="w-full flex justify-start items-center gap-3 hover:bg-slate-300 active:bg-slate-200 py-2 px-3 rounded-lg cursor-pointer"
                                                                 >
                                                                     {token.symbol}
                                                                 </div>
-                                                            ))} 
+                                                            ))}
                                                         </div>
                                                     )}
                                                 </div>
@@ -525,21 +525,21 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                                 Building Batch No. {individualBatch.length}
                             </h1>
                             <div className="w-full flex flex-col gap-5 px-5 py-7">
-                                <div 
+                                <div
                                     className={`w-full relative flex justify-center items-center gap-5 ${
-                                        selectedToNetwork.chainName 
-                                        && selectedToProtocol 
+                                        selectedToNetwork.chainName
+                                        && selectedToProtocol
                                         && selectedToToken
-                                        && selectedFromNetwork.chainName 
-                                        && selectedFromProtocol 
+                                        && selectedFromNetwork.chainName
+                                        && selectedFromProtocol
                                         && selectedFromToken
-                                        ? 'flex-row' 
+                                        ? 'flex-row'
                                         : 'flex-col'
                                         }`
                                     }
                                 >
                                     {/* ---------- FROM Section START ---------- */}
-                                    <div 
+                                    <div
                                         onClick={() => setShowFromSelectionMenu(true)}
                                         className="w-full bg-white border border-slate-300 shadow rounded-lg px-5 py-3"
                                     >
@@ -593,7 +593,7 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                                     </div>
                                     {/* ---------- FROM Section END ---------- */}
 
-                                    <div 
+                                    <div
                                         onClick={handleSwap}
                                         className="absolute flex justify-center items-center border-2 bg-white hover:bg-slate-50 active:bg-slate-100 rounded-full"
                                     >
@@ -601,20 +601,20 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                                             src={swap}
                                             alt=""
                                             className={`h-12 w-12 p-3 ${
-                                                selectedToNetwork.chainName 
-                                                && selectedToProtocol 
+                                                selectedToNetwork.chainName
+                                                && selectedToProtocol
                                                 && selectedToToken
-                                                && selectedFromNetwork.chainName 
-                                                && selectedFromProtocol 
+                                                && selectedFromNetwork.chainName
+                                                && selectedFromProtocol
                                                 && selectedFromToken
                                                 ? '!rotate-90'
-                                                : '!rotate-0' 
+                                                : '!rotate-0'
                                                 }`}
                                         />
                                     </div>
 
                                     {/* ---------- To Section START ---------- */}
-                                    <div 
+                                    <div
                                         onClick={() => setShowToSelectionMenu(true)}
                                         className="w-full bg-white border border-slate-300 shadow rounded-lg px-5 py-3"
                                     >
@@ -670,7 +670,7 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                                 </div>
 
                                 {/* ---------- YOU PAY Section START ---------- */}
-                                <div 
+                                <div
                                     className="bg-white border border-slate-300 shadow rounded-lg px-5 py-3"
                                 >
                                     <h5 className="text-sm md:text-base lg:text-lg font-medium md:font-semibold text-slate-800">
@@ -706,9 +706,9 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                                         )}
 
                                     <div className="text-slate-400">
-                                        <input 
+                                        <input
                                             min="0"
-                                            type="number" 
+                                            type="number"
                                             placeholder="0"
                                             value={fromTokenDecimal && amountIn && bg(amountIn).isGreaterThan(0) ? amountIn : amountIn}
                                             onChange={(e: any) => onChangeAmountIn(e.target.value)}
@@ -758,7 +758,7 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                         </div>
                     )}
                 </div>
-                
+
                 {showBatchList && (
                     <div className="w-full bg-gray-50 flex flex-col justify-start items-center gap-1 shadow-md shadow-primary-950 rounded-2xl cursor-pointer">
                         <h1 className="w-full bg-purple-950 text-white text-lg md:text-xl lg:text-2xl text-center font-bold rounded-t-2xl p-5">
@@ -797,7 +797,7 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                                                         className="hover:bg-slate-50 active:bg-slate-100 p-2 rounded-full"
                                                     />
                                                 </div>
-                                                <div 
+                                                <div
                                                     className="w-full flex flex-col justify-between items-start gap-2 p-3 rounded-xl bg-white shadow-sm"
                                                     onClick={() => toggleShowBatchList(bar.id)}
                                                 >
@@ -826,7 +826,7 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                                                                 </span>
                                                             </div>
                                                         </div>
-                                                        <div 
+                                                        <div
                                                             className="flex justify-center items-center bg-purple-100 hover:bg-purple-200 rounded-full p-0.5"
                                                         >
                                                             {showIndividualBatchList === bar.id ? (
