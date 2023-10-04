@@ -30,7 +30,7 @@ const HeaderContainer: React.FC<any> = () => {
     }: iGlobal = useGlobalStore((state) => state);
 
     const {
-        setSelectedNetwork,
+        setSelectedFromNetwork,
     }: iTrade = useTradeStore((state) => state);
 
     const {
@@ -249,105 +249,105 @@ const HeaderContainer: React.FC<any> = () => {
                     // @ts-ignore
                     await isNetworkCorrect(137, _smartAccount.address);
 
-                    setSelectedNetwork({
+                    setSelectedFromNetwork({
                         key: "Polygon",
                         chainName: chainName,
                         chainId: "137",
                         icon: polygon,
                     })
 
-                    // setSelectedChain?.(chainName);
-                    // setSelectedChainId?.("137");
+                    setSelectedChain?.(chainName);
+                    setSelectedChainId?.("137");
                 } else if (chainName == "arbitrum") {
                     await switchChain?.(42161);
                     const _smartAccount = await login(42161);
                     // @ts-ignore
                     await isNetworkCorrect(42161, _smartAccount.address);
 
-                    setSelectedNetwork({
+                    setSelectedFromNetwork({
                         key: "Arbitrum",
                         chainName: chainName,
                         chainId: "42161",
                         icon: arbitrum,
                     })
 
-                    // setSelectedChain?.(chainName);
-                    // setSelectedChainId?.("42161");
+                    setSelectedChain?.(chainName);
+                    setSelectedChainId?.("42161");
                 } else if (chainName == "avalanche") {
                     await switchChain(43114);
                     const _smartAccount = await login(43114);
                     // @ts-ignore
                     await isNetworkCorrect(43114, _smartAccount.address);
 
-                    setSelectedNetwork({
+                    setSelectedFromNetwork({
                         key: "Avalanche",
                         chainName: chainName,
                         chainId: "43114",
                         icon: avalanche,
                     })
 
-                    // setSelectedChain?.(chainName);
-                    // setSelectedChainId?.("43114");
+                    setSelectedChain?.(chainName);
+                    setSelectedChainId?.("43114");
                 } else if (chainName == "optimism") {
                     await switchChain?.(10);
                     const _smartAccount = await login(10);
                     // @ts-ignore
                     await isNetworkCorrect(10, _smartAccount.address);
 
-                    setSelectedNetwork({
+                    setSelectedFromNetwork({
                         key: "Optimism",
                         chainName: chainName,
                         chainId: "10",
                         icon: optimism,
                     })
                     
-                    // setSelectedChain?.(chainName);
-                    // setSelectedChainId?.("10");
+                    setSelectedChain?.(chainName);
+                    setSelectedChainId?.("10");
                 } else if (chainName == "ethereum") {
                     await switchChain(1);
                     const _smartAccount = await login(1);
                     // @ts-ignore
                     await isNetworkCorrect(1, _smartAccount.address);
 
-                    setSelectedNetwork({
+                    setSelectedFromNetwork({
                         key: "Ethereum",
                         chainName: chainName,
                         chainId: "1",
                         icon: ethereum,
                     })
 
-                    // setSelectedChain?.(chainName);
-                    // setSelectedChainId?.("1");
+                    setSelectedChain?.(chainName);
+                    setSelectedChainId?.("1");
                 } else if (chainName == "base") {
                     await switchChain?.(8453);
                     const _smartAccount = await login(8453);
                     // @ts-ignore
                     await isNetworkCorrect(8453, _smartAccount.address);
 
-                    setSelectedNetwork({
+                    setSelectedFromNetwork({
                         key: "Base",
                         chainName: chainName,
                         chainId: "8453",
                         icon: base,
                     })
 
-                    // setSelectedChain?.(chainName);
-                    // setSelectedChainId?.("8453");
+                    setSelectedChain?.(chainName);
+                    setSelectedChainId?.("8453");
                 }
             } else {
                 if (chain) {
                     console.log("🚀 HeaderContainer.tsx:339 ~ changeChain ~ chain:", chain)
                     const _smartAccount = await login(chain?.chainId);
 
-                    setSelectedNetwork({
+                    setSelectedFromNetwork({
                         key: chain?.chain,
                         chainName: chain?.slug,
                         chainId: chain?.chainId.toString(),
                         icon: NetworkLogoByChainId[chain?.chainId.toString()],
                     })
 
-                    // setSelectedChain?.(chain?.slug);
-                    // setSelectedChainId?.(chain?.chainId.toString());
+                    setSelectedChain?.(chain?.slug);
+                    setSelectedChainId?.(chain?.chainId.toString());
                     // @ts-ignore
                     await isNetworkCorrect(chain?.chainId, _smartAccount.address);
                 }

@@ -17,10 +17,10 @@ const SelectNetwork = ({
   const {
     showSelectNetworkList,
     setShowSelectNetworkList,
-    selectedNetwork,
+    selectedFromNetwork,
   }: iTrade = useTradeStore((state) => state);
   
-  console.log("🚀  selectedNetwork:", selectedNetwork)
+  console.log("🚀  selectedFromNetwork:", selectedFromNetwork)
   const handleSelectNetwork = (data: any) => {
     setShowSelectNetworkList(!showSelectNetworkList);
     if (selectedChain !== data.chainName) {
@@ -40,10 +40,10 @@ const SelectNetwork = ({
         className="flex justify-between items-center  cursor-pointer"
         onClick={() => setShowSelectNetworkList(!showSelectNetworkList)}
       >
-        {selectedNetwork?.chainName ? (
+        {selectedFromNetwork?.chainName ? (
             <div className="bg-slate-100 hover:bg-slate-300 active:bg-slate-400 rounded-full p-1">
               <Image
-                src={selectedNetwork.icon}
+                src={selectedFromNetwork.icon}
                 alt=""
                 className="h-8 w-8 rounded-full cursor-pointer"
               />

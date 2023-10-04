@@ -65,8 +65,8 @@ const CrossChainDefi: React.FC<{}> = () => {
         useGlobalStore((state) => state);
 
     const {
-        selectedNetwork,
-        setSelectedNetwork,
+        selectedFromNetwork,
+        setSelectedFromNetwork,
     }: iTrade = useTradeStore((state) => state);
 
     const {
@@ -148,7 +148,7 @@ const CrossChainDefi: React.FC<{}> = () => {
                 setSmartAccount(null)
                 setConnected(false)
 
-                setSelectedNetwork({
+                setSelectedFromNetwork({
                     key: "",
                     chainName: "",
                     chainId: "",
@@ -210,7 +210,7 @@ const CrossChainDefi: React.FC<{}> = () => {
                     setTokenInDecimals(6);
                     console.log("selectedChainId", selectedChainId, fromChainId);
                     // const provider = await getProvider(selectedChainId);
-                    const provider = await getProvider(selectedNetwork.chainId);
+                    const provider = await getProvider(selectedFromNetwork.chainId);
                     console.log("provider", provider?.toString());
 
                     const erc20 = await getContractInstance(token.usdc, IERC20, provider);
@@ -285,7 +285,7 @@ const CrossChainDefi: React.FC<{}> = () => {
             setData(null);
             const realChainID = await chooseChianId(_fromNetwork);
 
-            setSelectedNetwork({
+            setSelectedFromNetwork({
                 key: NetworkNameByChainId[realChainID],
                 chainName: NetworkNameByChainId[realChainID],
                 chainId: realChainID,
@@ -356,7 +356,7 @@ const CrossChainDefi: React.FC<{}> = () => {
         }
         if (!fromChainId) return alert("From network is not selecetd yet");
         // const provider = await getProvider(selectedChainId);
-        const provider = await getProvider(selectedNetwork.chainId);
+        const provider = await getProvider(selectedFromNetwork.chainId);
 
         const token = tokensByNetwork[fromChainId];
         const erc20 = await getContractInstance(token.usdc, IERC20, provider);
@@ -452,7 +452,7 @@ const CrossChainDefi: React.FC<{}> = () => {
                     setSmartAccount(smartAccount);
                     setCurrentProvider("Biconomy");
 
-                    setSelectedNetwork({
+                    setSelectedFromNetwork({
                         key: NetworkNameByChainId[_fromN],
                         chainName: NetworkNameByChainId[_fromN],
                         chainId: _fromN,

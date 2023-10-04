@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import { BigNumber } from "ethers";
 import { BigNumber as bg } from "bignumber.js";
@@ -6,20 +6,21 @@ import { BigNumber as bg } from "bignumber.js";
 import Image from "next/image";
 import { ImSpinner } from "react-icons/im";
 import { AiOutlineSearch } from "react-icons/ai";
-import { useChain, useAddress } from "@thirdweb-dev/react";
-import { MdOutlineArrowBack, MdDelete } from "react-icons/md";
-import { MdKeyboardArrowUp, MdKeyboardArrowDown } from "react-icons/md";
+import { useAddress, useChain } from "@thirdweb-dev/react";
+import { MdDelete, MdOutlineArrowBack } from "react-icons/md";
+import { MdKeyboardArrowDown, MdKeyboardArrowUp } from "react-icons/md";
 
 import { tTrade } from "./types";
 import { getProvider } from "../../utils/web3Libs/ethers";
-import { shorten, buildTxHash } from "../../utils/helper";
+import { buildTxHash, shorten } from "../../utils/helper";
 import UNISWAP_TOKENS from "../../abis/tokens/Uniswap.json";
+import { iTrade, useTradeStore } from "../../store/TradeStore";
 import { useRefinance } from "../../hooks/Batching/useRefinance";
-import { useGlobalStore, iGlobal } from "../../store/GlobalStore";
+import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import { useEoaProvider } from "../../hooks/aaProvider/useEoaProvider";
 import { useBiconomyProvider } from "../../hooks/aaProvider/useBiconomyProvider";
-import { protocolNames, protocolByNetwork, NETWORK_LIST } from "../../utils/constants";
-import { warning, swap, polygon, gas, downLine, bridgeCost, base, optimism, arbitrum, avalanche, ethereum } from "../../assets/images";
+import { NETWORK_LIST, protocolByNetwork, protocolNames } from "../../utils/constants";
+import { avalanche, base, bridgeCost, downLine, gas, optimism, polygon, swap, warning } from "../../assets/images";
 
 bg.config({ DECIMAL_PLACES: 10 });
 
@@ -37,25 +38,48 @@ const Trade: React.FC<any> = ({}: tTrade) => {
         smartAccount,
     }: iGlobal = useGlobalStore((state) => state);
 
-    const [selectedFromNetwork, setSelectedFromNetwork] = useState({
-        key: "",
-        chainName: "",
-        chainId: "",
-        icon: "",
-    })
-
-    const [selectedFromProtocol, setSelectedFromProtocol] = useState("")
-    const [selectedFromToken, setSelectedFromToken] = useState("")
-
-    const [selectedToNetwork, setSelectedToNetwork] = useState({
-        key: "",
-        chainName: "",
-        chainId: "",
-        icon: "",
-    })
-
-    const [selectedToProtocol, setSelectedToProtocol] = useState("")
-    const [selectedToToken, setSelectedToToken] = useState("")
+    const {
+        selectedFromNetwork,
+        setSelectedFromNetwork,
+        selectedFromProtocol,
+        setSelectedFromProtocol,
+        selectedFromToken,
+        setSelectedFromToken,
+        selectedToNetwork,
+        setSelectedToNetwork,
+        selectedToProtocol,
+        setSelectedToProtocol,
+        selectedToToken,
+        setSelectedToToken,
+        showFromSelectionMenu,
+        setShowFromSelectionMenu,
+        showToSelectionMenu,
+        setShowToSelectionMenu,
+        tokensData,
+        setTokensData,
+        amountIn,
+        setAmountIn,
+        fromTokenDecimal,
+        setFromTokenDecimal,
+        filterFromToken,
+        setFilterFromToken,
+        filterToToken,
+        setFilterToToken,
+        addToBatchLoading,
+        setAddToBatchLoading,
+        showBatchList,
+        setShowBatchList,
+        showIndividualBatchList,
+        setShowIndividualBatchList,
+        txhash,
+        setTxHash,
+        sendtxLoading,
+        setSendtxLoading,
+        sendtxLoadingForEoa,
+        setSendtxLoadingForEoa,
+        individualBatch,
+        setIndividualBatch,
+    }: iTrade = useTradeStore((state) => state);
 
     const handleSelectFromNetwork = (data: any) => {
         setSelectedFromNetwork(data)
@@ -64,54 +88,6 @@ const Trade: React.FC<any> = ({}: tTrade) => {
     const handleSelectToNetwork = (data: any) => {
         setSelectedToNetwork(data)
     };
-
-    const [showFromSelectionMenu, setShowFromSelectionMenu] = useState(false)
-    const [showToSelectionMenu, setShowToSelectionMenu] = useState(false)
-
-    const [tokensData, setTokensData] = useState<any>("")
-    const [amountIn, setAmountIn] = useState("")
-    const [fromTokenDecimal, setFromTokenDecimal] = useState<number>(0);
-
-
-    const [filterFromToken, setFilterFromToken] = useState("")
-    const [filterToToken, setFilterToToken] = useState("")
-
-    const [addToBatchLoading, setAddToBatchLoading] = useState(false)
-    const [showBatchList, setShowBatchList] = useState(true)
-
-    const [showIndividualBatchList, setShowIndividualBatchList] = useState<number | null>(null)
-    const [txhash, setTxHash] = useState("")
-    const [sendtxLoading, setSendtxLoading] = useState(false)
-    const [sendtxLoadingForEoa, setSendtxLoadingForEoa] = useState(false)
-
-    const [individualBatch, setIndividualBatch] = useState([
-        {
-            id: 0,
-            txHash: [{}],
-            data: {
-                fromNetwork: "Base",
-                toNetwork: "Polygon",
-                fromProtocol: "aavev2",
-                toProtocol: "aaev3",
-                fromToken: "aUSDC",
-                toToken: "aDAI",
-                amountIn: "0.5",
-            },
-        },
-        {
-            id: 1,
-            txHash: [{}],
-            data: {
-                fromNetwork: "Polygon",
-                toNetwork: "Etherum",
-                fromProtocol: "dForce",
-                toProtocol: "compoundv3",
-                fromToken: "dForceUSDC",
-                toToken: "cUSDC",
-                amountIn: "1.2",
-            },
-        },
-    ])
 
     useEffect(() => {
         if (selectedFromNetwork.chainName && selectedFromProtocol && selectedFromToken) {

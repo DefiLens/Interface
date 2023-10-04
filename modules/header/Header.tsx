@@ -42,7 +42,6 @@ const Header: React.FC<any> = ({
     const {
         selectedChain,
     } = useContext(ChainContext);
-        console.log("🚀 ~ file: Header.tsx:42 ~ selectedChain:", selectedChain)
 
     const address: any = useAddress(); // Detect the connected address
 
