@@ -270,28 +270,172 @@ export const uniswapSwapRouterByChainId = {
 };
 
 
+// export const protocolNames = {
+//     "base": {
+//         key: ["aaveV3", "compoundV3", "erc20"],
+//         value: ["AAVE V3", "Compound V3", "ERC20"],
+//     },
+//     "polygon": {
+//         key: ["aaveV2", "aaveV3", "compoundV3", "dForce", "erc20"],
+//         value: ["AAVE V2", "AAVE V3", "Compound V3", "dForce", "ERC20"],
+//     }
+// };
+
+
+// export const protocolByNetwork = {
+//     base: {
+//         aaveV3: ["aBasUSDbC", "aBasWETH"],
+//         compoundV3: ["cUSDbCv3"],
+//     },
+//     polygon: {
+//         aaveV2: ["aUSDC", "aUSDT", "aDAI", "aWETH", "aWMATIC", "aAAVE", "aWBTC"],
+//         aaveV3: ["aUSDCv3", "aUSDTv3", "aDAIv3", "aWETHv3", "aWMATICv3", "aAAVEv3", "aWBTCv3", "aBALv3"],
+//         compoundV3: ["cUSDC"],
+//         dForce: ["dForceUSDC"],
+//     }
+// };
+
 export const protocolNames = {
     "base": {
-        key: ["aaveV3", "compoundV3", "erc20"],
+        key: [
+            {
+                name: "aaveV3",
+                icon: ethereum,
+            },
+            {
+                name: "compoundV3",
+                icon: optimism,
+            },
+            {
+                name: "erc20",
+                icon: avalanche,
+            },
+        ],
         value: ["AAVE V3", "Compound V3", "ERC20"],
     },
     "polygon": {
-        key: ["aaveV2", "aaveV3", "compoundV3", "dForce", "erc20"],
+        key: [
+            {
+                name: "aaveV2",
+                icon: optimism,
+            },
+            {
+                name: "aaveV3",
+                icon: ethereum,
+            },
+            {
+                name: "compoundV3",
+                icon: avalanche,
+            },
+            {
+                name: "dForce",
+                icon: ethereum,
+            },
+            {
+                name: "erc20",
+                icon: optimism,
+            },
+        ],
         value: ["AAVE V2", "AAVE V3", "Compound V3", "dForce", "ERC20"],
     }
 };
 
-
 export const protocolByNetwork = {
     base: {
-        aaveV3: ["aBasUSDbC", "aBasWETH"],
-        compoundV3: ["cUSDbCv3"],
+        aaveV3: [
+            {
+                name: "aBasUSDbC",
+                icon: avalanche,
+            },
+            {
+                name: "aBasWETH",
+                icon: ethereum,
+            }
+        ],
+        compoundV3: [
+            {
+                name: "cUSDbCv3",
+                icon: optimism,
+            }
+        ],
     },
     polygon: {
-        aaveV2: ["aUSDC", "aUSDT", "aDAI", "aWETH", "aWMATIC", "aAAVE", "aWBTC"],
-        aaveV3: ["aUSDCv3", "aUSDTv3", "aDAIv3", "aWETHv3", "aWMATICv3", "aAAVEv3", "aWBTCv3", "aBALv3"],
-        compoundV3: ["cUSDC"],
-        dForce: ["dForceUSDC"],
+        aaveV2: [
+            {
+                name: "aUSDC",
+                icon: ethereum,
+            },
+            {
+                name: "aUSDT",
+                icon: optimism,
+            },
+            {
+                name: "aDAI",
+                icon: avalanche,
+            },
+            {
+                name: "aWETH",
+                icon: ethereum,
+            },
+            {
+                name: "aWMATIC",
+                icon: optimism,
+            },
+            {
+                name: "aAAVE",
+                icon: avalanche,
+            },
+            {
+                name: "aWBTC",
+                icon: optimism,
+            },
+        ],
+        aaveV3: [
+            {
+                name: "aUSDCv3",
+                icon: ethereum,
+            },
+            {
+                name: "aUSDTv3",
+                icon: optimism,
+            },
+            {
+                name: "aDAIv3",
+                icon: avalanche,
+            },
+            {
+                name: "aWETHv3",
+                icon: ethereum,
+            },
+            {
+                name: "aWMATICv3",
+                icon: optimism,
+            },
+            {
+                name: "aAAVEv3",
+                icon: avalanche,
+            },
+            {
+                name: "aWBTCv3",
+                icon: ethereum,
+            },
+            {
+                name: "aBALv3",
+                icon: optimism,
+            },
+        ],
+        compoundV3: [
+            {
+                name: "cUSDC",
+                icon: ethereum,
+            }
+        ],
+        dForce: [
+            {
+                name: "dForceUSDC",
+                icon: optimism,
+            }
+        ],
     }
 };
 

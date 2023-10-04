@@ -19,7 +19,7 @@ import { useGlobalStore, iGlobal } from "../../store/GlobalStore";
 import { useEoaProvider } from "../../hooks/aaProvider/useEoaProvider";
 import { useBiconomyProvider } from "../../hooks/aaProvider/useBiconomyProvider";
 import { protocolNames, protocolByNetwork, NETWORK_LIST } from "../../utils/constants";
-import { warning, swap, polygon, gas, downLine, bridgeCost, base } from "../../assets/images";
+import { warning, swap, polygon, gas, downLine, bridgeCost, base, optimism, arbitrum, avalanche, ethereum } from "../../assets/images";
 
 bg.config({ DECIMAL_PLACES: 10 });
 
@@ -129,7 +129,7 @@ const Trade: React.FC<any> = ({}: tTrade) => {
         async function onChangeselectedFromProtocol() {
             if (selectedFromProtocol) {
                 if (selectedFromProtocol === "erc20") {
-                    const tokensWithChainId = UNISWAP_TOKENS.tokens?.filter((token) => token.chainId === chain?.chainId);
+                    const tokensWithChainId = UNISWAP_TOKENS.tokens?.filter((token) => token.chainId === BigNumber.from(selectedFromNetwork.chainId).toNumber());
                     const filteredTokens = tokensWithChainId.map((token) => {
                         const { extensions, logoURI, ...filteredToken } = token;
                         return filteredToken;
@@ -409,10 +409,6 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                                         type="text"
                                         value={showFromSelectionMenu ? filterFromToken : filterToToken}
                                         onChange={showFromSelectionMenu
-
-
-
-
                                             ? (e) => setFilterFromToken(e.target.value)
                                             : (e) => setFilterToToken(e.target.value)
                                         }
@@ -424,42 +420,57 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                                 <div className="w-full overflow-auto flex flex-col justify-center items-center py-3">
                                     {showFromSelectionMenu && selectedFromNetwork.chainName && (
                                         <div className="w-full max-h-96">
-                                            {protocolNames[selectedFromNetwork.chainName]?.key.map((item: any, protocolIndex: any) => (
+                                            {protocolNames[selectedFromNetwork.chainName]?.key.map((item: any, protocolIndex: number) => (
                                                 <div
-                                                    key={item}
+                                                    key={item.name}
                                                     className="w-full"
                                                 >
                                                     <div
-                                                        key={item}
-                                                        onClick={() => setSelectedFromProtocol(item)}
+                                                        key={item.name}
+                                                        onClick={() => setSelectedFromProtocol(item.name)}
                                                         className="w-full flex justify-start items-center gap-3 hover:bg-slate-300 active:bg-slate-200 py-2 px-3 rounded-lg cursor-pointer"
                                                     >
+                                                        <Image
+                                                            src={item.icon}
+                                                            alt=""
+                                                            className="h-8 w-8 bg-slate-200 rounded-full cursor-pointer"
+                                                        />
                                                         <div>
                                                             {protocolNames[selectedFromNetwork.chainName].value[protocolIndex]}
                                                         </div>
                                                     </div>
 
-                                                    {selectedFromProtocol === item && (
+                                                    {selectedFromProtocol === item.name && (
                                                         <div className="bg-blue-200 rounded-lg p-3 my-1">
-                                                            {protocolByNetwork[selectedFromNetwork.chainName][selectedFromProtocol]?.map((token: any, tokenIndex: any) => (
+                                                            {protocolByNetwork[selectedFromNetwork.chainName][selectedFromProtocol]?.map((token: any, tokenIndex: number) => (
                                                                 <div
                                                                     key={tokenIndex}
-                                                                    onClick={() => setSelectedFromToken(token)}
+                                                                    onClick={() => setSelectedFromToken(token.name)}
                                                                     className="w-full flex justify-start items-center gap-3 hover:bg-slate-300 active:bg-slate-200 py-2 px-3 rounded-lg cursor-pointer"
                                                                 >
-                                                                    {token}
+                                                                    <Image
+                                                                        src={token.icon}
+                                                                        alt=""
+                                                                        className="h-7 w-7 bg-slate-200 rounded-full cursor-pointer"
+                                                                    />
+                                                                    {token.name}
                                                                 </div>
                                                             ))}
                                                         </div>
                                                     )}
                                                     {selectedFromProtocol === "erc20" && tokensData && (
                                                         <div className="bg-blue-200 rounded-lg p-3 my-1">
-                                                            {tokensData?.map((token: any, tokenIndex: any) => (
+                                                            {tokensData?.map((token: any, tokenIndex: number) => (
                                                                 <div
                                                                     key={tokenIndex}
                                                                     onClick={() => setSelectedFromToken(token.symbol)}
                                                                     className="w-full flex justify-start items-center gap-3 hover:bg-slate-300 active:bg-slate-200 py-2 px-3 rounded-lg cursor-pointer"
                                                                 >
+                                                                    <Image
+                                                                        src={optimism}
+                                                                        alt=""
+                                                                        className="h-7 w-7 bg-slate-200 rounded-full cursor-pointer"
+                                                                    />
                                                                     {token.symbol}
                                                                 </div>
                                                             ))}
@@ -472,41 +483,56 @@ const Trade: React.FC<any> = ({}: tTrade) => {
 
                                     {showToSelectionMenu && selectedToNetwork.chainName && (
                                         <div className="w-full max-h-96">
-                                            {protocolNames[selectedToNetwork.chainName]?.key.map((item: any, protocolIndex: any) => (
+                                            {protocolNames[selectedToNetwork.chainName]?.key.map((item: any, protocolIndex: number) => (
                                                 <div
-                                                    key={item}
+                                                    key={item.name}
                                                     className="w-full"
                                                 >
                                                     <div
-                                                        key={item}
-                                                        onClick={() => setSelectedToProtocol(item)}
+                                                        key={item.name}
+                                                        onClick={() => setSelectedToProtocol(item.name)}
                                                         className="w-full flex justify-start items-center gap-3 hover:bg-slate-300 active:bg-slate-200 py-2 px-3 rounded-lg cursor-pointer"
                                                     >
+                                                        <Image
+                                                            src={item.icon}
+                                                            alt=""
+                                                            className="h-8 w-8 bg-slate-200 rounded-full cursor-pointer"
+                                                        />
                                                         <div>
                                                             {protocolNames[selectedToNetwork.chainName].value[protocolIndex]}
                                                         </div>
                                                     </div>
-                                                    {selectedToProtocol === item && (
+                                                    {selectedToProtocol === item.name && (
                                                         <div className="bg-blue-200 rounded-lg p-3 my-1">
-                                                            {protocolByNetwork[selectedToNetwork.chainName][selectedToProtocol]?.map((token: any, tokenIndex: any) => (
+                                                            {protocolByNetwork[selectedToNetwork.chainName][selectedToProtocol]?.map((token: any, tokenIndex: number) => (
                                                                 <div
                                                                     key={tokenIndex}
-                                                                    onClick={() => setSelectedToToken(token)}
+                                                                    onClick={() => setSelectedToToken(token.name)}
                                                                     className="w-full flex justify-start items-center gap-3 hover:bg-slate-300 active:bg-slate-200 py-2 px-3 rounded-lg cursor-pointer"
                                                                 >
-                                                                    {token}
+                                                                    <Image
+                                                                        src={token.icon}
+                                                                        alt=""
+                                                                        className="h-7 w-7 bg-slate-200 rounded-full cursor-pointer"
+                                                                    />
+                                                                    {token.name}
                                                                 </div>
                                                             ))}
                                                         </div>
                                                     )}
                                                     {selectedToProtocol === "erc20" && tokensData && (
                                                         <div className="bg-blue-200 rounded-lg p-3 my-1">
-                                                            {tokensData?.map((token: any, tokenIndex: any) => (
+                                                            {tokensData?.map((token: any, tokenIndex: number) => (
                                                                 <div
                                                                     key={tokenIndex}
                                                                     onClick={() => setSelectedToToken(token.symbol)}
                                                                     className="w-full flex justify-start items-center gap-3 hover:bg-slate-300 active:bg-slate-200 py-2 px-3 rounded-lg cursor-pointer"
                                                                 >
+                                                                    <Image
+                                                                        src={avalanche}
+                                                                        alt=""
+                                                                        className="h-7 w-7 bg-slate-200 rounded-full cursor-pointer"
+                                                                    />
                                                                     {token.symbol}
                                                                 </div>
                                                             ))}
@@ -553,7 +579,7 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                                                         src={selectedFromNetwork.icon}
                                                         alt=""
                                                         className="h-12 w-12 bg-slate-200 rounded-full cursor-pointer"
-                                                        />
+                                                    />
                                                     <div className="absolute -bottom-1 -right-1 bg-white h-6 w-6 flex justify-center items-center rounded-full">
                                                         <Image
                                                             src={selectedFromNetwork.icon}
