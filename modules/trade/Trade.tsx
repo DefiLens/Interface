@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { BigNumber } from "ethers";
+import { toast } from "react-hot-toast";
 import { BigNumber as bg } from "bignumber.js";
 
 import Image from "next/image";
@@ -11,19 +12,19 @@ import { MdDelete, MdOutlineArrowBack } from "react-icons/md";
 import { MdKeyboardArrowDown, MdKeyboardArrowUp } from "react-icons/md";
 
 import { tTrade } from "./types";
-import { getProvider } from "../../utils/web3Libs/ethers";
-import { buildTxHash, shorten } from "../../utils/helper";
+import IERC20 from "../../abis/IERC20.json";
 import UNISWAP_TOKENS from "../../abis/tokens/Uniswap.json";
-import { iTrade, useTradeStore } from "../../store/TradeStore";
 import { useRefinance } from "../../hooks/Batching/useRefinance";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import { useEoaProvider } from "../../hooks/aaProvider/useEoaProvider";
+import { buildTxHash, setSafeState, shorten } from "../../utils/helper";
+import { iSelectedNetwork, iTrade, useTradeStore } from "../../store/TradeStore";
 import { useBiconomyProvider } from "../../hooks/aaProvider/useBiconomyProvider";
-import { NETWORK_LIST, protocolByNetwork, protocolNames } from "../../utils/constants";
 import { avalanche, base, bridgeCost, downLine, gas, optimism, polygon, swap, warning } from "../../assets/images";
+import { getContractInstance, getErc20Balanceof, getErc20Decimals, getProvider } from "../../utils/web3Libs/ethers";
+import { BIG_ZERO, NETWORK_LIST, protocolByNetwork, protocolNames, tokenAddressByProtocol } from "../../utils/constants";
 
 bg.config({ DECIMAL_PLACES: 10 });
-
 
 const Trade: React.FC<any> = ({}: tTrade) => {
 
@@ -61,6 +62,10 @@ const Trade: React.FC<any> = ({}: tTrade) => {
         setAmountIn,
         fromTokenDecimal,
         setFromTokenDecimal,
+        fromTokenBalanceForSCW,
+        setFromTokenBalanceForSCW,
+        fromTokenBalanceForEOA,
+        setFromTokenBalanceForEOA,
         filterFromToken,
         setFilterFromToken,
         filterToToken,
@@ -73,16 +78,22 @@ const Trade: React.FC<any> = ({}: tTrade) => {
         setShowIndividualBatchList,
         txhash,
         setTxHash,
-        sendtxLoading,
-        setSendtxLoading,
-        sendtxLoadingForEoa,
-        setSendtxLoadingForEoa,
+        sendTxLoading,
+        setSendTxLoading,
+        sendTxLoadingForEoa,
+        setSendTxLoadingForEoa,
         individualBatch,
         setIndividualBatch,
     }: iTrade = useTradeStore((state) => state);
-
-    const handleSelectFromNetwork = (data: any) => {
-        setSelectedFromNetwork(data)
+    
+    console.log("🚀 ~ file: Trade.tsx:86 ~ individualBatch:", individualBatch)
+    
+    const handleSelectFromNetwork = (_fromnetwork: iSelectedNetwork) => {
+        if (selectedFromNetwork.chainName !== _fromnetwork.chainName) {
+            // switchOnSpecificChain(_fromnetwork.chainName)
+            setSelectedFromNetwork(_fromnetwork)
+        }
+        setSelectedFromNetwork(_fromnetwork)
     };
 
     const handleSelectToNetwork = (data: any) => {
@@ -104,7 +115,25 @@ const Trade: React.FC<any> = ({}: tTrade) => {
     useEffect(() => {
         async function onChangeselectedFromProtocol() {
             if (selectedFromProtocol) {
-                if (selectedFromProtocol === "erc20") {
+                if (selectedFromProtocol !== "erc20") {
+                    setAmountIn("");
+                    setFromTokenDecimal(0);
+                    // setFromTokenBalanceForSCW(BIG_ZERO);
+                    // setFromTokenBalanceForEOA(BIG_ZERO);
+                    
+                    const firstFromToken = protocolByNetwork[selectedFromNetwork.chainName][selectedFromProtocol][0].name;
+                    setSelectedFromToken(firstFromToken);
+                    
+                    const provider = await getProvider(selectedFromNetwork.chainId);
+                    const tokenAddress = tokenAddressByProtocol[selectedFromNetwork.chainName][selectedFromProtocol][firstFromToken];
+                    const erc20 = await getContractInstance(tokenAddress, IERC20, provider);
+                    // const scwBalance = await getErc20Balanceof(erc20, smartAccount?.address);
+                    // const eoaBalance = await getErc20Balanceof(erc20, address);
+                    const fromTokendecimal = await getErc20Decimals(erc20);
+                    setSafeState(setFromTokenDecimal, fromTokendecimal, 0);
+                    // setSafeState(setFromTokenBalanceForSCW, BigNumber.from(scwBalance), BIG_ZERO);
+                    // setSafeState(setFromTokenBalanceForEOA, BigNumber.from(eoaBalance), BIG_ZERO);
+                } else {
                     const tokensWithChainId = UNISWAP_TOKENS.tokens?.filter((token) => token.chainId === BigNumber.from(selectedFromNetwork.chainId).toNumber());
                     const filteredTokens = tokensWithChainId.map((token) => {
                         const { extensions, logoURI, ...filteredToken } = token;
@@ -132,6 +161,95 @@ const Trade: React.FC<any> = ({}: tTrade) => {
         }
         onChangeselectedToProtocol();
     }, [selectedToProtocol]);
+
+    const onChangeFromProtocol = async (_fromProtocol: string) => {
+        if (addToBatchLoading) {
+            toast.error("wait, tx loading");
+            return;
+        }
+        if (!(selectedFromNetwork.chainName == "polygon" || selectedFromNetwork.chainName == "base")) {
+            toast.error("Batching is only supported on polygon and base as of now");
+            return;
+        }
+        setSelectedFromProtocol(_fromProtocol);
+    };
+
+    const onChangeFromToken = async (_fromToken: string) => {
+        if (addToBatchLoading) {
+            toast.error("wait, tx loading");
+            return;
+        }
+        if (!(selectedFromNetwork.chainName == "polygon" || selectedFromNetwork.chainName == "base")) {
+            toast.error("Batching is only supported on polygon and base as of now");
+            return;
+        }
+        if (!selectedFromProtocol) {
+            toast.error("select from protocol");
+            return;
+        }
+        setAmountIn("");
+        setFromTokenDecimal(0);
+        // setFromTokenBalanceForSCW(BIG_ZERO);
+        // setFromTokenBalanceForEOA(BIG_ZERO);
+
+        setSelectedFromToken(_fromToken);
+        const provider = await getProvider(selectedFromNetwork.chainId);
+
+        const erc20Address: any =
+            selectedFromProtocol == "erc20" ? tokensData.filter((token: any) => token.symbol === _fromToken) : "";
+        const tokenAddress =
+            selectedFromProtocol != "erc20"
+                ? tokenAddressByProtocol[selectedFromNetwork.chainName][selectedFromProtocol][_fromToken]
+                : erc20Address[0].address;
+        const erc20 = await getContractInstance(tokenAddress, IERC20, provider);
+        // const scwBalance = await getErc20Balanceof(erc20, smartAccount.address);
+        // const eoaBalance = await getErc20Balanceof(erc20, address);
+        const fromTokendecimal = await getErc20Decimals(erc20);
+        setSafeState(setFromTokenDecimal, fromTokendecimal, 0);
+        // setSafeState(setFromTokenBalanceForSCW, BigNumber.from(scwBalance), BIG_ZERO);
+        // setSafeState(setFromTokenBalanceForEOA, BigNumber.from(eoaBalance), BIG_ZERO);
+    };
+
+    const onChangeToProtocol = async (_toProtocol: string) => {
+        if (addToBatchLoading) {
+            toast.error("wait, tx loading");
+            return;
+        }
+        if (!(selectedFromNetwork.chainName == "polygon" || selectedFromNetwork.chainName == "base")) {
+            toast.error("Batching is only supported on polygon and base as of now");
+            return;
+        }
+        setSelectedToProtocol(_toProtocol);
+    };
+
+    const onChangeToToken = async (_toToken: string) => {
+        if (addToBatchLoading) {
+            toast.error("wait, tx loading");
+            return;
+        }
+        if (!(selectedFromNetwork.chainName == "polygon" || selectedFromNetwork.chainName == "base")) {
+            toast.error("Batching is only supported on polygon and base as of now");
+            return;
+        }
+        setSelectedToToken(_toToken);
+    };
+
+    const onChangeAmountIn = async (_amountIn: string) => {
+        if (addToBatchLoading) {
+            toast.error('wait, tx loading');
+            return;
+        }
+        if (!(selectedFromNetwork.chainName == "polygon" || selectedFromNetwork.chainName == "base")) {
+            throw "Batching is only supported on polygon as of now";
+        }
+        if (_amountIn && fromTokenDecimal) {
+            let amountInByDecimals = bg(_amountIn.toString());
+            amountInByDecimals = amountInByDecimals.multipliedBy(bg(10).pow(fromTokenDecimal));
+            setAmountIn(_amountIn);
+        } else {
+            setAmountIn("");
+        }
+    };
 
     const handleSwap = () => {
         let tempNetwork = selectedFromNetwork;
@@ -175,7 +293,7 @@ const Trade: React.FC<any> = ({}: tTrade) => {
 
     const updateInputValues = (index: number, txHash: string[], data: any) => {
         console.log("data: ", data, individualBatch);
-        if (txHash.length < 1) return alert("Please complete the last input before adding a new one.");
+        if (txHash.length < 1) return toast.error("Please complete the last input before adding a new one.");
         if (individualBatch.length == 0) {
             setIndividualBatch([
                 ...individualBatch,
@@ -223,55 +341,56 @@ const Trade: React.FC<any> = ({}: tTrade) => {
         }
     };
 
-    const onChangeAmountIn = async (_amountIn: any) => {
-        if (addToBatchLoading) {
-            alert("wait, tx loading");
-            return;
-        }
-        if (!(selectedFromNetwork.chainName == "polygon" || selectedFromNetwork.chainName == "base")) {
-            throw "Batching is only supported on polygon as of now";
-        }
-        if (_amountIn && !fromTokenDecimal) {
-            let amountInByDecimals = bg(_amountIn.toString());
-            amountInByDecimals = amountInByDecimals.multipliedBy(bg(10).pow(fromTokenDecimal));
-            setAmountIn(_amountIn);
-        } else {
-            setAmountIn("");
-        }
-    };
-
-    const sendBatch = async (isSCW: any) => {
+    const sendSingleBatchToList = async (isSCW: any) => {
         try {
             if (isSCW) {
                 setAddToBatchLoading(true);
             }
             if (selectedFromToken == selectedToToken) {
-                throw "fromToken and toToken should not same";
+                toast.error("fromToken and toToken should not same");
+                setAddToBatchLoading(false);
+                return;
             }
             if (!(selectedFromNetwork.chainName == "polygon" || selectedFromNetwork.chainName == "base")) {
-                throw "Batching is only supported on polygon as of now";
+                toast.error("Batching is only supported on polygon as of now");
+                setAddToBatchLoading(false);
+                return;
+            }
+            if ((amountIn.length > 0) && (scwBalance < amountIn)) {
+                toast.error("You don't have enough funds to complete transaction");
+                setAddToBatchLoading(false);
+                return;
             }
             if (addToBatchLoading) {
-                throw "wait, tx loading";
+                toast.error("wait, tx loading");
+                setAddToBatchLoading(false);
+                return;
             }
             if (!selectedFromProtocol) {
-                throw "select from protocol";
+                toast.error("select from protocol");
+                setAddToBatchLoading(false);
+                return;
             }
             if (!selectedFromToken) {
-                throw "select fromToken";
+                toast.error("select fromToken");
+                setAddToBatchLoading(false);
+                return;
             }
             if (!selectedToProtocol) {
-                throw "select to protocol";
+                toast.error("select to protocol");
+                setAddToBatchLoading(false);
+                return;
             }
             if (!selectedToToken) {
-                throw "select toToken";
+                toast.error("select toToken");
+                setAddToBatchLoading(false);
+                return;
             }
-            if (!amountIn) {
-                throw "select amountIn";
+            if (!amountIn && fromTokenDecimal) {
+                toast.error("select amountIn");
+                setAddToBatchLoading(false);
+                return;
             }
-            // if (!fromTokenDecimal) {
-            //     throw "select amountIn";
-            // }
             const provider = await getProvider(selectedFromNetwork.chainId);
             console.log(
                 "refinanceamoynt",
@@ -298,10 +417,10 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                 {
                     fromNetwork: selectedFromNetwork.chainName,
                     toNetwork: selectedToNetwork.chainName,
-                    selectedFromProtocol,
-                    selectedToProtocol,
-                    selectedFromToken,
-                    selectedToToken,
+                    fromProtocol: selectedFromProtocol,
+                    toProtocol: selectedToProtocol,
+                    fromToken: selectedFromToken,
+                    toToken: selectedToToken,
                     amountIn: amountIn,
                 }
             )
@@ -316,12 +435,12 @@ const Trade: React.FC<any> = ({}: tTrade) => {
         }
     };
 
-    const sendBatchAll = async (isSCW: any) => {
+    const ExecuteAllBatches = async (isSCW: any) => {
         try {
             if (isSCW) {
-                setSendtxLoading(true);
+                setSendTxLoading(true);
             } else {
-                setSendtxLoadingForEoa(true);
+                setSendTxLoadingForEoa(true);
             }
             const mergeArray: any = [];
             await individualBatch.map((bar) => bar.txHash.map((hash) => mergeArray.push(hash)));
@@ -335,12 +454,12 @@ const Trade: React.FC<any> = ({}: tTrade) => {
             if (tempTxhash) {
                 setTxHash(tempTxhash);
             }
-            setSendtxLoading(false);
-            setSendtxLoadingForEoa(false);
+            setSendTxLoading(false);
+            setSendTxLoadingForEoa(false);
             addBatch();
         } catch (error) {
-            setSendtxLoading(false);
-            setSendtxLoadingForEoa(false);
+            setSendTxLoading(false);
+            setSendTxLoadingForEoa(false);
         }
     };
 
@@ -403,7 +522,8 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                                                 >
                                                     <div
                                                         key={item.name}
-                                                        onClick={() => setSelectedFromProtocol(item.name)}
+                                                        // onClick={() => setSelectedFromProtocol(item.name)}
+                                                        onClick={() => onChangeFromProtocol(item.name)}
                                                         className="w-full flex justify-start items-center gap-3 hover:bg-slate-300 active:bg-slate-200 py-2 px-3 rounded-lg cursor-pointer"
                                                     >
                                                         <Image
@@ -421,7 +541,8 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                                                             {protocolByNetwork[selectedFromNetwork.chainName][selectedFromProtocol]?.map((token: any, tokenIndex: number) => (
                                                                 <div
                                                                     key={tokenIndex}
-                                                                    onClick={() => setSelectedFromToken(token.name)}
+                                                                    // onClick={() => setSelectedFromToken(token.name)}
+                                                                    onClick={() => onChangeFromToken(token.name)}
                                                                     className="w-full flex justify-start items-center gap-3 hover:bg-slate-300 active:bg-slate-200 py-2 px-3 rounded-lg cursor-pointer"
                                                                 >
                                                                     <Image
@@ -439,7 +560,8 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                                                             {tokensData?.map((token: any, tokenIndex: number) => (
                                                                 <div
                                                                     key={tokenIndex}
-                                                                    onClick={() => setSelectedFromToken(token.symbol)}
+                                                                    // onClick={() => setSelectedFromToken(token.symbol)}
+                                                                    onClick={() => onChangeFromToken(token.symbol)}
                                                                     className="w-full flex justify-start items-center gap-3 hover:bg-slate-300 active:bg-slate-200 py-2 px-3 rounded-lg cursor-pointer"
                                                                 >
                                                                     <Image
@@ -466,7 +588,8 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                                                 >
                                                     <div
                                                         key={item.name}
-                                                        onClick={() => setSelectedToProtocol(item.name)}
+                                                        // onClick={() => setSelectedToProtocol(item.name)}
+                                                        onClick={() => onChangeToProtocol(item.name)}
                                                         className="w-full flex justify-start items-center gap-3 hover:bg-slate-300 active:bg-slate-200 py-2 px-3 rounded-lg cursor-pointer"
                                                     >
                                                         <Image
@@ -483,7 +606,8 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                                                             {protocolByNetwork[selectedToNetwork.chainName][selectedToProtocol]?.map((token: any, tokenIndex: number) => (
                                                                 <div
                                                                     key={tokenIndex}
-                                                                    onClick={() => setSelectedToToken(token.name)}
+                                                                    // onClick={() => setSelectedToToken(token.name)}
+                                                                    onClick={() => onChangeToToken(token.name)}
                                                                     className="w-full flex justify-start items-center gap-3 hover:bg-slate-300 active:bg-slate-200 py-2 px-3 rounded-lg cursor-pointer"
                                                                 >
                                                                     <Image
@@ -501,7 +625,8 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                                                             {tokensData?.map((token: any, tokenIndex: number) => (
                                                                 <div
                                                                     key={tokenIndex}
-                                                                    onClick={() => setSelectedToToken(token.symbol)}
+                                                                    // onClick={() => setSelectedToToken(token.symbol)}
+                                                                    onClick={() => onChangeToToken(token.symbol)}
                                                                     className="w-full flex justify-start items-center gap-3 hover:bg-slate-300 active:bg-slate-200 py-2 px-3 rounded-lg cursor-pointer"
                                                                 >
                                                                     <Image
@@ -744,14 +869,23 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                                     </div>
                                 )}
 
-                                <div className="w-full flex justify-center items-center gap-3">
+                                <div className="w-full flex flex-col justify-center items-center gap-3">
                                     <button
                                         type="button"
-                                        onClick={() => sendBatch(true)}
+                                        onClick={() => sendSingleBatchToList(true)}
                                         className="w-full flex justify-center items-center gap-2 bg-purple-900 hover:bg-purple-950 py-2 px-5 rounded-full text-white font-medium border-b-4 border-purple-950 transition duration-300"
                                     >
                                         {addToBatchLoading && <ImSpinner className="animate-spin h-5 w-5" />}
                                         Add Batch to List
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => ExecuteAllBatches(true)}
+                                        className="w-full flex justify-center items-center gap-2 bg-purple-900 hover:bg-purple-950 py-2 px-5 rounded-full text-white font-medium border-b-4 border-purple-950 transition duration-300"
+                                    >
+                                        {sendTxLoading && <ImSpinner className="animate-spin h-5 w-5" />}
+                                        Execute Batch
+                    
                                     </button>
                                 </div>
                                 {/* ---------- Add Batch o List Section END ---------- */}
@@ -764,7 +898,7 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                 {showBatchList && (
                     <div className="w-full bg-gray-50 flex flex-col justify-start items-center gap-1 shadow-md shadow-primary-950 rounded-2xl cursor-pointer">
                         <h1 className="w-full bg-purple-950 text-white text-lg md:text-xl lg:text-2xl text-center font-bold rounded-t-2xl p-5">
-                            Batchig List
+                            Batching List
                         </h1>
                         <div className="w-full flex flex-col gap-5 px-5 py-7">
                         {txhash && (
@@ -824,7 +958,7 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                                                                     {bar.data.amountIn}
                                                                 </span>
                                                                 <span className="text-base md:text-lg font-semibold text-slate-700">
-                                                                    {bar.data.fromProtocol} on {bar.data.fromNetwork}
+                                                                   {bar.data.fromProtocol} on {bar.data.fromNetwork}
                                                                 </span>
                                                             </div>
                                                         </div>

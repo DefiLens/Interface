@@ -1,14 +1,13 @@
-import React, { useState, useRef } from 'react';
+import React, { useRef, useState } from 'react';
 
 import Image from 'next/image';
 
 import { tSelectNetwork } from './types';
 import useClickOutside from '../../hooks/useClickOutside';
-import { useTradeStore, iTrade } from '../../store/TradeStore';
-import { NETWORK_LIST, buttonStyle } from '../../utils/constants';
+import { iTrade, useTradeStore } from '../../store/TradeStore';
+import { buttonStyle, NETWORK_LIST } from '../../utils/constants';
 
 const SelectNetwork = ({
-  selectedChain,
   switchOnSpecificChain,
 }: tSelectNetwork) => {
 
@@ -20,11 +19,9 @@ const SelectNetwork = ({
     selectedFromNetwork,
   }: iTrade = useTradeStore((state) => state);
   
-  console.log("🚀  selectedFromNetwork:", selectedFromNetwork)
   const handleSelectNetwork = (data: any) => {
     setShowSelectNetworkList(!showSelectNetworkList);
-    if (selectedChain !== data.chainName) {
-      console.log("🚀 ~  switchOnSpecificChain:", switchOnSpecificChain)
+    if (selectedFromNetwork.chainName !== data.chainName) {
       switchOnSpecificChain(data.chainName)
     }
   };

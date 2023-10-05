@@ -1,24 +1,27 @@
-import { parseUnits } from "ethers/lib/utils";
-import { useMutation } from "@tanstack/react-query";
-import { SwapType, AlphaRouter } from "@uniswap/smart-order-router";
-import { TradeType, Token, Percent, CurrencyAmount } from "@uniswap/sdk-core";
-
-import IERC20 from "../abis/IERC20.json";
-import { _nonce, _functionType, uniswapSwapRouterByChainId } from "../utils/constants";
-import { getProvider, getErc20Decimals, getErc20Data, getContractInstance } from "../utils/web3Libs/ethers";
-import React from "react";
-import ChainContext from "../Context/ChainContext";
 import { BigNumber } from "ethers";
 
+import { parseUnits } from "ethers/lib/utils";
+import { useMutation } from "@tanstack/react-query";
+import { AlphaRouter, SwapType } from "@uniswap/smart-order-router";
+import { CurrencyAmount, Percent, Token, TradeType } from "@uniswap/sdk-core";
+
+import IERC20 from "../abis/IERC20.json";
+import ChainContext from "../Context/ChainContext";
+import { iTrade, useTradeStore } from "../store/TradeStore";
+import { _functionType, _nonce, uniswapSwapRouterByChainId } from "../utils/constants";
+import { getContractInstance, getErc20Data, getErc20Decimals, getProvider } from "../utils/web3Libs/ethers";
+
 export function useUniswap() {
-    const { selectedChainId } = React.useContext(ChainContext);
+    // const { selectedChainId } = React.useContext(ChainContext);
+    const { selectedFromNetwork }: iTrade = useTradeStore((state) => state);
+
 
     async function swap({ tokenIn, tokenOut, amountIn, address, type }: any) {
         try {
-            const web3JsonProvider = await getProvider(selectedChainId);
+            const web3JsonProvider = await getProvider(selectedFromNetwork.chainId);
             if (!web3JsonProvider) throw "No provider";
             const router = new AlphaRouter({
-                chainId: BigNumber.from(selectedChainId).toNumber(),
+                chainId: BigNumber.from(selectedFromNetwork.chainId).toNumber(),
                 provider: web3JsonProvider,
             });
 
@@ -49,8 +52,8 @@ export function useUniswap() {
                 type: SwapType.SWAP_ROUTER_02,
             };
 
-            const currencyIn = new Token(BigNumber.from(selectedChainId).toNumber(), tokenIn, tokenInDecimals);
-            const currencyOut = new Token(BigNumber.from(selectedChainId).toNumber(), tokenOut, tokenOutDecimals);
+            const currencyIn = new Token(BigNumber.from(selectedFromNetwork.chainId).toNumber(), tokenIn, tokenInDecimals);
+            const currencyOut = new Token(BigNumber.from(selectedFromNetwork.chainId).toNumber(), tokenOut, tokenOutDecimals);
 
             const baseCurrency = type === "exactIn" ? currencyIn : currencyOut;
             const quoteCurrency = type === "exactIn" ? currencyOut : currencyIn;
@@ -68,7 +71,7 @@ export function useUniswap() {
             amountOutprice = parseUnits(amountOutprice, tokenOutDecimals);
             console.log("amountOutprice", amountOutprice.toString());
             const swapTx = {
-                to: uniswapSwapRouterByChainId[selectedChainId],
+                to: uniswapSwapRouterByChainId[selectedFromNetwork.chainId],
                 data: route.methodParameters?.calldata,
             };
             console.log("swapUniV3-swapTx", swapTx);

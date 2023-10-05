@@ -4,17 +4,17 @@ import { useContext } from "react";
 import { toast } from "react-hot-toast";
 import { BigNumber as bg } from "bignumber.js";
 
-import { IBundler, Bundler } from "@biconomy/bundler";
-import { IPaymaster, BiconomyPaymaster } from "@biconomy/paymaster";
-import { DEFAULT_ENTRYPOINT_ADDRESS, BiconomySmartAccountConfig, BiconomySmartAccount } from "@biconomy/account";
-import { useSwitchChain, useSigner, useConnect, useChain, useAddress, metamaskWallet } from "@thirdweb-dev/react";
+import { Bundler, IBundler } from "@biconomy/bundler";
+import { BiconomyPaymaster, IPaymaster } from "@biconomy/paymaster";
+import { BiconomySmartAccount, BiconomySmartAccountConfig, DEFAULT_ENTRYPOINT_ADDRESS } from "@biconomy/account";
+import { metamaskWallet, useAddress, useChain, useConnect, useSigner, useSwitchChain } from "@thirdweb-dev/react";
 
 import Header from "./Header";
 import ChainContext from "../../Context/ChainContext";
-import { useGlobalStore, iGlobal } from "../../store/GlobalStore";
-import { paymasterURLs, bundlerURLs, NetworkLogoByChainId } from "../../utils/constants";
-import { useCalculatebalance } from "../../hooks/useCalculateBalance";
 import { iTrade, useTradeStore } from "../../store/TradeStore";
+import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
+import { useCalculatebalance } from "../../hooks/useCalculateBalance";
+import { bundlerURLs, NetworkLogoByChainId, paymasterURLs } from "../../utils/constants";
 import { arbitrum, avalanche, base, ethereum, optimism, polygon } from "../../assets/images";
 
 bg.config({ DECIMAL_PLACES: 5 });
@@ -33,10 +33,11 @@ const HeaderContainer: React.FC<any> = () => {
         setSelectedFromNetwork,
     }: iTrade = useTradeStore((state) => state);
 
-    const {
-        setSelectedChain,
-        setSelectedChainId
-    } = useContext(ChainContext);
+    // const {
+    //     setSelectedChain,
+    //     setSelectedChainId
+    // } = useContext(ChainContext);
+
     const { mutateAsync: fetchNativeBalance } = useCalculatebalance();
     const switchChain = useSwitchChain();
     const metamaskConfig = metamaskWallet();
@@ -55,13 +56,29 @@ const HeaderContainer: React.FC<any> = () => {
                 console.log("_smartAccount_", _smartAccount);
                 // @ts-ignore
                 await isNetworkCorrect(chain?.chainId, _smartAccount.address);
-                setSelectedChain?.(chain.slug);
-                setSelectedChainId?.(chain?.chainId.toString());
+
+                setSelectedFromNetwork({
+                    key: chain?.chain,
+                    chainName: chain?.slug,
+                    chainId: chain?.chainId.toString(),
+                    icon: NetworkLogoByChainId[chain?.chainId.toString()],
+                })
+
+                // setSelectedChain?.(chain.slug);
+                // setSelectedChainId?.(chain?.chainId.toString());
             } else {
                 setSmartAccount(null)
                 setConnected(false)
-                setSelectedChain("")
-                setSelectedChainId("")
+
+                setSelectedFromNetwork({
+                    key: '',
+                    chainName: '',
+                    chainId: '',
+                    icon: '',
+                })
+
+                // setSelectedChain("")
+                // setSelectedChainId("")
                 console.log("Metamask logout", address)
             }
         }
@@ -225,7 +242,7 @@ const HeaderContainer: React.FC<any> = () => {
     //     }
     // }
 
-    const switchOnSpecificChain = async (chainName) => {
+   const switchOnSpecificChain = async (chainName: string) => {
         try {
             setLoading(true);
             setSmartAccount(null);
@@ -238,7 +255,7 @@ const HeaderContainer: React.FC<any> = () => {
         }
     };
 
-    async function changeChain(chainName) {
+   const changeChain = async (chainName: string) => {
         try {
             await handleConnect();
             if (chain?.slug != chainName) {
@@ -256,8 +273,8 @@ const HeaderContainer: React.FC<any> = () => {
                         icon: polygon,
                     })
 
-                    setSelectedChain?.(chainName);
-                    setSelectedChainId?.("137");
+                    // setSelectedChain?.(chainName);
+                    // setSelectedChainId?.("137");
                 } else if (chainName == "arbitrum") {
                     await switchChain?.(42161);
                     const _smartAccount = await login(42161);
@@ -271,8 +288,8 @@ const HeaderContainer: React.FC<any> = () => {
                         icon: arbitrum,
                     })
 
-                    setSelectedChain?.(chainName);
-                    setSelectedChainId?.("42161");
+                    // setSelectedChain?.(chainName);
+                    // setSelectedChainId?.("42161");
                 } else if (chainName == "avalanche") {
                     await switchChain(43114);
                     const _smartAccount = await login(43114);
@@ -286,8 +303,8 @@ const HeaderContainer: React.FC<any> = () => {
                         icon: avalanche,
                     })
 
-                    setSelectedChain?.(chainName);
-                    setSelectedChainId?.("43114");
+                    // setSelectedChain?.(chainName);
+                    // setSelectedChainId?.("43114");
                 } else if (chainName == "optimism") {
                     await switchChain?.(10);
                     const _smartAccount = await login(10);
@@ -301,8 +318,8 @@ const HeaderContainer: React.FC<any> = () => {
                         icon: optimism,
                     })
                     
-                    setSelectedChain?.(chainName);
-                    setSelectedChainId?.("10");
+                    // setSelectedChain?.(chainName);
+                    // setSelectedChainId?.("10");
                 } else if (chainName == "ethereum") {
                     await switchChain(1);
                     const _smartAccount = await login(1);
@@ -316,8 +333,8 @@ const HeaderContainer: React.FC<any> = () => {
                         icon: ethereum,
                     })
 
-                    setSelectedChain?.(chainName);
-                    setSelectedChainId?.("1");
+                    // setSelectedChain?.(chainName);
+                    // setSelectedChainId?.("1");
                 } else if (chainName == "base") {
                     await switchChain?.(8453);
                     const _smartAccount = await login(8453);
@@ -331,8 +348,8 @@ const HeaderContainer: React.FC<any> = () => {
                         icon: base,
                     })
 
-                    setSelectedChain?.(chainName);
-                    setSelectedChainId?.("8453");
+                    // setSelectedChain?.(chainName);
+                    // setSelectedChainId?.("8453");
                 }
             } else {
                 if (chain) {
@@ -346,8 +363,8 @@ const HeaderContainer: React.FC<any> = () => {
                         icon: NetworkLogoByChainId[chain?.chainId.toString()],
                     })
 
-                    setSelectedChain?.(chain?.slug);
-                    setSelectedChainId?.(chain?.chainId.toString());
+                    // setSelectedChain?.(chain?.slug);
+                    // setSelectedChainId?.(chain?.chainId.toString());
                     // @ts-ignore
                     await isNetworkCorrect(chain?.chainId, _smartAccount.address);
                 }

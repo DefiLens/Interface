@@ -1,4 +1,4 @@
-import { useRef, useContext } from "react";
+import { useContext, useRef } from "react";
 
 import Link from "next/link";
 import Image from "next/image";
@@ -13,11 +13,12 @@ import { TbSquareRoundedChevronDownFilled } from "react-icons/tb";
 import { tHeader } from "./types";
 import { copyToClipboard } from "../../utils/helper";
 import ChainContext from "../../Context/ChainContext";
-import { wallet, metamask } from "../../assets/images";
+import { metamask, wallet } from "../../assets/images";
 import useClickOutside from "../../hooks/useClickOutside";
 import TransferContainer from "../transfer/TransferContainer";
-import { useGlobalStore, iGlobal } from "../../store/GlobalStore";
-import { NavigationList, gasFeesNames } from "../../utils/constants";
+import { iTrade, useTradeStore } from "../../store/TradeStore";
+import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
+import { gasFeesNames, NavigationList } from "../../utils/constants";
 import SelectNetwork from "../../components/SelectNetwork/SelectNetwork";
 
 const Header: React.FC<any> = ({
@@ -40,8 +41,12 @@ const Header: React.FC<any> = ({
     }: iGlobal = useGlobalStore((state) => state);
 
     const {
-        selectedChain,
-    } = useContext(ChainContext);
+        selectedFromNetwork,
+    }: iTrade = useTradeStore((state) => state);
+
+    // const {
+    //     selectedChain,
+    // } = useContext(ChainContext);
 
     const address: any = useAddress(); // Detect the connected address
 
@@ -207,7 +212,7 @@ const Header: React.FC<any> = ({
                                                     "SmartAccount : (" +
                                                         scwBalance +
                                                         " " +
-                                                        `${gasFeesNames[selectedChain]}` +
+                                                        `${gasFeesNames[selectedFromNetwork.chainName]}` +
                                                         ")"}
                                             </span>
                                         </div>
@@ -230,7 +235,7 @@ const Header: React.FC<any> = ({
                                                     "EOA : (" +
                                                         eoaBalance +
                                                         " " +
-                                                        `${gasFeesNames[selectedChain]}` +
+                                                        `${gasFeesNames[selectedFromNetwork.chainName]}` +
                                                         ")"}
                                             </span>
                                         </div>
@@ -247,7 +252,6 @@ const Header: React.FC<any> = ({
                     )}
 
                     <SelectNetwork
-                        selectedChain={selectedChain}
                         switchOnSpecificChain={switchOnSpecificChain}
                     />
                     

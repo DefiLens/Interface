@@ -9,39 +9,27 @@ import { FiCopy } from "react-icons/fi";
 import { FaChevronDown } from "react-icons/fa";
 import { ChainId } from "@biconomy/core-types";
 import { HiOutlineRefresh } from "react-icons/hi";
-import { IBundler, Bundler } from "@biconomy/bundler";
-import { ImSpinner9, ImSpinner } from "react-icons/im";
-import { IPaymaster, BiconomyPaymaster } from "@biconomy/paymaster";
-import { BiSolidRightArrowCircle, BiSolidChevronDown } from "react-icons/bi";
-import { DEFAULT_ENTRYPOINT_ADDRESS, BiconomySmartAccountConfig, BiconomySmartAccount } from "@biconomy/account";
-import { useSwitchChain, useSigner, useConnect, useChain, useAddress, metamaskWallet } from "@thirdweb-dev/react";
+import { Bundler, IBundler } from "@biconomy/bundler";
+import { ImSpinner, ImSpinner9 } from "react-icons/im";
+import { BiconomyPaymaster, IPaymaster } from "@biconomy/paymaster";
+import { BiSolidChevronDown, BiSolidRightArrowCircle } from "react-icons/bi";
+import { BiconomySmartAccount, BiconomySmartAccountConfig, DEFAULT_ENTRYPOINT_ADDRESS } from "@biconomy/account";
+import { metamaskWallet, useAddress, useChain, useConnect, useSigner, useSwitchChain } from "@thirdweb-dev/react";
 
 import IERC20 from "../../abis/IERC20.json";
 import { useSendTx } from "../../hooks/useSendTx";
 import { useSimulate } from "../../hooks/useSimulate";
 import ChainContext from "../../Context/ChainContext";
 import { useGenerateAbis } from "../../hooks/useGenerateAbis";
-import { useGlobalStore, iGlobal } from "../../store/GlobalStore";
-import { useCalculatebalance } from "../../hooks/useCalculateBalance";
-import { shorten, setSafeState, chooseChianId, buildTxHash } from "../../utils/helper";
-import { getNetworkAndContractData, fetchMethodParams } from "../../utils/apis";
-import { useCrossChainDifiStore, iCrossChainDifi } from "../../store/CrossChainDifiStore";
-import { getProvider, getErc20Balanceof, getContractInstance } from "../../utils/web3Libs/ethers";
-import { useOnChangeTokenIn, useOnChangeInput, useOnChangeFunctions } from "../../hooks/useOnChangeMainForm";
-import {
-    tokensByNetwork,
-    paymasterURLs,
-    NetworkNameByStargateChainId,
-    NetworkNameByChainId,
-    methodWithApi,
-    gasFeesNamesByChainId,
-    bundlerURLs,
-    BIG_ZERO,
-    _nonce,
-    _functionType,
-    NetworkLogoByChainId,
-} from "../../utils/constants";
 import { iTrade, useTradeStore } from "../../store/TradeStore";
+import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
+import { useCalculatebalance } from "../../hooks/useCalculateBalance";
+import { fetchMethodParams, getNetworkAndContractData } from "../../utils/apis";
+import { buildTxHash, chooseChianId, setSafeState, shorten } from "../../utils/helper";
+import { iCrossChainDifi, useCrossChainDifiStore } from "../../store/CrossChainDifiStore";
+import { getContractInstance, getErc20Balanceof, getProvider } from "../../utils/web3Libs/ethers";
+import { useOnChangeFunctions, useOnChangeInput, useOnChangeTokenIn } from "../../hooks/useOnChangeMainForm";
+import { _functionType, _nonce, BIG_ZERO, bundlerURLs, gasFeesNamesByChainId, methodWithApi, NetworkLogoByChainId, NetworkNameByChainId, NetworkNameByStargateChainId, paymasterURLs, tokensByNetwork } from "../../utils/constants";
 
 bg.config({ DECIMAL_PLACES: 10 });
 
@@ -59,7 +47,7 @@ const CrossChainDefi: React.FC<{}> = () => {
     const { mutateAsync: onChangeFunctionsHook } = useOnChangeFunctions();
     const { mutateAsync: onChangeInputHook } = useOnChangeInput();
     const { mutateAsync: fetchNativeBalance } = useCalculatebalance();
-    const { selectedChainId, setSelectedChain, setSelectedChainId } = React.useContext(ChainContext);
+    // const { selectedChainId, setSelectedChain, setSelectedChainId } = React.useContext(ChainContext);
 
     const { loading, setLoading, connected, smartAccount, setSmartAccount, setCurrentProvider, setConnected }: iGlobal =
         useGlobalStore((state) => state);
@@ -208,7 +196,7 @@ const CrossChainDefi: React.FC<{}> = () => {
                     const token: any = tokensByNetwork[fromChainId];
                     setTokenIn(token.usdc);
                     setTokenInDecimals(6);
-                    console.log("selectedChainId", selectedChainId, fromChainId);
+                    // console.log("selectedChainId", selectedChainId, fromChainId);
                     // const provider = await getProvider(selectedChainId);
                     const provider = await getProvider(selectedFromNetwork.chainId);
                     console.log("provider", provider?.toString());

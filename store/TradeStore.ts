@@ -1,13 +1,14 @@
 import { create } from "zustand";
+import { BigNumber } from "ethers";
 
-interface iSelectedNetwork {
+export interface iSelectedNetwork {
     key: string,
     chainName: string,
     chainId: string,
     icon: any,
 };
 
-interface iTokenData {
+export interface iTokenData {
     chainId: number,
     address: string,
     name: string,
@@ -15,7 +16,7 @@ interface iTokenData {
     decimals: number,
 }
 
-interface iIndividualBatch {
+export interface iIndividualBatch {
     id: number,
     txHash: string[],
     data: {
@@ -47,18 +48,21 @@ export interface iTrade {
     amountIn: string;
     fromTokenDecimal: number;
 
+    fromTokenBalanceForSCW: BigNumber;
+    fromTokenBalanceForEOA: BigNumber;
+
     filterFromToken: string;
     filterToToken: string;
 
     addToBatchLoading: boolean;
     showBatchList: boolean;
 
-    showIndividualBatchList: number | null;
     txhash: string;
-    sendtxLoading: boolean;
-    sendtxLoadingForEoa: boolean;
+    sendTxLoading: boolean;
+    sendTxLoadingForEoa: boolean;
 
     individualBatch: iIndividualBatch[];
+    showIndividualBatchList: number | null;
 
 
     setShowSelectNetworkList: (showSelectNetworkList: boolean) => void;
@@ -78,18 +82,21 @@ export interface iTrade {
     setAmountIn: (amountIn: string) => void;
     setFromTokenDecimal: (fromTokenDecimal: number) => void;
 
+    setFromTokenBalanceForSCW: (fromTokenBalanceForSCW: BigNumber) => void;
+    setFromTokenBalanceForEOA: (fromTokenBalanceForEOA: BigNumber) => void;
+
     setFilterFromToken: (filterFromToken: string) => void;
     setFilterToToken: (filterToToken: string) => void;
 
     setAddToBatchLoading: (addToBatchLoading: boolean) => void;
     setShowBatchList: (showBatchList: boolean) => void;
 
-    setShowIndividualBatchList: (showIndividualBatchList: number | null) => void;
     setTxHash: (txhash: string) => void;
-    setSendtxLoading: (sendtxLoading: boolean) => void;
-    setSendtxLoadingForEoa: (sendtxLoadingForEoa: boolean) => void;
+    setSendTxLoading: (sendTxLoading: boolean) => void;
+    setSendTxLoadingForEoa: (sendTxLoadingForEoa: boolean) => void;
 
     setIndividualBatch: (individualBatch: iIndividualBatch[]) => void;
+    setShowIndividualBatchList: (showIndividualBatchList: number | null) => void;
 }
 
 export const useTradeStore = create<iTrade>((set) => ({
@@ -120,45 +127,36 @@ export const useTradeStore = create<iTrade>((set) => ({
     amountIn: "",
     fromTokenDecimal: 0,
 
+    fromTokenBalanceForSCW: BigNumber.from(0),
+    fromTokenBalanceForEOA: BigNumber.from(0),
+
     filterFromToken: "",
     filterToToken: "",
 
     addToBatchLoading: false,
     showBatchList: false,
 
-    showIndividualBatchList: null,
     txhash: "",
-    sendtxLoading: false,
-    sendtxLoadingForEoa: false,
+    sendTxLoading: false,
+    sendTxLoadingForEoa: false,
 
     individualBatch: [
         {
             id: 0,
-            txHash: [""],
+            txHash: [],
             data: {
-                fromNetwork: "Base",
-                toNetwork: "Polygon",
-                fromProtocol: "aavev2",
-                toProtocol: "aaev3",
-                fromToken: "aUSDC",
-                toToken: "aDAI",
-                amountIn: "0.5",
-            },
-        },
-        {
-            id: 1,
-            txHash: [""],
-            data: {
-                fromNetwork: "Polygon",
-                toNetwork: "Etherum",
-                fromProtocol: "dForce",
-                toProtocol: "compoundv3",
-                fromToken: "dForceUSDC",
-                toToken: "cUSDC",
-                amountIn: "1.2",
+                fromNetwork: "",
+                toNetwork: "",
+                fromProtocol: "",
+                toProtocol: "",
+                fromToken: "",
+                toToken: "",
+                amountIn: "",
             },
         },
     ],
+    showIndividualBatchList: null,
+
    
     setShowSelectNetworkList: (showSelectNetworkList) => set(() => ({ showSelectNetworkList })),
     
@@ -177,16 +175,19 @@ export const useTradeStore = create<iTrade>((set) => ({
     setAmountIn: (amountIn) => set(() => ({ amountIn })),
     setFromTokenDecimal: (fromTokenDecimal) => set(() => ({ fromTokenDecimal })),
 
+    setFromTokenBalanceForSCW: (fromTokenBalanceForSCW) => set(() => ({ fromTokenBalanceForSCW })),
+    setFromTokenBalanceForEOA: (fromTokenBalanceForEOA) => set(() => ({ fromTokenBalanceForEOA })),
+
     setFilterFromToken: (filterFromToken) => set(() => ({ filterFromToken })),
     setFilterToToken: (filterToToken) => set(() => ({ filterToToken })),
 
     setAddToBatchLoading: (addToBatchLoading) => set(() => ({ addToBatchLoading })),
     setShowBatchList: (showBatchList) => set(() => ({ showBatchList })),
 
-    setShowIndividualBatchList: (showIndividualBatchList) => set(() => ({ showIndividualBatchList })),
     setTxHash: (txhash) => set(() => ({ txhash })),
-    setSendtxLoading: (sendtxLoading) => set(() => ({ sendtxLoading })),
-    setSendtxLoadingForEoa: (sendtxLoadingForEoa) => set(() => ({ sendtxLoadingForEoa })),
-
+    setSendTxLoading: (sendTxLoading) => set(() => ({ sendTxLoading })),
+    setSendTxLoadingForEoa: (sendTxLoadingForEoa) => set(() => ({ sendTxLoadingForEoa })),
+    
     setIndividualBatch: (individualBatch) => set(() => ({ individualBatch })),
+    setShowIndividualBatchList: (showIndividualBatchList) => set(() => ({ showIndividualBatchList })),
 }));

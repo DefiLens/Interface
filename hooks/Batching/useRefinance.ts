@@ -1,22 +1,26 @@
 import { ethers } from "ethers";
+import { toast } from "react-hot-toast";
 
 import { useMutation } from "@tanstack/react-query";
 
 import { useUniswap } from "../useUniswap";
 import { useApprove } from "../useApprove";
-import { useEoaProvider } from "../aaProvider/useEoaProvider";
-import { useBiconomyProvider } from "../aaProvider/useBiconomyProvider";
-import { useBatchingTxnStore, iBatchingTxn } from "../../store/BatchingTxnStore";
-import { V3_SWAP_ROUTER_ADDRESS, _nonce, _functionType, uniswapSwapRouterByChainId } from "../../utils/constants";
-import { useCrossChainDifiStore, iCrossChainDifi } from "../../store/CrossChainDifiStore";
-import { nativeTokenNum, nativeTokenFetcher, buildParams, abiFetcherNum, abiFetcher } from "./batchingUtils";
 import ChainContext from "../../Context/ChainContext";
-import React from "react";
+import { useEoaProvider } from "../aaProvider/useEoaProvider";
+import { iTrade, useTradeStore } from "../../store/TradeStore";
+import { useBiconomyProvider } from "../aaProvider/useBiconomyProvider";
+import { iBatchingTxn, useBatchingTxnStore } from "../../store/BatchingTxnStore";
+import { iCrossChainDifi, useCrossChainDifiStore } from "../../store/CrossChainDifiStore";
+import { abiFetcher, abiFetcherNum, buildParams, nativeTokenFetcher, nativeTokenNum } from "./batchingUtils";
+import { _functionType, _nonce, uniswapSwapRouterByChainId, V3_SWAP_ROUTER_ADDRESS } from "../../utils/constants";
 
 export function useRefinance() {
     const { mutateAsync: swap } = useUniswap();
     const { mutateAsync: approve } = useApprove();
-    const { selectedChain, selectedChainId } = React.useContext(ChainContext);
+    // const { selectedChain, selectedChainId } = React.useContext(ChainContext);
+
+    const { selectedFromNetwork }: iTrade = useTradeStore((state) => state);
+
 
     const { setTxHash }: iCrossChainDifi = useCrossChainDifiStore((state) => state);
     const { tokensData }: iBatchingTxn = useBatchingTxnStore((state) => state);
@@ -34,8 +38,8 @@ export function useRefinance() {
         provider,
     }: any) {
         try {
-            if (!selectedChain) {
-                alert("Chain is not selected!!")
+            if (!selectedFromNetwork.chainName) {
+                toast.error("Chain is not selected!!")
             }
             setTxHash("");
             const tempTxs: any = [];
@@ -62,23 +66,23 @@ export function useRefinance() {
             }
 
             if (toProtocol != "erc20") {
-                const tokenOutNum = nativeTokenNum[selectedChain][tokenOutName];
-                nativeTokenOut = nativeTokenFetcher[selectedChain][tokenOutNum].nativeToken;
+                const tokenOutNum = nativeTokenNum[selectedFromNetwork.chainName][tokenOutName];
+                nativeTokenOut = nativeTokenFetcher[selectedFromNetwork.chainName][tokenOutNum].nativeToken;
                 console.log("nativeTokenOut", nativeTokenOut);
             }
 
             if (fromProtocol != "erc20") {
-                abiNum = abiFetcherNum[selectedChain][tokenInName];
-                abi = abiFetcher[selectedChain][abiNum]["withdrawAbi"];
-                methodName = abiFetcher[selectedChain][abiNum]["withdrawMethodName"];
-                paramDetailsMethod = abiFetcher[selectedChain][abiNum]["withdrawParamDetailsMethod"];
-                tokenInContractAddress = abiFetcher[selectedChain][abiNum]["contractAddress"];
+                abiNum = abiFetcherNum[selectedFromNetwork.chainName][tokenInName];
+                abi = abiFetcher[selectedFromNetwork.chainName][abiNum]["withdrawAbi"];
+                methodName = abiFetcher[selectedFromNetwork.chainName][abiNum]["withdrawMethodName"];
+                paramDetailsMethod = abiFetcher[selectedFromNetwork.chainName][abiNum]["withdrawParamDetailsMethod"];
+                tokenInContractAddress = abiFetcher[selectedFromNetwork.chainName][abiNum]["contractAddress"];
 
                 console.log("tokenInName", tokenInName, tokenInContractAddress);
 
-                const tokenInNum = nativeTokenNum[selectedChain][tokenInName];
+                const tokenInNum = nativeTokenNum[selectedFromNetwork.chainName][tokenInName];
                 console.log("tokenInNum", tokenInNum);
-                nativeTokenIn = nativeTokenFetcher[selectedChain][tokenInNum].nativeToken;
+                nativeTokenIn = nativeTokenFetcher[selectedFromNetwork.chainName][tokenInNum].nativeToken;
                 console.log("nativeTokenIn", nativeTokenIn);
 
                 abiInterface = new ethers.utils.Interface([abi]);
@@ -103,7 +107,7 @@ export function useRefinance() {
                 console.log("isSwap", isSwap);
                 const approveData = await approve({
                     tokenIn: nativeTokenIn,
-                    spender: uniswapSwapRouterByChainId[selectedChainId],
+                    spender: uniswapSwapRouterByChainId[selectedFromNetwork.chainId],
                     amountIn: amount,
                     address,
                     web3JsonProvider: provider,
@@ -123,11 +127,11 @@ export function useRefinance() {
                 const newTokenIn = isSwap ? nativeTokenOut : nativeTokenIn;
                 const newAmount = isSwap ? swapData.amountOutprice : amount;
 
-                abiNum = abiFetcherNum[selectedChain][tokenOutName];
-                abi = abiFetcher[selectedChain][abiNum]["depositAbi"];
-                methodName = abiFetcher[selectedChain][abiNum]["depositMethodName"];
-                paramDetailsMethod = abiFetcher[selectedChain][abiNum]["depositParamDetailsMethod"];
-                const tokenOutContractAddress = abiFetcher[selectedChain][abiNum]["contractAddress"];
+                abiNum = abiFetcherNum[selectedFromNetwork.chainName][tokenOutName];
+                abi = abiFetcher[selectedFromNetwork.chainName][abiNum]["depositAbi"];
+                methodName = abiFetcher[selectedFromNetwork.chainName][abiNum]["depositMethodName"];
+                paramDetailsMethod = abiFetcher[selectedFromNetwork.chainName][abiNum]["depositParamDetailsMethod"];
+                const tokenOutContractAddress = abiFetcher[selectedFromNetwork.chainName][abiNum]["contractAddress"];
                 console.log(
                     "tokenOutContractAddress",
                     tokenOutContractAddress,
