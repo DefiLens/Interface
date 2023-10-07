@@ -7,21 +7,24 @@ import { useMutation } from "@tanstack/react-query";
 
 import IERC20 from "../abis/IERC20.json";
 import ChainPing from "../abis/ChainPing.json";
+import ChainContext from "../Context/ChainContext";
 import IStarGateRouter from "../abis/IStarGateRouter.json";
+import { useCalculateGasCost } from "./useCalculateGasCost";
+import { useTradeStore, iTrade } from "../store/TradeStore";
 import { useGlobalStore, iGlobal } from "../store/GlobalStore";
 import { chooseChianId, calculateFees, batch } from "../utils/helper";
 import { richAddressByChainId, _nonce, _functionType } from "../utils/constants";
 import { useCrossChainDifiStore, iCrossChainDifi } from "../store/CrossChainDifiStore";
 import { getProvider, getErc20Balanceof, getContractInstance } from "../utils/web3Libs/ethers";
-import { useCalculateGasCost } from "./useCalculateGasCost";
-import React from "react";
-import ChainContext from "../Context/ChainContext";
 
 bg.config({ DECIMAL_PLACES: 18 });
 
 export function useSimulate() {
     const { mutateAsync: calculategasCost } = useCalculateGasCost();
-    const { selectedChainId } = React.useContext(ChainContext);
+    // const { selectedChainId } = React.useContext(ChainContext);
+
+    const { selectedFromNetwork }: iTrade = useTradeStore((state) => state);
+
 
     const { smartAccount }: iGlobal = useGlobalStore((state) => state);
 
@@ -74,7 +77,7 @@ export function useSimulate() {
             if (!allNetworkData) throw "a need to fetch";
             const _tempAmount = BigNumber.from(bg(amountIn).multipliedBy(bg(10).pow(tokenInDecimals)).toString());
 
-            const provider = await getProvider(selectedChainId);
+            const provider = await getProvider(selectedFromNetwork.chainId);
             const fromStarGateRouter = allNetworkData.starGateRouter;
             const toUsdc = allNetworkData.tokens.usdc;
             const toChainPing = allNetworkData.chainPing;

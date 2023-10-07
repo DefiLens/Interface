@@ -7,20 +7,24 @@ import { ImSpinner } from "react-icons/im";
 import { BiSolidRightArrowCircle } from "react-icons/bi";
 import { LiaChevronUpSolid, LiaChevronDownSolid } from "react-icons/lia";
 
-import { buildTxHash, shorten } from "../../utils/helper";
-import { _nonce, _functionType, BIG_ZERO } from "../../utils/constants";
+import ChainContext from "../../Context/ChainContext";
+import { shorten, buildTxHash } from "../../utils/helper";
+import { useTradeStore, iTrade } from "../../store/TradeStore";
 import { useEoaProvider } from "../../hooks/aaProvider/useEoaProvider";
+import { BIG_ZERO, _nonce, _functionType } from "../../utils/constants";
 import { useBiconomyProvider } from "../../hooks/aaProvider/useBiconomyProvider";
 import { useBatchingTxnStore, iBatchingTxn } from "../../store/BatchingTxnStore";
 import IndividualBatch from "../../components/BatchingComponenets/IndividualBatch";
-import ChainContext from "../../Context/ChainContext";
 
 bg.config({ DECIMAL_PLACES: 10 });
 
 const Batching: React.FC<{}> = () => {
     const { mutateAsync: sendToBiconomy } = useBiconomyProvider();
     const { mutateAsync: sendTxTrditionally } = useEoaProvider();
-    const { selectedChainId } = React.useContext(ChainContext);
+    // const { selectedChainId } = React.useContext(ChainContext);
+
+    const { selectedFromNetwork }: iTrade = useTradeStore((state) => state);
+
 
     const {
         individualBatch,
@@ -202,7 +206,7 @@ const Batching: React.FC<{}> = () => {
                                 <p>
                                     <a
                                         target="_blank"
-                                        href={buildTxHash(selectedChainId, txhash, false)}
+                                        href={buildTxHash(selectedFromNetwork.chainId, txhash, false)}
                                         className="text-lg md:text-xl lg:text-1xl text-center text-lime-700 underline underline-offset-1 font-extrabold mb-5"
                                     >
                                         Success Batch TxHash : {shorten(txhash)}

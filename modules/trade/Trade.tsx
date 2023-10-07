@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 import { BigNumber } from "ethers";
 import { toast } from "react-hot-toast";
@@ -7,22 +7,23 @@ import { BigNumber as bg } from "bignumber.js";
 import Image from "next/image";
 import { ImSpinner } from "react-icons/im";
 import { AiOutlineSearch } from "react-icons/ai";
-import { useAddress, useChain } from "@thirdweb-dev/react";
-import { MdDelete, MdOutlineArrowBack } from "react-icons/md";
-import { MdKeyboardArrowDown, MdKeyboardArrowUp } from "react-icons/md";
+import { useChain, useAddress } from "@thirdweb-dev/react";
+import { MdOutlineArrowBack, MdDelete } from "react-icons/md";
+import { MdKeyboardArrowUp, MdKeyboardArrowDown } from "react-icons/md";
 
 import { tTrade } from "./types";
 import IERC20 from "../../abis/IERC20.json";
 import UNISWAP_TOKENS from "../../abis/tokens/Uniswap.json";
 import { useRefinance } from "../../hooks/Batching/useRefinance";
-import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
+import { useGlobalStore, iGlobal } from "../../store/GlobalStore";
 import { useEoaProvider } from "../../hooks/aaProvider/useEoaProvider";
-import { buildTxHash, setSafeState, shorten } from "../../utils/helper";
-import { iSelectedNetwork, iTrade, useTradeStore } from "../../store/TradeStore";
+import { shorten, setSafeState, buildTxHash } from "../../utils/helper";
+import { useSwitchOnSpecificChain } from "../../hooks/useSwitchOnSpecificChain";
+import { useTradeStore, iTrade, iSelectedNetwork } from "../../store/TradeStore";
 import { useBiconomyProvider } from "../../hooks/aaProvider/useBiconomyProvider";
-import { avalanche, base, bridgeCost, downLine, gas, optimism, polygon, swap, warning } from "../../assets/images";
-import { getContractInstance, getErc20Balanceof, getErc20Decimals, getProvider } from "../../utils/web3Libs/ethers";
-import { BIG_ZERO, NETWORK_LIST, protocolByNetwork, protocolNames, tokenAddressByProtocol } from "../../utils/constants";
+import { warning, swap, polygon, optimism, gas, downLine, bridgeCost, base, avalanche } from "../../assets/images";
+import { getProvider, getErc20Decimals, getErc20Balanceof, getContractInstance } from "../../utils/web3Libs/ethers";
+import { tokenAddressByProtocol, protocolNames, protocolByNetwork, NETWORK_LIST, BIG_ZERO } from "../../utils/constants";
 
 bg.config({ DECIMAL_PLACES: 10 });
 
@@ -33,6 +34,8 @@ const Trade: React.FC<any> = ({}: tTrade) => {
     const { mutateAsync: sendToBiconomy } = useBiconomyProvider();
     const { mutateAsync: sendTxTrditionally } = useEoaProvider();
     const { mutateAsync: refinance } = useRefinance();
+
+    const { mutateAsync: switchOnSpecificChain } = useSwitchOnSpecificChain();
 
     const {
         scwBalance,
@@ -90,7 +93,7 @@ const Trade: React.FC<any> = ({}: tTrade) => {
     
     const handleSelectFromNetwork = (_fromnetwork: iSelectedNetwork) => {
         if (selectedFromNetwork.chainName !== _fromnetwork.chainName) {
-            // switchOnSpecificChain(_fromnetwork.chainName)
+            switchOnSpecificChain(_fromnetwork.chainName)
             setSelectedFromNetwork(_fromnetwork)
         }
         setSelectedFromNetwork(_fromnetwork)
@@ -356,11 +359,11 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                 setAddToBatchLoading(false);
                 return;
             }
-            if ((amountIn.length > 0) && (scwBalance < amountIn)) {
-                toast.error("You don't have enough funds to complete transaction");
-                setAddToBatchLoading(false);
-                return;
-            }
+            // if ((amountIn.length > 0) && (scwBalance < amountIn)) {
+            //     toast.error("You don't have enough funds to complete transaction");
+            //     setAddToBatchLoading(false);
+            //     return;
+            // }
             if (addToBatchLoading) {
                 toast.error("wait, tx loading");
                 setAddToBatchLoading(false);

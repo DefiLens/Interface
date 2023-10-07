@@ -11,6 +11,7 @@ import IERC20 from "../abis/IERC20.json";
 import ChainPing from "../abis/ChainPing.json";
 import ChainContext from "../Context/ChainContext";
 import IStarGateRouter from "../abis/IStarGateRouter.json";
+import { useTradeStore, iTrade } from "../store/TradeStore";
 import { useEoaProvider } from "./aaProvider/useEoaProvider";
 import { useGlobalStore, iGlobal } from "../store/GlobalStore";
 import { chooseChianId, calculateFees, batch } from "../utils/helper";
@@ -42,7 +43,11 @@ export function useSendTx() {
         setTxHash,
     }: iCrossChainDifi = useCrossChainDifiStore((state) => state);
 
-    const { selectedChain } = useContext(ChainContext);
+    // const { selectedChain } = useContext(ChainContext);
+
+    const {
+        selectedFromNetwork,
+    }: iTrade = useTradeStore((state) => state);
 
     const { mutateAsync: sendToBiconomy } = useBiconomyProvider();
     const { mutateAsync: sendTxTrditionally } = useEoaProvider();
@@ -206,7 +211,7 @@ export function useSendTx() {
             // Extra 1e18 should more as of now
             if (!currentBalance.gt(quoteData[0].add(parseEther("0")))) {
                 throw `Not Enough Balance, You should have at least ${minimumBalanceRequired.toString()} ${
-                    gasFeesNames[selectedChain]
+                    gasFeesNames[selectedFromNetwork.chainName]
                 } in your SmartAccount wallet`;
             }
 

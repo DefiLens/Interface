@@ -4,15 +4,12 @@ import { fetchContractDetails } from '../utils/helper';
 import { _nonce, _functionType } from '../utils/constants';
 import { useGlobalStore, iGlobal } from '../store/GlobalStore';
 import { useCrossChainDifiStore, iCrossChainDifi } from '../store/CrossChainDifiStore';
-import React from 'react';
-import ChainContext from '../Context/ChainContext';
 
 export function useGenerateAbis() {
 
     const {
         smartAccount,
     }: iGlobal = useGlobalStore((state) => state);
-    const { selectedChainId } = React.useContext(ChainContext);
 
     const {
         toChainId,

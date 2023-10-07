@@ -16,6 +16,7 @@ import { getProvider, getErc20Decimals } from "../utils/web3Libs/ethers";
 import { useBiconomyProvider } from "../hooks/aaProvider/useBiconomyProvider";
 import { V3_SWAP_ROUTER_ADDRESS, BIG_ZERO, _nonce, _functionType, uniswapSwapRouterByChainId } from "../utils/constants";
 import ChainContext from "../Context/ChainContext";
+import { iTrade, useTradeStore } from "../store/TradeStore";
 
 const Swap: React.FC<{}> = () => {
 
@@ -24,7 +25,10 @@ const Swap: React.FC<{}> = () => {
     const { mutateAsync: approve } = useApprove();
     const { mutateAsync: sendTxTrditionally } = useEoaProvider();
     const { mutateAsync: sendToBiconomy } = useBiconomyProvider();
-    const { selectedChainId } = React.useContext(ChainContext);
+    // const { selectedChainId } = React.useContext(ChainContext);
+
+    const { selectedFromNetwork }: iTrade = useTradeStore((state) => state);
+
 
     const { smartAccount }: iGlobal = useGlobalStore((state) => state);
 
@@ -49,7 +53,7 @@ const Swap: React.FC<{}> = () => {
 
     const handleTokenIn = async (_tokenIn: any) => {
         setTokenIn(_tokenIn);
-        const web3JsonProvider = await getProvider(selectedChainId);
+        const web3JsonProvider = await getProvider(selectedFromNetwork.chainId);
         const erc20 = await new ethers.Contract(_tokenIn, IERC20, web3JsonProvider);
         const decimals = await getErc20Decimals(erc20);
         setSafeState(setTokenInDecimals, decimals, 0);
@@ -57,7 +61,7 @@ const Swap: React.FC<{}> = () => {
     };
     const handleTokenOut = async (_tokenOut: any) => {
         setTokenOut(_tokenOut);
-        const web3JsonProvider = await getProvider(selectedChainId);
+        const web3JsonProvider = await getProvider(selectedFromNetwork.chainId);
         const erc20 = await new ethers.Contract(_tokenOut, IERC20, web3JsonProvider);
         const decimals = await getErc20Decimals(erc20);
         setSafeState(setTokenOutDecimals, decimals, 0);
@@ -98,13 +102,13 @@ const Swap: React.FC<{}> = () => {
         try {
             if (!smartAccount) throw "please login by scw";
             if (!address) throw "please login by metamask";
-            const web3JsonProvider = await getProvider(selectedChainId);
+            const web3JsonProvider = await getProvider(selectedFromNetwork.chainId);
             let _address = isScw ? smartAccount.address : address;
             let _provider = isScw ? smartAccount.provider : web3JsonProvider;
             alert("_address: " + _address);
             const approveData = await approve({
                 tokenIn,
-                spender: uniswapSwapRouterByChainId[selectedChainId],
+                spender: uniswapSwapRouterByChainId[selectedFromNetwork.chainId],
                 amountIn,
                 address: _address,
                 web3JsonProvider: _provider,

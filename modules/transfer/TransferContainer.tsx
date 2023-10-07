@@ -13,6 +13,7 @@ import IERC20 from "../../abis/IERC20.json";
 import { BIG_ZERO } from "../../utils/constants";
 import { setSafeState } from "../../utils/helper";
 import ChainContext from "../../Context/ChainContext";
+import { useTradeStore, iTrade } from "../../store/TradeStore";
 import { useGlobalStore, iGlobal } from "../../store/GlobalStore";
 import { useCalculateGasCost } from "../../hooks/useCalculateGasCost";
 import { useTransferStore, iTransfer } from "../../store/TransferStore";
@@ -23,7 +24,10 @@ bg.config({ DECIMAL_PLACES: 5 });
 
 const TransferContainer: React.FC<any> = () => {
 
-    const { selectedChainId } = useContext(ChainContext);
+    // const { selectedChainId } = useContext(ChainContext);
+
+    const { selectedFromNetwork }: iTrade = useTradeStore((state) => state);
+
 
     const { mutateAsync: calculategasCost } = useCalculateGasCost();
 
@@ -67,7 +71,7 @@ const TransferContainer: React.FC<any> = () => {
         async function onChangeFromProtocol() {
             if (showTransferFundToggle) {
                 const response: any = await axios.get("https://gateway.ipfs.io/ipns/tokens.uniswap.org");
-                const tokensWithChainId = response.data.tokens?.filter((token) => token.chainId.toString() === selectedChainId.toString());
+                const tokensWithChainId = response.data.tokens?.filter((token) => token.chainId.toString() === selectedFromNetwork.chainId.toString());
                 const filteredTokens = tokensWithChainId.map((token) => {
                     const { extensions, logoURI, ...filteredToken } = token;
                     return filteredToken;

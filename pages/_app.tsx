@@ -11,6 +11,7 @@ import { Polygon, Optimism, Ethereum, Base, Avalanche, Arbitrum } from "@thirdwe
 
 import { closeNarrow } from "../assets/images";
 import ChainContext from "../Context/ChainContext";
+import { useTradeStore, iTrade } from "../store/TradeStore";
 import HeaderContainer from "../modules/header/HeaderContainer";
 
 import "@biconomy/web3-auth/dist/src/style.css";
@@ -19,8 +20,11 @@ import "../assets/styles/index.css";
 
 export default function App({ Component, pageProps }: AppProps) {
     const metamaskConfig = metamaskWallet({});
-    const [selectedChain, setSelectedChain] = React.useState("");
-    const [selectedChainId, setSelectedChainId] = React.useState("");
+
+    const { selectedFromNetwork }: iTrade = useTradeStore((state) => state);
+
+    // const [selectedChain, setSelectedChain] = React.useState("");
+    // const [selectedChainId, setSelectedChainId] = React.useState("");
 
     const queryClient = new QueryClient({
         defaultOptions: {
@@ -34,12 +38,13 @@ export default function App({ Component, pageProps }: AppProps) {
     return (
         <>
             {/* @ts-ignore */}
-            <ChainContext.Provider value={{ selectedChain, setSelectedChain, selectedChainId, setSelectedChainId }}>
+            {/* <ChainContext.Provider value={{ selectedChain, setSelectedChain, selectedChainId, setSelectedChainId }}> */}
                 <ThirdwebProvider
                     supportedWallets={[metamaskConfig]}
                     supportedChains={[Polygon, Arbitrum, Avalanche, Ethereum, Base, Optimism]}
                     clientId={process.env.NEXT_PUBLIC_TEMPLATE_CLIENT_ID}
-                    activeChain={selectedChain}
+                    // activeChain={selectedChain}
+                    activeChain={selectedFromNetwork.chainName}
                 >
                     <QueryClientProvider client={queryClient}>
 
@@ -91,7 +96,7 @@ export default function App({ Component, pageProps }: AppProps) {
 
                     </QueryClientProvider>
                 </ThirdwebProvider>
-            </ChainContext.Provider>
+            {/* </ChainContext.Provider> */}
         </>
     );
 }
