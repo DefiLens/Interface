@@ -30,6 +30,45 @@ export interface iIndividualBatch {
     },
 }
 
+export interface iContract {
+    contractName: string;
+    contractAddress: string;
+    extraOrShareToken?: string;
+};
+
+export interface iContractMetaData {
+    methodNames: string[];
+    amountFieldIndex: number[];
+};
+
+export interface iTokens {
+    [tokenName: string]: string;
+};
+
+export interface iChainPing {
+    [network: string]: string;
+};
+
+export interface iStarGateRouter {
+    [network: string]: string;
+};
+
+export interface iApiResponse {
+    contracts: iContract[];
+    contractMetaData: Record<string, iContractMetaData>;
+    tokens: iTokens;
+    chainPing: iChainPing;
+    starGateRouter: iStarGateRouter;
+};
+
+export interface iFuncArray {
+    name: string;
+    inputs: any[];
+    outputs: any[];
+    stateMutability: string;
+    type: string;
+};
+
 export interface iTrade {
     showSelectNetworkList: boolean;
 
@@ -65,6 +104,24 @@ export interface iTrade {
     showIndividualBatchList: number | null;
 
 
+    srcPoolId: number;
+    destPoolId: number;
+
+    tokenIn: string
+    tokenInDecimals: number;
+    isThisAmount: string | number;
+
+    contractIndex: string;
+    allNetworkData: iApiResponse | null;
+    currentAbi: string;
+    currentFunc: string;
+    currentFuncIndex: number;
+
+    funcArray: iFuncArray[] | null;
+    params: any[][];
+    fixParams: any[][];
+
+
     setShowSelectNetworkList: (showSelectNetworkList: boolean) => void;
     
     setSelectedFromNetwork: (selectedFromNetwork: iSelectedNetwork) => void;
@@ -97,6 +154,24 @@ export interface iTrade {
 
     setIndividualBatch: (individualBatch: iIndividualBatch[]) => void;
     setShowIndividualBatchList: (showIndividualBatchList: number | null) => void;
+
+
+    setSrcPoolId: (srcPoolId: number) => void;
+    setDestPoolId: (destPoolId: number) => void;
+
+    setTokenIn: (tokenIn: string) => void;
+    setTokenInDecimals: (tokenInDecimals: number) => void;
+    setIsThisFieldAmount: (isThisAmount: string | number) => void;
+
+    setContractIndex: (contractIndex: string) => void;
+    setData: (allNetworkData: iApiResponse | null) => void;
+    setAbi: (currentAbi: string) => void;
+    setCurrentFunc: (currentFunc: string) => void;
+    setCurrentFuncIndex: (currentFuncIndex: number) => void;
+
+    setFunctionArray: (funcArray: iFuncArray[] | null) => void;
+    setParams: (params: any[][]) => void;
+    setFixParams: (fixParams: any[][]) => void;
 }
 
 export const useTradeStore = create<iTrade>((set) => ({
@@ -157,6 +232,23 @@ export const useTradeStore = create<iTrade>((set) => ({
     ],
     showIndividualBatchList: null,
 
+
+    srcPoolId: 1,
+    destPoolId: 1,
+
+    tokenIn: "",
+    tokenInDecimals: 6,
+    isThisAmount: "",
+
+    contractIndex: "",
+    allNetworkData: null,
+    currentAbi: "",
+    currentFunc: "",
+    currentFuncIndex: 0,
+
+    funcArray: null,
+    params: [[]],
+    fixParams: [[]],
    
     setShowSelectNetworkList: (showSelectNetworkList) => set(() => ({ showSelectNetworkList })),
     
@@ -190,4 +282,22 @@ export const useTradeStore = create<iTrade>((set) => ({
     
     setIndividualBatch: (individualBatch) => set(() => ({ individualBatch })),
     setShowIndividualBatchList: (showIndividualBatchList) => set(() => ({ showIndividualBatchList })),
+
+
+    setSrcPoolId: (srcPoolId) => set(() => ({ srcPoolId })),
+    setDestPoolId: (destPoolId) => set(() => ({ destPoolId })),
+
+    setTokenIn: (tokenIn) => set(() => ({ tokenIn })),
+    setTokenInDecimals: (tokenInDecimals) => set(() => ({ tokenInDecimals })),
+    setIsThisFieldAmount: (isThisAmount) => set(() => ({ isThisAmount })),
+
+    setData: (allNetworkData) => set(() => ({ allNetworkData })),
+    setContractIndex: (contractIndex) => set(() => ({ contractIndex })),
+    setAbi: (currentAbi) => set(() => ({ currentAbi })),
+    setCurrentFunc: (currentFunc) => set(() => ({ currentFunc })),
+    setCurrentFuncIndex: (currentFuncIndex) => set(() => ({ currentFuncIndex })),
+
+    setFunctionArray: (funcArray) => set(() => ({ funcArray })),
+    setParams: (params) => set(() => ({ params })),
+    setFixParams: (fixParams) => set(() => ({ fixParams })),
 }));

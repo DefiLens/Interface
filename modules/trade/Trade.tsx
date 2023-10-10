@@ -5,25 +5,40 @@ import { toast } from "react-hot-toast";
 import { BigNumber as bg } from "bignumber.js";
 
 import Image from "next/image";
+import { FiCopy } from "react-icons/fi";
 import { ImSpinner } from "react-icons/im";
+import { FaChevronDown } from "react-icons/fa";
+import { ChainId } from "@biconomy/core-types";
 import { AiOutlineSearch } from "react-icons/ai";
-import { useChain, useAddress } from "@thirdweb-dev/react";
+import { HiOutlineRefresh } from "react-icons/hi";
+import { IBundler, Bundler } from "@biconomy/bundler";
 import { MdOutlineArrowBack, MdDelete } from "react-icons/md";
+import { IPaymaster, BiconomyPaymaster } from "@biconomy/paymaster";
 import { MdKeyboardArrowUp, MdKeyboardArrowDown } from "react-icons/md";
+import { BiSolidRightArrowCircle, BiSolidChevronDown } from "react-icons/bi";
+import { DEFAULT_ENTRYPOINT_ADDRESS, BiconomySmartAccountConfig, BiconomySmartAccount } from "@biconomy/account";
+import { useSwitchChain, useSigner, useCreateAccount, useConnect, useChain, useAddress, metamaskWallet } from "@thirdweb-dev/react";
 
 import { tTrade } from "./types";
 import IERC20 from "../../abis/IERC20.json";
+import { useSendTx } from "../../hooks/useSendTx";
+import { useSimulate } from "../../hooks/useSimulate";
 import UNISWAP_TOKENS from "../../abis/tokens/Uniswap.json";
+import { useGenerateAbis } from "../../hooks/useGenerateAbis";
 import { useRefinance } from "../../hooks/Batching/useRefinance";
 import { useGlobalStore, iGlobal } from "../../store/GlobalStore";
+import { useCalculatebalance } from "../../hooks/useCalculateBalance";
 import { useEoaProvider } from "../../hooks/aaProvider/useEoaProvider";
-import { shorten, setSafeState, buildTxHash } from "../../utils/helper";
 import { useSwitchOnSpecificChain } from "../../hooks/useSwitchOnSpecificChain";
+import { getNetworkAndContractData, fetchMethodParams } from "../../utils/apis";
 import { useTradeStore, iTrade, iSelectedNetwork } from "../../store/TradeStore";
 import { useBiconomyProvider } from "../../hooks/aaProvider/useBiconomyProvider";
+import { shorten, setSafeState, chooseChianId, buildTxHash } from "../../utils/helper";
+import { useCrossChainDifiStore, iCrossChainDifi } from "../../store/CrossChainDifiStore";
+import { useOnChangeTokenIn, useOnChangeInput, useOnChangeFunctions } from "../../hooks/useOnChangeMainForm";
 import { warning, swap, polygon, optimism, gas, downLine, bridgeCost, base, avalanche } from "../../assets/images";
 import { getProvider, getErc20Decimals, getErc20Balanceof, getContractInstance } from "../../utils/web3Libs/ethers";
-import { tokenAddressByProtocol, protocolNames, protocolByNetwork, NETWORK_LIST, BIG_ZERO } from "../../utils/constants";
+import { tokensByNetwork, tokenAddressByProtocol, protocolNames, protocolByNetwork, paymasterURLs, NetworkNameByStargateChainId, NetworkNameByChainId, NetworkLogoByChainId, NETWORK_LIST, methodWithApi, gasFeesNamesByChainId, bundlerURLs, BIG_ZERO, _nonce, _functionType } from "../../utils/constants";
 
 bg.config({ DECIMAL_PLACES: 10 });
 
@@ -35,11 +50,30 @@ const Trade: React.FC<any> = ({}: tTrade) => {
     const { mutateAsync: sendTxTrditionally } = useEoaProvider();
     const { mutateAsync: refinance } = useRefinance();
 
+    const switchChain = useSwitchChain();
+    const signer: any = useSigner(); // Detect the connected address
+    const connect = useConnect();
+    const metamaskConfig = metamaskWallet();
+    const { mutateAsync: sendTxToChain } = useSendTx();
+    const { mutateAsync: simulateTx } = useSimulate();
+    const { mutateAsync: generateAbisForContract } = useGenerateAbis();
+    const { mutateAsync: onChangeTokenInHook } = useOnChangeTokenIn();
+    const { mutateAsync: onChangeFunctionsHook } = useOnChangeFunctions();
+    const { mutateAsync: onChangeInputHook } = useOnChangeInput();
+    const { mutateAsync: fetchNativeBalance } = useCalculatebalance();
+
     const { mutateAsync: switchOnSpecificChain } = useSwitchOnSpecificChain();
 
     const {
         scwBalance,
         smartAccount,
+        
+        loading,
+        setLoading,
+        connected,
+        setSmartAccount,
+        setCurrentProvider,
+        setConnected
     }: iGlobal = useGlobalStore((state) => state);
 
     const {
@@ -87,21 +121,148 @@ const Trade: React.FC<any> = ({}: tTrade) => {
         setSendTxLoadingForEoa,
         individualBatch,
         setIndividualBatch,
+
+        tokenIn,
+        setTokenIn,
+        tokenInDecimals,
+        setTokenInDecimals,
+        isThisAmount,
+        setIsThisFieldAmount,
+
+        contractIndex,
+        setContractIndex,
+        allNetworkData,
+        setData,
+        setAbi,
+        currentFunc,
+        setCurrentFunc,
+        currentFuncIndex,
+        setCurrentFuncIndex,
+
+        funcArray,
+        setFunctionArray,
+        params,
+        setParams,
+        fixParams,
+        setFixParams,
     }: iTrade = useTradeStore((state) => state);
-    
-    console.log("🚀 ~ file: Trade.tsx:86 ~ individualBatch:", individualBatch)
-    
-    const handleSelectFromNetwork = (_fromnetwork: iSelectedNetwork) => {
-        if (selectedFromNetwork.chainName !== _fromnetwork.chainName) {
-            switchOnSpecificChain(_fromnetwork.chainName)
-            setSelectedFromNetwork(_fromnetwork)
-        }
-        setSelectedFromNetwork(_fromnetwork)
+
+    const generateAbis = async () => {
+        await generateAbisForContract();
     };
 
-    const handleSelectToNetwork = (data: any) => {
-        setSelectedToNetwork(data)
+    const handleContractAddress = async (_contractIndex) => {
+        // if (simulateLoading || sendTxLoading || sendTxLoadingForEoa) {
+        //     alert("wait, tx loading currently ...");
+        //     return;
+        // }
+        if (!smartAccount) {
+            alert("You need to biconomy login");
+            return;
+        }
+        setContractIndex(_contractIndex);
     };
+
+    // for e.g usdt -> usdc
+    const onChangeTokenIn = async (tokenIn: any) => {
+        if (!selectedFromNetwork.chainId) return alert("From network is not selecetd yet");
+        const provider = await getProvider(selectedFromNetwork.chainId);
+
+        const token = tokensByNetwork[selectedFromNetwork.chainId];
+        const erc20 = await getContractInstance(token.usdc, IERC20, provider);
+        const scwBalance = await getErc20Balanceof(erc20, smartAccount.address);
+        const eoaBalance = await getErc20Balanceof(erc20, address);
+        console.log("scwBalance++", scwBalance?.toString());
+        console.log("eoaBalance++", eoaBalance?.toString());
+
+        // setSafeState(setScwTokenInbalance, BigNumber.from(scwBalance), BIG_ZERO);
+        // setSafeState(setEoaTokenInbalance, BigNumber.from(eoaBalance), BIG_ZERO);
+
+        const { chainId } = selectedFromNetwork;
+        await onChangeTokenInHook({ fromChainId: chainId, tokenIn });
+    };
+
+    const onChangeFunctions = async (funcIndex) => {
+        if (funcIndex == "") return toast.error("Please select operation");
+        await onChangeFunctionsHook({ funcIndex, address });
+    };
+
+    const simulate = async (funcIndex: any) => {
+        simulateTx({ funcIndex, address });
+    };
+
+    useEffect(() => {
+        if (selectedToNetwork.chainId) {
+            setContractIndex("");
+            resetField();
+        }
+    }, [selectedToNetwork]);
+
+    useEffect(() => {
+        if (contractIndex) {
+            resetField();
+            generateAbis();
+        }
+    }, [contractIndex]);
+
+    const resetField = async () => {
+        setFunctionArray(null);
+        setParams([]);
+        setFixParams([]);
+        setCurrentFunc("");
+        setCurrentFuncIndex(0);
+        setIsThisFieldAmount(-1);
+    };
+    
+    const handleSelectFromNetwork = (_fromNetwork: iSelectedNetwork) => {
+        setLoading(true);
+        setCurrentFunc("");
+        setData(null);
+        if (selectedFromNetwork.chainName !== _fromNetwork.chainName) {
+            switchOnSpecificChain(_fromNetwork.chainName)
+            setSelectedFromNetwork(_fromNetwork)
+        }
+        setSelectedFromNetwork(_fromNetwork)
+        setLoading(false);
+    };
+
+    const handleSelectToNetwork = async (_toNetwork: any) => {
+        try {
+            setData(null);
+            setSelectedToNetwork(_toNetwork)
+            const response: any = await getNetworkAndContractData(selectedFromNetwork.chainId, selectedToNetwork.chainId);
+            if (response.data) {
+                setData(response.data);
+            }
+        } catch (error) {
+            console.error("API Error:", error);
+        }
+    };
+
+    useEffect(() => {
+        async function changeWallet() {
+            if (!address) {
+                setTokenIn("")
+                // setFromChainId("")
+                // setToChainId("")
+                setAmountIn("")
+                setContractIndex("")
+                setFunctionArray([])
+                setSmartAccount(null)
+                setConnected(false)
+
+                setSelectedFromNetwork({
+                    key: "",
+                    chainName: "",
+                    chainId: "",
+                    icon: "",
+                })
+
+                console.log("Metamask logout", address)
+            }
+        }
+        changeWallet();
+    }, [address])
 
     useEffect(() => {
         if (selectedFromNetwork.chainName && selectedFromProtocol && selectedFromToken) {
@@ -237,6 +398,7 @@ const Trade: React.FC<any> = ({}: tTrade) => {
         setSelectedToToken(_toToken);
     };
 
+    // for e.g 0 -> 1000
     const onChangeAmountIn = async (_amountIn: string) => {
         if (addToBatchLoading) {
             toast.error('wait, tx loading');
