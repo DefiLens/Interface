@@ -82,6 +82,7 @@ export interface iTrade {
 
     showFromSelectionMenu: boolean;
     showToSelectionMenu: boolean;
+    showCrossChainSelectionMenu: boolean;
 
     tokensData: iTokenData[];
     amountIn: string;
@@ -112,6 +113,7 @@ export interface iTrade {
     isThisAmount: string | number;
 
     contractIndex: string;
+    selectedToContractAddress: string,
     allNetworkData: iApiResponse | null;
     currentAbi: string;
     currentFunc: string;
@@ -134,6 +136,7 @@ export interface iTrade {
 
     setShowFromSelectionMenu: (showFromSelectionMenu: boolean) => void;
     setShowToSelectionMenu: (showToSelectionMenu: boolean) => void;
+    setShowCrossChainSelectionMenu: (showCrossChainSelectionMenu: boolean) => void;
 
     setTokensData: (tokensData: iTokenData[]) => void;
     setAmountIn: (amountIn: string) => void;
@@ -164,6 +167,7 @@ export interface iTrade {
     setIsThisFieldAmount: (isThisAmount: string | number) => void;
 
     setContractIndex: (contractIndex: string) => void;
+    setSelectedToContractAddress: (selectedToContractAddress: string) => void;
     setData: (allNetworkData: iApiResponse | null) => void;
     setAbi: (currentAbi: string) => void;
     setCurrentFunc: (currentFunc: string) => void;
@@ -197,6 +201,7 @@ export const useTradeStore = create<iTrade>((set) => ({
 
     showFromSelectionMenu: false,
     showToSelectionMenu: false,
+    showCrossChainSelectionMenu: false,
 
     tokensData: [],
     amountIn: "",
@@ -241,6 +246,7 @@ export const useTradeStore = create<iTrade>((set) => ({
     isThisAmount: "",
 
     contractIndex: "",
+    selectedToContractAddress: "",
     allNetworkData: null,
     currentAbi: "",
     currentFunc: "",
@@ -262,6 +268,7 @@ export const useTradeStore = create<iTrade>((set) => ({
 
     setShowFromSelectionMenu: (showFromSelectionMenu) => set(() => ({ showFromSelectionMenu })),
     setShowToSelectionMenu: (showToSelectionMenu) => set(() => ({ showToSelectionMenu })),
+    setShowCrossChainSelectionMenu: (showCrossChainSelectionMenu) => set(() => ({ showCrossChainSelectionMenu })),
 
     setTokensData: (tokensData) => set(() => ({ tokensData })),
     setAmountIn: (amountIn) => set(() => ({ amountIn })),
@@ -293,6 +300,7 @@ export const useTradeStore = create<iTrade>((set) => ({
 
     setData: (allNetworkData) => set(() => ({ allNetworkData })),
     setContractIndex: (contractIndex) => set(() => ({ contractIndex })),
+    setSelectedToContractAddress: (selectedToContractAddress) => set(() => ({ selectedToContractAddress })),
     setAbi: (currentAbi) => set(() => ({ currentAbi })),
     setCurrentFunc: (currentFunc) => set(() => ({ currentFunc })),
     setCurrentFuncIndex: (currentFuncIndex) => set(() => ({ currentFuncIndex })),

@@ -226,7 +226,7 @@ const CrossChainDefi: React.FC<{}> = () => {
         onChangeFromChainId();
     }, [fromChainId]);
 
-    useEffect(() => {
+    useEffect(() => {``
         if (toChainId) {
             setContractIndex("");
             resetField();

@@ -31,11 +31,10 @@ interface ApiResponse {
     starGateRouter: StarGateRouter;
 }
 
-export const getNetworkAndContractData = async (fromNetwork: any, toNetwork: any) => {
+export const getNetworkAndContractData = async (fromNetwork: string, toNetwork: string) => {
     return await axios
         .get<ApiResponse>(`${netlifyNodeURL}/common/getNetworkAndContractData/${fromNetwork}/${toNetwork}`)
         .then((response) => {
-            // console.log("getNetworkAndContractData:response: ", response);
             return response;
         })
         .catch((error) => {

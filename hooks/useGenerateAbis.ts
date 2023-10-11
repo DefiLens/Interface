@@ -1,9 +1,10 @@
 import { useMutation } from '@tanstack/react-query';
 
 import { fetchContractDetails } from '../utils/helper';
-import { _nonce, _functionType } from '../utils/constants';
+import { _nonce, _functionType, StargateChainIdBychainId } from '../utils/constants';
 import { useGlobalStore, iGlobal } from '../store/GlobalStore';
 import { useCrossChainDifiStore, iCrossChainDifi } from '../store/CrossChainDifiStore';
+import { iTrade, useTradeStore } from '../store/TradeStore';
 
 export function useGenerateAbis() {
 
@@ -11,24 +12,32 @@ export function useGenerateAbis() {
         smartAccount,
     }: iGlobal = useGlobalStore((state) => state);
 
+    // const {
+    //     toChainId,
+    //     contractIndex,
+    //     allNetworkData,
+    //     setFunctionArray,
+    //     setAbi
+    // }: iCrossChainDifi = useCrossChainDifiStore((state) => state);
+
     const {
-        toChainId,
+        selectedToNetwork,
         contractIndex,
         allNetworkData,
         setFunctionArray,
         setAbi
-    }: iCrossChainDifi = useCrossChainDifiStore((state) => state);
+    }: iTrade = useTradeStore((state) => state);
 
     async function generateAbisForContract() {
         try {
             if (!contractIndex) return
             if (!smartAccount) return
-            if (!toChainId) return
+            if (!selectedToNetwork.chainId) return
             const provider = smartAccount.provider
             const contractAddress: any = allNetworkData?.contracts[contractIndex].contractAddress
             const methodNames: any = allNetworkData?.contractMetaData[contractAddress].methodNames
 
-            let abi: any = await fetchContractDetails(provider, contractAddress, toChainId, methodNames)
+            let abi: any = await fetchContractDetails(provider, contractAddress, StargateChainIdBychainId[selectedToNetwork.chainId], methodNames)
             console.log("abi: ", abi)
             setAbi(abi)
 

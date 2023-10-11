@@ -203,6 +203,15 @@ export const chainIdByStargateChainId = {
     "184": "8453",
 };
 
+export const StargateChainIdBychainId = {
+    "137": "109",
+    "43114": "106",
+    "42161": "110",
+    "10": "111",
+    "1": "101",
+    "8453": "184",
+};
+
 export const gasFeesNames = {
     polygon: "polygon",
     avalanche: "avax",
