@@ -198,6 +198,12 @@ const Trade: React.FC<any> = ({}: tTrade) => {
     };
 
     useEffect(() => {
+        if (individualBatch.length === 1 && individualBatch[0].txHash.length === 0) {
+            setShowBatchList(false);
+        }
+    }, [individualBatch]);
+
+    useEffect(() => {
         if (selectedToNetwork.chainId) {
             setContractIndex("");
             resetField();
@@ -480,6 +486,21 @@ const Trade: React.FC<any> = ({}: tTrade) => {
         setIndividualBatch(updatedBatch);
     };
 
+    const clearSelectedBatchData = () => {
+        setSelectedToNetwork({
+            key: "",
+            chainName: "",
+            chainId: "",
+            icon: "",
+        });
+        setSelectedFromProtocol("")
+        setSelectedFromToken("");
+        setSelectedToProtocol("");
+        setSelectedToToken("");
+        setAmountIn("");
+        setFromTokenDecimal(0);
+    };
+
     const updateInputValues = (index: number, txHash: string[], data: any) => {
         console.log("data: ", data, individualBatch);
         if (txHash.length < 1) return toast.error("Please complete the last input before adding a new one.");
@@ -520,6 +541,7 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                 },
             },
         ]);
+        clearSelectedBatchData();
     };
 
     const toggleShowBatchList = (id: number): void => {
@@ -962,7 +984,16 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                                                             {selectedFromNetwork.key}
                                                         </div>
                                                         <div className="text-xs text-slate-500 font-medium">
-                                                            on {selectedFromProtocol} Chain ( {selectedFromToken} )
+                                                            {selectedFromProtocol && (
+                                                                <span>
+                                                                    on {selectedFromProtocol}
+                                                                </span>
+                                                            )}
+                                                            {selectedFromToken && (
+                                                                <span>
+                                                                    Chain ( {selectedFromToken} )
+                                                                </span>
+                                                            )}
                                                         </div>
                                                     </div>
                                                 ) : (
@@ -1037,7 +1068,16 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                                                     {selectedToNetwork.key}
                                                 </div>
                                                 <div className="text-xs text-slate-500 font-medium">
-                                                    on {selectedToProtocol} Chain ( {selectedToToken} )
+                                                    {selectedToProtocol && (
+                                                        <span>
+                                                            on {selectedToProtocol}
+                                                        </span>
+                                                    )}
+                                                    {selectedToToken && (
+                                                        <span>
+                                                            Chain ( {selectedToToken} )
+                                                        </span>
+                                                    )}
                                                 </div>
                                             </div>
                                         ) : (
