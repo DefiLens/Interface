@@ -435,7 +435,8 @@ const Trade: React.FC<any> = ({}: tTrade) => {
             return;
         }
         if (!(selectedFromNetwork.chainName == "polygon" || selectedFromNetwork.chainName == "base")) {
-            throw "Batching is only supported on polygon as of now";
+            toast.error("Batching is only supported on polygon as of now");
+            return;
         }
         if (_amountIn && fromTokenDecimal) {
             let amountInByDecimals = bg(_amountIn.toString());
@@ -1217,7 +1218,10 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                                             $0.00
                                         </div>
                                         <div className="absolute right-0 bottom-0 flex flex-col justify-center items-end gap-1">
-                                            <span className="text-xs md:text-sm text-purple-100 font-medium bg-purple-700 rounded-xl px-3 py-1">
+                                            <span 
+                                                onClick={() => onChangeAmountIn(scwBalance ? scwBalance.toString() : "0")}
+                                                className="text-xs md:text-sm text-purple-100 font-medium bg-purple-700 rounded-xl px-3 py-1"
+                                            >
                                                 Max
                                             </span>
                                             <span className="text-xs md:text-sm text-slate-600 font-medium ">
