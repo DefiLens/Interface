@@ -151,9 +151,6 @@ const Trade: React.FC<any> = ({}: tTrade) => {
         setFixParams,
     }: iTrade = useTradeStore((state) => state);
 
-    console.log("🚀 ~ funcArray: - 🚀", funcArray)
-    console.log("🚀 ~ currentFunc: - 🚀", currentFunc)
-
     const generateAbis = async () => {
         await generateAbisForContract();
     };
@@ -301,7 +298,7 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                     // setFromTokenBalanceForEOA(BIG_ZERO);
                     
                     const firstFromToken = protocolByNetwork[selectedFromNetwork.chainName][selectedFromProtocol][0].name;
-                    setSelectedFromToken(firstFromToken);
+                    // setSelectedFromToken(firstFromToken);
                     
                     const provider = await getProvider(selectedFromNetwork.chainId);
                     const tokenAddress = tokenAddressByProtocol[selectedFromNetwork.chainName][selectedFromProtocol][firstFromToken];
@@ -350,7 +347,13 @@ const Trade: React.FC<any> = ({}: tTrade) => {
             toast.error("Batching is only supported on polygon and base as of now");
             return;
         }
-        setSelectedFromProtocol(_fromProtocol);
+        if(selectedFromProtocol === _fromProtocol) {
+            setSelectedFromProtocol("");
+            setSelectedFromToken("");
+        } else {
+            setSelectedFromToken("");
+            setSelectedFromProtocol(_fromProtocol);
+        }
     };
 
     const onChangeFromToken = async (_fromToken: string) => {
@@ -398,7 +401,13 @@ const Trade: React.FC<any> = ({}: tTrade) => {
             toast.error("Batching is only supported on polygon and base as of now");
             return;
         }
-        setSelectedToProtocol(_toProtocol);
+        if(selectedToProtocol === _toProtocol) {
+            setSelectedToProtocol("");
+            setSelectedToToken("");
+        } else {
+            setSelectedToToken("");
+            setSelectedToProtocol(_toProtocol);
+        }
     };
 
     const onChangeToToken = async (_toToken: string) => {
@@ -826,70 +835,72 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                                 </div>
                             </div>
                         </div>
-                    ) : showCrossChainSelectionMenu ? (
-                         <div className="w-full bg-gray-50 flex flex-col gap-2 shadow-md shadow-primary-950 rounded-lg cursor-pointer p-3">
-                            <MdOutlineArrowBack
-                                onClick={() => setShowCrossChainSelectionMenu(false)}
-                                className="rounded-full h-10 w-10 p-2 hover:bg-gray-100 active:bg-gray-200  text-black"
-                            />
-                            <div className="flex flex-col justify-center items-center gap-5 px-4">
-                                <div className="w-full flex justify-start items-center gap-2 bg-white border-2 border-slate-200 rounded-md py-2 px-5">
-                                    <input
-                                        type="text"
-                                        placeholder="Search by Contract Address"
-                                        className="w-full text-sm md:text-base outline-none"
-                                    />
-                                    <AiOutlineSearch />
-                                </div>
-                                <div className="w-full overflow-auto flex flex-col justify-center items-center py-3">
-                                    {allNetworkData && allNetworkData.contracts.length > 0 && (
-                                        <div className="w-full max-h-96">
-                                            {allNetworkData.contracts.map((contractDetails: any, contractIndex: number) => (
-                                                <div
-                                                    key={contractDetails.contractName}
-                                                    className="w-full"
-                                                >
-                                                    <div
-                                                        key={contractDetails.contractName}
-                                                        onClick={() => handleContractAddress(contractIndex.toString(), contractDetails)}
-                                                        className="w-full flex justify-start items-center gap-3 hover:bg-slate-300 active:bg-slate-200 py-2 px-3 rounded-lg cursor-pointer"
-                                                    >
-                                                        <div>
-                                                            {contractDetails.contractName}
-                                                        </div>
-                                                    </div>
+                    ) 
+                    // : showCrossChainSelectionMenu ? (
+                    //      <div className="w-full bg-gray-50 flex flex-col gap-2 shadow-md shadow-primary-950 rounded-lg cursor-pointer p-3">
+                    //         <MdOutlineArrowBack
+                    //             onClick={() => setShowCrossChainSelectionMenu(false)}
+                    //             className="rounded-full h-10 w-10 p-2 hover:bg-gray-100 active:bg-gray-200  text-black"
+                    //         />
+                    //         <div className="flex flex-col justify-center items-center gap-5 px-4">
+                    //             <div className="w-full flex justify-start items-center gap-2 bg-white border-2 border-slate-200 rounded-md py-2 px-5">
+                    //                 <input
+                    //                     type="text"
+                    //                     placeholder="Search by Contract Address"
+                    //                     className="w-full text-sm md:text-base outline-none"
+                    //                 />
+                    //                 <AiOutlineSearch />
+                    //             </div>
+                    //             <div className="w-full overflow-auto flex flex-col justify-center items-center py-3">
+                    //                 {allNetworkData && allNetworkData.contracts.length > 0 && (
+                    //                     <div className="w-full max-h-96">
+                    //                         {allNetworkData.contracts.map((contractDetails: any, contractIndex: number) => (
+                    //                             <div
+                    //                                 key={contractDetails.contractName}
+                    //                                 className="w-full"
+                    //                             >
+                    //                                 <div
+                    //                                     key={contractDetails.contractName}
+                    //                                     onClick={() => handleContractAddress(contractIndex.toString(), contractDetails)}
+                    //                                     className="w-full flex justify-start items-center gap-3 hover:bg-slate-300 active:bg-slate-200 py-2 px-3 rounded-lg cursor-pointer"
+                    //                                 >
+                    //                                     <div>
+                    //                                         {contractDetails.contractName}
+                    //                                     </div>
+                    //                                 </div>
                                                     
-                                                </div>
-                                            ))}
-                                            {funcArray && funcArray.length > 0 && (
-                                                <>
-                                                    <h5 className="text-sm md:text-base font-medium md:font-semibold text-slate-800 mt-5">
-                                                        Select Destination Chain Method :  
-                                                    </h5>
-                                                    <div className="bg-slate-200 rounded-lg p-1 my-1">
-                                                        {funcArray.map((funcName: any, funcIndex: number) => (
-                                                            <div
-                                                                key={funcIndex}
-                                                                onClick={() => onChangeFunctions(funcName.name)}
-                                                                className="w-full flex justify-start items-center gap-3 hover:bg-slate-300 active:bg-slate-200 py-2 px-3 rounded-lg cursor-pointer"
-                                                            >
-                                                                {/* <Image
-                                                                    src={funcName.icon}
-                                                                    alt=""
-                                                                    className="h-7 w-7 bg-slate-200 rounded-full cursor-pointer"
-                                                                /> */}
-                                                                {funcName.name}
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                </>
-                                            )}
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                    ) :  (
+                    //                             </div>
+                    //                         ))}
+                    //                         {funcArray && funcArray.length > 0 && (
+                    //                             <>
+                    //                                 <h5 className="text-sm md:text-base font-medium md:font-semibold text-slate-800 mt-5">
+                    //                                     Select Destination Chain Method :  
+                    //                                 </h5>
+                    //                                 <div className="bg-slate-200 rounded-lg p-1 my-1">
+                    //                                     {funcArray.map((funcName: any, funcIndex: number) => (
+                    //                                         <div
+                    //                                             key={funcIndex}
+                    //                                             onClick={() => onChangeFunctions(funcName.name)}
+                    //                                             className="w-full flex justify-start items-center gap-3 hover:bg-slate-300 active:bg-slate-200 py-2 px-3 rounded-lg cursor-pointer"
+                    //                                         >
+                    //                                             {/* <Image
+                    //                                                 src={funcName.icon}
+                    //                                                 alt=""
+                    //                                                 className="h-7 w-7 bg-slate-200 rounded-full cursor-pointer"
+                    //                                             /> */}
+                    //                                             {funcName.name}
+                    //                                         </div>
+                    //                                     ))}
+                    //                                 </div>
+                    //                             </>
+                    //                         )}
+                    //                     </div>
+                    //                 )}
+                    //             </div>
+                    //         </div>
+                    //     </div>
+                    // ) 
+                    :  (
                         <div className="w-full bg-gray-50 flex flex-col gap-1 shadow-md shadow-primary-950 rounded-2xl cursor-pointer">
                             <h1 className="w-full bg-purple-950 text-white text-lg md:text-xl lg:text-2xl text-center font-bold rounded-t-2xl p-5">
                                 Building Batch No. {individualBatch.length}
@@ -1040,7 +1051,7 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                                 </div>
 
                                 {/* ---------- Contract Address Section START ---------- */}
-                                {selectedFromNetwork.chainName && 
+                                {/* {selectedFromNetwork.chainName && 
                                 selectedToNetwork.chainName &&
                                 (selectedFromNetwork.chainName !== selectedToNetwork.chainName ) && (
                                     <div
@@ -1094,7 +1105,7 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                                                 )}
                                         </div>
                                     </div>
-                                )}
+                                )} */}
                                 {/* ---------- Contract Address Section END ---------- */}
 
 
