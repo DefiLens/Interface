@@ -28,6 +28,10 @@ export interface iIndividualBatch {
         toToken: string,
         amountIn: string,
     },
+    simulation: {
+        isSuccess: boolean,
+        isError: boolean,
+    }
 }
 
 export interface iContract {
@@ -233,6 +237,10 @@ export const useTradeStore = create<iTrade>((set) => ({
                 toToken: "",
                 amountIn: "",
             },
+            simulation: {
+                isSuccess: false,
+                isError: false,
+            }
         },
     ],
     showIndividualBatchList: null,

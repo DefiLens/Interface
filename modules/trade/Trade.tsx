@@ -476,6 +476,10 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                     toToken: "",
                     amountIn: "",
                 },
+                simulation: {
+                    isSuccess: false,
+                    isError: false,
+                }
             },
         ]);
     };
@@ -501,7 +505,7 @@ const Trade: React.FC<any> = ({}: tTrade) => {
         setFromTokenDecimal(0);
     };
 
-    const updateInputValues = (index: number, txHash: string[], data: any) => {
+    const updateInputValues = (index: number, txHash: string[], data: any, simulation: any) => {
         console.log("data: ", data, individualBatch);
         if (txHash.length < 1) return toast.error("Please complete the last input before adding a new one.");
         if (individualBatch.length == 0) {
@@ -519,12 +523,17 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                         toToken: "",
                         amountIn: "",
                     },
+                    simulation: {
+                        isSuccess: false,
+                        isError: false,
+                    }
                 },
             ]);
         }
         const updatedBatch: any = [...individualBatch];
         updatedBatch[index].txHash = txHash;
         updatedBatch[index].data = data;
+        updatedBatch[index].simulation = simulation;
         setIndividualBatch([
             ...updatedBatch,
             {
@@ -539,6 +548,10 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                     toToken: "",
                     amountIn: "",
                 },
+                simulation: {
+                    isSuccess: false,
+                    isError: false,
+                }
             },
         ]);
         clearSelectedBatchData();
@@ -622,6 +635,11 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                 provider,
             });
 
+            const simulation = {
+                isSuccess: true,
+                isError: false,
+            }
+
             updateInputValues(
                 individualBatch.length - 1,
                 txHash,
@@ -633,7 +651,8 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                     fromToken: selectedFromToken,
                     toToken: selectedToToken,
                     amountIn: amountIn,
-                }
+                },
+                simulation
             )
 
             setAddToBatchLoading(false);
@@ -1394,15 +1413,44 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                                                           $0.70
                                                         </span>
                                                     </div>
-                                                    <div className="flex justify-center items-center gap-3 text-black font-semibold text-base">
-                                                        <Image
-                                                            src={bridgeCost}
-                                                            alt=""
-                                                            className="h-7 w-7"
-                                                        />
-                                                        <span>
-                                                          $0.00
-                                                        </span>
+                                                    <div className="flex justify-center items-center gap-3">
+                                                        {bar.simulation.isSuccess ? (
+                                                            <h6 className="flex justify-center items-center gap-3 bg-white text-black shadow-md font-medium text-sm rounded-full p-1 pr-5">
+                                                                <svg
+                                                                    className="h-5 w-5 text-green-500"
+                                                                    viewBox="0 0 24 24"
+                                                                    fill="none"
+                                                                    stroke="currentColor"
+                                                                    stroke-width="2"
+                                                                    stroke-linecap="round"
+                                                                    stroke-linejoin="round"
+                                                                >
+                                                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                                                                    <polyline points="22 4 12 14.01 9 11.01" />
+                                                                </svg>
+                                                                Simulation Success
+                                                            </h6>
+                                                        ) : bar.simulation.isError ? (
+                                                            <h6 className="flex justify-center items-center gap-3 bg-white text-black shadow-md font-medium text-sm rounded-full p-1 pr-5">
+                                                                <svg
+                                                                    className="h-5 w-5 text-red-500"
+                                                                    viewBox="0 0 24 24"
+                                                                    fill="none"
+                                                                    stroke="currentColor"
+                                                                    stroke-width="2"
+                                                                    stroke-linecap="round"
+                                                                    stroke-linejoin="round"
+                                                                >
+                                                                    <circle cx="12" cy="12" r="10" /> <line x1="15" y1="9" x2="9" y2="15" />
+                                                                    <line x1="9" y1="9" x2="15" y2="15" />
+                                                                </svg>
+                                                                Simulation Error
+                                                            </h6>
+                                                        ) : (
+                                                            <h6 className="flex justify-center items-center gap-3 bg-white text-black shadow-md font-medium text-sm rounded-full py-1 px-5">
+                                                                Simulation
+                                                            </h6>
+                                                        )}
                                                     </div>
                                                 </div>
                                             </div>
