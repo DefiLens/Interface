@@ -8,20 +8,19 @@ import { metamaskWallet, useAddress, useChain, useConnect, useSigner, useSwitchC
 
 import Trade from "./Trade";
 import IERC20 from "../../abis/IERC20.json";
-import { useSendTx } from "../../hooks/useSendTx";
 import { setSafeState } from "../../utils/helper";
 import { useSimulate } from "../../hooks/useSimulate";
 import UNISWAP_TOKENS from "../../abis/tokens/Uniswap.json";
 import { getNetworkAndContractData } from "../../utils/apis";
 import { useGenerateAbis } from "../../hooks/useGenerateAbis";
 import { useRefinance } from "../../hooks/Batching/useRefinance";
+import { useCCRefinance } from "../../hooks/Batching/useCCRefinance";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
-import { useCalculatebalance } from "../../hooks/useCalculateBalance";
 import { useEoaProvider } from "../../hooks/aaProvider/useEoaProvider";
 import { useSwitchOnSpecificChain } from "../../hooks/useSwitchOnSpecificChain";
 import { iSelectedNetwork, iTrade, useTradeStore } from "../../store/TradeStore";
 import { useBiconomyProvider } from "../../hooks/aaProvider/useBiconomyProvider";
-import { useOnChangeFunctions, useOnChangeInput, useOnChangeTokenIn } from "../../hooks/useOnChangeMainForm";
+import { useOnChangeFunctions, useOnChangeTokenIn } from "../../hooks/useOnChangeMainForm";
 import { getContractInstance, getErc20Balanceof, getErc20Decimals, getProvider } from "../../utils/web3Libs/ethers";
 import { _functionType, _nonce, protocolByNetwork, StargateChainIdBychainId, tokenAddressByProtocol, tokensByNetwork } from "../../utils/constants";
 
@@ -34,29 +33,24 @@ const TradeContainer: React.FC<any> = () => {
     const { mutateAsync: sendToBiconomy } = useBiconomyProvider();
     const { mutateAsync: sendTxTrditionally } = useEoaProvider();
     const { mutateAsync: refinance } = useRefinance();
+    const { mutateAsync: refinanceForCC } = useCCRefinance();
 
     const switchChain = useSwitchChain();
     const signer: any = useSigner(); // Detect the connected address
     const connect = useConnect();
     const metamaskConfig = metamaskWallet();
-    const { mutateAsync: sendTxToChain } = useSendTx();
     const { mutateAsync: simulateTx } = useSimulate();
     const { mutateAsync: generateAbisForContract } = useGenerateAbis();
     const { mutateAsync: onChangeTokenInHook } = useOnChangeTokenIn();
     const { mutateAsync: onChangeFunctionsHook } = useOnChangeFunctions();
-    const { mutateAsync: onChangeInputHook } = useOnChangeInput();
-    const { mutateAsync: fetchNativeBalance } = useCalculatebalance();
 
     const { mutateAsync: switchOnSpecificChain } = useSwitchOnSpecificChain();
 
     const {
         scwBalance,
         smartAccount,
-        loading,
         setLoading,
-        connected,
         setSmartAccount,
-        setCurrentProvider,
         setConnected
     }: iGlobal = useGlobalStore((state) => state);
 
@@ -568,11 +562,11 @@ const TradeContainer: React.FC<any> = () => {
                 setAddToBatchLoading(false);
                 return;
             }
-            // if ((amountIn.length > 0) && (scwBalance < amountIn)) {
-            //     toast.error("You don't have enough funds to complete transaction");
-            //     setAddToBatchLoading(false);
-            //     return;
-            // }
+            if ((amountIn.length > 0) && (scwBalance < amountIn)) {
+                toast.error("You don't have enough funds to complete transaction");
+                setAddToBatchLoading(false);
+                return;
+            }
             if (addToBatchLoading) {
                 toast.error("wait, tx loading");
                 setAddToBatchLoading(false);
@@ -610,18 +604,35 @@ const TradeContainer: React.FC<any> = () => {
                 bg(amountIn).multipliedBy(bg(10).pow(fromTokenDecimal)).toString()
             );
             const _tempAmount = BigNumber.from(bg(amountIn).multipliedBy(bg(10).pow(fromTokenDecimal)).toString());
-            const txHash = await refinance({
-                isSCW: isSCW,
-                fromProtocol: selectedFromProtocol,
-                toProtocol: selectedToProtocol,
-                tokenIn: "",
-                tokenInName: selectedFromToken,
-                tokenOut: "",
-                tokenOutName: selectedToToken,
-                amount: _tempAmount,
-                address: isSCW ? smartAccount.address : address,
-                provider,
-            });
+
+            let txHash;
+            if (selectedFromNetwork.chainName == selectedToNetwork.chainName) {
+                txHash = await refinance({
+                    isSCW: isSCW,
+                    fromProtocol: selectedFromProtocol,
+                    toProtocol: selectedToProtocol,
+                    tokenIn: "",
+                    tokenInName: selectedFromToken,
+                    tokenOut: "",
+                    tokenOutName: selectedToToken,
+                    amount: _tempAmount,
+                    address: isSCW ? smartAccount.address : address,
+                    provider,
+                });
+            } else {
+                txHash = await refinanceForCC({
+                    isSCW: isSCW,
+                    fromProtocol: selectedFromProtocol,
+                    toProtocol: selectedToProtocol,
+                    tokenIn: "",
+                    tokenInName: selectedFromToken,
+                    tokenOut: "",
+                    tokenOutName: selectedToToken,
+                    amount: _tempAmount,
+                    address: isSCW ? smartAccount.address : address,
+                    provider,
+                });
+            }
 
             const simulation = {
                 isSuccess: true,

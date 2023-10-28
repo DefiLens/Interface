@@ -252,7 +252,7 @@ const Trade: React.FC<any> = ({
                                 </div>
                             </div>
                         </div>
-                    ) 
+                    )
                     // : showCrossChainSelectionMenu ? (
                     //      <div className="w-full bg-gray-50 flex flex-col gap-2 shadow-md shadow-primary-950 rounded-lg cursor-pointer p-3">
                     //         <MdOutlineArrowBack
@@ -285,13 +285,13 @@ const Trade: React.FC<any> = ({
                     //                                         {contractDetails.contractName}
                     //                                     </div>
                     //                                 </div>
-                                                    
+
                     //                             </div>
                     //                         ))}
                     //                         {funcArray && funcArray.length > 0 && (
                     //                             <>
                     //                                 <h5 className="text-sm md:text-base font-medium md:font-semibold text-slate-800 mt-5">
-                    //                                     Select Destination Chain Method :  
+                    //                                     Select Destination Chain Method :
                     //                                 </h5>
                     //                                 <div className="bg-slate-200 rounded-lg p-1 my-1">
                     //                                     {funcArray.map((funcName: any, funcIndex: number) => (
@@ -316,7 +316,7 @@ const Trade: React.FC<any> = ({
                     //             </div>
                     //         </div>
                     //     </div>
-                    // ) 
+                    // )
                     :  (
                         <div className="w-full bg-gray-50 flex flex-col gap-1 shadow-md shadow-primary-950 rounded-2xl cursor-pointer">
                             <h1 className="w-full bg-purple-950 text-white text-lg md:text-xl lg:text-2xl text-center font-bold rounded-t-2xl p-5">
@@ -486,7 +486,7 @@ const Trade: React.FC<any> = ({
                                 </div>
 
                                 {/* ---------- Contract Address Section START ---------- */}
-                                {/* {selectedFromNetwork.chainName && 
+                                {/* {selectedFromNetwork.chainName &&
                                 selectedToNetwork.chainName &&
                                 (selectedFromNetwork.chainName !== selectedToNetwork.chainName ) && (
                                     <div
@@ -593,7 +593,7 @@ const Trade: React.FC<any> = ({
                                             $0.00
                                         </div>
                                         <div className="absolute right-0 bottom-0 flex flex-col justify-center items-end gap-1">
-                                            <span 
+                                            <span
                                                 onClick={() => onChangeAmountIn(scwBalance ? scwBalance.toString() : "0")}
                                                 className="text-xs md:text-sm text-purple-100 font-medium bg-purple-700 rounded-xl px-3 py-1"
                                             >
@@ -639,7 +639,7 @@ const Trade: React.FC<any> = ({
                                     >
                                         {sendTxLoading && <ImSpinner className="animate-spin h-5 w-5" />}
                                         Execute Batch
-                    
+
                                     </button>
                                 </div>
                                 {/* ---------- Add Batch o List Section END ---------- */}
