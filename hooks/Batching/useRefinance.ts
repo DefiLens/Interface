@@ -5,10 +5,7 @@ import { useMutation } from "@tanstack/react-query";
 
 import { useUniswap } from "../useUniswap";
 import { useApprove } from "../useApprove";
-import ChainContext from "../../Context/ChainContext";
-import { useEoaProvider } from "../aaProvider/useEoaProvider";
 import { iTrade, useTradeStore } from "../../store/TradeStore";
-import { useBiconomyProvider } from "../aaProvider/useBiconomyProvider";
 import { iBatchingTxn, useBatchingTxnStore } from "../../store/BatchingTxnStore";
 import { iCrossChainDifi, useCrossChainDifiStore } from "../../store/CrossChainDifiStore";
 import { abiFetcher, abiFetcherNum, buildParams, nativeTokenFetcher, nativeTokenNum } from "./batchingUtils";
@@ -17,10 +14,8 @@ import { _functionType, _nonce, uniswapSwapRouterByChainId, V3_SWAP_ROUTER_ADDRE
 export function useRefinance() {
     const { mutateAsync: swap } = useUniswap();
     const { mutateAsync: approve } = useApprove();
-    // const { selectedChain, selectedChainId } = React.useContext(ChainContext);
 
     const { selectedFromNetwork }: iTrade = useTradeStore((state) => state);
-
 
     const { setTxHash }: iCrossChainDifi = useCrossChainDifiStore((state) => state);
     const { tokensData }: iBatchingTxn = useBatchingTxnStore((state) => state);
@@ -77,13 +72,8 @@ export function useRefinance() {
                 methodName = abiFetcher[selectedFromNetwork.chainName][abiNum]["withdrawMethodName"];
                 paramDetailsMethod = abiFetcher[selectedFromNetwork.chainName][abiNum]["withdrawParamDetailsMethod"];
                 tokenInContractAddress = abiFetcher[selectedFromNetwork.chainName][abiNum]["contractAddress"];
-
-                console.log("tokenInName", tokenInName, tokenInContractAddress);
-
                 const tokenInNum = nativeTokenNum[selectedFromNetwork.chainName][tokenInName];
-                console.log("tokenInNum", tokenInNum);
                 nativeTokenIn = nativeTokenFetcher[selectedFromNetwork.chainName][tokenInNum].nativeToken;
-                console.log("nativeTokenIn", nativeTokenIn);
 
                 abiInterface = new ethers.utils.Interface([abi]);
                 params = await buildParams({
@@ -114,9 +104,9 @@ export function useRefinance() {
                 });
                 if (approveData) tempTxs.push(approveData);
                 swapData = await swap({
-                    tokenIn: nativeTokenIn, //: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
-                    tokenOut: nativeTokenOut, // nativeTokenOut, //: "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
-                    amountIn: amount, //: BigNumber.from('1000000'),
+                    tokenIn: nativeTokenIn,
+                    tokenOut: nativeTokenOut,
+                    amountIn: amount,
                     address,
                     type: "exactIn",
                 });
@@ -132,14 +122,6 @@ export function useRefinance() {
                 methodName = abiFetcher[selectedFromNetwork.chainName][abiNum]["depositMethodName"];
                 paramDetailsMethod = abiFetcher[selectedFromNetwork.chainName][abiNum]["depositParamDetailsMethod"];
                 const tokenOutContractAddress = abiFetcher[selectedFromNetwork.chainName][abiNum]["contractAddress"];
-                console.log(
-                    "tokenOutContractAddress",
-                    tokenOutContractAddress,
-                    paramDetailsMethod,
-                    methodName,
-                    abi,
-                    provider
-                );
 
                 const approveData = await approve({
                     tokenIn: newTokenIn,

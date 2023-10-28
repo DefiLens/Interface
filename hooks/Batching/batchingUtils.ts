@@ -139,38 +139,49 @@ export const nativeTokenFetcher = {
     base: {
         "1": {
             nativeToken: "0xd9aAEc86B65D86f6A7B5B1b0c42FFA531710b6CA", // USDC
+            symbol: "usdc"
         },
         "2": {
             nativeToken: "0x4200000000000000000000000000000000000006", // WETH
+            symbol: "weth"
         },
         "3": {
             nativeToken: "0x2Ae3F1Ec7F1F5012CFEab0185bfc7aa3cf0DEc22", // cbETH
+            symbol: "cbeth"
         },
     },
     polygon: {
         "1": {
             nativeToken: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
+            symbol: "usdc"
         },
         "2": {
             nativeToken: "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
+            symbol: "usdt"
         },
         "3": {
             nativeToken: "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063",
+            symbol: "dai"
         },
         "4": {
             nativeToken: "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619",
+            symbol: "weth"
         },
         "5": {
             nativeToken: "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+            symbol: "wmatic"
         },
         "6": {
             nativeToken: "0xD6DF932A45C0f255f85145f286eA0b292B21C90B",
+            symbol: "aave"
         },
         "7": {
             nativeToken: "0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6",
+            symbol: "wbtc"
         },
         "8": {
             nativeToken: "0x9a71012B13CA4d3D0Cdc72A177DF3ef03b0E76A3",
+            symbol: "bal"
         },
     },
 };
@@ -226,5 +237,67 @@ export async function fetchApy({ protocol, contractAddress, provider, signer, to
         let supplyRate = await protocolInstance?.getSupplyRate(utilization);
         supplyRate = bg(supplyRate.toString()).dividedBy(1e18).multipliedBy(bg(SecondsPerYear).multipliedBy(100));
         return supplyRate;
+    }
+}
+
+interface ChainPing {
+    [network: string]: string;
+}
+
+interface StarGateRouter {
+    [network: string]: string;
+}
+
+interface Tokens {
+    [tokenName: string]: string;
+}
+
+export const chainPingByNetwork: ChainPing= {
+    '137': '0x664BFAA3ce3C03aAf18EC2627d81f439576f7969',
+    // '106': '0x6FE8e3E0c47043f136640dF7972C1e3F144B807F',
+    '43114': '0x934E5421D4ce678ae4c4B136306Fbee91bfDBbC8',
+    '42161': '0xBA821135197bB2614F5Bd8943b5d1607288DC60d',
+    // '111': '0x934E5421D4ce678ae4c4B136306Fbee91bfDBbC8',
+    "10": '0x2b2ED70C5B25b71CaA766C1054092A9Ff0900df0',
+    '1': '0x0000000000000000000000000000000000000000',
+    '8453': '0x5764FfF7629c03aFE36AA35114C250b2218a77E2',
+}
+
+// export const starGateRouterByNetwork: StarGateRouter = {
+//     '137': '0x45A01E4e04F14f7A4a6702c74187c5F6222033cd',
+//     '43114': '0x45A01E4e04F14f7A4a6702c74187c5F6222033cd',
+//     '42161': '0x53Bf833A5d6c4ddA888F69c22C88C9f356a41614',
+//     '10': '0xB0D502E938ed5f4df2E681fE6E419ff29631d62b',
+//     '1': '0x8731d54E9D02c286767d56ac03e8037C07e01e98',
+//     '8453': '0x45f1A95A4D3f3836523F5c83673c797f4d4d263B',
+// }
+
+export const starGateRouterByNetwork: StarGateRouter = {
+    '137': '0xeCc19E177d24551aA7ed6Bc6FE566eCa726CC8a9',
+    '43114': '0xeCc19E177d24551aA7ed6Bc6FE566eCa726CC8a9',
+    '42161': '0xeCc19E177d24551aA7ed6Bc6FE566eCa726CC8a9',
+    '10': '0xeCc19E177d24551aA7ed6Bc6FE566eCa726CC8a9',
+    '1': '0xeCc19E177d24551aA7ed6Bc6FE566eCa726CC8a9',
+    '8453': '0xeCc19E177d24551aA7ed6Bc6FE566eCa726CC8a9',
+}
+
+export const tokensByNetworkForCC: Record<string, Tokens> = {
+    '137':  {
+        usdc: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
+    },
+    '43114':  {
+        usdc: '0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E',
+    },
+    '42161':  {
+        usdc: '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8',
+    },
+    '10':  {
+        usdc: '0x7F5c764cBc14f9669B88837ca1490cCa17c31607',
+    },
+    '1':  {
+        usdc: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
+    },
+    '8453':  {
+        usdc: '0xd9aAEc86B65D86f6A7B5B1b0c42FFA531710b6CA',
     }
 }

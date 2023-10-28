@@ -5,36 +5,27 @@ import { toast } from "react-hot-toast";
 import { BigNumber as bg } from "bignumber.js";
 
 import Image from "next/image";
-import { FiCopy } from "react-icons/fi";
 import { ImSpinner } from "react-icons/im";
-import { FaChevronDown } from "react-icons/fa";
-import { ChainId } from "@biconomy/core-types";
 import { AiOutlineSearch } from "react-icons/ai";
-import { HiOutlineRefresh } from "react-icons/hi";
-import { IBundler, Bundler } from "@biconomy/bundler";
 import { MdOutlineArrowBack, MdDelete } from "react-icons/md";
-import { IPaymaster, BiconomyPaymaster } from "@biconomy/paymaster";
 import { MdKeyboardArrowUp, MdKeyboardArrowDown } from "react-icons/md";
-import { BiSolidRightArrowCircle, BiSolidChevronDown } from "react-icons/bi";
-import { DEFAULT_ENTRYPOINT_ADDRESS, BiconomySmartAccountConfig, BiconomySmartAccount } from "@biconomy/account";
-import { useSwitchChain, useSigner, useCreateAccount, useConnect, useChain, useAddress, metamaskWallet } from "@thirdweb-dev/react";
+import { useSwitchChain, useSigner, useConnect, useChain, useAddress, metamaskWallet } from "@thirdweb-dev/react";
 
 import { tTrade } from "./types";
 import IERC20 from "../../abis/IERC20.json";
-import { useSendTx } from "../../hooks/useSendTx";
 import { useSimulate } from "../../hooks/useSimulate";
 import UNISWAP_TOKENS from "../../abis/tokens/Uniswap.json";
 import { useGenerateAbis } from "../../hooks/useGenerateAbis";
 import { useRefinance } from "../../hooks/Batching/useRefinance";
+import { useCCRefinance } from "../../hooks/Batching/useCCRefinance";
 import { useGlobalStore, iGlobal } from "../../store/GlobalStore";
 import { useCalculatebalance } from "../../hooks/useCalculateBalance";
 import { useEoaProvider } from "../../hooks/aaProvider/useEoaProvider";
 import { useSwitchOnSpecificChain } from "../../hooks/useSwitchOnSpecificChain";
-import { getNetworkAndContractData, fetchMethodParams } from "../../utils/apis";
+import { getNetworkAndContractData } from "../../utils/apis";
 import { useTradeStore, iTrade, iSelectedNetwork } from "../../store/TradeStore";
 import { useBiconomyProvider } from "../../hooks/aaProvider/useBiconomyProvider";
-import { shorten, setSafeState, chooseChianId, buildTxHash } from "../../utils/helper";
-import { useCrossChainDifiStore, iCrossChainDifi } from "../../store/CrossChainDifiStore";
+import { shorten, setSafeState, buildTxHash } from "../../utils/helper";
 import { useOnChangeTokenIn, useOnChangeInput, useOnChangeFunctions } from "../../hooks/useOnChangeMainForm";
 import { warning, swap, polygon, optimism, gas, downLine, bridgeCost, base, avalanche } from "../../assets/images";
 import { getProvider, getErc20Decimals, getErc20Balanceof, getContractInstance } from "../../utils/web3Libs/ethers";
@@ -49,30 +40,24 @@ const Trade: React.FC<any> = ({}: tTrade) => {
     const { mutateAsync: sendToBiconomy } = useBiconomyProvider();
     const { mutateAsync: sendTxTrditionally } = useEoaProvider();
     const { mutateAsync: refinance } = useRefinance();
+    const { mutateAsync: refinanceForCC } = useCCRefinance();
 
     const switchChain = useSwitchChain();
     const signer: any = useSigner(); // Detect the connected address
     const connect = useConnect();
     const metamaskConfig = metamaskWallet();
-    const { mutateAsync: sendTxToChain } = useSendTx();
     const { mutateAsync: simulateTx } = useSimulate();
     const { mutateAsync: generateAbisForContract } = useGenerateAbis();
     const { mutateAsync: onChangeTokenInHook } = useOnChangeTokenIn();
     const { mutateAsync: onChangeFunctionsHook } = useOnChangeFunctions();
-    const { mutateAsync: onChangeInputHook } = useOnChangeInput();
-    const { mutateAsync: fetchNativeBalance } = useCalculatebalance();
 
     const { mutateAsync: switchOnSpecificChain } = useSwitchOnSpecificChain();
 
     const {
         scwBalance,
         smartAccount,
-        
-        loading,
         setLoading,
-        connected,
         setSmartAccount,
-        setCurrentProvider,
         setConnected
     }: iGlobal = useGlobalStore((state) => state);
 
@@ -225,7 +210,7 @@ const Trade: React.FC<any> = ({}: tTrade) => {
         setCurrentFuncIndex(0);
         setIsThisFieldAmount(-1);
     };
-    
+
     const handleSelectFromNetwork = (_fromNetwork: iSelectedNetwork) => {
         setLoading(true);
         setCurrentFunc("");
@@ -302,10 +287,10 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                     setFromTokenDecimal(0);
                     // setFromTokenBalanceForSCW(BIG_ZERO);
                     // setFromTokenBalanceForEOA(BIG_ZERO);
-                    
+
                     const firstFromToken = protocolByNetwork[selectedFromNetwork.chainName][selectedFromProtocol][0].name;
                     // setSelectedFromToken(firstFromToken);
-                    
+
                     const provider = await getProvider(selectedFromNetwork.chainId);
                     const tokenAddress = tokenAddressByProtocol[selectedFromNetwork.chainName][selectedFromProtocol][firstFromToken];
                     const erc20 = await getContractInstance(tokenAddress, IERC20, provider);
@@ -623,18 +608,35 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                 bg(amountIn).multipliedBy(bg(10).pow(fromTokenDecimal)).toString()
             );
             const _tempAmount = BigNumber.from(bg(amountIn).multipliedBy(bg(10).pow(fromTokenDecimal)).toString());
-            const txHash = await refinance({
-                isSCW: isSCW,
-                fromProtocol: selectedFromProtocol,
-                toProtocol: selectedToProtocol,
-                tokenIn: "",
-                tokenInName: selectedFromToken,
-                tokenOut: "",
-                tokenOutName: selectedToToken,
-                amount: _tempAmount,
-                address: isSCW ? smartAccount.address : address,
-                provider,
-            });
+
+            let txHash;
+            if (selectedFromNetwork.chainName == selectedToNetwork.chainName) {
+                txHash = await refinance({
+                    isSCW: isSCW,
+                    fromProtocol: selectedFromProtocol,
+                    toProtocol: selectedToProtocol,
+                    tokenIn: "",
+                    tokenInName: selectedFromToken,
+                    tokenOut: "",
+                    tokenOutName: selectedToToken,
+                    amount: _tempAmount,
+                    address: isSCW ? smartAccount.address : address,
+                    provider,
+                });
+            } else {
+                txHash = await refinanceForCC({
+                    isSCW: isSCW,
+                    fromProtocol: selectedFromProtocol,
+                    toProtocol: selectedToProtocol,
+                    tokenIn: "",
+                    tokenInName: selectedFromToken,
+                    tokenOut: "",
+                    tokenOutName: selectedToToken,
+                    amount: _tempAmount,
+                    address: isSCW ? smartAccount.address : address,
+                    provider,
+                });
+            }
 
             const simulation = {
                 isSuccess: true,
@@ -877,7 +879,7 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                                 </div>
                             </div>
                         </div>
-                    ) 
+                    )
                     // : showCrossChainSelectionMenu ? (
                     //      <div className="w-full bg-gray-50 flex flex-col gap-2 shadow-md shadow-primary-950 rounded-lg cursor-pointer p-3">
                     //         <MdOutlineArrowBack
@@ -910,13 +912,13 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                     //                                         {contractDetails.contractName}
                     //                                     </div>
                     //                                 </div>
-                                                    
+
                     //                             </div>
                     //                         ))}
                     //                         {funcArray && funcArray.length > 0 && (
                     //                             <>
                     //                                 <h5 className="text-sm md:text-base font-medium md:font-semibold text-slate-800 mt-5">
-                    //                                     Select Destination Chain Method :  
+                    //                                     Select Destination Chain Method :
                     //                                 </h5>
                     //                                 <div className="bg-slate-200 rounded-lg p-1 my-1">
                     //                                     {funcArray.map((funcName: any, funcIndex: number) => (
@@ -941,7 +943,7 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                     //             </div>
                     //         </div>
                     //     </div>
-                    // ) 
+                    // )
                     :  (
                         <div className="w-full bg-gray-50 flex flex-col gap-1 shadow-md shadow-primary-950 rounded-2xl cursor-pointer">
                             <h1 className="w-full bg-purple-950 text-white text-lg md:text-xl lg:text-2xl text-center font-bold rounded-t-2xl p-5">
@@ -1111,7 +1113,7 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                                 </div>
 
                                 {/* ---------- Contract Address Section START ---------- */}
-                                {/* {selectedFromNetwork.chainName && 
+                                {/* {selectedFromNetwork.chainName &&
                                 selectedToNetwork.chainName &&
                                 (selectedFromNetwork.chainName !== selectedToNetwork.chainName ) && (
                                     <div
@@ -1218,7 +1220,7 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                                             $0.00
                                         </div>
                                         <div className="absolute right-0 bottom-0 flex flex-col justify-center items-end gap-1">
-                                            <span 
+                                            <span
                                                 onClick={() => onChangeAmountIn(scwBalance ? scwBalance.toString() : "0")}
                                                 className="text-xs md:text-sm text-purple-100 font-medium bg-purple-700 rounded-xl px-3 py-1"
                                             >
@@ -1261,7 +1263,7 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                                     >
                                         {sendTxLoading && <ImSpinner className="animate-spin h-5 w-5" />}
                                         Execute Batch
-                    
+
                                     </button>
                                 </div>
                                 {/* ---------- Add Batch o List Section END ---------- */}
