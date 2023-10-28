@@ -1,7 +1,7 @@
 import { useContext } from "react";
 
 import { toast } from "react-hot-toast";
-import { ethers, BigNumber } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { BigNumber as bg } from "bignumber.js";
 
 import { parseEther } from "ethers/lib/utils";
@@ -11,14 +11,14 @@ import IERC20 from "../abis/IERC20.json";
 import ChainPing from "../abis/ChainPing.json";
 import ChainContext from "../Context/ChainContext";
 import IStarGateRouter from "../abis/IStarGateRouter.json";
-import { useTradeStore, iTrade } from "../store/TradeStore";
+import { iTrade, useTradeStore } from "../store/TradeStore";
 import { useEoaProvider } from "./aaProvider/useEoaProvider";
-import { useGlobalStore, iGlobal } from "../store/GlobalStore";
-import { chooseChianId, calculateFees, batch } from "../utils/helper";
+import { iGlobal, useGlobalStore } from "../store/GlobalStore";
+import { batch, calculateFees, chooseChianId } from "../utils/helper";
 import { useBiconomyProvider } from "./aaProvider/useBiconomyProvider";
-import { gasFeesNames, _nonce, _functionType } from "../utils/constants";
-import { useCrossChainDifiStore, iCrossChainDifi } from "../store/CrossChainDifiStore";
-import { getErc20Balanceof, getErc20Allownace, getContractInstance } from "../utils/web3Libs/ethers";
+import { _functionType, _nonce, gasFeesNames } from "../utils/constants";
+import { iCrossChainDifi, useCrossChainDifiStore } from "../store/CrossChainDifiStore";
+import { getContractInstance, getErc20Allownace, getErc20Balanceof } from "../utils/web3Libs/ethers";
 
 export function useSendTx() {
     const { smartAccount, currentProvider }: iGlobal = useGlobalStore((state) => state);
@@ -60,13 +60,34 @@ export function useSendTx() {
             } else {
                 setSendtxLoadingForEoa(true);
             }
-            if (!address) throw "Connect a wallet or refresh it";
-            if (!smartAccount) throw "You need to login";
-            if (!simulation) throw "First simulate then send Tx";
-            if (contractIndex == "") throw "Enter contractIndex field";
-            if (!amountIn) throw "Enter amountIn field";
-            if (!isThisAmount) throw "Select amount field";
-            if (!allNetworkData) throw "a need to fetch";
+            if (!address) {
+                toast.error("Connect a wallet or refresh it");
+                return;
+            };
+            if (!smartAccount) {
+                toast.error("You need to login");
+                return;
+            };
+            if (!simulation) {
+                toast.error("First simulate then send Tx");
+                return;
+            };
+            if (contractIndex == "") {
+                toast.error("Enter contractIndex field");
+                return;
+            };
+            if (!amountIn) {
+                toast.error("Enter amountIn field");
+                return;
+            };
+            if (!isThisAmount) {
+                toast.error("Select amount field");
+                return;
+            };
+            if (!allNetworkData) {
+                toast.error("a need to fetch");
+                return;
+            };
 
             const _tempAmount = BigNumber.from(bg(amountIn).multipliedBy(bg(10).pow(tokenInDecimals)).toString());
 
@@ -92,11 +113,15 @@ export function useSendTx() {
             const balance = await getErc20Balanceof(USDT, _currentAddress);
 
             if (isSCW) {
-                if (BigNumber.from(balance).lt(BigNumber.from(_tempAmount)))
-                    throw "You don't have enough balance in SmartAccount";
+                if (BigNumber.from(balance).lt(BigNumber.from(_tempAmount))) {
+                    toast.error("You don't have enough balance in SmartAccount");
+                    return;
+                };
             } else {
-                if (BigNumber.from(balance).lt(BigNumber.from(_tempAmount)))
-                    throw "You don't have enough balance in EOA";
+                if (BigNumber.from(balance).lt(BigNumber.from(_tempAmount))) {
+                    toast.error("You don't have enough balance in EOA");
+                    return;
+                };
             }
 
             let approveTx;
@@ -210,9 +235,10 @@ export function useSendTx() {
 
             // Extra 1e18 should more as of now
             if (!currentBalance.gt(quoteData[0].add(parseEther("0")))) {
-                throw `Not Enough Balance, You should have at least ${minimumBalanceRequired.toString()} ${
+                toast.error(`Not Enough Balance, You should have at least ${minimumBalanceRequired.toString()} ${
                     gasFeesNames[selectedFromNetwork.chainName]
-                } in your SmartAccount wallet`;
+                } in your SmartAccount wallet`);
+                return;
             }
 
             console.log("stargateTx", stargateTx);

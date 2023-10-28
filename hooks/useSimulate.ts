@@ -1,6 +1,6 @@
 import axios from "axios";
 import { toast } from "react-hot-toast";
-import { ethers, BigNumber } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { BigNumber as bg } from "bignumber.js";
 
 import { useMutation } from "@tanstack/react-query";
@@ -10,12 +10,12 @@ import ChainPing from "../abis/ChainPing.json";
 import ChainContext from "../Context/ChainContext";
 import IStarGateRouter from "../abis/IStarGateRouter.json";
 import { useCalculateGasCost } from "./useCalculateGasCost";
-import { useTradeStore, iTrade } from "../store/TradeStore";
-import { useGlobalStore, iGlobal } from "../store/GlobalStore";
-import { chooseChianId, calculateFees, batch } from "../utils/helper";
-import { richAddressByChainId, _nonce, _functionType } from "../utils/constants";
-import { useCrossChainDifiStore, iCrossChainDifi } from "../store/CrossChainDifiStore";
-import { getProvider, getErc20Balanceof, getContractInstance } from "../utils/web3Libs/ethers";
+import { iTrade, useTradeStore } from "../store/TradeStore";
+import { iGlobal, useGlobalStore } from "../store/GlobalStore";
+import { batch, calculateFees, chooseChianId } from "../utils/helper";
+import { _functionType, _nonce, richAddressByChainId } from "../utils/constants";
+import { iCrossChainDifi, useCrossChainDifiStore } from "../store/CrossChainDifiStore";
+import { getContractInstance, getErc20Balanceof, getProvider } from "../utils/web3Libs/ethers";
 
 bg.config({ DECIMAL_PLACES: 18 });
 
@@ -70,11 +70,26 @@ export function useSimulate() {
             setSimulation("");
             setTxHash("");
 
-            if (!smartAccount) throw "You need to login";
-            if (contractIndex == "") throw "Enter contractIndex field";
-            if (!amountIn) throw "Enter amountIn field";
-            if (!isThisAmount) throw "Select amount field";
-            if (!allNetworkData) throw "a need to fetch";
+            if (!smartAccount) {
+                toast.error("You need to login");
+                return;
+            };
+            if (contractIndex == "") {
+                toast.error("Enter contractIndex field");
+                return;
+            }; 
+            if (!amountIn) {
+                toast.error("Enter amountIn field");
+                return;
+            };
+            if (!isThisAmount) {
+                toast.error("Select amount field");
+                return;
+            };
+            if (!allNetworkData) {
+                toast.error("a need to fetch");
+                return;
+            };
             const _tempAmount = BigNumber.from(bg(amountIn).multipliedBy(bg(10).pow(tokenInDecimals)).toString());
 
             const provider = await getProvider(selectedFromNetwork.chainId);
@@ -86,7 +101,10 @@ export function useSimulate() {
             const USDT = await getContractInstance(tokenIn, IERC20, provider);
             if (!USDT) return;
             const balance = await getErc20Balanceof(USDT, smartAccount.address);
-            // if (BigNumber.from(balance).lt(BigNumber.from(amountIn))) throw "You don't have enough balance"
+            // if (BigNumber.from(balance).lt(BigNumber.from(amountIn))) {
+                // toast.error("You don't have enough balance");
+                // return ;
+            // };
 
             const approveData = await USDT.populateTransaction.approve(fromStarGateRouter, _tempAmount);
             const approveTx = { to: approveData.to, data: approveData.data };
@@ -141,7 +159,7 @@ export function useSimulate() {
                 );
             }
 
-            // alert("toUsdc"+toUsdc)
+            // toast.error("toUsdc"+toUsdc)
 
             const srcAddress = ethers.utils.solidityPack(["address"], [smartAccount.address]);
             let abiInterfaceForChainPing = new ethers.utils.Interface(ChainPing);

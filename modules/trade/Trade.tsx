@@ -11,13 +11,13 @@ import { FaChevronDown } from "react-icons/fa";
 import { ChainId } from "@biconomy/core-types";
 import { AiOutlineSearch } from "react-icons/ai";
 import { HiOutlineRefresh } from "react-icons/hi";
-import { IBundler, Bundler } from "@biconomy/bundler";
-import { MdOutlineArrowBack, MdDelete } from "react-icons/md";
-import { IPaymaster, BiconomyPaymaster } from "@biconomy/paymaster";
-import { MdKeyboardArrowUp, MdKeyboardArrowDown } from "react-icons/md";
-import { BiSolidRightArrowCircle, BiSolidChevronDown } from "react-icons/bi";
-import { DEFAULT_ENTRYPOINT_ADDRESS, BiconomySmartAccountConfig, BiconomySmartAccount } from "@biconomy/account";
-import { useSwitchChain, useSigner, useCreateAccount, useConnect, useChain, useAddress, metamaskWallet } from "@thirdweb-dev/react";
+import { Bundler, IBundler } from "@biconomy/bundler";
+import { MdDelete, MdOutlineArrowBack } from "react-icons/md";
+import { BiconomyPaymaster, IPaymaster } from "@biconomy/paymaster";
+import { MdKeyboardArrowDown, MdKeyboardArrowUp } from "react-icons/md";
+import { BiSolidChevronDown, BiSolidRightArrowCircle } from "react-icons/bi";
+import { BiconomySmartAccount, BiconomySmartAccountConfig, DEFAULT_ENTRYPOINT_ADDRESS } from "@biconomy/account";
+import { metamaskWallet, useAddress, useChain, useConnect, useCreateAccount, useSigner, useSwitchChain } from "@thirdweb-dev/react";
 
 import { tTrade } from "./types";
 import IERC20 from "../../abis/IERC20.json";
@@ -26,19 +26,19 @@ import { useSimulate } from "../../hooks/useSimulate";
 import UNISWAP_TOKENS from "../../abis/tokens/Uniswap.json";
 import { useGenerateAbis } from "../../hooks/useGenerateAbis";
 import { useRefinance } from "../../hooks/Batching/useRefinance";
-import { useGlobalStore, iGlobal } from "../../store/GlobalStore";
+import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import { useCalculatebalance } from "../../hooks/useCalculateBalance";
 import { useEoaProvider } from "../../hooks/aaProvider/useEoaProvider";
 import { useSwitchOnSpecificChain } from "../../hooks/useSwitchOnSpecificChain";
-import { getNetworkAndContractData, fetchMethodParams } from "../../utils/apis";
-import { useTradeStore, iTrade, iSelectedNetwork } from "../../store/TradeStore";
+import { fetchMethodParams, getNetworkAndContractData } from "../../utils/apis";
+import { iSelectedNetwork, iTrade, useTradeStore } from "../../store/TradeStore";
 import { useBiconomyProvider } from "../../hooks/aaProvider/useBiconomyProvider";
-import { shorten, setSafeState, chooseChianId, buildTxHash } from "../../utils/helper";
-import { useCrossChainDifiStore, iCrossChainDifi } from "../../store/CrossChainDifiStore";
-import { useOnChangeTokenIn, useOnChangeInput, useOnChangeFunctions } from "../../hooks/useOnChangeMainForm";
-import { warning, swap, polygon, optimism, gas, downLine, bridgeCost, base, avalanche } from "../../assets/images";
-import { getProvider, getErc20Decimals, getErc20Balanceof, getContractInstance } from "../../utils/web3Libs/ethers";
-import { tokensByNetwork, tokenAddressByProtocol, protocolNames, protocolByNetwork, paymasterURLs, NetworkNameByStargateChainId, NetworkNameByChainId, NetworkLogoByChainId, NETWORK_LIST, methodWithApi, gasFeesNamesByChainId, bundlerURLs, BIG_ZERO, _nonce, _functionType, StargateChainIdBychainId } from "../../utils/constants";
+import { buildTxHash, chooseChianId, setSafeState, shorten } from "../../utils/helper";
+import { iCrossChainDifi, useCrossChainDifiStore } from "../../store/CrossChainDifiStore";
+import { useOnChangeFunctions, useOnChangeInput, useOnChangeTokenIn } from "../../hooks/useOnChangeMainForm";
+import { avalanche, base, bridgeCost, downLine, gas, optimism, polygon, swap, warning } from "../../assets/images";
+import { getContractInstance, getErc20Balanceof, getErc20Decimals, getProvider } from "../../utils/web3Libs/ethers";
+import { _functionType, _nonce, BIG_ZERO, bundlerURLs, gasFeesNamesByChainId, methodWithApi, NETWORK_LIST, NetworkLogoByChainId, NetworkNameByChainId, NetworkNameByStargateChainId, paymasterURLs, protocolByNetwork, protocolNames, StargateChainIdBychainId, tokenAddressByProtocol, tokensByNetwork } from "../../utils/constants";
 
 bg.config({ DECIMAL_PLACES: 10 });
 
@@ -158,11 +158,11 @@ const Trade: React.FC<any> = ({}: tTrade) => {
     const handleContractAddress = async (_contractIndex: string, _contractDetail: any) => {
         console.log("🚀  _contractIndex: string, _contractDetail: any:", _contractIndex, _contractDetail)
         // if (simulateLoading || sendTxLoading || sendTxLoadingForEoa) {
-        //     alert("wait, tx loading currently ...");
+        //     toast.error("wait, tx loading currently ...");
         //     return;
         // }
         if (!smartAccount) {
-            alert("You need to biconomy login");
+            toast.error("You need to biconomy login");
             return;
         }
         setContractIndex(_contractIndex);
@@ -171,7 +171,10 @@ const Trade: React.FC<any> = ({}: tTrade) => {
 
     // for e.g usdt -> usdc
     const onChangeTokenIn = async (tokenIn: any) => {
-        if (!selectedFromNetwork.chainId) return alert("From network is not selecetd yet");
+        if (!selectedFromNetwork.chainId) {
+            toast.error("From network is not selecetd yet");
+            return;
+        } 
         const provider = await getProvider(selectedFromNetwork.chainId);
 
         const token = tokensByNetwork[selectedFromNetwork.chainId];
@@ -188,7 +191,7 @@ const Trade: React.FC<any> = ({}: tTrade) => {
         await onChangeTokenInHook({ fromChainId: chainId, tokenIn });
     };
 
-    const onChangeFunctions = async (funcIndex) => {
+    const onChangeFunctions = async (funcIndex: any) => {
         if (funcIndex == "") return toast.error("Please select operation");
         await onChangeFunctionsHook({ funcIndex, address });
     };
@@ -658,10 +661,10 @@ const Trade: React.FC<any> = ({}: tTrade) => {
 
             setAddToBatchLoading(false);
             setShowBatchList(true);
-        } catch (error) {
+        } catch (error: any) {
             setAddToBatchLoading(false);
             setShowBatchList(true);
-            alert(error);
+            toast.error(error);
             console.log("sendBatch-error", error);
         }
     };
@@ -1224,8 +1227,11 @@ const Trade: React.FC<any> = ({}: tTrade) => {
                                             >
                                                 Max
                                             </span>
-                                            <span className="text-xs md:text-sm text-slate-600 font-medium ">
-                                                / {scwBalance ? scwBalance : 0 }
+                                            <span className="flex gap-2 text-xs md:text-sm text-slate-600 font-semibold">
+                                                / {scwBalance ? scwBalance : 0 }  
+                                                <span className="text-slate-700">
+                                                    {selectedFromToken && selectedFromToken}
+                                                </span>
                                             </span>
                                         </div>
                                     </div>

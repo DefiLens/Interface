@@ -179,7 +179,10 @@ const CrossChainDefi: React.FC<{}> = () => {
                     apiUrl
                 );
                 console.log("🚀 ~ file: index.tsx:239 ~ updateParams ~ response:", response);
-                if (!response.data) throw "api error";
+                if (!response.data) {
+                    toast.error("api error");
+                    return;
+                };
                 let _func = [...params];
                 _func[currentFuncIndex] = response.data.params;
                 setParams(_func);
@@ -258,11 +261,11 @@ const CrossChainDefi: React.FC<{}> = () => {
     const onChangeFromNetwork = async (_fromNetwork: any) => {
         try {
             if (simulateLoading || sendTxLoading || sendTxLoadingForEoa) {
-                alert("wait, tx loading currently ...");
+                toast.error("wait, tx loading currently ...");
                 return;
             }
             if (!connected) {
-                alert("Please connect to metamask");
+                toast.error("Please connect to metamask");
                 setFromChainId("");
                 return;
             }
@@ -309,7 +312,7 @@ const CrossChainDefi: React.FC<{}> = () => {
     const onChangeToNetwork = async (toNetwork: any) => {
         try {
             if (simulateLoading || sendTxLoading || sendTxLoadingForEoa) {
-                alert("wait, tx loading currently ...");
+                toast.error("wait, tx loading currently ...");
                 return;
             }
             setIsSimulationSuccessOpen(false);
@@ -326,11 +329,11 @@ const CrossChainDefi: React.FC<{}> = () => {
 
     const handleContractAddress = async (_contractIndex) => {
         if (simulateLoading || sendTxLoading || sendTxLoadingForEoa) {
-            alert("wait, tx loading currently ...");
+            toast.error("wait, tx loading currently ...");
             return;
         }
         if (!smartAccount) {
-            alert("You need to biconomy login");
+            toast.error("You need to biconomy login");
             return;
         }
         setContractIndex(_contractIndex);
@@ -339,10 +342,13 @@ const CrossChainDefi: React.FC<{}> = () => {
     // for e.g usdt -> usdc
     const onChangeTokenIn = async (tokenIn: any) => {
         if (simulateLoading || sendTxLoading || sendTxLoadingForEoa) {
-            alert("wait, tx loading currently ...");
+            toast.error("wait, tx loading currently ...");
             return;
         }
-        if (!fromChainId) return alert("From network is not selecetd yet");
+        if (!fromChainId) {
+             toast.error("From network is not selecetd yet");
+             return
+        } 
         // const provider = await getProvider(selectedChainId);
         const provider = await getProvider(selectedFromNetwork.chainId);
 
@@ -362,11 +368,11 @@ const CrossChainDefi: React.FC<{}> = () => {
     // for e.g 0 -> 1000
     const handleAmountIn = async (_amountIn) => {
         if (simulateLoading || sendTxLoading || sendTxLoadingForEoa) {
-            alert("wait, tx loading currently ...");
+            toast.error("wait, tx loading currently ...");
             return;
         }
         if (!smartAccount) {
-            alert("You need to biconomy login");
+            toast.error("You need to biconomy login");
             return;
         }
         if (_amountIn) {
@@ -395,7 +401,7 @@ const CrossChainDefi: React.FC<{}> = () => {
     //     if (index >= 0) {
     //         setIsThisFieldAmount(index);
     //     } else {
-    //         alert("Somethig gets wrong");
+    //         toast.error("Somethig gets wrong");
     //     }
     // };
 

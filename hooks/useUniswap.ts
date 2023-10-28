@@ -1,4 +1,5 @@
 import { BigNumber } from "ethers";
+import toast from "react-hot-toast";
 
 import { parseUnits } from "ethers/lib/utils";
 import { useMutation } from "@tanstack/react-query";
@@ -19,7 +20,10 @@ export function useUniswap() {
     async function swap({ tokenIn, tokenOut, amountIn, address, type }: any) {
         try {
             const web3JsonProvider = await getProvider(selectedFromNetwork.chainId);
-            if (!web3JsonProvider) throw "No provider";
+            if (!web3JsonProvider) {
+                toast.error("No provider");
+                return;
+            };
             const router = new AlphaRouter({
                 chainId: BigNumber.from(selectedFromNetwork.chainId).toNumber(),
                 provider: web3JsonProvider,

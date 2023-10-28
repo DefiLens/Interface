@@ -1,19 +1,20 @@
 import * as React from "react";
 
+import toast from "react-hot-toast";
 import { BigNumber as bg } from "bignumber.js";
 
 import { MdDelete } from "react-icons/md";
 import { ImSpinner } from "react-icons/im";
 import { BiSolidRightArrowCircle } from "react-icons/bi";
-import { LiaChevronUpSolid, LiaChevronDownSolid } from "react-icons/lia";
+import { LiaChevronDownSolid, LiaChevronUpSolid } from "react-icons/lia";
 
 import ChainContext from "../../Context/ChainContext";
-import { shorten, buildTxHash } from "../../utils/helper";
-import { useTradeStore, iTrade } from "../../store/TradeStore";
+import { buildTxHash, shorten } from "../../utils/helper";
+import { iTrade, useTradeStore } from "../../store/TradeStore";
 import { useEoaProvider } from "../../hooks/aaProvider/useEoaProvider";
-import { BIG_ZERO, _nonce, _functionType } from "../../utils/constants";
+import { _functionType, _nonce, BIG_ZERO } from "../../utils/constants";
 import { useBiconomyProvider } from "../../hooks/aaProvider/useBiconomyProvider";
-import { useBatchingTxnStore, iBatchingTxn } from "../../store/BatchingTxnStore";
+import { iBatchingTxn, useBatchingTxnStore } from "../../store/BatchingTxnStore";
 import IndividualBatch from "../../components/BatchingComponenets/IndividualBatch";
 
 bg.config({ DECIMAL_PLACES: 10 });
@@ -66,7 +67,10 @@ const Batching: React.FC<{}> = () => {
 
     const updateInputValues = (index: number, txHash: string[], data: any) => {
         console.log("data: ", data, individualBatch);
-        if (txHash.length < 1) return alert("Please complete the last input before adding a new one.");
+        if (txHash.length < 1) {
+            toast.error("Please complete the last input before adding a new one.");
+            return;
+        } 
         if (individualBatch.length == 0) {
             setIndividualBatch([
                 ...individualBatch,

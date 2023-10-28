@@ -1,13 +1,16 @@
+import { BigNumber } from "ethers";
+import toast from "react-hot-toast";
+import { BigNumber as bg } from "bignumber.js";
+
 import { useMutation } from "@tanstack/react-query";
 
 import { useSimulate } from "./useSimulate";
 import { setSafeState } from "../utils/helper";
 import { fetchMethodParams } from "../utils/apis";
-import { useGlobalStore, iGlobal } from "../store/GlobalStore";
-import { useCrossChainDifiStore, iCrossChainDifi } from "../store/CrossChainDifiStore";
-import { tokensByNetwork, methodWithApi, _nonce, _functionType } from "../utils/constants";
-import { BigNumber } from "ethers";
-import { BigNumber as bg } from "bignumber.js";
+import { iGlobal, useGlobalStore } from "../store/GlobalStore";
+import { iCrossChainDifi, useCrossChainDifiStore } from "../store/CrossChainDifiStore";
+import { _functionType, _nonce, methodWithApi, tokensByNetwork } from "../utils/constants";
+
 bg.config({ DECIMAL_PLACES: 18 });
 
 export function useOnChangeTokenIn() {
@@ -87,7 +90,10 @@ export function useOnChangeFunctions() {
                 funcArray?.[funcIndex].name,
                 apiUrl
             );
-            if (!response.data) throw "api error";
+            if (!response.data) {
+                toast.error("api error");
+                return;
+            };
 
             let _func = [...params];
             _func[funcIndex] = response.data.params;
@@ -121,7 +127,10 @@ export function useOnChangeInput() {
 
     const onChangeInputHook = async ({ funcIndex, inputIndex, inputValue }) => {
         try {
-            if (!amountIn) throw "Enter amountIn field above";
+            if (!amountIn) {
+                toast.error("Enter amountIn field above");
+                return;
+            };
             setSafeState(setCurrentFunc, funcArray?.[funcIndex].name, "");
 
             let _params: any = [];
@@ -137,7 +146,7 @@ export function useOnChangeInput() {
             _func[funcIndex] = _params;
             setParams(_func);
         } catch (error) {
-            alert("InputError: " + error);
+            toast.error("InputError: " + error);
         }
     };
     return useMutation(onChangeInputHook);

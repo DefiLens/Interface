@@ -1,23 +1,23 @@
-import { useEffect, useContext } from "react";
+import { useContext, useEffect } from "react";
 
 import web3 from "web3";
 import axios from "axios";
 import { toast } from "react-hot-toast";
-import { ethers, BigNumber } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { BigNumber as bg } from "bignumber.js";
 
-import { useSigner, useChain, useAddress } from "@thirdweb-dev/react";
+import { useAddress, useChain, useSigner } from "@thirdweb-dev/react";
 
 import Transfer from "./Transfer";
 import IERC20 from "../../abis/IERC20.json";
 import { BIG_ZERO } from "../../utils/constants";
 import { setSafeState } from "../../utils/helper";
 import ChainContext from "../../Context/ChainContext";
-import { useTradeStore, iTrade } from "../../store/TradeStore";
-import { useGlobalStore, iGlobal } from "../../store/GlobalStore";
+import { iTrade, useTradeStore } from "../../store/TradeStore";
+import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import { useCalculateGasCost } from "../../hooks/useCalculateGasCost";
-import { useTransferStore, iTransfer } from "../../store/TransferStore";
-import { getErc20Decimals, getErc20Balanceof } from "../../utils/web3Libs/ethers";
+import { iTransfer, useTransferStore } from "../../store/TransferStore";
+import { getErc20Balanceof, getErc20Decimals } from "../../utils/web3Libs/ethers";
 
 bg.config({ DECIMAL_PLACES: 5 });
 
@@ -93,8 +93,14 @@ const TransferContainer: React.FC<any> = () => {
             setIsnative(!isNative);
             if (isNative) {
                 let provider = await new ethers.providers.Web3Provider(web3.givenProvider);
-                if (!provider) throw "no provider";
-                if (!address) throw "no metamask connected";
+                if (!provider) {
+                    toast.error("no provider");
+                    return;
+                };
+                if (!address) {
+                    toast.error("no metamask connected");
+                    return;
+                };
                 const _scwBalance = await provider.getBalance(smartAccount.address);
                 const _eoaBalance = await provider.getBalance(address);
                 setScwTokenInbalance(BigNumber.from(_scwBalance));
@@ -107,7 +113,7 @@ const TransferContainer: React.FC<any> = () => {
             }
         } catch (error) {
             console.log("send-error: ", error);
-            alert("Error: " + error);
+            toast.error("Error: " + error);
             return;
         }
     };
@@ -143,7 +149,7 @@ const TransferContainer: React.FC<any> = () => {
             setSafeState(setEoaTokenInbalance, BigNumber.from(_eoaBalance), BIG_ZERO);
 
             if (!contract) {
-                alert("Not valid Token address");
+                toast.error("Not valid Token address");
             }
         } catch (error) {
             console.log("handleTokenAddress-error", error);
@@ -164,7 +170,7 @@ const TransferContainer: React.FC<any> = () => {
             } else {
                 const contract = await getContract(tokenAddress);
                 if (!contract) {
-                    alert("Not valid token address");
+                    toast.error("Not valid token address");
                     return;
                 }
                 let decimal = await contract.decimals();
@@ -203,34 +209,37 @@ const TransferContainer: React.FC<any> = () => {
             setSendtxLoading(true);
             setTxHash("");
             if (!BigNumber.from(amountIn).gt(0)) {
-                alert("Enter valid Amount");
-                throw "Enter valid Amount";
-            }
+                toast.error("Enter valid Amount");
+                return;
+            };
             let tx;
             const _fromAddress = isSCW ? smartAccount.address : address;
             const _toAdress = isSCW ? address : smartAccount.address;
             if (isNative) {
                 let provider = await new ethers.providers.Web3Provider(web3.givenProvider);
-                if (!provider) throw "no provider";
+                if (!provider) {
+                    toast.error("no provider");
+                    return;
+                };
 
                 const balance = await provider.getBalance(_fromAddress);
                 console.log("balance", balance.toString());
                 if (!BigNumber.from(balance).gte(amountIn)) {
-                    alert("Not native enough balance-");
-                    throw "Not native enough balance";
+                    toast.error("Not native enough balance-");
+                    return;
                 }
                 tx = { to: _toAdress, value: amountIn, data: "0x" };
                 console.log("tx", tx);
             } else {
                 const contract = await getContract(tokenAddress);
                 if (!contract) {
-                    alert("add valid Token address first");
-                    throw "add valid Token address first";
+                    toast.error("add valid Token address first");
+                    return;
                 }
                 const balance = await contract.balanceOf(_fromAddress);
                 if (!BigNumber.from(balance).gte(amountIn)) {
-                    alert("Not erc20 enough balance");
-                    throw "Not erc20 enough balance";
+                    toast.error("Not erc20 enough balance");
+                    return;
                 }
                 console.log("erc20", address, amountIn.toString());
                 const data = await contract.populateTransaction.transfer(_toAdress, amountIn);
@@ -261,7 +270,8 @@ const TransferContainer: React.FC<any> = () => {
                 toast.success(`Tx Succefully done: ${txReciept?.receipt.transactionHash}`);
             } else {
                 if (!signer) {
-                    alert("Please connect wallet or refresh it!");
+                    toast.error("Please connect wallet or refresh it!");
+                    return;
                 }
                 const txReciept = await signer.sendTransaction(tx);
                 await txReciept?.wait();
@@ -271,7 +281,7 @@ const TransferContainer: React.FC<any> = () => {
             }
         } catch (error) {
             console.log("send-error: ", error);
-            alert("Transaction Failed");
+            toast.error("Transaction Failed");
             setSendtxLoading(false);
             return;
         }

@@ -2,21 +2,22 @@ import * as React from "react";
 import { useEffect } from "react";
 
 import { BigNumber } from "ethers";
+import toast from "react-hot-toast";
 import { BigNumber as bg } from "bignumber.js";
 
 import { ImSpinner } from "react-icons/im";
 import { BiSolidChevronDown } from "react-icons/bi";
-import { useChain, useAddress } from "@thirdweb-dev/react";
+import { useAddress, useChain } from "@thirdweb-dev/react";
 
 import IERC20 from "../../abis/IERC20.json";
 import { setSafeState } from "../../utils/helper";
 import ChainContext from "../../Context/ChainContext";
 import UNISWAP_TOKENS from "../../abis/tokens/Uniswap.json";
 import { useRefinance } from "../../hooks/Batching/useRefinance";
-import { useGlobalStore, iGlobal } from "../../store/GlobalStore";
-import { useBatchingTxnStore, iBatchingTxn } from "../../store/BatchingTxnStore";
-import { getProvider, getErc20Decimals, getErc20Balanceof, getContractInstance } from "../../utils/web3Libs/ethers";
-import { tokenAddressByProtocol, protocolNames, protocolByNetwork, BIG_ZERO, _nonce, _functionType } from "../../utils/constants";
+import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
+import { iBatchingTxn, useBatchingTxnStore } from "../../store/BatchingTxnStore";
+import { getContractInstance, getErc20Balanceof, getErc20Decimals, getProvider } from "../../utils/web3Libs/ethers";
+import { _functionType, _nonce, BIG_ZERO, protocolByNetwork, protocolNames, tokenAddressByProtocol } from "../../utils/constants";
 
 bg.config({ DECIMAL_PLACES: 10 });
 
@@ -27,7 +28,7 @@ const IndividualBatch: React.FC<any> = ({ onUpdate }: any) => {
     const { selectedChain, selectedChainId } = React.useContext(ChainContext);
 
     useEffect(() => {
-        // alert(selectedChain)
+        // toast.error(selectedChain)
     }, []);
 
     const { smartAccount }: iGlobal = useGlobalStore((state) => state);
@@ -126,11 +127,11 @@ const IndividualBatch: React.FC<any> = ({ onUpdate }: any) => {
 
     const onChangeFromProtocol = async (_fromProtocol: any) => {
         if (addToBatchLoading) {
-            alert("wait, tx loading");
+            toast.error("wait, tx loading");
             return;
         }
         if (!(selectedChain == "polygon" || selectedChain == "base")) {
-            alert("Batching is only supported on polygon and base as of now");
+            toast.error("Batching is only supported on polygon and base as of now");
             return;
         }
         setFromProtocol("");
@@ -139,11 +140,11 @@ const IndividualBatch: React.FC<any> = ({ onUpdate }: any) => {
 
     const onChangeToProtocol = async (_toProtocol: any) => {
         if (addToBatchLoading) {
-            alert("wait, tx loading");
+            toast.error("wait, tx loading");
             return;
         }
         if (!(selectedChain == "polygon" || selectedChain == "base")) {
-            alert("Batching is only supported on polygon and base as of now");
+            toast.error("Batching is only supported on polygon and base as of now");
             return;
         }
         setToToken("");
@@ -152,16 +153,16 @@ const IndividualBatch: React.FC<any> = ({ onUpdate }: any) => {
 
     const onChangeFromToken = async (_fromToken: any) => {
         if (addToBatchLoading) {
-            alert("wait, tx loading");
+            toast.error("wait, tx loading");
             return;
         }
         // if (selectedChain != "polygon") {
         if (!(selectedChain == "polygon" || selectedChain == "base")) {
-            alert("Batching is only supported on polygon as of now");
+            toast.error("Batching is only supported on polygon as of now");
             return;
         }
         if (!fromProtocol) {
-            alert("select from protocol");
+            toast.error("select from protocol");
             return;
         }
         // setAmountIn(BIG_ZERO);
@@ -189,12 +190,12 @@ const IndividualBatch: React.FC<any> = ({ onUpdate }: any) => {
 
     const onChangeToToken = async (_toToken: any) => {
         if (addToBatchLoading) {
-            alert("wait, tx loading");
+            toast.error("wait, tx loading");
             return;
         }
         // if (selectedChain != "polygon") {
         if (!(selectedChain == "polygon" || selectedChain == "base")) {
-            alert("Batching is only supported on polygon as of now");
+            toast.error("Batching is only supported on polygon as of now");
             return;
         }
         setToToken(_toToken);
@@ -202,12 +203,12 @@ const IndividualBatch: React.FC<any> = ({ onUpdate }: any) => {
 
     const onChangeAmountIn = async (_amountIn: any) => {
         if (addToBatchLoading) {
-            alert("wait, tx loading");
+            toast.error("wait, tx loading");
             return;
         }
         // if (selectedChain != "polygon") {
         if (!(selectedChain == "polygon" || selectedChain == "base")) {
-            alert("Batching is only supported on polygon as of now");
+            toast.error("Batching is only supported on polygon as of now");
             return;
         }
         if (_amountIn && fromTokenDecimal) {
@@ -239,40 +240,40 @@ const IndividualBatch: React.FC<any> = ({ onUpdate }: any) => {
                 // setSendtxLoadingForEoa(true);
             }
             if (fromToken == toToken) {
-                throw "fromToken and toToken should not same-";
+                toast.error("fromToken and toToken should not same-");
                 return;
             }
             // if (selectedChain != "polygon") {
             if (!(selectedChain == "polygon" || selectedChain == "base")) {
-                alert("Batching is only supported on polygon as of now");
+                toast.error("Batching is only supported on polygon as of now");
                 return;
             }
             if (addToBatchLoading) {
-                throw "wait, tx loading";
+                toast.error("wait, tx loading");
                 return;
             }
             if (!fromProtocol) {
-                throw "select from protocol";
+                toast.error("select from protocol");
                 return;
             }
             if (!fromToken) {
-                throw "select fromToken";
+                toast.error("select fromToken");
                 return;
             }
             if (!toProtocol) {
-                throw "select to protocol";
+                toast.error("select to protocol");
                 return;
             }
             if (!toToken) {
-                throw "select toToken";
+                toast.error("select toToken");
                 return;
             }
             if (!amountIn) {
-                throw "select amountIn";
+                toast.error("select amountIn");
                 return;
             }
             if (!fromTokenDecimal) {
-                throw "select amountIn";
+                toast.error("select amountIn");
                 return;
             }
             const provider = await getProvider(selectedChainId);
@@ -306,10 +307,10 @@ const IndividualBatch: React.FC<any> = ({ onUpdate }: any) => {
             });
             setAddToBatchLoading(false);
             // setSendtxLoadingForEoa(false);
-        } catch (error) {
+        } catch (error: any) {
             setAddToBatchLoading(false);
             // setSendtxLoadingForEoa(false);
-            alert(error);
+            toast.error(error);
             console.log("sendBatch-error", error);
         }
     };

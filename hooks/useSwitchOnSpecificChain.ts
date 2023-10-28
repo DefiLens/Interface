@@ -1,18 +1,19 @@
 import { useEffect } from "react";
 
+import toast from "react-hot-toast";
 import { BigNumber as bg } from "bignumber.js";
 
 import { useMutation } from "@tanstack/react-query";
-import { IBundler, Bundler } from "@biconomy/bundler";
-import { IPaymaster, BiconomyPaymaster } from "@biconomy/paymaster";
-import { DEFAULT_ENTRYPOINT_ADDRESS, BiconomySmartAccountConfig, BiconomySmartAccount } from "@biconomy/account";
-import { useSwitchChain, useSigner, useConnect, useChain, useAddress, metamaskWallet } from "@thirdweb-dev/react";
+import { Bundler, IBundler } from "@biconomy/bundler";
+import { BiconomyPaymaster, IPaymaster } from "@biconomy/paymaster";
+import { BiconomySmartAccount, BiconomySmartAccountConfig, DEFAULT_ENTRYPOINT_ADDRESS } from "@biconomy/account";
+import { metamaskWallet, useAddress, useChain, useConnect, useSigner, useSwitchChain } from "@thirdweb-dev/react";
 
-import { useTradeStore, iTrade } from "../store/TradeStore";
-import { useGlobalStore, iGlobal } from "../store/GlobalStore";
+import { iTrade, useTradeStore } from "../store/TradeStore";
+import { iGlobal, useGlobalStore } from "../store/GlobalStore";
 import { useCalculatebalance } from "../hooks/useCalculateBalance";
-import { paymasterURLs, NetworkLogoByChainId, bundlerURLs } from "../utils/constants";
-import { polygon, optimism, ethereum, base, avalanche, arbitrum } from "../assets/images";
+import { bundlerURLs, NetworkLogoByChainId, paymasterURLs } from "../utils/constants";
+import { arbitrum, avalanche, base, ethereum, optimism, polygon } from "../assets/images";
 
 bg.config({ DECIMAL_PLACES: 5 });
 
@@ -121,7 +122,10 @@ export function useSwitchOnSpecificChain() {
     };
 
     const login = async (chainId: number) => {
-        if (!chainId) throw "No ChainId";
+        if (!chainId) {
+            toast.error("No ChainId");
+            return;
+        };
        
         return setupSmartAccount(chainId);
     };

@@ -1,7 +1,9 @@
+import toast from "react-hot-toast";
 import { BigNumber, ethers } from "ethers";
+
 import { rpscURLS } from "../constants";
-import IERC20 from "../../abis/IERC20.json";
 import { chooseChianId } from "../helper";
+import IERC20 from "../../abis/IERC20.json";
 
 export const getProvider = async (chainId) => {
     try {
@@ -26,7 +28,10 @@ export const getContractInstance = async (address, abi, provider): Promise<ether
 
 export async function getErc20Data(token, address, spender, provider) {
     try {
-        if (!address || !spender) throw "Invalid addresses";
+        if (!address || !spender) {
+            toast.error("Invalid addresses");
+            return;
+        };
         const erc20: any = await getContractInstance(token, IERC20, provider);
 
         const [name, symbol, decimals, totalSupply, balance, allowance] = await Promise.all([

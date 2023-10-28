@@ -1,6 +1,7 @@
 import * as React from "react";
 
-import { ethers, BigNumber } from "ethers";
+import toast from "react-hot-toast";
+import { BigNumber, ethers } from "ethers";
 import { BigNumber as bg } from "bignumber.js";
 
 import { useAddress } from "@thirdweb-dev/react";
@@ -9,14 +10,14 @@ import IERC20 from "../abis/IERC20.json";
 import { setSafeState } from "../utils/helper";
 import { useUniswap } from "../hooks/useUniswap";
 import { useApprove } from "../hooks/useApprove";
-import { useSwapStore, iSwap } from "../store/SwapStore";
-import { useGlobalStore, iGlobal } from "../store/GlobalStore";
-import { useEoaProvider } from "../hooks/aaProvider/useEoaProvider";
-import { getProvider, getErc20Decimals } from "../utils/web3Libs/ethers";
-import { useBiconomyProvider } from "../hooks/aaProvider/useBiconomyProvider";
-import { V3_SWAP_ROUTER_ADDRESS, BIG_ZERO, _nonce, _functionType, uniswapSwapRouterByChainId } from "../utils/constants";
 import ChainContext from "../Context/ChainContext";
+import { iSwap, useSwapStore } from "../store/SwapStore";
 import { iTrade, useTradeStore } from "../store/TradeStore";
+import { iGlobal, useGlobalStore } from "../store/GlobalStore";
+import { useEoaProvider } from "../hooks/aaProvider/useEoaProvider";
+import { getErc20Decimals, getProvider } from "../utils/web3Libs/ethers";
+import { useBiconomyProvider } from "../hooks/aaProvider/useBiconomyProvider";
+import { _functionType, _nonce, BIG_ZERO, uniswapSwapRouterByChainId, V3_SWAP_ROUTER_ADDRESS } from "../utils/constants";
 
 const Swap: React.FC<{}> = () => {
 
@@ -68,7 +69,7 @@ const Swap: React.FC<{}> = () => {
     };
     const handleAmountIn = async (_amountIn) => {
         if (!smartAccount) {
-            alert("You need to biconomy login");
+            toast.error("You need to biconomy login");
             return;
         }
         if (_amountIn) {
@@ -100,12 +101,18 @@ const Swap: React.FC<{}> = () => {
 
     const sendTx = async (isScw: boolean) => {
         try {
-            if (!smartAccount) throw "please login by scw";
-            if (!address) throw "please login by metamask";
+            if (!smartAccount) {
+                toast.error("please login by scw");
+                return;
+            };
+            if (!address) {
+                toast.error("please login by metamask");
+                return;
+            };
             const web3JsonProvider = await getProvider(selectedFromNetwork.chainId);
             let _address = isScw ? smartAccount.address : address;
             let _provider = isScw ? smartAccount.provider : web3JsonProvider;
-            alert("_address: " + _address);
+            toast.error("_address: " + _address);
             const approveData = await approve({
                 tokenIn,
                 spender: uniswapSwapRouterByChainId[selectedFromNetwork.chainId],
