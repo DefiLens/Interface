@@ -28,8 +28,11 @@ export function useCCRefinance() {
 
     const { selectedFromNetwork, selectedToNetwork }: iTrade = useTradeStore((state) => state);
 
-    const { setTxHash }: iCrossChainDifi = useCrossChainDifiStore((state) => state);
-    const { tokensData }: iBatchingTxn = useBatchingTxnStore((state) => state);
+    // const { setTxHash }: iCrossChainDifi = useCrossChainDifiStore((state) => state);
+    const {
+        tokensData,
+        setTxHash,
+     }: iBatchingTxn = useBatchingTxnStore((state) => state);
 
     async function refinanceForCC({
         isSCW,

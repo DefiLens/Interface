@@ -19,9 +19,12 @@ export function useRefinance() {
 
     const { selectedFromNetwork }: iTrade = useTradeStore((state) => state);
 
-    const { setTxHash }: iCrossChainDifi = useCrossChainDifiStore((state) => state);
+    // const { setTxHash }: iCrossChainDifi = useCrossChainDifiStore((state) => state);
     // const { tokensData }: iBatchingTxn = useBatchingTxnStore((state) => state);
-    const { tokensData }: iTrade = useTradeStore((state) => state);
+    const {
+        tokensData, 
+        setTxHash, 
+    }: iTrade = useTradeStore((state) => state);
 
     async function refinance({
         isSCW, 

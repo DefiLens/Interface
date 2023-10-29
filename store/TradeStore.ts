@@ -131,6 +131,10 @@ export interface iTrade {
     params: any[][];
     fixParams: any[][];
 
+    showExecuteBatchModel: boolean;
+    hasExecutionSuccess: string;
+    hasExecutionError: string;
+
     setMaxBalance: (maxBalance: string) => void;
     setIsmaxBalanceLoading: (ismaxBalanceLoading: boolean) => void;
     setShowSelectNetworkList: (showSelectNetworkList: boolean) => void;
@@ -187,6 +191,10 @@ export interface iTrade {
     setFunctionArray: (funcArray: iFuncArray[] | null) => void;
     setParams: (params: any[][]) => void;
     setFixParams: (fixParams: any[][]) => void;
+
+    setShowExecuteBatchModel: (showExecuteBatchModel: boolean) => void;
+    setHasExecutionSuccess: (hasExecutionSuccess: string) => void;
+    setHasExecutionError: (hasExecutionError: string) => void;
 }
 
 export const useTradeStore = create<iTrade>((set) => ({
@@ -274,6 +282,10 @@ export const useTradeStore = create<iTrade>((set) => ({
     funcArray: null,
     params: [[]],
     fixParams: [[]],
+
+    showExecuteBatchModel: false,
+    hasExecutionSuccess: "",
+    hasExecutionError: "",
    
     setMaxBalance: (maxBalance) => set(() => ({ maxBalance })),
     setIsmaxBalanceLoading: (ismaxBalanceLoading) => set(() => ({ ismaxBalanceLoading })),
@@ -331,4 +343,8 @@ export const useTradeStore = create<iTrade>((set) => ({
     setFunctionArray: (funcArray) => set(() => ({ funcArray })),
     setParams: (params) => set(() => ({ params })),
     setFixParams: (fixParams) => set(() => ({ fixParams })),
+
+    setShowExecuteBatchModel: (showExecuteBatchModel) => set(() => ({ showExecuteBatchModel })),
+    setHasExecutionSuccess: (hasExecutionSuccess) => set(() => ({ hasExecutionSuccess })),
+    setHasExecutionError: (hasExecutionError) => set(() => ({ hasExecutionError })),
 }));

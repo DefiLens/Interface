@@ -40,13 +40,14 @@ export function useSendTx() {
         simulation,
         setSendtxLoading,
         setSendtxLoadingForEoa,
-        setTxHash,
+        // setTxHash,
     }: iCrossChainDifi = useCrossChainDifiStore((state) => state);
 
     // const { selectedChain } = useContext(ChainContext);
 
     const {
         selectedFromNetwork,
+        setTxHash,
     }: iTrade = useTradeStore((state) => state);
 
     const { mutateAsync: sendToBiconomy } = useBiconomyProvider();

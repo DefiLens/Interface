@@ -138,6 +138,9 @@ const TradeContainer: React.FC<any> = () => {
         setParams,
         fixParams,
         setFixParams,
+
+        setShowExecuteBatchModel,
+        setHasExecutionError,
     }: iTrade = useTradeStore((state) => state);
 
     const generateAbis = async () => {
@@ -550,7 +553,6 @@ const TradeContainer: React.FC<any> = () => {
     }
 
     const addBatch = () => {
-        setIndividualBatch([]);
         setIndividualBatch([
             {
                 id: 0,
@@ -772,6 +774,13 @@ const TradeContainer: React.FC<any> = () => {
 
     const ExecuteAllBatches = async (isSCW: any) => {
         try {
+            if (!individualBatch[0].txHash.length){
+                toast.error("No Batch found for Execution");
+                return;
+            }
+            setShowExecuteBatchModel(true);
+            setHasExecutionError('')
+
             if (isSCW) {
                 setSendTxLoading(true);
             } else {
@@ -790,7 +799,7 @@ const TradeContainer: React.FC<any> = () => {
             }
             setSendTxLoading(false);
             setSendTxLoadingForEoa(false);
-            addBatch();
+            // addBatch();
         } catch (error) {
             setSendTxLoading(false);
             setSendTxLoadingForEoa(false);

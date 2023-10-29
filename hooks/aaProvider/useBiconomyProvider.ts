@@ -5,9 +5,12 @@ import { useMutation } from "@tanstack/react-query";
 import { _nonce, _functionType } from "../../utils/constants";
 import { useGlobalStore, iGlobal } from "../../store/GlobalStore";
 import { useCrossChainDifiStore, iCrossChainDifi } from "../../store/CrossChainDifiStore";
+import { iTrade, useTradeStore } from "../../store/TradeStore";
 
 export function useBiconomyProvider() {
     const { smartAccount }: iGlobal = useGlobalStore((state) => state);
+
+    const { setHasExecutionError }: iTrade = useTradeStore((state) => state);
 
     async function sendToBiconomy(txs) {
         try {
@@ -18,11 +21,12 @@ export function useBiconomyProvider() {
             return txReciept?.receipt.transactionHash;
         } catch (error: any) {
             console.log("sendToBiconomy-error: ", error);
-            if (error.message) {
-                toast.error(error.message);
-            } else {
-                toast.error(error);
-            }
+            setHasExecutionError(error.message ? error.message : error);
+            // if (error.message) {
+            //     toast.error(error.message);
+            // } else {
+            //     toast.error(error);
+            // }
             return;
         }
     }

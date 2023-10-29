@@ -12,6 +12,7 @@ import { iTrade, useTradeStore } from "../../store/TradeStore";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import { avalanche, base, downLine, gas, optimism, polygon, swap, warning } from "../../assets/images";
 import { _functionType, _nonce, NETWORK_LIST, protocolByNetwork, protocolNames } from "../../utils/constants";
+import ExecuteBatchModel from "../../components/ExecuteBatchModel/ExecuteBatchModel";
 
 bg.config({ DECIMAL_PLACES: 10 });
 
@@ -75,6 +76,7 @@ const Trade: React.FC<any> = ({
         txhash,
         sendTxLoading,
         individualBatch,
+        showExecuteBatchModel,
     }: iTrade = useTradeStore((state) => state);
 
     return (
@@ -721,7 +723,7 @@ const Trade: React.FC<any> = ({
                                         onClick={() => ExecuteAllBatches(true)}
                                         className="w-full flex justify-center items-center gap-2 bg-purple-900 hover:bg-purple-950 py-2 px-5 rounded-full text-white font-medium border-b-4 border-purple-950 transition duration-300"
                                     >
-                                        {sendTxLoading && <ImSpinner className="animate-spin h-5 w-5" />}
+                                        {/* {sendTxLoading && <ImSpinner className="animate-spin h-5 w-5" />} */}
                                         Execute Batch
 
                                     </button>
@@ -732,6 +734,10 @@ const Trade: React.FC<any> = ({
                         </div>
                     )}
                 </div>
+                
+                {showExecuteBatchModel && (
+                    <ExecuteBatchModel />
+                )}
 
                 {showBatchList && (
                     <div className="w-full bg-gray-50 flex flex-col justify-start items-center gap-1 shadow-md shadow-primary-950 rounded-2xl cursor-pointer">
@@ -739,196 +745,184 @@ const Trade: React.FC<any> = ({
                             Batching List
                         </h1>
                         <div className="w-full flex flex-col gap-5 px-5 py-7">
-                        {txhash && (
-                            <div className="flex flex-col justify-center items-center gap-5 py-5">
-                                <a
-                                    target="_blank"
-                                    href={buildTxHash(selectedToNetwork.chainName, txhash, false)}
-                                    className="text-lg md:text-xl lg:text-2xl text-center text-green-600 underline underline-offset-2 font-extrabold"
-                                >
-                                    Success Batch TxHash : {shorten(txhash)}
-                                </a>
-                            </div>
-                        )}
-
-                        {individualBatch.length > 0 && individualBatch[0].txHash.length > 0 ? (
-                            individualBatch.map((bar, inputBarIndex) => (
-                                <>
-                                     {bar.txHash.length > 0 && (
-                                        <div key={bar.id} className="relative">
-                                            <div className="simulation-success flex flex-col justify-center items-start gap-6 bg-purple-100 p-5 rounded-xl text-black font-medium border-2 border-purple-300 shadow-md transition duration-300">
-                                                <div className="w-full flex justify-between items-center gap-2">
-                                                    <h1 className="flex justify-center items-center gap-3 text-black font-semibold text-base">
-                                                        {inputBarIndex + 1}.
-                                                        <span>
-                                                          {bar.data.fromNetwork} To {bar.data.toNetwork}
-                                                        </span>
-                                                    </h1>
-                                                    <MdDelete
-                                                        color="red"
-                                                        size="40px"
-                                                        onClick={() => removeBatch(inputBarIndex)}
-                                                        className="hover:bg-slate-50 active:bg-slate-100 p-2 rounded-full"
-                                                    />
-                                                </div>
-                                                <div
-                                                    className="w-full flex flex-col justify-between items-start gap-2 p-3 rounded-xl bg-white shadow-sm"
-                                                    onClick={() => toggleShowBatchList(bar.id)}
-                                                >
+                            {individualBatch.length > 0 && individualBatch[0].txHash.length > 0 ? (
+                                individualBatch.map((bar, inputBarIndex) => (
+                                    <>
+                                        {bar.txHash.length > 0 && (
+                                            <div key={bar.id} className="relative">
+                                                <div className="simulation-success flex flex-col justify-center items-start gap-6 bg-purple-100 p-5 rounded-xl text-black font-medium border-2 border-purple-300 shadow-md transition duration-300">
                                                     <div className="w-full flex justify-between items-center gap-2">
-                                                        <div className="flex justify-start items-start gap-5">
-                                                            <div className="relative">
-                                                                <Image
-                                                                    src={polygon}
-                                                                    alt=""
-                                                                    className="h-10 w-10 bg-slate-200 rounded-full cursor-pointer"
-                                                                    />
-                                                                    <div className="absolute -bottom-1 -right-1 bg-white h-5 w-5 flex justify-center items-center rounded-full">
-                                                                        <Image
-                                                                            src={polygon}
-                                                                            alt=""
-                                                                            className="h-4 w-4 bg-slate-200 rounded-full cursor-pointer"
-                                                                        />
-                                                                    </div>
-                                                            </div>
-                                                            <div className="flex flex-col justify-start items-start">
-                                                                <span className="text-lg md:text-xl lg:text-2xl font-bold text-slate-700">
-                                                                    {bar.data.amountIn}
-                                                                </span>
-                                                                <span className="text-base md:text-lg font-semibold text-slate-700">
-                                                                   {bar.data.fromProtocol} on {bar.data.fromNetwork}
-                                                                </span>
-                                                            </div>
-                                                        </div>
-                                                        <div
-                                                            className="flex justify-center items-center bg-purple-100 hover:bg-purple-200 rounded-full p-0.5"
-                                                        >
-                                                            {showIndividualBatchList === bar.id ? (
-                                                                <MdKeyboardArrowUp size="30px" />
-                                                            ) : (
-                                                                <MdKeyboardArrowDown size="30px" />
-                                                            )}
-                                                        </div>
+                                                        <h1 className="flex justify-center items-center gap-3 text-black font-semibold text-base">
+                                                            {inputBarIndex + 1}.
+                                                            <span>
+                                                            {bar.data.fromNetwork} To {bar.data.toNetwork}
+                                                            </span>
+                                                        </h1>
+                                                        <MdDelete
+                                                            color="red"
+                                                            size="40px"
+                                                            onClick={() => removeBatch(inputBarIndex)}
+                                                            className="hover:bg-slate-50 active:bg-slate-100 p-2 rounded-full"
+                                                        />
                                                     </div>
-                                                    {showIndividualBatchList === bar.id && (
-                                                        <div className="flex flex-col justify-start items-start gap-1 pl-10 pt-3">
-                                                            <div className="flex justify-center items-center gap-3">
+                                                    <div
+                                                        className="w-full flex flex-col justify-between items-start gap-2 p-3 rounded-xl bg-white shadow-sm"
+                                                        onClick={() => toggleShowBatchList(bar.id)}
+                                                    >
+                                                        <div className="w-full flex justify-between items-center gap-2">
+                                                            <div className="flex justify-start items-start gap-5">
                                                                 <div className="relative">
                                                                     <Image
                                                                         src={polygon}
                                                                         alt=""
-                                                                        className="h-8 w-8 bg-slate-200 rounded-full cursor-pointer"
+                                                                        className="h-10 w-10 bg-slate-200 rounded-full cursor-pointer"
                                                                         />
-                                                                        <div className="absolute -bottom-1 -right-1 bg-white h-4 w-4 flex justify-center items-center rounded-full">
+                                                                        <div className="absolute -bottom-1 -right-1 bg-white h-5 w-5 flex justify-center items-center rounded-full">
                                                                             <Image
                                                                                 src={polygon}
                                                                                 alt=""
-                                                                                className="h-3 w-3 bg-slate-200 rounded-full cursor-pointer"
+                                                                                className="h-4 w-4 bg-slate-200 rounded-full cursor-pointer"
                                                                             />
                                                                         </div>
                                                                 </div>
                                                                 <div className="flex flex-col justify-start items-start">
-                                                                    <span className="text-sm md:text-base font-semibold text-slate-700">
-                                                                        {bar.data.fromProtocol} on {bar.data.fromNetwork}
+                                                                    <span className="text-lg md:text-xl lg:text-2xl font-bold text-slate-700">
+                                                                        {bar.data.amountIn}
                                                                     </span>
-                                                                    <span className="text-xs md:text-sm font-semibold text-slate-700">
-                                                                        {bar.data.amountIn} {bar.data.fromToken}
+                                                                    <span className="text-base md:text-lg font-semibold text-slate-700">
+                                                                    {bar.data.fromProtocol} on {bar.data.fromNetwork}
                                                                     </span>
                                                                 </div>
                                                             </div>
-                                                            <Image
-                                                                src={downLine}
-                                                                alt=""
-                                                                className="h-8"
-                                                            />
-                                                            <div className="flex justify-center items-center gap-3">
-                                                                <div className="relative">
-                                                                    <Image
-                                                                        src={base}
-                                                                        alt=""
-                                                                        className="h-8 w-8 bg-slate-200 rounded-full cursor-pointer"
-                                                                        />
-                                                                        <div className="absolute -bottom-1 -right-1 bg-white h-4 w-4 flex justify-center items-center rounded-full">
-                                                                            <Image
-                                                                                src={base}
-                                                                                alt=""
-                                                                                className="h-3 w-3 bg-slate-200 rounded-full cursor-pointer"
-                                                                            />
-                                                                        </div>
-                                                                </div>
-                                                                <div className="flex flex-col justify-start items-start">
-                                                                    <span className="text-sm md:text-base font-semibold text-slate-700">
-                                                                        {bar.data.toProtocol} on {bar.data.toNetwork}
-                                                                    </span>
-                                                                    <span className="text-xs md:text-sm font-semibold text-slate-700">
-                                                                        {bar.data.amountIn} {bar.data.toToken}
-                                                                    </span>
-                                                                </div>
+                                                            <div
+                                                                className="flex justify-center items-center bg-purple-100 hover:bg-purple-200 rounded-full p-0.5"
+                                                            >
+                                                                {showIndividualBatchList === bar.id ? (
+                                                                    <MdKeyboardArrowUp size="30px" />
+                                                                ) : (
+                                                                    <MdKeyboardArrowDown size="30px" />
+                                                                )}
                                                             </div>
                                                         </div>
-                                                    )}
-                                                </div>
-                                                <div className="w-full flex justify-between items-center gap-2">
-                                                    <div className="flex justify-center items-center gap-3 text-black font-semibold text-base">
-                                                        <Image
-                                                            src={gas}
-                                                            alt=""
-                                                            className="h-7 w-7"
-                                                        />
-                                                        <span>
-                                                          $0.70
-                                                        </span>
-                                                    </div>
-                                                    <div className="flex justify-center items-center gap-3">
-                                                        {bar.simulation.isSuccess ? (
-                                                            <h6 className="flex justify-center items-center gap-3 bg-white text-black shadow-md font-medium text-sm rounded-full p-1 pr-5">
-                                                                <svg
-                                                                    className="h-5 w-5 text-green-500"
-                                                                    viewBox="0 0 24 24"
-                                                                    fill="none"
-                                                                    stroke="currentColor"
-                                                                    stroke-width="2"
-                                                                    stroke-linecap="round"
-                                                                    stroke-linejoin="round"
-                                                                >
-                                                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                                                                    <polyline points="22 4 12 14.01 9 11.01" />
-                                                                </svg>
-                                                                Simulation Success
-                                                            </h6>
-                                                        ) : bar.simulation.isError ? (
-                                                            <h6 className="flex justify-center items-center gap-3 bg-white text-black shadow-md font-medium text-sm rounded-full p-1 pr-5">
-                                                                <svg
-                                                                    className="h-5 w-5 text-red-500"
-                                                                    viewBox="0 0 24 24"
-                                                                    fill="none"
-                                                                    stroke="currentColor"
-                                                                    stroke-width="2"
-                                                                    stroke-linecap="round"
-                                                                    stroke-linejoin="round"
-                                                                >
-                                                                    <circle cx="12" cy="12" r="10" /> <line x1="15" y1="9" x2="9" y2="15" />
-                                                                    <line x1="9" y1="9" x2="15" y2="15" />
-                                                                </svg>
-                                                                Simulation Error
-                                                            </h6>
-                                                        ) : (
-                                                            <h6 className="flex justify-center items-center gap-3 bg-white text-black shadow-md font-medium text-sm rounded-full py-1 px-5">
-                                                                Simulation
-                                                            </h6>
+                                                        {showIndividualBatchList === bar.id && (
+                                                            <div className="flex flex-col justify-start items-start gap-1 pl-10 pt-3">
+                                                                <div className="flex justify-center items-center gap-3">
+                                                                    <div className="relative">
+                                                                        <Image
+                                                                            src={polygon}
+                                                                            alt=""
+                                                                            className="h-8 w-8 bg-slate-200 rounded-full cursor-pointer"
+                                                                            />
+                                                                            <div className="absolute -bottom-1 -right-1 bg-white h-4 w-4 flex justify-center items-center rounded-full">
+                                                                                <Image
+                                                                                    src={polygon}
+                                                                                    alt=""
+                                                                                    className="h-3 w-3 bg-slate-200 rounded-full cursor-pointer"
+                                                                                />
+                                                                            </div>
+                                                                    </div>
+                                                                    <div className="flex flex-col justify-start items-start">
+                                                                        <span className="text-sm md:text-base font-semibold text-slate-700">
+                                                                            {bar.data.fromProtocol} on {bar.data.fromNetwork}
+                                                                        </span>
+                                                                        <span className="text-xs md:text-sm font-semibold text-slate-700">
+                                                                            {bar.data.amountIn} {bar.data.fromToken}
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+                                                                <Image
+                                                                    src={downLine}
+                                                                    alt=""
+                                                                    className="h-8"
+                                                                />
+                                                                <div className="flex justify-center items-center gap-3">
+                                                                    <div className="relative">
+                                                                        <Image
+                                                                            src={base}
+                                                                            alt=""
+                                                                            className="h-8 w-8 bg-slate-200 rounded-full cursor-pointer"
+                                                                            />
+                                                                            <div className="absolute -bottom-1 -right-1 bg-white h-4 w-4 flex justify-center items-center rounded-full">
+                                                                                <Image
+                                                                                    src={base}
+                                                                                    alt=""
+                                                                                    className="h-3 w-3 bg-slate-200 rounded-full cursor-pointer"
+                                                                                />
+                                                                            </div>
+                                                                    </div>
+                                                                    <div className="flex flex-col justify-start items-start">
+                                                                        <span className="text-sm md:text-base font-semibold text-slate-700">
+                                                                            {bar.data.toProtocol} on {bar.data.toNetwork}
+                                                                        </span>
+                                                                        <span className="text-xs md:text-sm font-semibold text-slate-700">
+                                                                            {bar.data.amountIn} {bar.data.toToken}
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
                                                         )}
+                                                    </div>
+                                                    <div className="w-full flex justify-between items-center gap-2">
+                                                        <div className="flex justify-center items-center gap-3 text-black font-semibold text-base">
+                                                            <Image
+                                                                src={gas}
+                                                                alt=""
+                                                                className="h-7 w-7"
+                                                            />
+                                                            <span>
+                                                            $0.70
+                                                            </span>
+                                                        </div>
+                                                        <div className="flex justify-center items-center gap-3">
+                                                            {bar.simulation.isSuccess ? (
+                                                                <h6 className="flex justify-center items-center gap-3 bg-white text-black shadow-md font-medium text-sm rounded-full p-1 pr-5">
+                                                                    <svg
+                                                                        className="h-5 w-5 text-green-500"
+                                                                        viewBox="0 0 24 24"
+                                                                        fill="none"
+                                                                        stroke="currentColor"
+                                                                        stroke-width="2"
+                                                                        stroke-linecap="round"
+                                                                        stroke-linejoin="round"
+                                                                    >
+                                                                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                                                                        <polyline points="22 4 12 14.01 9 11.01" />
+                                                                    </svg>
+                                                                    Simulation Success
+                                                                </h6>
+                                                            ) : bar.simulation.isError ? (
+                                                                <h6 className="flex justify-center items-center gap-3 bg-white text-black shadow-md font-medium text-sm rounded-full p-1 pr-5">
+                                                                    <svg
+                                                                        className="h-5 w-5 text-red-500"
+                                                                        viewBox="0 0 24 24"
+                                                                        fill="none"
+                                                                        stroke="currentColor"
+                                                                        stroke-width="2"
+                                                                        stroke-linecap="round"
+                                                                        stroke-linejoin="round"
+                                                                    >
+                                                                        <circle cx="12" cy="12" r="10" /> <line x1="15" y1="9" x2="9" y2="15" />
+                                                                        <line x1="9" y1="9" x2="15" y2="15" />
+                                                                    </svg>
+                                                                    Simulation Error
+                                                                </h6>
+                                                            ) : (
+                                                                <h6 className="flex justify-center items-center gap-3 bg-white text-black shadow-md font-medium text-sm rounded-full py-1 px-5">
+                                                                    Simulation
+                                                                </h6>
+                                                            )}
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    )}
-                                </>
-                            ))
-                        ) : (
-                            <div className="text-center text-slate-600 font-semibold text-base md:text-lg">
-                                {txhash ? "Last Batches executed, Now create new batches" : "No Batches Found !" }
-                            </div>
-                        )}
+                                        )}
+                                    </>
+                                ))
+                            ) : (
+                                <div className="text-center text-slate-600 font-semibold text-base md:text-lg">
+                                    {txhash ? "Last Batches executed, Now create new batches" : "No Batches Found !" }
+                                </div>
+                            )}
                         </div>
                     </div>
                 )}

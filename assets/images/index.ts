@@ -12,6 +12,7 @@ import swap from './swap.png';
 import gas from './gas.png';
 import bridgeCost from './bridgeCost.png';
 import downLine from './downLine.png';
+import sideLine from './sideLine.png';
 
 export {
   closeNarrow,
@@ -28,4 +29,5 @@ export {
   gas,
   bridgeCost,
   downLine,
+  sideLine,
 };
