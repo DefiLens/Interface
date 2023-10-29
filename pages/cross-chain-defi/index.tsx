@@ -145,7 +145,6 @@ const CrossChainDefi: React.FC<{}> = () => {
 
                 // setSelectedChain("")
                 // setSelectedChainId("")
-                console.log("Metamask logout", address)
             }
         }
         changeWallet();
@@ -178,7 +177,6 @@ const CrossChainDefi: React.FC<{}> = () => {
                     currentFunc,
                     apiUrl
                 );
-                console.log("🚀 ~ file: index.tsx:239 ~ updateParams ~ response:", response);
                 if (!response.data) {
                     toast.error("api error");
                     return;
@@ -199,17 +197,13 @@ const CrossChainDefi: React.FC<{}> = () => {
                     const token: any = tokensByNetwork[fromChainId];
                     setTokenIn(token.usdc);
                     setTokenInDecimals(6);
-                    // console.log("selectedChainId", selectedChainId, fromChainId);
                     // const provider = await getProvider(selectedChainId);
                     const provider = await getProvider(selectedFromNetwork.chainId);
-                    console.log("provider", provider?.toString());
 
                     const erc20 = await getContractInstance(token.usdc, IERC20, provider);
-                    console.log("erc20" + erc20?.toString());
 
                     const scwBalance = await getErc20Balanceof(erc20, smartAccount.address);
                     const eoaBalance = await getErc20Balanceof(erc20, address);
-                    console.log("address", address);
 
                     setSafeState(setScwTokenInbalance, BigNumber.from(scwBalance), BIG_ZERO);
                     setSafeState(setEoaTokenInbalance, BigNumber.from(eoaBalance), BIG_ZERO);
@@ -222,7 +216,7 @@ const CrossChainDefi: React.FC<{}> = () => {
                 setFromChainId("");
                 setTokenIn("");
                 setTokenInDecimals(0);
-                console.log('onChangeFromChainId-error: ', error)
+console.log('onChangeFromChainId-error: ', error)
             }
 
         }
@@ -289,7 +283,6 @@ const CrossChainDefi: React.FC<{}> = () => {
             await switchChain(Number(realChainID))
                 .then(async () => {
                     const smartAccount: any = await createAccount(realChainID);
-                    console.log("smartAccount: ", smartAccount);
                     await fetchNativeBalance({
                         chainId: realChainID,
                         eoaAddress: address,
@@ -356,8 +349,6 @@ const CrossChainDefi: React.FC<{}> = () => {
         const erc20 = await getContractInstance(token.usdc, IERC20, provider);
         const scwBalance = await getErc20Balanceof(erc20, smartAccount.address);
         const eoaBalance = await getErc20Balanceof(erc20, address);
-        console.log("scwBalance++", scwBalance?.toString());
-        console.log("eoaBalance++", eoaBalance?.toString());
 
         setSafeState(setScwTokenInbalance, BigNumber.from(scwBalance), BIG_ZERO);
         setSafeState(setEoaTokenInbalance, BigNumber.from(eoaBalance), BIG_ZERO);
@@ -437,7 +428,6 @@ const CrossChainDefi: React.FC<{}> = () => {
     const changeToFromChain = async (funcIndex: any, isSCW: any) => {
         const _fromN = chooseChianId(fromChainId);
         const _chain = chain;
-        console.log(_chain);
         if (_chain?.chainId.toString() != _fromN) {
             await connect(metamaskConfig, {});
             switchChain(Number(_fromN))
@@ -469,7 +459,6 @@ const CrossChainDefi: React.FC<{}> = () => {
             }
             const _fromN = chooseChianId(fromChainId);
             const _chain = chain;
-            console.log(_chain);
             if (_chain?.chainId.toString() != _fromN) {
                 await changeToFromChain(funcIndex, isSCW);
             } else {

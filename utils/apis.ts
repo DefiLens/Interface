@@ -54,7 +54,6 @@ export const fetchMethodParams = async (
     methodName: any,
     apiName: any
 ) => {
-    // console.log('netlifyNodeURL', netlifyNodeURL)
     try {
         const fromToken = tokensByNetwork[fromChainId];
         const toToken = tokensByNetwork[toChainId];
@@ -77,10 +76,6 @@ export const fetchMethodParams = async (
             }
         );
 
-        console.log("response: ", response.data.abi);
-        console.log("response: ", response.data.totalParamsLengthWise);
-        console.log("response: ", response.data.fixParams);
-        console.log("response-params: ", response.data.params);
         return response;
     } catch (error) {
         console.log("fetchMethodParams-error", fetchMethodParams);

@@ -81,21 +81,16 @@ const Swap: React.FC<{}> = () => {
                 setAmountIn(amountInByDecimals.toString());
             }
         } else {
-            console.log("5");
             setAmountIn("");
         }
-        console.log("6");
     };
 
     const handleAmountOut = async (_amountOut: any) => {
         setAmountOut(_amountOut);
     };
     const handleSlippage = async (_slippage: any) => {
-        console.log("_slippage", _slippage);
         setSlippage(_slippage);
-        console.log("amountOut", amountOut.toString());
         const amountAfterSlippage = bg(amountOut).minus(bg(amountOut).multipliedBy(_slippage).div(100));
-        console.log("amountAfterSlippage", amountAfterSlippage.toString());
         setSafeState(setAmountOutAfterSlippage, BigNumber.from(amountAfterSlippage), BIG_ZERO);
     };
 
@@ -120,7 +115,6 @@ const Swap: React.FC<{}> = () => {
                 address: _address,
                 web3JsonProvider: _provider,
             });
-            console.log("approveData--", approveData, amountIn.toString());
             const swapData = await swap({
                 tokenIn, //: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
                 tokenOut, //: "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
@@ -128,7 +122,6 @@ const Swap: React.FC<{}> = () => {
                 address: _address,
                 type: "exactIn",
             });
-            console.log("swapData--", swapData);
 
             if (swapData?.amountOutprice) {
                 let amountOutByDecimals = bg(swapData?.amountOutprice);
@@ -139,7 +132,6 @@ const Swap: React.FC<{}> = () => {
                         const amountAfterSlippage = bg(swapData?.amountOutprice).minus(
                             bg(swapData?.amountOutprice).multipliedBy(slippage).div(100)
                         );
-                        console.log("amountAfterSlippage-1", amountAfterSlippage.toString());
                         setSafeState(setAmountOutAfterSlippage, BigNumber.from(amountAfterSlippage), BIG_ZERO);
                     }
                 } else {
@@ -148,7 +140,6 @@ const Swap: React.FC<{}> = () => {
                         const amountAfterSlippage = bg(amountOutByDecimals).minus(
                             bg(amountOutByDecimals).multipliedBy(slippage).div(100)
                         );
-                        console.log("amountAfterSlippage-2", amountAfterSlippage.toString());
                         setSafeState(setAmountOutAfterSlippage, BigNumber.from(amountAfterSlippage), BIG_ZERO);
                     }
                 }

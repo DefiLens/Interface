@@ -145,10 +145,8 @@ const TradeContainer: React.FC<any> = () => {
 
         if (selectedFromProtocol == "erc20") {
             tokenAddress = tokensData?.filter((token) => token.symbol === selectedFromToken)[0].address;
-            console.log("🚀 ERC20  ---- tokenAddress:", tokenAddress)
         } else {
             tokenAddress = tokenAddressByProtocol[selectedFromNetwork.chainName][selectedFromProtocol][selectedFromToken];
-            console.log("🚀  !ERC20  tokenAddress:", tokenAddress)
         }
 
         const erc20 = await getContractInstance(tokenAddress, IERC20, provider);
@@ -160,7 +158,6 @@ const TradeContainer: React.FC<any> = () => {
     };
 
     const handleContractAddress = async (_contractIndex: string, _contractDetail: any) => {
-        console.log("🚀  _contractIndex: string, _contractDetail: any:", _contractIndex, _contractDetail)
         // if (simulateLoading || sendTxLoading || sendTxLoadingForEoa) {
         //     toast.error("wait, tx loading currently ...");
         //     return;
@@ -186,9 +183,6 @@ const TradeContainer: React.FC<any> = () => {
         const scwBalance = await getErc20Balanceof(erc20, smartAccount.address);
         const eoaBalance = await getErc20Balanceof(erc20, address);
         
-        console.log("scwBalance++", scwBalance?.toString());
-        console.log("eoaBalance++", eoaBalance?.toString());
-
         // setSafeState(setScwTokenInbalance, BigNumber.from(scwBalance), BIG_ZERO);
         // setSafeState(setEoaTokenInbalance, BigNumber.from(eoaBalance), BIG_ZERO);
 
@@ -290,8 +284,6 @@ const TradeContainer: React.FC<any> = () => {
                     chainId: "",
                     icon: "",
                 })
-
-                console.log("Metamask logout", address)
             }
         }
         changeWallet();
@@ -432,7 +424,6 @@ const TradeContainer: React.FC<any> = () => {
         
         const maxBal: any = await getErc20Balanceof(erc20, smartAccount.address)
         const MaxBalance = bg(maxBal?.toString()).dividedBy(bg(10).pow(fromTokendecimal))
-        console.log("✅  onChangeFromToken ~ MaxBalance:", MaxBalance)
         setMaxBalance(MaxBalance.toString())
     };
 
@@ -560,7 +551,6 @@ const TradeContainer: React.FC<any> = () => {
     };
 
     const updateInputValues = (index: number, txHash: string[], data: any, simulation: any) => {
-        console.log("data: ", data, individualBatch);
         if (txHash.length < 1) return toast.error("Please complete the last input before adding a new one.");
         if (individualBatch.length == 0) {
             setIndividualBatch([
@@ -675,11 +665,6 @@ const TradeContainer: React.FC<any> = () => {
                 return;
             }
             const provider = await getProvider(selectedFromNetwork.chainId);
-            console.log(
-                "refinanceamoynt",
-                amountIn.toString(),
-                bg(amountIn).multipliedBy(bg(10).pow(fromTokenDecimal)).toString()
-            );
             const _tempAmount = BigNumber.from(bg(amountIn).multipliedBy(bg(10).pow(fromTokenDecimal)).toString());
 
             let txHash;
@@ -750,7 +735,6 @@ const TradeContainer: React.FC<any> = () => {
             }
             const mergeArray: any = [];
             await individualBatch.map((bar) => bar.txHash.map((hash) => mergeArray.push(hash)));
-            console.log("mergedArray--: ", mergeArray);
             let tempTxhash = "";
             if (isSCW) {
                 tempTxhash = await sendToBiconomy(mergeArray);

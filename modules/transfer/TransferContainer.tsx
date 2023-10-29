@@ -77,7 +77,6 @@ const TransferContainer: React.FC<any> = () => {
                     return filteredToken;
                 });
                 setTokensData(filteredTokens);
-                console.log("TRANSFER FUND :-  filteredTokens: ", filteredTokens);
             }
         }
         setTokenAddress("");
@@ -128,7 +127,6 @@ const TransferContainer: React.FC<any> = () => {
 
     const handleTokenAddress = async (_tokenAddress) => {
         try {
-            console.log('_tokenAddress', _tokenAddress)
             setAmountIn(0);
             setTokenAddress(_tokenAddress);
             const contract = await getContract(_tokenAddress);
@@ -139,7 +137,6 @@ const TransferContainer: React.FC<any> = () => {
             const _eoaBalance: BigNumber | undefined = await getErc20Balanceof(contract, address);
             const decimals: number | undefined = await getErc20Decimals(contract);
 
-            console.log("address====" + address, decimals?.toString(), decimals);
             // setTokenInDecimals(BigNumber.from(decimals)?.toNumber());
             // setScwTokenInbalance(BigNumber.from(_scwBalance));
             // setEoaTokenInbalance(BigNumber.from(_eoaBalance));
@@ -166,7 +163,6 @@ const TransferContainer: React.FC<any> = () => {
                 } else {
                     setAmountIn(amountInByDecimals.toString());
                 }
-                console.log("amountInByDecimals-native", amountInByDecimals.toString());
             } else {
                 const contract = await getContract(tokenAddress);
                 if (!contract) {
@@ -176,16 +172,13 @@ const TransferContainer: React.FC<any> = () => {
                 let decimal = await contract.decimals();
                 let amountInByDecimals = bg(_amountIn);
                 amountInByDecimals = amountInByDecimals.multipliedBy(bg(10).pow(decimal.toString()));
-                console.log("amountInByDecimals", amountInByDecimals.toString(), _amountIn.toString());
                 if (amountInByDecimals.eq(0)) {
                     setAmountIn(_amountIn);
                 } else {
                     setAmountIn(amountInByDecimals.toString());
                 }
-                console.log("amountInByDecimals-erc20", amountInByDecimals.toString());
             }
             const gasCost: number | undefined = await calculategasCost(chain?.chainId);
-            console.log("gasCost: ", gasCost?.toString());
             setGasCost(gasCost!);
         } catch (error) {
             console.log("handleAmountIn-error: ", error)
@@ -223,13 +216,11 @@ const TransferContainer: React.FC<any> = () => {
                 };
 
                 const balance = await provider.getBalance(_fromAddress);
-                console.log("balance", balance.toString());
                 if (!BigNumber.from(balance).gte(amountIn)) {
                     toast.error("Not native enough balance-");
                     return;
                 }
                 tx = { to: _toAdress, value: amountIn, data: "0x" };
-                console.log("tx", tx);
             } else {
                 const contract = await getContract(tokenAddress);
                 if (!contract) {
@@ -241,30 +232,22 @@ const TransferContainer: React.FC<any> = () => {
                     toast.error("Not erc20 enough balance");
                     return;
                 }
-                console.log("erc20", address, amountIn.toString());
                 const data = await contract.populateTransaction.transfer(_toAdress, amountIn);
                 tx = { to: tokenAddress, data: data.data };
-                console.log("tx", tx);
             }
 
             if (isSCW) {
-                console.log("biconomySmartAccount-----------2: ", smartAccount, tx);
                 const userOp = await smartAccount.buildUserOp([tx]);
                 userOp.paymasterAndData = "0x";
-                console.log("userOp: ", userOp);
 
                 const userOpResponse = await smartAccount.sendUserOp(userOp);
-                console.log("userOp hash: ", userOpResponse);
 
                 const txReciept = await userOpResponse.wait();
-                console.log("Tx hash: ", txReciept?.receipt.transactionHash);
 
                 // const txResponseOfBiconomyAA = await smartAccount?.sendTransactionBatch({
                 //   transactions: [tx],
                 // });
                 // const txReciept = await txResponseOfBiconomyAA?.wait();
-                // console.log("userOp hash", txResponseOfBiconomyAA?.hash);
-                // console.log("Tx hash", txReciept?.transactionHash);
                 setTxHash(txReciept?.receipt.transactionHash);
                 setSendtxLoading(false);
                 toast.success(`Tx Succefully done: ${txReciept?.receipt.transactionHash}`);

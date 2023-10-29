@@ -19,17 +19,15 @@ export function useCalculatebalance() {
             if (eoaAddress) {
                 let _eoabalance: any = await provider.getBalance(eoaAddress);
                 _eoabalance = bg(_eoabalance.toString()).dividedBy(bg(10).pow(18));
-                console.log("_eoabalance: ", _eoabalance.toString());
                 setEoaBalance(_eoabalance.toString());
             }
             if (scwAddress) {
                 let _eoabalance: any = await provider.getBalance(scwAddress);
                 _eoabalance = bg(_eoabalance.toString()).dividedBy(bg(10).pow(18));
-                console.log("_eoabalance: ", _eoabalance.toString());
                 setScwBalance(_eoabalance.toString());
             }
         } catch (error: any) {
-            console.log("useCalculatebalance:Error: " + error);
+console.log("useCalculatebalance:Error: " + error);
             toast.error(error);
             return;
         }

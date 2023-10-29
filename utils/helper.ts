@@ -73,24 +73,19 @@ export const fetchContractDetails = async (
         const newprovider = await getProvider(chainIdByStargateChainId[toChainId]);
 
         const { isProxy, currentImplAddress }: any = await checkIfContractIsProxy(abi, contractAddress, newprovider);
-        console.log("isProxy: ", isProxy, currentImplAddress);
         if (isProxy) {
             const realChainid = await chooseChianId(toChainId);
             const provider = new ethers.providers.JsonRpcProvider(rpscURLS[realChainid]);
             let implementation = await provider.getStorageAt(contractAddress, implementation_slot);
             implementation = "0x" + implementation.slice(26, 66);
-            console.log("implementation", implementation);
             contractAbis = await getAbiUsingExplorereUrl(toChainId, implementation);
-            console.log("contractAbis", contractAbis);
             abi = JSON.parse(contractAbis.ABI);
         }
-        console.log("abi", abi);
 
         // Find the selected functions
         const selectedFunctions = findSelectedFunctions(abi, methodNames);
         // Create the updated ABI
         abi = createUpdatedABI(selectedFunctions);
-        console.log("Updated-Abi: ", abi);
         return abi;
     } catch (error) {
         console.log("fetchdetails-error: ", error);
@@ -115,7 +110,6 @@ export const getAbiUsingExplorereUrl = async (network: string, toAddress: string
         }
         if (!URL) return;
         const resABI = await axios.get(URL);
-        console.log(resABI.data.result[0].ContractName);
         return resABI.data.result[0];
     } catch (error) {
         console.log("GetABI-Error: ", error);
@@ -138,7 +132,6 @@ export const checkIfContractIsProxy = async (abi: any, contratAddress: any, prov
             currentImplAddress = contratAddress;
             isProxy = false;
         }
-        console.log("currentImplAddress: ", currentImplAddress);
         return { isProxy: isProxy, currentImplAddress: currentImplAddress };
     } catch (error) {
         console.log("IfContractProxy-Error: ", error);
@@ -155,30 +148,24 @@ export const calculateFees = async (
     provider: any
 ) => {
     try {
-        // console.log("stargateRouter: ", stargateRouter.toString());
 
         const stargateRouterInstance = await getContractInstance(stargateRouter, IStarGateRouter, provider);
         if (!stargateRouterInstance) return;
         const factory = await stargateRouterInstance.factory();
-        // console.log("factory: ", factory.toString());
 
         const factoryInstance = await getContractInstance(factory, IStarGateFactory, provider);
         if (!factoryInstance) return;
         const pool = await factoryInstance.getPool(1);
-        // console.log("factory: ", factory.toString());
 
         const poolInstance = await getContractInstance(pool, IStarGatePool, provider);
         if (!poolInstance) return;
         const feeLibrary = await poolInstance.feeLibrary();
-        // console.log("feeLibrary: ", feeLibrary.toString());
 
         const feeLibraryInstance = await getContractInstance(feeLibrary, IStarGateFeeLibrary, provider);
         if (!feeLibraryInstance) return;
         const fees = await feeLibraryInstance.getFees(srcPoolId, destPoolId, toChainId, userAddress, amountIn);
-        // console.log("fees: ", fees.toString());
         const ChainPingFees = "65"; // will deposit into dest eoa if stargate do not take much slippage
         amountIn = BigNumber.from(amountIn).sub(fees.eqFee).sub(fees.protocolFee).sub(fees.lpFee).sub(ChainPingFees);
-        console.log("amountIn: ", amountIn.toString());
         return amountIn;
     } catch (error) {
         console.log("calculateFees-error: ", error);
@@ -194,7 +181,6 @@ export const batch = async (
     destChainId: any
 ) => {
     console.time("Batch Simulation");
-    console.log("destChainId", destChainId);
 
     const chainPingOwner = "0xb50685c25485CA8C520F5286Bbbf1d3F216D6989"; // owner of ChainPing
 
@@ -218,9 +204,6 @@ export const batch = async (
             }
         )
     ).data;
-    console.log("simulate: ", simulate.simulation_results);
-    console.log("Gas Estimation: ", simulate.simulation_results[0].transaction.gas_used);
-    console.log("Gas Estimation: ", simulate.simulation_results[1].transaction.gas_used);
     console.timeEnd("Batch Simulation");
     if (isSimulate) {
         return simulate.simulation_results[1];

@@ -44,10 +44,8 @@ export function useSwitchOnSpecificChain() {
     useEffect(() => {
         async function changeWallet() {
             if (address && smartAccount && chain) {
-                console.log("Metamask new address", address)
                 if (smartAccount.owner == address) return;
                 const _smartAccount = await login(chain?.chainId);
-                console.log("_smartAccount_", _smartAccount);
                 // @ts-ignore
                 await isNetworkCorrect(chain?.chainId, _smartAccount.address);
 
@@ -68,8 +66,6 @@ export function useSwitchOnSpecificChain() {
                     chainId: '',
                     icon: '',
                 })
-
-                console.log("Metamask logout", address)
             }
         }
         changeWallet();
@@ -236,7 +232,6 @@ export function useSwitchOnSpecificChain() {
                 }
             } else {
                 if (chain) {
-                    console.log("🚀 HeaderContainer.tsx:339 ~ changeChain ~ chain:", chain)
                     const _smartAccount = await login(chain?.chainId);
 
                     setSelectedFromNetwork({

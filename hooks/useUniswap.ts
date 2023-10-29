@@ -29,7 +29,6 @@ export function useUniswap() {
                 provider: web3JsonProvider,
             });
 
-            console.log("tokenIn", tokenIn, tokenOut);
             const erc20In: any = await getContractInstance(tokenIn, IERC20, web3JsonProvider);
             const erc20Out: any = await getContractInstance(tokenOut, IERC20, web3JsonProvider);
 
@@ -63,7 +62,6 @@ export function useUniswap() {
             const quoteCurrency = type === "exactIn" ? currencyOut : currencyIn;
 
             const amount = await CurrencyAmount.fromRawAmount(baseCurrency, amountIn);
-            console.log("amount", amount, quoteCurrency, options);
             const route: any = await router?.route(
                 amount,
                 quoteCurrency,
@@ -71,14 +69,11 @@ export function useUniswap() {
                 options
             );
             let amountOutprice: any = route?.quote.toExact().toString();
-            console.log("amountOutprice", amountOutprice.toString());
             amountOutprice = parseUnits(amountOutprice, tokenOutDecimals);
-            console.log("amountOutprice", amountOutprice.toString());
             const swapTx = {
                 to: uniswapSwapRouterByChainId[selectedFromNetwork.chainId],
                 data: route.methodParameters?.calldata,
             };
-            console.log("swapUniV3-swapTx", swapTx);
             return { swapTx, tokenIn, tokenOut, amountOutprice };
         } catch (error) {
             console.log("swapUniV3-error", error);

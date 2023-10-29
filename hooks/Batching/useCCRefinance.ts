@@ -97,13 +97,11 @@ export function useCCRefinance() {
                 });
                 txData = abiInterface.encodeFunctionData(methodName, params);
                 const tx1 = { to: tokenInContractAddress, data: txData };
-                console.log("tx1", tx1);
                 tempTxs.push(tx1);
             }
 
             isSwap = nativeTokenIn != tokensByNetworkForCC[selectedFromNetwork.chainId].usdc ? true : false;
             if (isSwap) {
-                console.log("isSwap", isSwap);
                 const approveData = await approve({
                     tokenIn: nativeTokenIn,
                     spender: uniswapSwapRouterByChainId[selectedFromNetwork.chainId],
@@ -136,7 +134,6 @@ export function useCCRefinance() {
                     address,
                     paramDetailsMethod,
                 });
-                console.log("params ", params);
                 abiNum = abiFetcherNum[selectedToNetwork.chainName][tokenOutName];
                 abi = abiFetcher[selectedToNetwork.chainName][abiNum]["depositAbi"];
                 methodName = abiFetcher[selectedToNetwork.chainName][abiNum]["depositMethodName"];
@@ -158,7 +155,6 @@ export function useCCRefinance() {
                     extraOrShareToken: "0x0000000000000000000000000000000000000000",
                 });
                 tempTxs = [...tempTxs, ...txs];
-                console.log("tempTxs: ", tempTxs);
             }
 
             // else if (toProtocol != "erc20") {
@@ -170,14 +166,6 @@ export function useCCRefinance() {
             //     methodName = abiFetcher[selectedToNetwork.chainName][abiNum]["depositMethodName"];
             //     paramDetailsMethod = abiFetcher[selectedToNetwork.chainName][abiNum]["depositParamDetailsMethod"];
             //     const tokenOutContractAddress = abiFetcher[selectedToNetwork.chainName][abiNum]["contractAddress"];
-            //     console.log(
-            //         "tokenOutContractAddress",
-            //         tokenOutContractAddress,
-            //         paramDetailsMethod,
-            //         methodName,
-            //         abi,
-            //         provider
-            //     );
 
             //     const approveData = await approve({
             //         tokenIn: newTokenIn,
@@ -201,7 +189,6 @@ export function useCCRefinance() {
             //     txData = abiInterface.encodeFunctionData(methodName, params);
             //     const tx2 = { to: tokenOutContractAddress, data: txData };
             //     tempTxs.push(tx2);
-            //     console.log("tempTxs", tempTxs);
             // }
             return tempTxs;
         } catch (error) {

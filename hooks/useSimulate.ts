@@ -108,9 +108,7 @@ export function useSimulate() {
 
             const approveData = await USDT.populateTransaction.approve(fromStarGateRouter, _tempAmount);
             const approveTx = { to: approveData.to, data: approveData.data };
-            console.log("approveTx", approveTx);
 
-            console.log("params1", params[funcIndex]);
             const amountAfterSlippage = await calculateFees(
                 address,
                 _tempAmount,
@@ -121,18 +119,14 @@ export function useSimulate() {
                 provider
             );
             params[funcIndex][isThisAmount] = amountAfterSlippage.toString();
-            console.log("params2", params[funcIndex], currentFunc);
-            console.log("params3: ", [toUsdc, params[funcIndex][1], address, 0], currentFunc);
 
             let abiInterfaceForDestDefiProtocol = new ethers.utils.Interface(currentAbi);
-            console.log("abiInterfaceForDestDefiProtocol", abiInterfaceForDestDefiProtocol, currentFunc);
 
             // const destChainExecData = abiInterfaceForDestDefiProtocol.encodeFunctionData(currentFunc, params[funcIndex])
             const destChainExecData = abiInterfaceForDestDefiProtocol.encodeFunctionData(
                 currentFunc,
                 params[funcIndex]
             );
-            console.log("destChainExecData", destChainExecData);
 
             const contractAddress = allNetworkData?.contracts[contractIndex].contractAddress;
             const extraOrShareToken = allNetworkData?.contracts[contractIndex].extraOrShareToken;
@@ -164,7 +158,6 @@ export function useSimulate() {
             const srcAddress = ethers.utils.solidityPack(["address"], [smartAccount.address]);
             let abiInterfaceForChainPing = new ethers.utils.Interface(ChainPing);
             const stargateParams = [fromChainId, srcAddress, _nonce, toUsdc, amountAfterSlippage, data];
-            console.log("stargateParams:", stargateParams, data);
 
             const encodedDataForChainPing = abiInterfaceForChainPing.encodeFunctionData("sgReceive", stargateParams);
             const erc20Interface = new ethers.utils.Interface(["function transfer(address _account, uint256 _value)"]);
@@ -196,8 +189,6 @@ export function useSimulate() {
                 data,
                 lzParams
             );
-            console.log("quoteData", quoteData.toString(), _tempAmount);
-            console.log("srcPoolId-destPoolId", srcPoolId, destPoolId);
 
             let stargateTx = await stargateRouter.populateTransaction.swap(
                 toChainId,
@@ -211,23 +202,18 @@ export function useSimulate() {
                 data,
                 { value: quoteData[0] }
             );
-            console.log("stargateTx", stargateTx, fromChainId);
 
             const gasCost: number | undefined = await calculategasCost(chooseChianId(fromChainId))
-            console.log('gasCost: ',  gasCost?.toString())
 
             setGasCost(gasCost!);
             const _bridgeGasCost = bg(quoteData[0].toString()).dividedBy(1e18);
             setBridgeGasCost(bg(_bridgeGasCost).toNumber());
 
             // const firstObject: any = biconomyGasInfo.data.data.response[0];
-            // console.log('firstObject: ', firstObject)
 
             // // const tokenGasPrice: number = firstObject.tokenGasPrice;
-            // // console.log('tokenGasPrice: ', tokenGasPrice)
 
             // // const feeTokenTransferGas: number = firstObject.feeTokenTransferGas;
-            // // console.log('feeTokenTransferGas: ', feeTokenTransferGas)
 
             // // const totalfees = BigNumber.from(tokenGasPrice).mul(feeTokenTransferGas).mul(1e9)
             // // const divisor = new BigNumber('1e18');
@@ -241,10 +227,8 @@ export function useSimulate() {
             // // const gasCost = bg(totalfees.toString()).dividedBy(bg(10).pow(27))
             // // const decimalRepresentation = new bg(gasCost.toString()).toString();
 
-            // console.log("Token Gas Price in ETH:", formattedResult.toString());
 
             // // const richSigner = new ethers.VoidSigner(richAddressByChainId[fromChainId], provider)
-            // // console.log("richSigner", fromChainId, richSigner, richAddressByChainId[fromChainId]);
 
             // // const gasEstimate = await richSigner?.estimateGas({
             // //     from: richAddressByChainId[fromChainId],
@@ -252,15 +236,12 @@ export function useSimulate() {
             // //     value: quoteData[0],
             // //     data: stargateTx?.data,
             // // });
-            // // console.log("gasEstimate--", gasEstimate?.toString());
 
             // // const gasPrice = await provider?.getGasPrice();
-            // // console.log("gasPrice--", gasPrice?.toString());
 
             // // const gasCost = bg(BigNumber.from(gasEstimate).toString())
             // //     .multipliedBy(BigNumber.from(gasPrice).toString())
             // //     .dividedBy(1e18);
-            // // console.log("gasCost--", gasCost?.toString(), _bridgeGasCost.toString());
 
             // const _bridgeGasCost = bg(quoteData[0].toString()).dividedBy(1e18);
             // setGasCost(formattedResult.toString());
@@ -280,10 +261,6 @@ export function useSimulate() {
             }
 
             console.log("simulation-error: ", simulation.simulation.error);
-            console.log("simulation-status: ", simulation.simulation.status);
-            console.log("simulation-input: ", simulation.simulation.input);
-            console.log("simulation-method: ", simulation.simulation.method);
-            console.log("simulation-gasused: ", simulation.simulation.gas_used);
         } catch (error: any) {
             setSimulationLoading(false);
             setIsSimulationOpen(false);

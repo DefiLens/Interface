@@ -76,9 +76,6 @@ const Trade: React.FC<any> = ({
         individualBatch,
     }: iTrade = useTradeStore((state) => state);
 
-    console.log("🚀 ~ ~ selectedFromNetwork:", selectedFromNetwork)
-
-
     return (
         <div className="w-full flex flex-col justify-center items-center py-5">
             <div className={`${showBatchList ? '!w-full' : '!w-[50%]'}  flex flex-col lg:flex-row justify-center items-start gap-4`}>
