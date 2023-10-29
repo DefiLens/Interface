@@ -10,10 +10,12 @@ import { iBatchingTxn, useBatchingTxnStore } from "../../store/BatchingTxnStore"
 import { iCrossChainDifi, useCrossChainDifiStore } from "../../store/CrossChainDifiStore";
 import { abiFetcher, abiFetcherNum, buildParams, nativeTokenFetcher, nativeTokenNum } from "./batchingUtils";
 import { _functionType, _nonce, uniswapSwapRouterByChainId, V3_SWAP_ROUTER_ADDRESS } from "../../utils/constants";
+import { useCalculateGasCost } from "../useCalculateGasCost";
 
 export function useRefinance() {
     const { mutateAsync: swap } = useUniswap();
     const { mutateAsync: approve } = useApprove();
+    const { mutateAsync: calculategasCost } = useCalculateGasCost();
 
     const { selectedFromNetwork }: iTrade = useTradeStore((state) => state);
 
@@ -92,7 +94,6 @@ export function useRefinance() {
             }
 
             isSwap = nativeTokenIn != nativeTokenOut ? true : false;
-
             if (isSwap) {
                 console.log("isSwap", isSwap);
                 const approveData = await approve({
@@ -147,6 +148,9 @@ export function useRefinance() {
                 tempTxs.push(tx2);
                 console.log("tempTxs", tempTxs);
             }
+            const gasCost: number | undefined = await calculategasCost(selectedFromNetwork.chainId)
+            console.log('gasCost: ',  gasCost?.toString())
+            alert(gasCost?.toString())
             return tempTxs;
         } catch (error) {
             console.log("refinance-error", error);
