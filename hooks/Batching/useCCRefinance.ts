@@ -123,8 +123,10 @@ export function useCCRefinance() {
             }
 
             if (selectedFromNetwork.chainName != selectedToNetwork.chainName) {
+                abiNum = abiFetcherNum[selectedToNetwork.chainName][tokenOutName];
                 const newTokenIn = isSwap ? tokensByNetworkForCC[selectedFromNetwork.chainId] : nativeTokenIn;
                 paramDetailsMethod = abiFetcher[selectedToNetwork.chainName][abiNum]["depositParamDetailsMethod"];
+
                 params = await buildParams({
                     tokenIn,
                     tokenOut,
@@ -140,7 +142,6 @@ export function useCCRefinance() {
                 methodName = abiFetcher[selectedToNetwork.chainName][abiNum]["depositMethodName"];
                 paramDetailsMethod = abiFetcher[selectedToNetwork.chainName][abiNum]["depositParamDetailsMethod"];
                 const tokenOutContractAddress = abiFetcher[selectedToNetwork.chainName][abiNum]["contractAddress"];
-
                 let txs: any = await sendTxToChain({
                     tokenIn: nativeTokenIn,
                     address,
@@ -159,6 +160,7 @@ export function useCCRefinance() {
                 tempTxs = [...tempTxs, ...txs];
                 console.log("tempTxs: ", tempTxs);
             }
+
             // else if (toProtocol != "erc20") {
             //     const newTokenIn = isSwap ? nativeTokenOut : nativeTokenIn;
             //     const newAmount = isSwap ? swapData.amountOutprice : amount;

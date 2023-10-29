@@ -8,11 +8,6 @@ import { getContractInstance } from "../../utils/web3Libs/ethers";
 bg.config({ DECIMAL_PLACES: 20 });
 
 export const abiFetcherNum = {
-    base: {
-        cUSDbCv3: "1",
-        aBasUSDbC: "2",
-        aBasWETH: "2",
-    },
     polygon: {
         cUSDC: "1",
         aUSDC: "2",
@@ -32,32 +27,44 @@ export const abiFetcherNum = {
         aWBTCv3: "4",
         aBALv3: "4",
     },
+    avalanche: {
+        aUSDT: "1",
+        aUSDC: "1",
+        aWAVAX: "1",
+        aBTCb: "1",
+        aWETHe: "1",
+        aWBTCe: "1",
+        asAVAX: "1",
+        aLINKe: "1",
+        aDAIe: "1",
+        aAAVEe: "1",
+        aMAI: "1",
+        aFRAX: "1",
+    },
+    base: {
+        cUSDbCv3: "1",
+        aBasUSDbC: "2",
+        aBasWETH: "2",
+    },
+    arbitrum: {
+        aWETH: "1",
+        aUSDC: "1",
+        aUSDCe: "1",
+        awstETH: "1",
+        aWBTC: "1",
+        aUSDT: "1",
+        aARB: "1",
+        aLINK: "1",
+        aDAI: "1",
+        arETH: "1",
+        aLUSD: "1",
+        aAAVE: "1",
+        aFRAX: "1",
+        aEURS: "1"
+    },
 };
 
 export const abiFetcher = {
-    base: {
-        "1": {
-            depositAbi: "function supply(address asset, uint256 amount)",
-            withdrawAbi: "function withdraw(address asset,uint256 amount)",
-            depositMethodName: "supply",
-            withdrawMethodName: "withdraw",
-            depositParamDetailsMethod: "compound_supply",
-            withdrawParamDetailsMethod: "compound_withdraw",
-            contractAddress: "0x9c4ec768c28520B50860ea7a15bd7213a9fF58bf",
-            apyFetch: "fetchApyForCompoundPolygon",
-        },
-        "2": {
-            depositAbi: "function supply(address asset, uint256 amount, address onBehalfOf, uint16 referralCode)",
-            withdrawAbi: "function withdraw(address asset, uint256 amount, address to)",
-            depositMethodName: "supply",
-            withdrawMethodName: "withdraw",
-            paramDetailsMethod: "aave_supply_v3",
-            depositParamDetailsMethod: "aave_supply_v3",
-            withdrawParamDetailsMethod: "aave_withdraw_v3",
-            contractAddress: "0xA238Dd80C259a72e81d7e4664a9801593F98d1c5",
-            apyFetch: "fetchApyForAaveV3Polygon",
-        },
-    },
     polygon: {
         "1": {
             depositAbi: "function supply(address asset, uint256 amount)",
@@ -103,14 +110,58 @@ export const abiFetcher = {
             apyFetch: "fetchApyForAaveV3Polygon",
         },
     },
+    avalanche: {
+        "1": {
+            depositAbi: "function supply(address asset, uint256 amount, address onBehalfOf, uint16 referralCode)",
+            withdrawAbi: "function withdraw(address asset, uint256 amount, address to)",
+            depositMethodName: "supply",
+            withdrawMethodName: "withdraw",
+            paramDetailsMethod: "aave_supply_v3",
+            depositParamDetailsMethod: "aave_supply_v3",
+            withdrawParamDetailsMethod: "aave_withdraw_v3",
+            contractAddress: "0x794a61358D6845594F94dc1DB02A252b5b4814aD",
+            apyFetch: "fetchApyForAaveV3Polygon",
+        },
+    },
+    arbitrum: {
+        "1": {
+            depositAbi: "function supply(address asset, uint256 amount, address onBehalfOf, uint16 referralCode)",
+            withdrawAbi: "function withdraw(address asset, uint256 amount, address to)",
+            depositMethodName: "supply",
+            withdrawMethodName: "withdraw",
+            paramDetailsMethod: "aave_supply_v3",
+            depositParamDetailsMethod: "aave_supply_v3",
+            withdrawParamDetailsMethod: "aave_withdraw_v3",
+            contractAddress: "0x794a61358D6845594F94dc1DB02A252b5b4814aD",
+            apyFetch: "fetchApyForAaveV3Polygon",
+        },
+    },
+    base: {
+        "1": {
+            depositAbi: "function supply(address asset, uint256 amount)",
+            withdrawAbi: "function withdraw(address asset,uint256 amount)",
+            depositMethodName: "supply",
+            withdrawMethodName: "withdraw",
+            depositParamDetailsMethod: "compound_supply",
+            withdrawParamDetailsMethod: "compound_withdraw",
+            contractAddress: "0x9c4ec768c28520B50860ea7a15bd7213a9fF58bf",
+            apyFetch: "fetchApyForCompoundPolygon",
+        },
+        "2": {
+            depositAbi: "function supply(address asset, uint256 amount, address onBehalfOf, uint16 referralCode)",
+            withdrawAbi: "function withdraw(address asset, uint256 amount, address to)",
+            depositMethodName: "supply",
+            withdrawMethodName: "withdraw",
+            paramDetailsMethod: "aave_supply_v3",
+            depositParamDetailsMethod: "aave_supply_v3",
+            withdrawParamDetailsMethod: "aave_withdraw_v3",
+            contractAddress: "0xA238Dd80C259a72e81d7e4664a9801593F98d1c5",
+            apyFetch: "fetchApyForAaveV3Polygon",
+        },
+    },
 };
 
 export const nativeTokenNum = {
-    base: {
-        cUSDbCv3: "1",
-        aBasUSDbC: "1",
-        aBasWETH: "2",
-    },
     polygon: {
         cUSDC: "1",
 
@@ -133,55 +184,198 @@ export const nativeTokenNum = {
         aWBTCv3: "7",
         aBALv3: "8",
     },
+    avalanche: {
+        aUSDT: "1",
+        aUSDC: "2",
+        aWAVAX: "3",
+        aBTCb: "4",
+        aWETHe: "5",
+        aWBTCe: "6",
+        asAVAX: "7",
+        aLINKe: "8",
+        aDAIe: "9",
+        aAAVEe: "10",
+        aMAI: "11",
+        aFRAX: "12",
+    },
+    arbitrum: {
+        aWETH: "1",
+        aUSDC: "2",
+        aUSDCe: "3",
+        awstETH: "4",
+        aWBTC: "5",
+        aUSDT: "6",
+        aARB: "7",
+        aLINK: "8",
+        aDAI: "9",
+        arETH: "10",
+        aLUSD: "11",
+        aAAVE: "12",
+        aFRAX: "13",
+        aEURS: "14"
+    },
+    base: {
+        cUSDbCv3: "1",
+        aBasUSDbC: "1",
+        aBasWETH: "2",
+    },
 };
 
 export const nativeTokenFetcher = {
-    base: {
-        "1": {
-            nativeToken: "0xd9aAEc86B65D86f6A7B5B1b0c42FFA531710b6CA", // USDC
-            symbol: "usdc"
-        },
-        "2": {
-            nativeToken: "0x4200000000000000000000000000000000000006", // WETH
-            symbol: "weth"
-        },
-        "3": {
-            nativeToken: "0x2Ae3F1Ec7F1F5012CFEab0185bfc7aa3cf0DEc22", // cbETH
-            symbol: "cbeth"
-        },
-    },
     polygon: {
         "1": {
             nativeToken: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
-            symbol: "usdc"
+            symbol: "usdc",
         },
         "2": {
             nativeToken: "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
-            symbol: "usdt"
+            symbol: "usdt",
         },
         "3": {
             nativeToken: "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063",
-            symbol: "dai"
+            symbol: "dai",
         },
         "4": {
             nativeToken: "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619",
-            symbol: "weth"
+            symbol: "weth",
         },
         "5": {
             nativeToken: "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
-            symbol: "wmatic"
+            symbol: "wmatic",
         },
         "6": {
             nativeToken: "0xD6DF932A45C0f255f85145f286eA0b292B21C90B",
-            symbol: "aave"
+            symbol: "aave",
         },
         "7": {
             nativeToken: "0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6",
-            symbol: "wbtc"
+            symbol: "wbtc",
         },
         "8": {
             nativeToken: "0x9a71012B13CA4d3D0Cdc72A177DF3ef03b0E76A3",
-            symbol: "bal"
+            symbol: "bal",
+        },
+    },
+    avalanche: {
+        "1": {
+            nativeToken: "0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7",
+            symbol: "usdt",
+        },
+        "2": {
+            nativeToken: "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E",
+            symbol: "usdc",
+        },
+        "3": {
+            nativeToken: "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
+            symbol: "wavax",
+        },
+        "4": {
+            nativeToken: "0x152b9d0FdC40C096757F570A51E494bd4b943E50",
+            symbol: "btc.b",
+        },
+        "5": {
+            nativeToken: "0x49D5c2BdFfac6CE2BFdB6640F4F80f226bc10bAB",
+            symbol: "weth.e",
+        },
+        "6": {
+            nativeToken: "0x50b7545627a5162F82A992c33b87aDc75187B218",
+            symbol: "wbtc.3",
+        },
+        "7": {
+            nativeToken: "0x2b2C81e08f1Af8835a78Bb2A90AE924ACE0eA4bE",
+            symbol: "savax",
+        },
+        "8": {
+            nativeToken: "0x5947BB275c521040051D82396192181b413227A3",
+            symbol: "link.e",
+        },
+        "9": {
+            nativeToken: "0xd586E7F844cEa2F87f50152665BCbc2C279D8d70",
+            symbol: "dai.e",
+        },
+        "10": {
+            nativeToken: "0x63a72806098Bd3D9520cC43356dD78afe5D386D9",
+            symbol: "aave.e",
+        },
+        "11": {
+            nativeToken: "0x5c49b268c9841AFF1Cc3B0a418ff5c3442eE3F3b",
+            symbol: "mai",
+        },
+        "12": {
+            nativeToken: "0xD24C2Ad096400B6FBcd2ad8B24E7acBc21A1da64",
+            symbol: "frax",
+        },
+    },
+    arbitrum: {
+        "1": {
+            nativeToken: "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
+            symbol: "weth",
+        },
+        "2": {
+            nativeToken: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
+            symbol: "usdc",
+        },
+        "3": {
+            nativeToken: "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8",
+            symbol: "usdc.e",
+        },
+        "4": {
+            nativeToken: "0x5979D7b546E38E414F7E9822514be443A4800529",
+            symbol: "wstETH"
+        },
+        "5": {
+            nativeToken: "0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f",
+            symbol: "wbtc"
+        },
+        "6": {
+            nativeToken: "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9",
+            symbol: "usdt"
+        },
+        "7": {
+            nativeToken: "0x912CE59144191C1204E64559FE8253a0e49E6548",
+            symbol: "arb"
+        },
+        "8": {
+            nativeToken: "0xf97f4df75117a78c1A5a0DBb814Af92458539FB4",
+            symbol: "link"
+        },
+        "9": {
+            nativeToken: "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1",
+            symbol: "dai"
+        },
+        "10": {
+            nativeToken: "0xEC70Dcb4A1EFa46b8F2D97C310C9c4790ba5ffA8",
+            symbol: "rETH"
+        },
+        "11": {
+            nativeToken: "0x93b346b6BC2548dA6A1E7d98E9a421B42541425b",
+            symbol: "lusd"
+        },
+        "12": {
+            nativeToken: "0xba5DdD1f9d7F570dc94a51479a000E3BCE967196",
+            symbol: "aave"
+        },
+        "13": {
+            nativeToken: "0x17FC002b466eEc40DaE837Fc4bE5c67993ddBd6F",
+            symbol: "frax"
+        },
+        "14": {
+            nativeToken: "0xD22a58f79e9481D1a88e00c343885A588b34b68B",
+            symbol: "eurs"
+        },
+    },
+    base: {
+        "1": {
+            nativeToken: "0xd9aAEc86B65D86f6A7B5B1b0c42FFA531710b6CA", // USDC
+            symbol: "usdc",
+        },
+        "2": {
+            nativeToken: "0x4200000000000000000000000000000000000006", // WETH
+            symbol: "weth",
+        },
+        "3": {
+            nativeToken: "0x2Ae3F1Ec7F1F5012CFEab0185bfc7aa3cf0DEc22", // cbETH
+            symbol: "cbeth",
         },
     },
 };
@@ -252,16 +446,16 @@ interface Tokens {
     [tokenName: string]: string;
 }
 
-export const chainPingByNetwork: ChainPing= {
-    '137': '0x664BFAA3ce3C03aAf18EC2627d81f439576f7969',
+export const chainPingByNetwork: ChainPing = {
+    "137": "0x664BFAA3ce3C03aAf18EC2627d81f439576f7969",
     // '106': '0x6FE8e3E0c47043f136640dF7972C1e3F144B807F',
-    '43114': '0x934E5421D4ce678ae4c4B136306Fbee91bfDBbC8',
-    '42161': '0xBA821135197bB2614F5Bd8943b5d1607288DC60d',
+    "43114": "0x934E5421D4ce678ae4c4B136306Fbee91bfDBbC8",
+    "42161": "0xBA821135197bB2614F5Bd8943b5d1607288DC60d",
     // '111': '0x934E5421D4ce678ae4c4B136306Fbee91bfDBbC8',
-    "10": '0x2b2ED70C5B25b71CaA766C1054092A9Ff0900df0',
-    '1': '0x0000000000000000000000000000000000000000',
-    '8453': '0x5764FfF7629c03aFE36AA35114C250b2218a77E2',
-}
+    "10": "0x2b2ED70C5B25b71CaA766C1054092A9Ff0900df0",
+    "1": "0x0000000000000000000000000000000000000000",
+    "8453": "0x5764FfF7629c03aFE36AA35114C250b2218a77E2",
+};
 
 // export const starGateRouterByNetwork: StarGateRouter = {
 //     '137': '0x45A01E4e04F14f7A4a6702c74187c5F6222033cd',
@@ -273,31 +467,31 @@ export const chainPingByNetwork: ChainPing= {
 // }
 
 export const starGateRouterByNetwork: StarGateRouter = {
-    '137': '0xeCc19E177d24551aA7ed6Bc6FE566eCa726CC8a9',
-    '43114': '0xeCc19E177d24551aA7ed6Bc6FE566eCa726CC8a9',
-    '42161': '0xeCc19E177d24551aA7ed6Bc6FE566eCa726CC8a9',
-    '10': '0xeCc19E177d24551aA7ed6Bc6FE566eCa726CC8a9',
-    '1': '0xeCc19E177d24551aA7ed6Bc6FE566eCa726CC8a9',
-    '8453': '0xeCc19E177d24551aA7ed6Bc6FE566eCa726CC8a9',
-}
+    "137": "0xeCc19E177d24551aA7ed6Bc6FE566eCa726CC8a9",
+    "43114": "0xeCc19E177d24551aA7ed6Bc6FE566eCa726CC8a9",
+    "42161": "0xeCc19E177d24551aA7ed6Bc6FE566eCa726CC8a9",
+    "10": "0xeCc19E177d24551aA7ed6Bc6FE566eCa726CC8a9",
+    "1": "0xeCc19E177d24551aA7ed6Bc6FE566eCa726CC8a9",
+    "8453": "0xeCc19E177d24551aA7ed6Bc6FE566eCa726CC8a9",
+};
 
 export const tokensByNetworkForCC: Record<string, Tokens> = {
-    '137':  {
-        usdc: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
+    "137": {
+        usdc: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
     },
-    '43114':  {
-        usdc: '0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E',
+    "43114": {
+        usdc: "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E",
     },
-    '42161':  {
-        usdc: '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8',
+    "42161": {
+        usdc: "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8",
     },
-    '10':  {
-        usdc: '0x7F5c764cBc14f9669B88837ca1490cCa17c31607',
+    "10": {
+        usdc: "0x7F5c764cBc14f9669B88837ca1490cCa17c31607",
     },
-    '1':  {
-        usdc: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
+    "1": {
+        usdc: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
     },
-    '8453':  {
-        usdc: '0xd9aAEc86B65D86f6A7B5B1b0c42FFA531710b6CA',
-    }
-}
+    "8453": {
+        usdc: "0xd9aAEc86B65D86f6A7B5B1b0c42FFA531710b6CA",
+    },
+};

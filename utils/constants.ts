@@ -305,23 +305,7 @@ export const uniswapSwapRouterByChainId = {
 // };
 
 export const protocolNames = {
-    "base": {
-        key: [
-            {
-                name: "aaveV3",
-                icon: ethereum,
-            },
-            {
-                name: "compoundV3",
-                icon: optimism,
-            },
-            {
-                name: "erc20",
-                icon: avalanche,
-            },
-        ],
-        value: ["AAVE V3", "Compound V3", "ERC20"],
-    },
+
     "polygon": {
         key: [
             {
@@ -346,28 +330,53 @@ export const protocolNames = {
             },
         ],
         value: ["AAVE V2", "AAVE V3", "Compound V3", "dForce", "ERC20"],
-    }
-};
-
-export const protocolByNetwork = {
-    base: {
-        aaveV3: [
+    },
+    "avalanche": {
+        key: [
             {
-                name: "aBasUSDbC",
+                name: "aaveV3",
                 icon: avalanche,
             },
             {
-                name: "aBasWETH",
-                icon: ethereum,
-            }
+                name: "erc20",
+                icon: avalanche,
+            },
         ],
-        compoundV3: [
-            {
-                name: "cUSDbCv3",
-                icon: optimism,
-            }
-        ],
+        value: ["AAVE V3", "ERC20"],
     },
+    "arbitrum": {
+        key: [
+            {
+                name: "aaveV3",
+                icon: arbitrum,
+            },
+            {
+                name: "erc20",
+                icon: arbitrum,
+            },
+        ],
+        value: ["AAVE V3", "ERC20"],
+    },
+    "base": {
+        key: [
+            {
+                name: "aaveV3",
+                icon: ethereum,
+            },
+            {
+                name: "compoundV3",
+                icon: optimism,
+            },
+            {
+                name: "erc20",
+                icon: avalanche,
+            },
+        ],
+        value: ["AAVE V3", "Compound V3", "ERC20"],
+    },
+};
+
+export const protocolByNetwork = {
     polygon: {
         aaveV2: [
             {
@@ -445,19 +454,140 @@ export const protocolByNetwork = {
                 icon: optimism,
             }
         ],
-    }
+    },
+    avalanche: {
+        aaveV3: [
+            {
+                name: "aUSDT",
+                icon: avalanche,
+            },
+            {
+                name: "aUSDC",
+                icon: ethereum,
+            },
+            {
+                name: "aWAVAX",
+                icon: avalanche,
+            },
+            {
+                name: "aBTCb",
+                icon: ethereum,
+            },
+            {
+                name: "aWETHe",
+                icon: avalanche,
+            },
+            {
+                name: "aWBTCe",
+                icon: ethereum,
+            },
+            {
+                name: "asAVAX",
+                icon: avalanche,
+            },
+            {
+                name: "aLINKe",
+                icon: ethereum,
+            },
+            {
+                name: "aDAIe",
+                icon: avalanche,
+            },
+            {
+                name: "aAAVEe",
+                icon: ethereum,
+            },
+            {
+                name: "aMAI",
+                icon: avalanche,
+            },
+            {
+                name: "aFRAX",
+                icon: ethereum,
+            }
+        ],
+    },
+    arbitrum: {
+        aaveV3: [
+            {
+                name: "aWETH",
+                icon: avalanche,
+            },
+            {
+                name: "aUSDC",
+                icon: avalanche,
+            },
+            {
+                name: "aUSDCe",
+                icon: avalanche,
+            },
+            {
+                name: "awstETH",
+                icon: avalanche,
+            },
+            {
+                name: "aWBTC",
+                icon: avalanche,
+            },
+            {
+                name: "aUSDT",
+                icon: avalanche,
+            },
+            {
+                name: "aARB",
+                icon: avalanche,
+            },
+            {
+                name: "aLINK",
+                icon: avalanche,
+            },
+            {
+                name: "aDAI",
+                icon: avalanche,
+            },
+            {
+                name: "arETH",
+                icon: avalanche,
+            },
+            {
+                name: "aLUSD",
+                icon: avalanche,
+            },
+            {
+                name: "aAAVE",
+                icon: avalanche,
+            },
+            {
+                name: "aFRAX",
+                icon: avalanche,
+            },
+            {
+                name: "aEURS",
+                icon: avalanche,
+            },
+        ]
+    },
+    base: {
+        aaveV3: [
+            {
+                name: "aBasUSDbC",
+                icon: avalanche,
+            },
+            {
+                name: "aBasWETH",
+                icon: ethereum,
+            }
+        ],
+        compoundV3: [
+            {
+                name: "cUSDbCv3",
+                icon: optimism,
+            }
+        ],
+    },
 };
 
 export const tokenAddressByProtocol = {
-    base: {
-        aaveV3: {
-            aBasUSDbC: "0x0a1d576f3eFeF75b330424287a95A366e8281D54",
-            aBasWETH: "0xD4a0e0b9149BCee3C920d2E00b5dE09138fd8bb7"
-        },
-        compoundV3: {
-            cUSDbCv3: "0x9c4ec768c28520B50860ea7a15bd7213a9fF58bf"
-        }
-    },
     polygon: {
         aaveV2: {
             aUSDC: "0x1a13F4Ca1d028320A707D99520AbFefca3998b7F",
@@ -484,6 +614,49 @@ export const tokenAddressByProtocol = {
         dForce: {
             dForceUSDC: "0x5268b3c4afb0860D365a093C184985FCFcb65234",
         },
+    },
+    avalanche: {
+        aaveV3: {
+            aUSDT: "",
+            aUSDC: "",
+            aWAVAX: "",
+            aBTCb: "",
+            aWETHe: "",
+            aWBTCe: "",
+            asAVAX: "",
+            aLINKe: "",
+            aDAIe: "",
+            aAAVEe: "",
+            aMAI: "",
+            aFRAX: "",
+        }
+    },
+    arbitrum: {
+        aaveV3: {
+            aWETH: "0xe50fA9b3c56FfB159cB0FCA61F5c9D750e8128c8",
+            aUSDC: "0x724dc807b04555b71ed48a6896b6F41593b8C637",
+            aUSDCe: "0x625E7708f30cA75bfd92586e17077590C60eb4cD",
+            awstETH: "0x513c7E3a9c69cA3e22550eF58AC1C0088e918FFf",
+            aWBTC: "0x078f358208685046a11C85e8ad32895DED33A249",
+            aUSDT: "0x6ab707Aca953eDAeFBc4fD23bA73294241490620",
+            aARB: "0x6533afac2E7BCCB20dca161449A13A32D391fb00",
+            aLINK: "0x191c10Aa4AF7C30e871E70C95dB0E4eb77237530",
+            aDAI: "0x82E64f49Ed5EC1bC6e43DAD4FC8Af9bb3A2312EE",
+            arETH: "0x8Eb270e296023E9D92081fdF967dDd7878724424",
+            aLUSD: "0x8ffDf2DE812095b1D19CB146E4c004587C0A0692",
+            aAAVE: "0xf329e36C7bF6E5E86ce2150875a84Ce77f477375",
+            aFRAX: "0x38d693cE1dF5AaDF7bC62595A37D667aD57922e5",
+            aEURS: "0x6d80113e533a2C0fe82EaBD35f1875DcEA89Ea97",
+        }
+    },
+    base: {
+        aaveV3: {
+            aBasUSDbC: "0x0a1d576f3eFeF75b330424287a95A366e8281D54",
+            aBasWETH: "0xD4a0e0b9149BCee3C920d2E00b5dE09138fd8bb7"
+        },
+        compoundV3: {
+            cUSDbCv3: "0x9c4ec768c28520B50860ea7a15bd7213a9fF58bf"
+        }
     },
 };
 
