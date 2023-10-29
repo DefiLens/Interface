@@ -75,6 +75,7 @@ export interface iFuncArray {
 
 export interface iTrade {
     maxBalance: string;
+    ismaxBalanceLoading: boolean;
     showSelectNetworkList: boolean;
 
     selectedFromNetwork: iSelectedNetwork;
@@ -131,6 +132,7 @@ export interface iTrade {
     fixParams: any[][];
 
     setMaxBalance: (maxBalance: string) => void;
+    setIsmaxBalanceLoading: (ismaxBalanceLoading: boolean) => void;
     setShowSelectNetworkList: (showSelectNetworkList: boolean) => void;
     
     setSelectedFromNetwork: (selectedFromNetwork: iSelectedNetwork) => void;
@@ -188,7 +190,8 @@ export interface iTrade {
 }
 
 export const useTradeStore = create<iTrade>((set) => ({
-    maxBalance: "",
+    maxBalance: "0",
+    ismaxBalanceLoading: false,
     showSelectNetworkList: false,
     
     selectedFromNetwork:  {
@@ -273,6 +276,7 @@ export const useTradeStore = create<iTrade>((set) => ({
     fixParams: [[]],
    
     setMaxBalance: (maxBalance) => set(() => ({ maxBalance })),
+    setIsmaxBalanceLoading: (ismaxBalanceLoading) => set(() => ({ ismaxBalanceLoading })),
     setShowSelectNetworkList: (showSelectNetworkList) => set(() => ({ showSelectNetworkList })),
     
     setSelectedFromNetwork: (selectedFromNetwork) => set(() => ({ selectedFromNetwork })),

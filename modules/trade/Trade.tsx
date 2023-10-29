@@ -47,6 +47,7 @@ const Trade: React.FC<any> = ({
 
     const {
         maxBalance,
+        ismaxBalanceLoading,
         selectedFromNetwork,
         selectedFromProtocol,
         selectedFromToken,
@@ -663,25 +664,30 @@ const Trade: React.FC<any> = ({
                                             $0.00
                                         </div>
                                         <div className="absolute right-0 bottom-0 flex flex-col justify-center items-end gap-1">
-                                            {maxBalance !== amountIn || maxBalance == '0' ? (
+                                            {maxBalance !== amountIn && maxBalance !== '0' ? (
                                                 <span
                                                     onClick={() => onChangeAmountIn(maxBalance ? maxBalance.toString() : "0")}
                                                     className="text-xs md:text-sm text-purple-100 font-medium bg-purple-700 rounded-xl px-3 py-1"
                                                     >
                                                     Max
                                                 </span>
-                                            ) : (
+                                            ) : maxBalance == '0' ? (
                                                 <span
                                                     className="text-xs md:text-sm text-purple-100 font-medium bg-red-700 rounded-xl px-3 py-1"
-                                                    >
-                                                    No Balance
+                                                >
+                                                   No Balance
                                                 </span>
-                                            )}
+                                                ) : null
+                                            }
                                             <span className="flex gap-2 text-xs md:text-sm text-slate-600 font-semibold">
-                                                Balance: {maxBalance ? maxBalance : 0 }  
-                                                <span className="text-slate-700">
-                                                    {selectedFromToken && selectedFromToken}
-                                                </span>
+                                                Balance: 
+                                                {ismaxBalanceLoading ? (
+                                                    <ImSpinner className="animate-spin h-4 w-4" />
+                                                ): (
+                                                    <span className="text-slate-700">
+                                                        {maxBalance ? maxBalance : 0 }  {selectedFromToken && selectedFromToken}
+                                                    </span>
+                                                )}
                                             </span>
                                         </div>
                                     </div>
