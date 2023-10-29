@@ -178,14 +178,14 @@ const TradeContainer: React.FC<any> = () => {
         if (!selectedFromNetwork.chainId) {
             toast.error("From network is not selecetd yet");
             return;
-        } 
+        }
         const provider = await getProvider(selectedFromNetwork.chainId);
 
         const token = tokensByNetwork[selectedFromNetwork.chainId];
         const erc20 = await getContractInstance(token.usdc, IERC20, provider);
         const scwBalance = await getErc20Balanceof(erc20, smartAccount.address);
         const eoaBalance = await getErc20Balanceof(erc20, address);
-        
+
         console.log("scwBalance++", scwBalance?.toString());
         console.log("eoaBalance++", eoaBalance?.toString());
 
@@ -233,7 +233,7 @@ const TradeContainer: React.FC<any> = () => {
         setCurrentFuncIndex(0);
         setIsThisFieldAmount(-1);
     };
-    
+
     const handleSelectFromNetwork = (_fromNetwork: iSelectedNetwork) => {
         clearSelectedBatchData();
         setLoading(true);
@@ -323,10 +323,10 @@ const TradeContainer: React.FC<any> = () => {
                     setFromTokenDecimal(0);
                     // setFromTokenBalanceForSCW(BIG_ZERO);
                     // setFromTokenBalanceForEOA(BIG_ZERO);
-                    
+
                     const firstFromToken = protocolByNetwork[selectedFromNetwork.chainName][selectedFromProtocol][0].name;
                     // setSelectedFromToken(firstFromToken);
-                    
+
                     const provider = await getProvider(selectedFromNetwork.chainId);
                     const tokenAddress = tokenAddressByProtocol[selectedFromNetwork.chainName][selectedFromProtocol][firstFromToken];
                     const erc20 = await getContractInstance(tokenAddress, IERC20, provider);
@@ -374,7 +374,8 @@ const TradeContainer: React.FC<any> = () => {
             selectedFromNetwork.chainName == "polygon" ||
             selectedFromNetwork.chainName == "base" ||
             selectedFromNetwork.chainName == "avalanche" ||
-            selectedFromNetwork.chainName == "arbitrum"
+            selectedFromNetwork.chainName == "arbitrum" ||
+            selectedFromNetwork.chainName == "optimism"
         )) {
             toast.error("Batching is only supported on polygon and base as of now");
             return;
@@ -399,7 +400,8 @@ const TradeContainer: React.FC<any> = () => {
             selectedFromNetwork.chainName == "polygon" ||
             selectedFromNetwork.chainName == "base" ||
             selectedFromNetwork.chainName == "avalanche" ||
-            selectedFromNetwork.chainName == "arbitrum"
+            selectedFromNetwork.chainName == "arbitrum"  ||
+            selectedFromNetwork.chainName == "optimism"
         )) {
             toast.error("Batching is only supported on polygon and base as of now");
             return;
@@ -429,7 +431,7 @@ const TradeContainer: React.FC<any> = () => {
         setSafeState(setFromTokenDecimal, fromTokendecimal, 0);
         // setSafeState(setFromTokenBalanceForSCW, BigNumber.from(scwBalance), BIG_ZERO);
         // setSafeState(setFromTokenBalanceForEOA, BigNumber.from(eoaBalance), BIG_ZERO);
-        
+
         const maxBal: any = await getErc20Balanceof(erc20, smartAccount.address)
         const MaxBalance = bg(maxBal?.toString()).dividedBy(bg(10).pow(fromTokendecimal))
         console.log("✅  onChangeFromToken ~ MaxBalance:", MaxBalance)
@@ -445,7 +447,8 @@ const TradeContainer: React.FC<any> = () => {
             selectedFromNetwork.chainName == "polygon" ||
             selectedFromNetwork.chainName == "base" ||
             selectedFromNetwork.chainName == "avalanche" ||
-            selectedFromNetwork.chainName == "arbitrum"
+            selectedFromNetwork.chainName == "arbitrum"  ||
+            selectedFromNetwork.chainName == "optimism"
         )) {
             toast.error("Batching is only supported on polygon and base as of now");
             return;
@@ -468,7 +471,8 @@ const TradeContainer: React.FC<any> = () => {
             selectedFromNetwork.chainName == "polygon" ||
             selectedFromNetwork.chainName == "base" ||
             selectedFromNetwork.chainName == "avalanche" ||
-            selectedFromNetwork.chainName == "arbitrum"
+            selectedFromNetwork.chainName == "arbitrum" ||
+            selectedFromNetwork.chainName == "optimism"
         )) {
             toast.error("Batching is only supported on polygon and base as of now");
             return;
@@ -486,7 +490,8 @@ const TradeContainer: React.FC<any> = () => {
             selectedFromNetwork.chainName == "polygon" ||
             selectedFromNetwork.chainName == "base" ||
             selectedFromNetwork.chainName == "avalanche" ||
-            selectedFromNetwork.chainName == "arbitrum"
+            selectedFromNetwork.chainName == "arbitrum" ||
+            selectedFromNetwork.chainName == "optimism"
         )) {
             toast.error("Batching is only supported on polygon as of now");
             return;
@@ -633,7 +638,8 @@ const TradeContainer: React.FC<any> = () => {
                 selectedFromNetwork.chainName == "polygon" ||
                 selectedFromNetwork.chainName == "base" ||
                 selectedFromNetwork.chainName == "avalanche" ||
-                selectedFromNetwork.chainName == "arbitrum"
+                selectedFromNetwork.chainName == "arbitrum" ||
+                selectedFromNetwork.chainName == "optimism"
             )) {
                 toast.error("Batching is only supported on polygon as of now");
                 setAddToBatchLoading(false);

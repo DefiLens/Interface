@@ -305,7 +305,6 @@ export const uniswapSwapRouterByChainId = {
 // };
 
 export const protocolNames = {
-
     "polygon": {
         key: [
             {
@@ -353,6 +352,19 @@ export const protocolNames = {
             {
                 name: "erc20",
                 icon: arbitrum,
+            },
+        ],
+        value: ["AAVE V3", "ERC20"],
+    },
+    "optimism": {
+        key: [
+            {
+                name: "aaveV3",
+                icon: optimism,
+            },
+            {
+                name: "erc20",
+                icon: optimism,
             },
         ],
         value: ["AAVE V3", "ERC20"],
@@ -567,6 +579,58 @@ export const protocolByNetwork = {
             },
         ]
     },
+    optimism: {
+        aaveV3: [
+            {
+                name: "aDAI",
+                icon: optimism,
+            },
+            {
+                name: "aOP",
+                icon: optimism,
+            },
+            {
+                name: "aWETH",
+                icon: optimism,
+            },
+            {
+                name: "awstETH",
+                icon: optimism,
+            },
+            {
+                name: "aWBTC",
+                icon: optimism,
+            },
+            {
+                name: "aUSDC",
+                icon: optimism,
+            },
+            {
+                name: "aUSDT",
+                icon: optimism,
+            },
+            {
+                name: "aLINK",
+                icon: optimism,
+            },
+            {
+                name: "asUSD",
+                icon: optimism,
+            },
+            {
+                name: "arETH",
+                icon: optimism,
+            },
+            {
+                name: "aAAVE",
+                icon: optimism,
+            },
+            {
+                name: "aLUSD",
+                icon: optimism,
+            },
+        ]
+    },
     base: {
         aaveV3: [
             {
@@ -617,18 +681,18 @@ export const tokenAddressByProtocol = {
     },
     avalanche: {
         aaveV3: {
-            aUSDT: "",
-            aUSDC: "",
-            aWAVAX: "",
-            aBTCb: "",
-            aWETHe: "",
-            aWBTCe: "",
-            asAVAX: "",
-            aLINKe: "",
-            aDAIe: "",
-            aAAVEe: "",
-            aMAI: "",
-            aFRAX: "",
+            aUSDT: "0x6ab707Aca953eDAeFBc4fD23bA73294241490620",
+            aUSDC: "0x625E7708f30cA75bfd92586e17077590C60eb4cD",
+            aWAVAX: "0x6d80113e533a2C0fe82EaBD35f1875DcEA89Ea97",
+            aBTCb: "0x8ffDf2DE812095b1D19CB146E4c004587C0A0692",
+            aWETHe: "0xe50fA9b3c56FfB159cB0FCA61F5c9D750e8128c8",
+            aWBTCe: "0x078f358208685046a11C85e8ad32895DED33A249",
+            asAVAX: "0x513c7E3a9c69cA3e22550eF58AC1C0088e918FFf",
+            aLINKe: "0x191c10Aa4AF7C30e871E70C95dB0E4eb77237530",
+            aDAIe: "0x82E64f49Ed5EC1bC6e43DAD4FC8Af9bb3A2312EE",
+            aAAVEe: "0xf329e36C7bF6E5E86ce2150875a84Ce77f477375",
+            aMAI: "0x8Eb270e296023E9D92081fdF967dDd7878724424",
+            aFRAX: "0xc45A479877e1e9Dfe9FcD4056c699575a1045dAA",
         }
     },
     arbitrum: {
@@ -648,6 +712,23 @@ export const tokenAddressByProtocol = {
             aFRAX: "0x38d693cE1dF5AaDF7bC62595A37D667aD57922e5",
             aEURS: "0x6d80113e533a2C0fe82EaBD35f1875DcEA89Ea97",
         }
+    },
+    optimism: {
+        aDAI: "0x82E64f49Ed5EC1bC6e43DAD4FC8Af9bb3A2312EE",
+        aOP: "0x513c7E3a9c69cA3e22550eF58AC1C0088e918FFf",
+        aWETH: "0xe50fA9b3c56FfB159cB0FCA61F5c9D750e8128c8",
+        awstETH: "0xc45A479877e1e9Dfe9FcD4056c699575a1045dAA",
+        aWBTC: "0x078f358208685046a11C85e8ad32895DED33A249",
+        aUSDC: "0x625E7708f30cA75bfd92586e17077590C60eb4cD",
+        aUSDT: "0x6ab707Aca953eDAeFBc4fD23bA73294241490620",
+        aLINK: "0x191c10Aa4AF7C30e871E70C95dB0E4eb77237530",
+        asUSD: "0x6d80113e533a2C0fe82EaBD35f1875DcEA89Ea97",
+        arETH: "0x724dc807b04555b71ed48a6896b6F41593b8C637",
+        aAAVE: "0xf329e36C7bF6E5E86ce2150875a84Ce77f477375",
+        aLUSD: "0x8Eb270e296023E9D92081fdF967dDd7878724424",
+    },
+    ethereum: {
+
     },
     base: {
         aaveV3: {

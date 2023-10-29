@@ -41,11 +41,6 @@ export const abiFetcherNum = {
         aMAI: "1",
         aFRAX: "1",
     },
-    base: {
-        cUSDbCv3: "1",
-        aBasUSDbC: "2",
-        aBasWETH: "2",
-    },
     arbitrum: {
         aWETH: "1",
         aUSDC: "1",
@@ -61,6 +56,25 @@ export const abiFetcherNum = {
         aAAVE: "1",
         aFRAX: "1",
         aEURS: "1"
+    },
+    optimism: {
+        aDAI: "1",
+        aOP: "1",
+        aWETH: "1",
+        awstETH: "1",
+        aWBTC: "1",
+        aUSDC: "1",
+        aUSDT: "1",
+        aLINK: "1",
+        asUSD: "1",
+        arETH: "1",
+        aAAVE: "1",
+        aLUSD: "1",
+    },
+    base: {
+        cUSDbCv3: "1",
+        aBasUSDbC: "2",
+        aBasWETH: "2",
     },
 };
 
@@ -120,7 +134,7 @@ export const abiFetcher = {
             depositParamDetailsMethod: "aave_supply_v3",
             withdrawParamDetailsMethod: "aave_withdraw_v3",
             contractAddress: "0x794a61358D6845594F94dc1DB02A252b5b4814aD",
-            apyFetch: "fetchApyForAaveV3Polygon",
+            apyFetch: "fetchApyForAaveV3Avalanche",
         },
     },
     arbitrum: {
@@ -133,7 +147,20 @@ export const abiFetcher = {
             depositParamDetailsMethod: "aave_supply_v3",
             withdrawParamDetailsMethod: "aave_withdraw_v3",
             contractAddress: "0x794a61358D6845594F94dc1DB02A252b5b4814aD",
-            apyFetch: "fetchApyForAaveV3Polygon",
+            apyFetch: "fetchApyForAaveV3Arbitrum",
+        },
+    },
+    optimism: {
+        "1": {
+            depositAbi: "function supply(address asset, uint256 amount, address onBehalfOf, uint16 referralCode)",
+            withdrawAbi: "function withdraw(address asset, uint256 amount, address to)",
+            depositMethodName: "supply",
+            withdrawMethodName: "withdraw",
+            paramDetailsMethod: "aave_supply_v3",
+            depositParamDetailsMethod: "aave_supply_v3",
+            withdrawParamDetailsMethod: "aave_withdraw_v3",
+            contractAddress: "0x794a61358D6845594F94dc1DB02A252b5b4814aD",
+            apyFetch: "fetchApyForAaveV3Optimism",
         },
     },
     base: {
@@ -156,7 +183,7 @@ export const abiFetcher = {
             depositParamDetailsMethod: "aave_supply_v3",
             withdrawParamDetailsMethod: "aave_withdraw_v3",
             contractAddress: "0xA238Dd80C259a72e81d7e4664a9801593F98d1c5",
-            apyFetch: "fetchApyForAaveV3Polygon",
+            apyFetch: "fetchApyForAaveV3Base",
         },
     },
 };
@@ -213,6 +240,20 @@ export const nativeTokenNum = {
         aAAVE: "12",
         aFRAX: "13",
         aEURS: "14"
+    },
+    optimism: {
+        aDAI: "1",
+        aOP: "2",
+        aWETH: "3",
+        awstETH: "4",
+        aWBTC: "5",
+        aUSDC: "6",
+        aUSDT: "7",
+        aLINK: "8",
+        asUSD: "9",
+        arETH: "10",
+        aAAVE: "11",
+        aLUSD: "12",
     },
     base: {
         cUSDbCv3: "1",
@@ -376,6 +417,56 @@ export const nativeTokenFetcher = {
         "3": {
             nativeToken: "0x2Ae3F1Ec7F1F5012CFEab0185bfc7aa3cf0DEc22", // cbETH
             symbol: "cbeth",
+        },
+    },
+    optimism: {
+        "1": {
+            nativeToken: "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1", // USDC
+            symbol: "dai",
+        },
+        "2": {
+            nativeToken: "0x4200000000000000000000000000000000000042", // WETH
+            symbol: "op",
+        },
+        "3": {
+            nativeToken: "0x4200000000000000000000000000000000000006", // cbETH
+            symbol: "weth",
+        },
+        "4": {
+            nativeToken: "0x1F32b1c2345538c0c6f582fCB022739c4A194Ebb", // USDC
+            symbol: "wsteth",
+        },
+        "5": {
+            nativeToken: "0x68f180fcCe6836688e9084f035309E29Bf0A2095", // WETH
+            symbol: "wbtc",
+        },
+        "6": {
+            nativeToken: "0x7F5c764cBc14f9669B88837ca1490cCa17c31607", // cbETH
+            symbol: "usdc",
+        },
+        "7": {
+            nativeToken: "0x94b008aA00579c1307B0EF2c499aD98a8ce58e58", // USDC
+            symbol: "usdt",
+        },
+        "8": {
+            nativeToken: "0x350a791Bfc2C21F9Ed5d10980Dad2e2638ffa7f6", // WETH
+            symbol: "link",
+        },
+        "9": {
+            nativeToken: "0x8c6f28f2F1A3C87F0f938b96d27520d9751ec8d9", // cbETH
+            symbol: "susd",
+        },
+        "10": {
+            nativeToken: "0x9Bcef72be871e61ED4fBbc7630889beE758eb81D", // USDC
+            symbol: "reth",
+        },
+        "11": {
+            nativeToken: "0x76FB31fb4af56892A25e32cFC43De717950c9278", // WETH
+            symbol: "aave",
+        },
+        "12": {
+            nativeToken: "0xc40F949F8a4e094D1b49a23ea9241D289B7b2819", // cbETH
+            symbol: "lusd",
         },
     },
 };
