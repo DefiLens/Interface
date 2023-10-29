@@ -66,7 +66,6 @@ const Batching: React.FC<{}> = () => {
     };
 
     const updateInputValues = (index: number, txHash: string[], data: any) => {
-        console.log("data: ", data, individualBatch);
         if (txHash.length < 1) {
             toast.error("Please complete the last input before adding a new one.");
             return;
@@ -117,7 +116,6 @@ const Batching: React.FC<{}> = () => {
             }
             const mergeArray: any = [];
             await individualBatch.map((bar) => bar.txHash.map((hash) => mergeArray.push(hash)));
-            console.log("mergedArray--: ", mergeArray);
             // setCollectedValues(mergeArray);
             let tempTxhash = "";
             if (isSCW) {

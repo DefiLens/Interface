@@ -38,7 +38,6 @@ export function useGenerateAbis() {
             const methodNames: any = allNetworkData?.contractMetaData[contractAddress].methodNames
 
             let abi: any = await fetchContractDetails(provider, contractAddress, StargateChainIdBychainId[selectedToNetwork.chainId], methodNames)
-            console.log("abi: ", abi)
             setAbi(abi)
 
             const tempFuncArray: any = []
@@ -46,9 +45,7 @@ export function useGenerateAbis() {
             for (let i = 0; i < abi.length; i++) {
                 if (abi[i].stateMutability != "view") {
                     if (abi[i].type == "fallback") {
-                        console.log("fallback")
                     } else if (abi[i].type != "event") {
-                        console.log("abi[i]: ", abi[i].name)
                         tempFuncArray[iterate] = abi[i];
                         iterate = iterate + 1
                     }

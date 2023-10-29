@@ -4,6 +4,9 @@ import { BigNumber } from "ethers";
 import { toast } from "react-hot-toast";
 import { BigNumber as bg } from "bignumber.js";
 
+import { Bundler, IBundler } from "@biconomy/bundler";
+import { BiconomyPaymaster, IPaymaster } from "@biconomy/paymaster";
+import { BiconomySmartAccount, BiconomySmartAccountConfig, DEFAULT_ENTRYPOINT_ADDRESS } from "@biconomy/account";
 import { metamaskWallet, useAddress, useChain, useConnect, useSigner, useSwitchChain } from "@thirdweb-dev/react";
 
 import Trade from "./Trade";
@@ -14,15 +17,15 @@ import UNISWAP_TOKENS from "../../abis/tokens/Uniswap.json";
 import { getNetworkAndContractData } from "../../utils/apis";
 import { useGenerateAbis } from "../../hooks/useGenerateAbis";
 import { useRefinance } from "../../hooks/Batching/useRefinance";
-import { useCCRefinance } from "../../hooks/Batching/useCCRefinance";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
+import { useCCRefinance } from "../../hooks/Batching/useCCRefinance";
 import { useEoaProvider } from "../../hooks/aaProvider/useEoaProvider";
 import { useSwitchOnSpecificChain } from "../../hooks/useSwitchOnSpecificChain";
 import { iSelectedNetwork, iTrade, useTradeStore } from "../../store/TradeStore";
 import { useBiconomyProvider } from "../../hooks/aaProvider/useBiconomyProvider";
 import { useOnChangeFunctions, useOnChangeTokenIn } from "../../hooks/useOnChangeMainForm";
 import { getContractInstance, getErc20Balanceof, getErc20Decimals, getProvider } from "../../utils/web3Libs/ethers";
-import { _functionType, _nonce, protocolByNetwork, StargateChainIdBychainId, tokenAddressByProtocol, tokensByNetwork } from "../../utils/constants";
+import { _functionType, _nonce, bundlerURLs, paymasterURLs, protocolByNetwork, StargateChainIdBychainId, tokenAddressByProtocol, tokensByNetwork } from "../../utils/constants";
 
 bg.config({ DECIMAL_PLACES: 10 });
 
@@ -30,6 +33,7 @@ const TradeContainer: React.FC<any> = () => {
 
     const chain = useChain(); // Detect the connected address
     const address = useAddress(); // Detect the connected address
+
     const { mutateAsync: sendToBiconomy } = useBiconomyProvider();
     const { mutateAsync: sendTxTrditionally } = useEoaProvider();
     const { mutateAsync: refinance } = useRefinance();
@@ -57,6 +61,7 @@ const TradeContainer: React.FC<any> = () => {
     const {
         maxBalance,
         setMaxBalance,
+        setIsmaxBalanceLoading,
         selectedFromNetwork,
         setSelectedFromNetwork,
         selectedFromProtocol,
@@ -145,10 +150,8 @@ const TradeContainer: React.FC<any> = () => {
 
         if (selectedFromProtocol == "erc20") {
             tokenAddress = tokensData?.filter((token) => token.symbol === selectedFromToken)[0].address;
-            console.log("🚀 ERC20  ---- tokenAddress:", tokenAddress)
         } else {
             tokenAddress = tokenAddressByProtocol[selectedFromNetwork.chainName][selectedFromProtocol][selectedFromToken];
-            console.log("🚀  !ERC20  tokenAddress:", tokenAddress)
         }
 
         const erc20 = await getContractInstance(tokenAddress, IERC20, provider);
@@ -160,7 +163,6 @@ const TradeContainer: React.FC<any> = () => {
     };
 
     const handleContractAddress = async (_contractIndex: string, _contractDetail: any) => {
-        console.log("🚀  _contractIndex: string, _contractDetail: any:", _contractIndex, _contractDetail)
         // if (simulateLoading || sendTxLoading || sendTxLoadingForEoa) {
         //     toast.error("wait, tx loading currently ...");
         //     return;
@@ -185,9 +187,6 @@ const TradeContainer: React.FC<any> = () => {
         const erc20 = await getContractInstance(token.usdc, IERC20, provider);
         const scwBalance = await getErc20Balanceof(erc20, smartAccount.address);
         const eoaBalance = await getErc20Balanceof(erc20, address);
-
-        console.log("scwBalance++", scwBalance?.toString());
-        console.log("eoaBalance++", eoaBalance?.toString());
 
         // setSafeState(setScwTokenInbalance, BigNumber.from(scwBalance), BIG_ZERO);
         // setSafeState(setEoaTokenInbalance, BigNumber.from(eoaBalance), BIG_ZERO);
@@ -290,8 +289,6 @@ const TradeContainer: React.FC<any> = () => {
                     chainId: "",
                     icon: "",
                 })
-
-                console.log("Metamask logout", address)
             }
         }
         changeWallet();
@@ -410,32 +407,64 @@ const TradeContainer: React.FC<any> = () => {
             toast.error("select from protocol");
             return;
         }
-        setAmountIn("");
-        setFromTokenDecimal(0);
-        // setFromTokenBalanceForSCW(BIG_ZERO);
-        // setFromTokenBalanceForEOA(BIG_ZERO);
 
-        setSelectedFromToken(_fromToken);
-        const provider = await getProvider(selectedFromNetwork.chainId);
+        try {
+            setIsmaxBalanceLoading(true)
+            setAmountIn("");
+            setFromTokenDecimal(0);
+            // setFromTokenBalanceForSCW(BIG_ZERO);
+            // setFromTokenBalanceForEOA(BIG_ZERO);
 
-        const erc20Address: any =
-            selectedFromProtocol == "erc20" ? tokensData.filter((token: any) => token.symbol === _fromToken) : "";
-        const tokenAddress =
-            selectedFromProtocol != "erc20"
-                ? tokenAddressByProtocol[selectedFromNetwork.chainName][selectedFromProtocol][_fromToken]
-                : erc20Address[0].address;
-        const erc20 = await getContractInstance(tokenAddress, IERC20, provider);
-        // const scwBalance = await getErc20Balanceof(erc20, smartAccount.address);
-        // const eoaBalance = await getErc20Balanceof(erc20, address);
-        const fromTokendecimal: any = await getErc20Decimals(erc20);
-        setSafeState(setFromTokenDecimal, fromTokendecimal, 0);
-        // setSafeState(setFromTokenBalanceForSCW, BigNumber.from(scwBalance), BIG_ZERO);
-        // setSafeState(setFromTokenBalanceForEOA, BigNumber.from(eoaBalance), BIG_ZERO);
+            setSelectedFromToken(_fromToken);
+            const provider = await getProvider(selectedFromNetwork.chainId);
 
-        const maxBal: any = await getErc20Balanceof(erc20, smartAccount.address)
-        const MaxBalance = bg(maxBal?.toString()).dividedBy(bg(10).pow(fromTokendecimal))
-        console.log("✅  onChangeFromToken ~ MaxBalance:", MaxBalance)
-        setMaxBalance(MaxBalance.toString())
+            const erc20Address: any =
+                selectedFromProtocol == "erc20" ? tokensData.filter((token: any) => token.symbol === _fromToken) : "";
+            const tokenAddress =
+                selectedFromProtocol != "erc20"
+                    ? tokenAddressByProtocol[selectedFromNetwork.chainName][selectedFromProtocol][_fromToken]
+                    : erc20Address[0].address;
+            const erc20 = await getContractInstance(tokenAddress, IERC20, provider);
+            // const scwBalance = await getErc20Balanceof(erc20, smartAccount.address);
+            // const eoaBalance = await getErc20Balanceof(erc20, address);
+            const fromTokendecimal: any = await getErc20Decimals(erc20);
+            setSafeState(setFromTokenDecimal, fromTokendecimal, 0);
+            // setSafeState(setFromTokenBalanceForSCW, BigNumber.from(scwBalance), BIG_ZERO);
+            // setSafeState(setFromTokenBalanceForEOA, BigNumber.from(eoaBalance), BIG_ZERO);
+
+            let scwAddress: any;
+            if (!smartAccount?.address) {
+                const createAccount = async (chainId: any) => {
+                    const bundler: IBundler = new Bundler({
+                        bundlerUrl: bundlerURLs[chainId],
+                        chainId: chainId,
+                        entryPointAddress: DEFAULT_ENTRYPOINT_ADDRESS,
+                    });
+                    const paymaster: IPaymaster = new BiconomyPaymaster({
+                        paymasterUrl: paymasterURLs[chainId],
+                    });
+                    const biconomySmartAccountConfig: BiconomySmartAccountConfig = {
+                        signer: signer,
+                        chainId: chainId,
+                        bundler: bundler,
+                        paymaster: paymaster,
+                    };
+                    let biconomySmartAccount = new BiconomySmartAccount(biconomySmartAccountConfig);
+                    biconomySmartAccount = await biconomySmartAccount.init();
+                    return biconomySmartAccount;
+                }
+                scwAddress = await createAccount(selectedFromNetwork.chainId);
+            }
+
+            const maxBal: any = await getErc20Balanceof(erc20, smartAccount?.address ? smartAccount?.address : scwAddress.address)
+            const MaxBalance = bg(maxBal?.toString()).dividedBy(bg(10).pow(fromTokendecimal))
+            setMaxBalance(MaxBalance.toString())
+            setIsmaxBalanceLoading(false)
+
+        } catch (error: any) {
+            setIsmaxBalanceLoading(false)
+            console.log("onChangeFromToken ~ error:", error);
+        }
     };
 
     const onChangeToProtocol = async (_toProtocol: string) => {
@@ -565,7 +594,6 @@ const TradeContainer: React.FC<any> = () => {
     };
 
     const updateInputValues = (index: number, txHash: string[], data: any, simulation: any) => {
-        console.log("data: ", data, individualBatch);
         if (txHash.length < 1) return toast.error("Please complete the last input before adding a new one.");
         if (individualBatch.length == 0) {
             setIndividualBatch([
@@ -681,11 +709,6 @@ const TradeContainer: React.FC<any> = () => {
                 return;
             }
             const provider = await getProvider(selectedFromNetwork.chainId);
-            console.log(
-                "refinanceamoynt",
-                amountIn.toString(),
-                bg(amountIn).multipliedBy(bg(10).pow(fromTokenDecimal)).toString()
-            );
             const _tempAmount = BigNumber.from(bg(amountIn).multipliedBy(bg(10).pow(fromTokenDecimal)).toString());
 
             let txHash;
@@ -756,7 +779,6 @@ const TradeContainer: React.FC<any> = () => {
             }
             const mergeArray: any = [];
             await individualBatch.map((bar) => bar.txHash.map((hash) => mergeArray.push(hash)));
-            console.log("mergedArray--: ", mergeArray);
             let tempTxhash = "";
             if (isSCW) {
                 tempTxhash = await sendToBiconomy(mergeArray);

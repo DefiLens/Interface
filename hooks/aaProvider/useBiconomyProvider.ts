@@ -13,11 +13,8 @@ export function useBiconomyProvider() {
         try {
             const userOp = await smartAccount.buildUserOp(txs);
             userOp.paymasterAndData = "0x";
-            console.log("userOp: ", userOp);
             const userOpResponse = await smartAccount.sendUserOp(userOp);
-            console.log("userOp hash: ", userOpResponse);
             const txReciept = await userOpResponse.wait();
-            console.log("Tx hash: ", txReciept?.receipt.transactionHash);
             return txReciept?.receipt.transactionHash;
         } catch (error: any) {
             console.log("sendToBiconomy-error: ", error);

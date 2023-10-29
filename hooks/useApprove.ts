@@ -10,10 +10,6 @@ export function useApprove() {
         try {
             const erc20: any = await getContractInstance(tokenIn, IERC20, web3JsonProvider);
             const allowance: any = await getErc20Allownace(erc20, address, spender);
-            console.log("tokenIn- ", tokenIn);
-            console.log("spender- ", spender);
-            console.log("approveCheck1- ", allowance.toString());
-            console.log("approveCheck2- ", amountIn.toString());
             if (BigNumber.from(allowance).gte(amountIn)) return;
             const erc20Interface = new ethers.utils.Interface(["function approve(address _spender, uint256 _value)"]);
             let approveEncodedData = erc20Interface.encodeFunctionData("approve", [spender, amountIn]);

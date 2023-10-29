@@ -21,13 +21,11 @@ export function useCalculateGasCost() {
     async function calculategasCost(fromChainId) {
         try {
             const biconomyGasInfo = await axios.get(`${BICONOMY_GAS_PRICE_URL}${fromChainId}`)
-            // console.log(biconomyGasInfo)
             // const firstObject: any = biconomyGasInfo.data.response[0];
             // const tokenGasPrice: number = firstObject.tokenGasPrice;
             // const feeTokenTransferGas: number = firstObject.feeTokenTransferGas;
 
             // const gasCost = bg(tokenGasPrice).multipliedBy(feeTokenTransferGas).dividedBy(1e18)
-            // console.log("Token Gas Price in ETH:", gasCost);
 
             if (biconomyGasInfo && biconomyGasInfo.data && biconomyGasInfo.data.data) {
                 if (biconomyGasInfo.data.data.response.length > 0) {
@@ -38,7 +36,6 @@ export function useCalculateGasCost() {
                         const divisor = new bg("1e18");
                         const result = tokenGasPrice.times(feeTokenTransferGas).dividedBy(divisor);
                         const formattedResult = result.toFixed(15);
-                        console.log("Token Gas Price in ETH:", formattedResult.toString());
                         return bg(formattedResult).toNumber();
                     } else {
                         return 0

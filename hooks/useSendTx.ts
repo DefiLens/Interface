@@ -54,7 +54,6 @@ export function useSendTx() {
 
     async function sendTxToChain({ funcIndex, address, isSCW }) {
         try {
-            console.log("sendTxToChain++++++");
             if (isSCW) {
                 setSendtxLoading(true);
             } else {
@@ -130,9 +129,6 @@ export function useSendTx() {
                 const approveData = await USDT.populateTransaction.approve(fromStarGateRouter, _tempAmount);
                 approveTx = { to: approveData.to, data: approveData.data };
             }
-            console.log("approveTx", approveTx);
-
-            console.log("params1", params[funcIndex]);
             const amountAfterSlippage = await calculateFees(
                 address,
                 _tempAmount,
@@ -143,7 +139,6 @@ export function useSendTx() {
                 _currentProvider
             );
             params[funcIndex][isThisAmount] = amountAfterSlippage.toString();
-            console.log("params2", params[funcIndex], currentFunc);
 
             let abiInterfaceForDestDefiProtocol = new ethers.utils.Interface(currentAbi);
             // const destChainExecData = abiInterfaceForDestDefiProtocol.encodeFunctionData(currentFunc, params[funcIndex])
@@ -192,7 +187,6 @@ export function useSendTx() {
                 false,
                 chooseChianId(toChainId)
             );
-            console.log("gasUsed: ", gasUsed);
 
             const stargateRouter = await getContractInstance(fromStarGateRouter, IStarGateRouter, _currentProvider);
             if (!stargateRouter) return;
@@ -209,8 +203,6 @@ export function useSendTx() {
                 data,
                 lzParams
             );
-            console.log("quoteData", quoteData.toString(), _tempAmount);
-            console.log("srcPoolId-destPoolId", srcPoolId, destPoolId);
 
             let stargateTx = await stargateRouter.populateTransaction.swap(
                 toChainId,
@@ -226,10 +218,8 @@ export function useSendTx() {
             );
 
             const scwOrEoaNativeBalance = await _currentProvider.getBalance(_currentAddress);
-            console.log("scwOrEoaNativeBalance", scwOrEoaNativeBalance.toString(), quoteData[0].toString());
             const currentBalance = BigNumber.from(scwOrEoaNativeBalance);
             // const minimumBalanceRequired = bg(currentBalance.toString()).plus(parseEther('1').toString()).dividedBy(bg(10).pow(18)).toString()
-            // console.log("minimumBalanceRequired", minimumBalanceRequired.toString())
 
             const minimumBalanceRequired = bg(quoteData[0].toString()).dividedBy(bg(10).pow(18)).toString();
 
@@ -241,7 +231,6 @@ export function useSendTx() {
                 return;
             }
 
-            console.log("stargateTx", stargateTx);
             const sendTx = { to: stargateTx.to, data: stargateTx.data, value: stargateTx.value };
             let tempTxhash = "";
             if (approveTx) {

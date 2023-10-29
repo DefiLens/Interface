@@ -36,14 +36,11 @@ export function useRefinance() {
         provider,
     }: any) {
         try {
-            console.log("tokenInName: ", tokenInName, tokensData)
-
             if (!selectedFromNetwork.chainName) {
                 toast.error("Chain is not selected!!")
             }
             setTxHash("");
             const tempTxs: any = [];
-            console.log("1")
             let abiNum,
                 abi,
                 methodName,
@@ -60,20 +57,15 @@ export function useRefinance() {
             if (fromProtocol == "erc20") {
                 nativeTokenIn = tokensData?.filter((token) => token.symbol === tokenInName)[0].address;
             }
-            console.log("2")
 
             if (toProtocol == "erc20") {
                 nativeTokenOut = tokensData?.filter((token) => token.symbol === tokenOutName)[0].address;
-                console.log("nativeTokenOut", nativeTokenOut);
             }
-            console.log("3")
 
             if (toProtocol != "erc20") {
                 const tokenOutNum = nativeTokenNum[selectedFromNetwork.chainName][tokenOutName];
                 nativeTokenOut = nativeTokenFetcher[selectedFromNetwork.chainName][tokenOutNum].nativeToken;
-                console.log("nativeTokenOut", nativeTokenOut);
             }
-            console.log("4")
 
             if (fromProtocol != "erc20") {
                 abiNum = abiFetcherNum[selectedFromNetwork.chainName][tokenInName];
@@ -96,14 +88,11 @@ export function useRefinance() {
                 });
                 txData = abiInterface.encodeFunctionData(methodName, params);
                 const tx1 = { to: tokenInContractAddress, data: txData };
-                console.log("tx1", tx1);
                 tempTxs.push(tx1);
             }
-            console.log("5")
 
             isSwap = nativeTokenIn != nativeTokenOut ? true : false;
             if (isSwap) {
-                console.log("isSwap", isSwap);
                 const approveData = await approve({
                     tokenIn: nativeTokenIn,
                     spender: uniswapSwapRouterByChainId[selectedFromNetwork.chainId],
@@ -121,7 +110,6 @@ export function useRefinance() {
                 });
                 tempTxs.push(swapData.swapTx);
             }
-            console.log("6")
 
             if (toProtocol != "erc20") {
                 const newTokenIn = isSwap ? nativeTokenOut : nativeTokenIn;
@@ -155,10 +143,8 @@ export function useRefinance() {
                 txData = abiInterface.encodeFunctionData(methodName, params);
                 const tx2 = { to: tokenOutContractAddress, data: txData };
                 tempTxs.push(tx2);
-                console.log("tempTxs", tempTxs);
             }
             const gasCost: number | undefined = await calculategasCost(selectedFromNetwork.chainId)
-            console.log('gasCost: ',  gasCost?.toString())
             // alert(gasCost?.toString())
 
             return tempTxs;

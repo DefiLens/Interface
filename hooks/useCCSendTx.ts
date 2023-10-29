@@ -42,7 +42,6 @@ export function useCCSendTx() {
         extraOrShareToken
     }) {
         try {
-            console.log("sendTxToChain++++++");
             // if (isSCW) {
             //     setSendtxLoading(true);
             // } else {
@@ -78,7 +77,6 @@ export function useCCSendTx() {
             const erc20TokenInInstance = await getContractInstance(tokenIn, IERC20, _currentProvider);
             if (!erc20TokenInInstance) return;
             const balance = await getErc20Balanceof(erc20TokenInInstance, _currentAddress);
-            console.log('balance', balance?.toString())
 
             if (isSCW) {
                 if (BigNumber.from(balance).lt(BigNumber.from(_tempAmount)))
@@ -94,8 +92,6 @@ export function useCCSendTx() {
                 const approveData = await erc20TokenInInstance.populateTransaction.approve(fromStarGateRouter, _tempAmount);
                 approveTx = { to: approveData.to, data: approveData.data };
             }
-            console.log("approveTx", approveTx);
-            console.log("params1", params);
             const amountAfterSlippage = await calculateFees(
                 address,
                 _tempAmount,
@@ -106,8 +102,6 @@ export function useCCSendTx() {
                 _currentProvider
             );
             params[isThisAmount] = amountAfterSlippage.toString();
-            console.log("params2", params);
-            console.log("currentFunc", currentFunc);
 
             let abiInterfaceForDestDefiProtocol = new ethers.utils.Interface(currentAbi);
             // const destChainExecData = abiInterfaceForDestDefiProtocol.encodeFunctionData(currentFunc, params[funcIndex])
@@ -156,7 +150,6 @@ export function useCCSendTx() {
                 false,
                 chooseChianId(toChainId)
             );
-            console.log("gasUsed: ", gasUsed);
 
             const stargateRouter = await getContractInstance(fromStarGateRouter, IStarGateRouter, _currentProvider);
             if (!stargateRouter) return;
@@ -173,8 +166,6 @@ export function useCCSendTx() {
                 data,
                 lzParams
             );
-            console.log("quoteData", quoteData.toString(), _tempAmount);
-            console.log("srcPoolId-destPoolId", srcPoolId, destPoolId, toChainId);
 
             let stargateTx = await stargateRouter.populateTransaction.swap(
                 toChainId,
@@ -190,10 +181,8 @@ export function useCCSendTx() {
             );
 
             const scwOrEoaNativeBalance = await _currentProvider.getBalance(_currentAddress);
-            console.log("scwOrEoaNativeBalance", scwOrEoaNativeBalance.toString(), quoteData[0].toString());
             const currentBalance = BigNumber.from(scwOrEoaNativeBalance);
             // const minimumBalanceRequired = bg(currentBalance.toString()).plus(parseEther('1').toString()).dividedBy(bg(10).pow(18)).toString()
-            // console.log("minimumBalanceRequired", minimumBalanceRequired.toString())
 
             const minimumBalanceRequired = bg(quoteData[0].toString()).dividedBy(bg(10).pow(18)).toString();
 
@@ -204,7 +193,6 @@ export function useCCSendTx() {
                 } in your SmartAccount wallet`;
             }
 
-            console.log("stargateTx", stargateTx);
             const sendTx = { to: stargateTx.to, data: stargateTx.data, value: stargateTx.value };
             if (approveTx) {
                 return [approveTx, sendTx];

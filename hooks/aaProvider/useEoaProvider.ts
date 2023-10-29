@@ -22,7 +22,6 @@ export function useEoaProvider() {
                 await tempTxhash.wait();
                 toast.dismiss(toastId);
                 toast.success(`Tx ${txNo} is done successfully.`);
-                console.log("tempTxhash", tempTxhash);
             }
             toast.dismiss(confirmToastId);
             toast.success(`Tx Succefully done: ${tempTxhash?.hash}`);

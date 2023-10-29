@@ -97,7 +97,6 @@ const IndividualBatch: React.FC<any> = ({ onUpdate }: any) => {
                         const { extensions, logoURI, ...filteredToken } = token;
                         return filteredToken;
                     });
-                    console.log("filteredTokens: ", filteredTokens);
                     setTokensData(filteredTokens);
                 }
             }
@@ -107,19 +106,15 @@ const IndividualBatch: React.FC<any> = ({ onUpdate }: any) => {
 
     useEffect(() => {
         async function onChangeFromProtocol() {
-            console.log('toProtocol-0', toProtocol, tokensData)
             if (toProtocol) {
                 if (toProtocol == "erc20" && tokensData.length <1) {
-                    console.log("toProtocol-1", toProtocol)
                     const tokensWithChainId = UNISWAP_TOKENS.tokens?.filter((token) => token.chainId === BigNumber.from(selectedChainId).toNumber());
                     const filteredTokens = tokensWithChainId.map((token) => {
                         const { extensions, logoURI, ...filteredToken } = token;
                         return filteredToken;
                     });
-                    console.log("filteredTokens: ", filteredTokens);
                     setTokensData(filteredTokens);
                 }
-                console.log("toProtocol-2", toProtocol)
             }
         }
         onChangeFromProtocol();
@@ -217,13 +212,10 @@ const IndividualBatch: React.FC<any> = ({ onUpdate }: any) => {
             // if (typeof _amountIn !== 'undefined' && amountInByDecimals.eq(0)) {
             // const amountInString = _amountIn.toString();
             // const amountInString = Number.isNaN(_amountIn) ? '0' : _amountIn.toString();
-            // console.log('amountInString-', amountInString)
             setAmountIn(_amountIn);
             // } else {
-            //     console.log('amountInByDecimals-', amountInByDecimals.toString())
             //     // const amountInByDecimalsString = amountInByDecimals.toString(10);
             //     const amountInByDecimalsString = amountInByDecimals.toFixed(fromTokenDecimal); // 18 decimal places, adjust as needed
-            //     console.log('amountInByDecimalsString-', amountInByDecimalsString)
             //     setAmountIn(BigNumber.from(amountInByDecimalsString.toString()));
             // }
         } else {
