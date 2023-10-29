@@ -55,6 +55,8 @@ const TradeContainer: React.FC<any> = () => {
     }: iGlobal = useGlobalStore((state) => state);
 
     const {
+        maxBalance,
+        setMaxBalance,
         selectedFromNetwork,
         setSelectedFromNetwork,
         selectedFromProtocol,
@@ -87,6 +89,10 @@ const TradeContainer: React.FC<any> = () => {
         setFilterFromToken,
         filterToToken,
         setFilterToToken,
+        filterFromAddress,
+        setFilterFromAddress,
+        filterToAddress,
+        setFilterToAddress,
         addToBatchLoading,
         setAddToBatchLoading,
         showBatchList,
@@ -133,6 +139,26 @@ const TradeContainer: React.FC<any> = () => {
         await generateAbisForContract();
     };
 
+    const fetchMaxbalance = async () => {
+        let tokenAddress: string;
+        const provider = await getProvider(selectedFromNetwork.chainId);
+
+        if (selectedFromProtocol == "erc20") {
+            tokenAddress = tokensData?.filter((token) => token.symbol === selectedFromToken)[0].address;
+            console.log("🚀 ERC20  ---- tokenAddress:", tokenAddress)
+        } else {
+            tokenAddress = tokenAddressByProtocol[selectedFromNetwork.chainName][selectedFromProtocol][selectedFromToken];
+            console.log("🚀  !ERC20  tokenAddress:", tokenAddress)
+        }
+
+        const erc20 = await getContractInstance(tokenAddress, IERC20, provider);
+        const maxBal: any = await getErc20Balanceof(erc20, smartAccount.address)
+        const fromTokendecimal: any = await getErc20Decimals(erc20);
+        const MaxBalance = bg(maxBal?.toString()).dividedBy(bg(10).pow(fromTokendecimal))
+
+        return MaxBalance.toString()
+    };
+
     const handleContractAddress = async (_contractIndex: string, _contractDetail: any) => {
         console.log("🚀  _contractIndex: string, _contractDetail: any:", _contractIndex, _contractDetail)
         // if (simulateLoading || sendTxLoading || sendTxLoadingForEoa) {
@@ -159,6 +185,7 @@ const TradeContainer: React.FC<any> = () => {
         const erc20 = await getContractInstance(token.usdc, IERC20, provider);
         const scwBalance = await getErc20Balanceof(erc20, smartAccount.address);
         const eoaBalance = await getErc20Balanceof(erc20, address);
+        
         console.log("scwBalance++", scwBalance?.toString());
         console.log("eoaBalance++", eoaBalance?.toString());
 
@@ -208,6 +235,7 @@ const TradeContainer: React.FC<any> = () => {
     };
     
     const handleSelectFromNetwork = (_fromNetwork: iSelectedNetwork) => {
+        clearSelectedBatchData();
         setLoading(true);
         setCurrentFunc("");
         setData(null);
@@ -230,6 +258,18 @@ const TradeContainer: React.FC<any> = () => {
         } catch (error) {
             console.error("API Error:", error);
         }
+    };
+
+    const closeFromSelectionMenu = () => {
+        setShowFromSelectionMenu(false)
+        setFilterFromToken("");
+        setFilterFromAddress("");
+    };
+
+    const closeToSelectionMenu = () => {
+        setShowToSelectionMenu(false)
+        setFilterToToken("");
+        setFilterToAddress("");
     };
 
     useEffect(() => {
@@ -259,13 +299,13 @@ const TradeContainer: React.FC<any> = () => {
 
     useEffect(() => {
         if (selectedFromNetwork.chainName && selectedFromProtocol && selectedFromToken) {
-            setShowFromSelectionMenu(false)
+            closeFromSelectionMenu();
         }
     }, [selectedFromNetwork, selectedFromProtocol, selectedFromToken])
 
     useEffect(() => {
         if (selectedToNetwork.chainName && selectedToProtocol && selectedToToken) {
-            setShowToSelectionMenu(false)
+            closeToSelectionMenu();
         }
     }, [selectedToNetwork, selectedToProtocol, selectedToToken])
 
@@ -330,15 +370,22 @@ const TradeContainer: React.FC<any> = () => {
             toast.error("wait, tx loading");
             return;
         }
-        if (!(selectedFromNetwork.chainName == "polygon" || selectedFromNetwork.chainName == "base")) {
+        if (!(
+            selectedFromNetwork.chainName == "polygon" ||
+            selectedFromNetwork.chainName == "base" ||
+            selectedFromNetwork.chainName == "avalanche" ||
+            selectedFromNetwork.chainName == "arbitrum"
+        )) {
             toast.error("Batching is only supported on polygon and base as of now");
             return;
         }
+        setSelectedFromToken("");
+        setFilterFromAddress("");
+        setFilterToAddress("");
+
         if(selectedFromProtocol === _fromProtocol) {
             setSelectedFromProtocol("");
-            setSelectedFromToken("");
         } else {
-            setSelectedFromToken("");
             setSelectedFromProtocol(_fromProtocol);
         }
     };
@@ -348,7 +395,12 @@ const TradeContainer: React.FC<any> = () => {
             toast.error("wait, tx loading");
             return;
         }
-        if (!(selectedFromNetwork.chainName == "polygon" || selectedFromNetwork.chainName == "base")) {
+        if (!(
+            selectedFromNetwork.chainName == "polygon" ||
+            selectedFromNetwork.chainName == "base" ||
+            selectedFromNetwork.chainName == "avalanche" ||
+            selectedFromNetwork.chainName == "arbitrum"
+        )) {
             toast.error("Batching is only supported on polygon and base as of now");
             return;
         }
@@ -373,10 +425,15 @@ const TradeContainer: React.FC<any> = () => {
         const erc20 = await getContractInstance(tokenAddress, IERC20, provider);
         // const scwBalance = await getErc20Balanceof(erc20, smartAccount.address);
         // const eoaBalance = await getErc20Balanceof(erc20, address);
-        const fromTokendecimal = await getErc20Decimals(erc20);
+        const fromTokendecimal: any = await getErc20Decimals(erc20);
         setSafeState(setFromTokenDecimal, fromTokendecimal, 0);
         // setSafeState(setFromTokenBalanceForSCW, BigNumber.from(scwBalance), BIG_ZERO);
         // setSafeState(setFromTokenBalanceForEOA, BigNumber.from(eoaBalance), BIG_ZERO);
+        
+        const maxBal: any = await getErc20Balanceof(erc20, smartAccount.address)
+        const MaxBalance = bg(maxBal?.toString()).dividedBy(bg(10).pow(fromTokendecimal))
+        console.log("✅  onChangeFromToken ~ MaxBalance:", MaxBalance)
+        setMaxBalance(MaxBalance.toString())
     };
 
     const onChangeToProtocol = async (_toProtocol: string) => {
@@ -384,7 +441,12 @@ const TradeContainer: React.FC<any> = () => {
             toast.error("wait, tx loading");
             return;
         }
-        if (!(selectedFromNetwork.chainName == "polygon" || selectedFromNetwork.chainName == "base")) {
+        if (!(
+            selectedFromNetwork.chainName == "polygon" ||
+            selectedFromNetwork.chainName == "base" ||
+            selectedFromNetwork.chainName == "avalanche" ||
+            selectedFromNetwork.chainName == "arbitrum"
+        )) {
             toast.error("Batching is only supported on polygon and base as of now");
             return;
         }
@@ -402,7 +464,12 @@ const TradeContainer: React.FC<any> = () => {
             toast.error("wait, tx loading");
             return;
         }
-        if (!(selectedFromNetwork.chainName == "polygon" || selectedFromNetwork.chainName == "base")) {
+        if (!(
+            selectedFromNetwork.chainName == "polygon" ||
+            selectedFromNetwork.chainName == "base" ||
+            selectedFromNetwork.chainName == "avalanche" ||
+            selectedFromNetwork.chainName == "arbitrum"
+        )) {
             toast.error("Batching is only supported on polygon and base as of now");
             return;
         }
@@ -415,7 +482,12 @@ const TradeContainer: React.FC<any> = () => {
             toast.error('wait, tx loading');
             return;
         }
-        if (!(selectedFromNetwork.chainName == "polygon" || selectedFromNetwork.chainName == "base")) {
+        if (!(
+            selectedFromNetwork.chainName == "polygon" ||
+            selectedFromNetwork.chainName == "base" ||
+            selectedFromNetwork.chainName == "avalanche" ||
+            selectedFromNetwork.chainName == "arbitrum"
+        )) {
             toast.error("Batching is only supported on polygon as of now");
             return;
         }
@@ -479,7 +551,7 @@ const TradeContainer: React.FC<any> = () => {
             chainId: "",
             icon: "",
         });
-        setSelectedFromProtocol("")
+        setSelectedFromProtocol("");
         setSelectedFromToken("");
         setSelectedToProtocol("");
         setSelectedToToken("");
@@ -557,12 +629,17 @@ const TradeContainer: React.FC<any> = () => {
                 setAddToBatchLoading(false);
                 return;
             }
-            if (!(selectedFromNetwork.chainName == "polygon" || selectedFromNetwork.chainName == "base")) {
+            if (!(
+                selectedFromNetwork.chainName == "polygon" ||
+                selectedFromNetwork.chainName == "base" ||
+                selectedFromNetwork.chainName == "avalanche" ||
+                selectedFromNetwork.chainName == "arbitrum"
+            )) {
                 toast.error("Batching is only supported on polygon as of now");
                 setAddToBatchLoading(false);
                 return;
             }
-            if ((amountIn.length > 0) && (scwBalance < amountIn)) {
+            if ((amountIn.length > 0) && (maxBalance < amountIn)) {
                 toast.error("You don't have enough funds to complete transaction");
                 setAddToBatchLoading(false);
                 return;
@@ -715,6 +792,8 @@ const TradeContainer: React.FC<any> = () => {
             toggleShowBatchList={toggleShowBatchList}
             sendSingleBatchToList={sendSingleBatchToList}
             ExecuteAllBatches={ExecuteAllBatches}
+            closeFromSelectionMenu={closeFromSelectionMenu}
+            closeToSelectionMenu={closeToSelectionMenu}
         />
     );
 };

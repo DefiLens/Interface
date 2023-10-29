@@ -74,6 +74,7 @@ export interface iFuncArray {
 };
 
 export interface iTrade {
+    maxBalance: string;
     showSelectNetworkList: boolean;
 
     selectedFromNetwork: iSelectedNetwork;
@@ -97,6 +98,8 @@ export interface iTrade {
 
     filterFromToken: string;
     filterToToken: string;
+    filterFromAddress: string;
+    filterToAddress: string;
 
     addToBatchLoading: boolean;
     showBatchList: boolean;
@@ -127,7 +130,7 @@ export interface iTrade {
     params: any[][];
     fixParams: any[][];
 
-
+    setMaxBalance: (maxBalance: string) => void;
     setShowSelectNetworkList: (showSelectNetworkList: boolean) => void;
     
     setSelectedFromNetwork: (selectedFromNetwork: iSelectedNetwork) => void;
@@ -151,6 +154,8 @@ export interface iTrade {
 
     setFilterFromToken: (filterFromToken: string) => void;
     setFilterToToken: (filterToToken: string) => void;
+    setFilterFromAddress: (filterFromAddress: string) => void;
+    setFilterToAddress: (filterToAddress: string) => void;
 
     setAddToBatchLoading: (addToBatchLoading: boolean) => void;
     setShowBatchList: (showBatchList: boolean) => void;
@@ -183,6 +188,7 @@ export interface iTrade {
 }
 
 export const useTradeStore = create<iTrade>((set) => ({
+    maxBalance: "",
     showSelectNetworkList: false,
     
     selectedFromNetwork:  {
@@ -216,6 +222,8 @@ export const useTradeStore = create<iTrade>((set) => ({
 
     filterFromToken: "",
     filterToToken: "",
+    filterFromAddress: "",
+    filterToAddress: "",
 
     addToBatchLoading: false,
     showBatchList: false,
@@ -264,6 +272,7 @@ export const useTradeStore = create<iTrade>((set) => ({
     params: [[]],
     fixParams: [[]],
    
+    setMaxBalance: (maxBalance) => set(() => ({ maxBalance })),
     setShowSelectNetworkList: (showSelectNetworkList) => set(() => ({ showSelectNetworkList })),
     
     setSelectedFromNetwork: (selectedFromNetwork) => set(() => ({ selectedFromNetwork })),
@@ -287,6 +296,8 @@ export const useTradeStore = create<iTrade>((set) => ({
 
     setFilterFromToken: (filterFromToken) => set(() => ({ filterFromToken })),
     setFilterToToken: (filterToToken) => set(() => ({ filterToToken })),
+    setFilterFromAddress: (filterFromAddress) => set(() => ({ filterFromAddress })),
+    setFilterToAddress: (filterToAddress) => set(() => ({ filterToAddress })),
 
     setAddToBatchLoading: (addToBatchLoading) => set(() => ({ addToBatchLoading })),
     setShowBatchList: (showBatchList) => set(() => ({ showBatchList })),

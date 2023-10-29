@@ -8,9 +8,9 @@ import { useGlobalStore, iGlobal } from "../store/GlobalStore";
 import { rpscURLS, _nonce, _functionType } from "../utils/constants";
 
 export function useCalculatebalance() {
-    const { 
+    const {
         setScwBalance,
-        setEoaBalance
+        setEoaBalance,
     }: iGlobal = useGlobalStore((state) => state);
 
     async function fetchNativeBalance({ chainId, eoaAddress, scwAddress }) {

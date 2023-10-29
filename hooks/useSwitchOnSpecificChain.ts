@@ -32,6 +32,7 @@ export function useSwitchOnSpecificChain() {
         setSelectedFromNetwork,
     }: iTrade = useTradeStore((state) => state);
 
+
     const { mutateAsync: fetchNativeBalance } = useCalculatebalance();
     const switchChain = useSwitchChain();
     const metamaskConfig = metamaskWallet();
@@ -78,7 +79,6 @@ export function useSwitchOnSpecificChain() {
         if (smartAccount) isNetworkCorrect(chain?.chainId, smartAccount.address);
     }, []);
 
-
     const handleConnect = async () => {
         connect(metamaskConfig, {})
             .then(() => {
@@ -113,7 +113,11 @@ export function useSwitchOnSpecificChain() {
         try {
             const chainIds = [137, 42161, 10, 1, 43114, 8453];
             if (chainIds.includes(chainId)) {
-                await fetchNativeBalance({ chainId: chainId, eoaAddress: address, scwAddress: smartAccountAddress });
+                await fetchNativeBalance({ 
+                    chainId: chainId,
+                    eoaAddress: address,
+                    scwAddress: smartAccountAddress
+                });
             } else {
             }
         } catch (error) {

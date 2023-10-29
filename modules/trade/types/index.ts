@@ -22,4 +22,6 @@ export type tTrade = {
     toggleShowBatchList: (id: number) => void,
     sendSingleBatchToList: (isSCW: any) => void,
     ExecuteAllBatches: (isSCW: any) => void,
+    closeFromSelectionMenu: () => void,
+    closeToSelectionMenu: () => void,
 };
