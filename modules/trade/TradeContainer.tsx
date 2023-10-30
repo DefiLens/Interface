@@ -25,12 +25,44 @@ import { iSelectedNetwork, iTrade, useTradeStore } from "../../store/TradeStore"
 import { useBiconomyProvider } from "../../hooks/aaProvider/useBiconomyProvider";
 import { useOnChangeFunctions, useOnChangeTokenIn } from "../../hooks/useOnChangeMainForm";
 import { getContractInstance, getErc20Balanceof, getErc20Decimals, getProvider } from "../../utils/web3Libs/ethers";
-import { _functionType, _nonce, bundlerURLs, paymasterURLs, protocolByNetwork, StargateChainIdBychainId, tokenAddressByProtocol, tokensByNetwork } from "../../utils/constants";
+import {
+    _functionType,
+    _nonce,
+    bundlerURLs,
+    paymasterURLs,
+    protocolByNetwork,
+    StargateChainIdBychainId,
+    tokenAddressByProtocol,
+    tokensByNetwork,
+} from "../../utils/constants";
 
 bg.config({ DECIMAL_PLACES: 10 });
 
-const TradeContainer: React.FC<any> = () => {
+interface TokenInfo {
+    chainId: number;
+    address: string;
+    name: string;
+    symbol: string;
+    decimals: number;
+    logoURI: string;
+    extensions?: Record<string, { tokenAddress: string }>;
+}
 
+interface TokenList {
+    name: string;
+    timestamp: string;
+    version: {
+        major: number;
+        minor: number;
+        patch: number;
+    };
+    tags: Record<string, any>;
+    logoURI: string;
+    keywords: string[];
+    tokens: TokenInfo[];
+}
+
+const TradeContainer: React.FC<any> = () => {
     const chain = useChain(); // Detect the connected address
     const address = useAddress(); // Detect the connected address
 
@@ -50,13 +82,9 @@ const TradeContainer: React.FC<any> = () => {
 
     const { mutateAsync: switchOnSpecificChain } = useSwitchOnSpecificChain();
 
-    const {
-        scwBalance,
-        smartAccount,
-        setLoading,
-        setSmartAccount,
-        setConnected
-    }: iGlobal = useGlobalStore((state) => state);
+    const { scwBalance, smartAccount, setLoading, setSmartAccount, setConnected }: iGlobal = useGlobalStore(
+        (state) => state
+    );
 
     const {
         maxBalance,
@@ -154,15 +182,16 @@ const TradeContainer: React.FC<any> = () => {
         if (selectedFromProtocol == "erc20") {
             tokenAddress = tokensData?.filter((token) => token.symbol === selectedFromToken)[0].address;
         } else {
-            tokenAddress = tokenAddressByProtocol[selectedFromNetwork.chainName][selectedFromProtocol][selectedFromToken];
+            tokenAddress =
+                tokenAddressByProtocol[selectedFromNetwork.chainName][selectedFromProtocol][selectedFromToken];
         }
 
         const erc20 = await getContractInstance(tokenAddress, IERC20, provider);
-        const maxBal: any = await getErc20Balanceof(erc20, smartAccount.address)
+        const maxBal: any = await getErc20Balanceof(erc20, smartAccount.address);
         const fromTokendecimal: any = await getErc20Decimals(erc20);
-        const MaxBalance = bg(maxBal?.toString()).dividedBy(bg(10).pow(fromTokendecimal))
+        const MaxBalance = bg(maxBal?.toString()).dividedBy(bg(10).pow(fromTokendecimal));
 
-        return MaxBalance.toString()
+        return MaxBalance.toString();
     };
 
     const handleContractAddress = async (_contractIndex: string, _contractDetail: any) => {
@@ -208,7 +237,7 @@ const TradeContainer: React.FC<any> = () => {
     };
 
     useEffect(() => {
-        if (individualBatch.length === 1 && individualBatch[0].txHash.length === 0) {
+        if (individualBatch.length === 1 && individualBatch[0].txArray.length === 0) {
             setShowBatchList(false);
         }
     }, [individualBatch]);
@@ -242,18 +271,21 @@ const TradeContainer: React.FC<any> = () => {
         setCurrentFunc("");
         setData(null);
         if (selectedFromNetwork.chainName !== _fromNetwork.chainName) {
-            switchOnSpecificChain(_fromNetwork.chainName)
-            setSelectedFromNetwork(_fromNetwork)
+            switchOnSpecificChain(_fromNetwork.chainName);
+            setSelectedFromNetwork(_fromNetwork);
         }
-        setSelectedFromNetwork(_fromNetwork)
+        setSelectedFromNetwork(_fromNetwork);
         setLoading(false);
     };
 
     const handleSelectToNetwork = async (_toNetwork: iSelectedNetwork) => {
         try {
             setData(null);
-            setSelectedToNetwork(_toNetwork)
-            const response: any = await getNetworkAndContractData(StargateChainIdBychainId[selectedFromNetwork.chainId], StargateChainIdBychainId[_toNetwork.chainId]);
+            setSelectedToNetwork(_toNetwork);
+            const response: any = await getNetworkAndContractData(
+                StargateChainIdBychainId[selectedFromNetwork.chainId],
+                StargateChainIdBychainId[_toNetwork.chainId]
+            );
             if (response.data) {
                 setData(response.data);
             }
@@ -263,13 +295,13 @@ const TradeContainer: React.FC<any> = () => {
     };
 
     const closeFromSelectionMenu = () => {
-        setShowFromSelectionMenu(false)
+        setShowFromSelectionMenu(false);
         setFilterFromToken("");
         setFilterFromAddress("");
     };
 
     const closeToSelectionMenu = () => {
-        setShowToSelectionMenu(false)
+        setShowToSelectionMenu(false);
         setFilterToToken("");
         setFilterToAddress("");
     };
@@ -277,43 +309,88 @@ const TradeContainer: React.FC<any> = () => {
     useEffect(() => {
         async function changeWallet() {
             if (!address) {
-                setTokenIn("")
+                setTokenIn("");
                 // setFromChainId("")
                 // setToChainId("")
-                setAmountIn("")
-                setContractIndex("")
-                setFunctionArray([])
-                setSmartAccount(null)
-                setConnected(false)
+                setAmountIn("");
+                setContractIndex("");
+                setFunctionArray([]);
+                setSmartAccount(null);
+                setConnected(false);
 
                 setSelectedFromNetwork({
                     key: "",
                     chainName: "",
                     chainId: "",
                     icon: "",
-                })
+                });
             }
         }
         changeWallet();
-    }, [address])
+    }, [address]);
 
     useEffect(() => {
         if (selectedFromNetwork.chainName && selectedFromProtocol && selectedFromToken) {
             closeFromSelectionMenu();
         }
-    }, [selectedFromNetwork, selectedFromProtocol, selectedFromToken])
+    }, [selectedFromNetwork, selectedFromProtocol, selectedFromToken]);
 
     useEffect(() => {
         if (selectedToNetwork.chainName && selectedToProtocol && selectedToToken) {
             closeToSelectionMenu();
         }
-    }, [selectedToNetwork, selectedToProtocol, selectedToToken])
+    }, [selectedToNetwork, selectedToProtocol, selectedToToken]);
 
     useEffect(() => {
         if (contractIndex && currentFunc) {
-            setShowCrossChainSelectionMenu(false)
+            setShowCrossChainSelectionMenu(false);
         }
-    }, [contractIndex, currentFunc])
+    }, [contractIndex, currentFunc]);
+
+    function convertIpfsUrl(ipfsUri: string): string {
+        // Check if the input URI starts with 'ipfs://'
+        if (ipfsUri.startsWith("ipfs://")) {
+            // Remove the 'ipfs://' prefix
+            const ipfsHash = ipfsUri.replace("ipfs://", "");
+
+            // Create the Cloudflare IPFS URL
+            const cloudflareIpfsUrl = `https://cloudflare-ipfs.com/ipfs/${ipfsHash}`;
+
+            return cloudflareIpfsUrl;
+        }
+
+        // If the input doesn't start with 'ipfs://', return it as is
+        return ipfsUri;
+    }
+
+    function getTokenListByChainId(chainId: any, tokenList: any): TokenInfo[] {
+        return tokenList.tokens
+            .map((token) => {
+                console.log("token.chainId", token.chainId, chainId);
+                if (token.chainId == chainId) {
+                    return {
+                        chainId: token.chainId,
+                        address: token.address,
+                        name: token.name,
+                        symbol: token.symbol,
+                        decimals: token.decimals,
+                        logoURI: token.logoURI.includes("ipfs") ? convertIpfsUrl(token.logoURI) : token.logoURI,
+                    };
+                } else if (token.extensions && token.extensions.bridgeInfo[chainId.toString()]) {
+                    const tokenAddress = token.extensions.bridgeInfo[chainId.toString()].tokenAddress;
+                    return {
+                        chainId: chainId,
+                        address: tokenAddress,
+                        name: token.name,
+                        symbol: token.symbol,
+                        decimals: token.decimals,
+                        logoURI: token.logoURI.includes("ipfs") ? convertIpfsUrl(token.logoURI) : token.logoURI,
+                    };
+                }
+                return null;
+            })
+            .filter(Boolean) as TokenInfo[];
+    }
 
     useEffect(() => {
         async function onChangeselectedFromProtocol() {
@@ -324,11 +401,13 @@ const TradeContainer: React.FC<any> = () => {
                     // setFromTokenBalanceForSCW(BIG_ZERO);
                     // setFromTokenBalanceForEOA(BIG_ZERO);
 
-                    const firstFromToken = protocolByNetwork[selectedFromNetwork.chainName][selectedFromProtocol][0].name;
+                    const firstFromToken =
+                        protocolByNetwork[selectedFromNetwork.chainName][selectedFromProtocol][0].name;
                     // setSelectedFromToken(firstFromToken);
 
                     const provider = await getProvider(selectedFromNetwork.chainId);
-                    const tokenAddress = tokenAddressByProtocol[selectedFromNetwork.chainName][selectedFromProtocol][firstFromToken];
+                    const tokenAddress =
+                        tokenAddressByProtocol[selectedFromNetwork.chainName][selectedFromProtocol][firstFromToken];
                     const erc20 = await getContractInstance(tokenAddress, IERC20, provider);
                     // const scwBalance = await getErc20Balanceof(erc20, smartAccount?.address);
                     // const eoaBalance = await getErc20Balanceof(erc20, address);
@@ -337,11 +416,16 @@ const TradeContainer: React.FC<any> = () => {
                     // setSafeState(setFromTokenBalanceForSCW, BigNumber.from(scwBalance), BIG_ZERO);
                     // setSafeState(setFromTokenBalanceForEOA, BigNumber.from(eoaBalance), BIG_ZERO);
                 } else {
-                    const tokensWithChainId = UNISWAP_TOKENS.tokens?.filter((token) => token.chainId === BigNumber.from(selectedFromNetwork.chainId).toNumber());
-                    const filteredTokens = tokensWithChainId.map((token) => {
-                        const { extensions, logoURI, ...filteredToken } = token;
-                        return filteredToken;
-                    });
+                    const filteredTokens = getTokenListByChainId(selectedFromNetwork.chainId, UNISWAP_TOKENS);
+                    console.log("filteredTokens++++++++++:", filteredTokens);
+
+                    // const tokensWithChainId = UNISWAP_TOKENS.tokens?.filter((token) => token.chainId === BigNumber.from(selectedFromNetwork.chainId).toNumber());
+                    // const filteredTokens = tokensWithChainId.map((token) => {
+                    //     const { extensions, logoURI, ...filteredToken } = token;
+                    //     return filteredToken;
+                    // });
+                    // console.log("filteredTokens++++++++++:", filteredTokens)
+
                     setTokensData(filteredTokens);
                 }
             }
@@ -353,11 +437,13 @@ const TradeContainer: React.FC<any> = () => {
         async function onChangeselectedToProtocol() {
             if (selectedToProtocol) {
                 if (selectedToProtocol == "erc20" && tokensData.length < 1) {
-                    const tokensWithChainId = UNISWAP_TOKENS.tokens?.filter((token) => token.chainId === BigNumber.from(selectedToNetwork.chainId).toNumber());
-                    const filteredTokens = tokensWithChainId.map((token) => {
-                        const { extensions, logoURI, ...filteredToken } = token;
-                        return filteredToken;
-                    });
+                    // const tokensWithChainId = UNISWAP_TOKENS.tokens?.filter((token) => token.chainId === BigNumber.from(selectedToNetwork.chainId).toNumber());
+                    // const filteredTokens = tokensWithChainId.map((token) => {
+                    //     const { extensions, logoURI, ...filteredToken } = token;
+                    //     return filteredToken;
+                    // });
+                    const filteredTokens = getTokenListByChainId(selectedFromNetwork.chainId, UNISWAP_TOKENS);
+                    console.log("filteredTokenList++++++++++:", filteredTokens);
                     setTokensData(filteredTokens);
                 }
             }
@@ -370,13 +456,15 @@ const TradeContainer: React.FC<any> = () => {
             toast.error("wait, tx loading");
             return;
         }
-        if (!(
-            selectedFromNetwork.chainName == "polygon" ||
-            selectedFromNetwork.chainName == "base" ||
-            selectedFromNetwork.chainName == "avalanche" ||
-            selectedFromNetwork.chainName == "arbitrum" ||
-            selectedFromNetwork.chainName == "optimism"
-        )) {
+        if (
+            !(
+                selectedFromNetwork.chainName == "polygon" ||
+                selectedFromNetwork.chainName == "base" ||
+                selectedFromNetwork.chainName == "avalanche" ||
+                selectedFromNetwork.chainName == "arbitrum" ||
+                selectedFromNetwork.chainName == "optimism"
+            )
+        ) {
             toast.error("Batching is only supported on polygon and base as of now");
             return;
         }
@@ -384,7 +472,7 @@ const TradeContainer: React.FC<any> = () => {
         setFilterFromAddress("");
         setFilterToAddress("");
 
-        if(selectedFromProtocol === _fromProtocol) {
+        if (selectedFromProtocol === _fromProtocol) {
             setSelectedFromProtocol("");
         } else {
             setSelectedFromProtocol(_fromProtocol);
@@ -396,13 +484,15 @@ const TradeContainer: React.FC<any> = () => {
             toast.error("wait, tx loading");
             return;
         }
-        if (!(
-            selectedFromNetwork.chainName == "polygon" ||
-            selectedFromNetwork.chainName == "base" ||
-            selectedFromNetwork.chainName == "avalanche" ||
-            selectedFromNetwork.chainName == "arbitrum"  ||
-            selectedFromNetwork.chainName == "optimism"
-        )) {
+        if (
+            !(
+                selectedFromNetwork.chainName == "polygon" ||
+                selectedFromNetwork.chainName == "base" ||
+                selectedFromNetwork.chainName == "avalanche" ||
+                selectedFromNetwork.chainName == "arbitrum" ||
+                selectedFromNetwork.chainName == "optimism"
+            )
+        ) {
             toast.error("Batching is only supported on polygon and base as of now");
             return;
         }
@@ -412,7 +502,7 @@ const TradeContainer: React.FC<any> = () => {
         }
 
         try {
-            setIsmaxBalanceLoading(true)
+            setIsmaxBalanceLoading(true);
             setAmountIn("");
             setFromTokenDecimal(0);
             // setFromTokenBalanceForSCW(BIG_ZERO);
@@ -455,17 +545,19 @@ const TradeContainer: React.FC<any> = () => {
                     let biconomySmartAccount = new BiconomySmartAccount(biconomySmartAccountConfig);
                     biconomySmartAccount = await biconomySmartAccount.init();
                     return biconomySmartAccount;
-                }
+                };
                 scwAddress = await createAccount(selectedFromNetwork.chainId);
             }
 
-            const maxBal: any = await getErc20Balanceof(erc20, smartAccount?.address ? smartAccount?.address : scwAddress.address)
-            const MaxBalance = bg(maxBal?.toString()).dividedBy(bg(10).pow(fromTokendecimal))
-            setMaxBalance(MaxBalance.toString())
-            setIsmaxBalanceLoading(false)
-
+            const maxBal: any = await getErc20Balanceof(
+                erc20,
+                smartAccount?.address ? smartAccount?.address : scwAddress.address
+            );
+            const MaxBalance = bg(maxBal?.toString()).dividedBy(bg(10).pow(fromTokendecimal));
+            setMaxBalance(MaxBalance.toString());
+            setIsmaxBalanceLoading(false);
         } catch (error: any) {
-            setIsmaxBalanceLoading(false)
+            setIsmaxBalanceLoading(false);
             console.log("onChangeFromToken ~ error:", error);
         }
     };
@@ -475,17 +567,19 @@ const TradeContainer: React.FC<any> = () => {
             toast.error("wait, tx loading");
             return;
         }
-        if (!(
-            selectedFromNetwork.chainName == "polygon" ||
-            selectedFromNetwork.chainName == "base" ||
-            selectedFromNetwork.chainName == "avalanche" ||
-            selectedFromNetwork.chainName == "arbitrum"  ||
-            selectedFromNetwork.chainName == "optimism"
-        )) {
+        if (
+            !(
+                selectedFromNetwork.chainName == "polygon" ||
+                selectedFromNetwork.chainName == "base" ||
+                selectedFromNetwork.chainName == "avalanche" ||
+                selectedFromNetwork.chainName == "arbitrum" ||
+                selectedFromNetwork.chainName == "optimism"
+            )
+        ) {
             toast.error("Batching is only supported on polygon and base as of now");
             return;
         }
-        if(selectedToProtocol === _toProtocol) {
+        if (selectedToProtocol === _toProtocol) {
             setSelectedToProtocol("");
             setSelectedToToken("");
         } else {
@@ -499,13 +593,15 @@ const TradeContainer: React.FC<any> = () => {
             toast.error("wait, tx loading");
             return;
         }
-        if (!(
-            selectedFromNetwork.chainName == "polygon" ||
-            selectedFromNetwork.chainName == "base" ||
-            selectedFromNetwork.chainName == "avalanche" ||
-            selectedFromNetwork.chainName == "arbitrum" ||
-            selectedFromNetwork.chainName == "optimism"
-        )) {
+        if (
+            !(
+                selectedFromNetwork.chainName == "polygon" ||
+                selectedFromNetwork.chainName == "base" ||
+                selectedFromNetwork.chainName == "avalanche" ||
+                selectedFromNetwork.chainName == "arbitrum" ||
+                selectedFromNetwork.chainName == "optimism"
+            )
+        ) {
             toast.error("Batching is only supported on polygon and base as of now");
             return;
         }
@@ -515,16 +611,18 @@ const TradeContainer: React.FC<any> = () => {
     // for e.g 0 -> 1000
     const onChangeAmountIn = async (_amountIn: string) => {
         if (addToBatchLoading) {
-            toast.error('wait, tx loading');
+            toast.error("wait, tx loading");
             return;
         }
-        if (!(
-            selectedFromNetwork.chainName == "polygon" ||
-            selectedFromNetwork.chainName == "base" ||
-            selectedFromNetwork.chainName == "avalanche" ||
-            selectedFromNetwork.chainName == "arbitrum" ||
-            selectedFromNetwork.chainName == "optimism"
-        )) {
+        if (
+            !(
+                selectedFromNetwork.chainName == "polygon" ||
+                selectedFromNetwork.chainName == "base" ||
+                selectedFromNetwork.chainName == "avalanche" ||
+                selectedFromNetwork.chainName == "arbitrum" ||
+                selectedFromNetwork.chainName == "optimism"
+            )
+        ) {
             toast.error("Batching is only supported on polygon as of now");
             return;
         }
@@ -550,13 +648,13 @@ const TradeContainer: React.FC<any> = () => {
 
         setSelectedFromToken(selectedToToken);
         setSelectedToToken(tempToken);
-    }
+    };
 
     const addBatch = () => {
         setIndividualBatch([
             {
                 id: 0,
-                txHash: [],
+                txArray: [],
                 data: {
                     fromNetwork: "",
                     toNetwork: "",
@@ -569,7 +667,7 @@ const TradeContainer: React.FC<any> = () => {
                 simulation: {
                     isSuccess: false,
                     isError: false,
-                }
+                },
             },
         ]);
     };
@@ -595,14 +693,15 @@ const TradeContainer: React.FC<any> = () => {
         setFromTokenDecimal(0);
     };
 
-    const updateInputValues = (index: number, txHash: string[], data: any, simulation: any) => {
-        if (txHash.length < 1) return toast.error("Please complete the last input before adding a new one.");
+    const updateInputValues = (index: number, txArray: string[], batchesFlow: any, data: any, simulation: any) => {
+        if (txArray.length < 1) return toast.error("Please complete the last input before adding a new one.");
         if (individualBatch.length == 0) {
             setIndividualBatch([
                 ...individualBatch,
                 {
                     id: 0,
-                    txHash: [],
+                    txArray: [],
+                    batchesFlow: [],
                     data: {
                         fromNetwork: "",
                         toNetwork: "",
@@ -615,19 +714,21 @@ const TradeContainer: React.FC<any> = () => {
                     simulation: {
                         isSuccess: false,
                         isError: false,
-                    }
+                    },
                 },
             ]);
         }
         const updatedBatch: any = [...individualBatch];
-        updatedBatch[index].txHash = txHash;
+        updatedBatch[index].txArray = txArray;
+        updatedBatch[index].batchesFlow = batchesFlow;
         updatedBatch[index].data = data;
         updatedBatch[index].simulation = simulation;
         setIndividualBatch([
             ...updatedBatch,
             {
                 id: updatedBatch.length,
-                txHash: [],
+                txArray: [],
+                batchesFlow: [],
                 data: {
                     fromNetwork: "",
                     toNetwork: "",
@@ -640,7 +741,7 @@ const TradeContainer: React.FC<any> = () => {
                 simulation: {
                     isSuccess: false,
                     isError: false,
-                }
+                },
             },
         ]);
         clearSelectedBatchData();
@@ -659,23 +760,25 @@ const TradeContainer: React.FC<any> = () => {
             if (isSCW) {
                 setAddToBatchLoading(true);
             }
-            if (selectedFromToken == selectedToToken) {
+            if (selectedFromToken == selectedToToken && selectedFromNetwork.chainName === selectedToNetwork.chainName) {
                 toast.error("fromToken and toToken should not same");
                 setAddToBatchLoading(false);
                 return;
             }
-            if (!(
-                selectedFromNetwork.chainName == "polygon" ||
-                selectedFromNetwork.chainName == "base" ||
-                selectedFromNetwork.chainName == "avalanche" ||
-                selectedFromNetwork.chainName == "arbitrum" ||
-                selectedFromNetwork.chainName == "optimism"
-            )) {
+            if (
+                !(
+                    selectedFromNetwork.chainName == "polygon" ||
+                    selectedFromNetwork.chainName == "base" ||
+                    selectedFromNetwork.chainName == "avalanche" ||
+                    selectedFromNetwork.chainName == "arbitrum" ||
+                    selectedFromNetwork.chainName == "optimism"
+                )
+            ) {
                 toast.error("Batching is only supported on polygon as of now");
                 setAddToBatchLoading(false);
                 return;
             }
-            if ((amountIn.length > 0) && (maxBalance < amountIn)) {
+            if (amountIn.length > 0 && maxBalance < amountIn) {
                 toast.error("You don't have enough funds to complete transaction");
                 setAddToBatchLoading(false);
                 return;
@@ -713,9 +816,10 @@ const TradeContainer: React.FC<any> = () => {
             const provider = await getProvider(selectedFromNetwork.chainId);
             const _tempAmount = BigNumber.from(bg(amountIn).multipliedBy(bg(10).pow(fromTokenDecimal)).toString());
 
-            let txHash;
+            let refinaceData: any;
+            let txArray;
             if (selectedFromNetwork.chainName == selectedToNetwork.chainName) {
-                txHash = await refinance({
+                refinaceData = await refinance({
                     isSCW: isSCW,
                     fromProtocol: selectedFromProtocol,
                     toProtocol: selectedToProtocol,
@@ -728,7 +832,7 @@ const TradeContainer: React.FC<any> = () => {
                     provider,
                 });
             } else {
-                txHash = await refinanceForCC({
+                refinaceData = await refinanceForCC({
                     isSCW: isSCW,
                     fromProtocol: selectedFromProtocol,
                     toProtocol: selectedToProtocol,
@@ -745,11 +849,12 @@ const TradeContainer: React.FC<any> = () => {
             const simulation = {
                 isSuccess: true,
                 isError: false,
-            }
+            };
 
             updateInputValues(
                 individualBatch.length - 1,
-                txHash,
+                refinaceData.txArray,
+                refinaceData.batchFlow,
                 {
                     fromNetwork: selectedFromNetwork.chainName,
                     toNetwork: selectedToNetwork.chainName,
@@ -760,7 +865,7 @@ const TradeContainer: React.FC<any> = () => {
                     amountIn: amountIn,
                 },
                 simulation
-            )
+            );
 
             setAddToBatchLoading(false);
             setShowBatchList(true);
@@ -774,12 +879,12 @@ const TradeContainer: React.FC<any> = () => {
 
     const ExecuteAllBatches = async (isSCW: any) => {
         try {
-            if (!individualBatch[0].txHash.length){
+            if (!individualBatch[0].txArray.length) {
                 toast.error("No Batch found for Execution");
                 return;
             }
             setShowExecuteBatchModel(true);
-            setHasExecutionError('')
+            setHasExecutionError("");
 
             if (isSCW) {
                 setSendTxLoading(true);
@@ -787,7 +892,7 @@ const TradeContainer: React.FC<any> = () => {
                 setSendTxLoadingForEoa(true);
             }
             const mergeArray: any = [];
-            await individualBatch.map((bar) => bar.txHash.map((hash) => mergeArray.push(hash)));
+            await individualBatch.map((bar) => bar.txArray.map((hash) => mergeArray.push(hash)));
             let tempTxhash = "";
             if (isSCW) {
                 tempTxhash = await sendToBiconomy(mergeArray);

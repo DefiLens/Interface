@@ -5,7 +5,7 @@ import { useMutation } from "@tanstack/react-query";
 
 import { useUniswap } from "../useUniswap";
 import { useApprove } from "../useApprove";
-import { iTrade, useTradeStore } from "../../store/TradeStore";
+import { iBatchFlowData, iTrade, useTradeStore } from "../../store/TradeStore";
 import { iBatchingTxn, useBatchingTxnStore } from "../../store/BatchingTxnStore";
 import { iCrossChainDifi, useCrossChainDifiStore } from "../../store/CrossChainDifiStore";
 import { abiFetcher, abiFetcherNum, buildParams, nativeTokenFetcher, nativeTokenNum } from "./batchingUtils";
@@ -17,17 +17,16 @@ export function useRefinance() {
     const { mutateAsync: approve } = useApprove();
     const { mutateAsync: calculategasCost } = useCalculateGasCost();
 
-    const { selectedFromNetwork }: iTrade = useTradeStore((state) => state);
+    const { selectedFromNetwork, selectedFromProtocol, selectedToProtocol, amountIn }: iTrade = useTradeStore(
+        (state) => state
+    );
 
     // const { setTxHash }: iCrossChainDifi = useCrossChainDifiStore((state) => state);
     // const { tokensData }: iBatchingTxn = useBatchingTxnStore((state) => state);
-    const {
-        tokensData, 
-        setTxHash, 
-    }: iTrade = useTradeStore((state) => state);
+    const { tokensData, setTxHash }: iTrade = useTradeStore((state) => state);
 
     async function refinance({
-        isSCW, 
+        isSCW,
         fromProtocol,
         toProtocol,
         tokenIn,
@@ -40,10 +39,12 @@ export function useRefinance() {
     }: any) {
         try {
             if (!selectedFromNetwork.chainName) {
-                toast.error("Chain is not selected!!")
+                toast.error("Chain is not selected!!");
             }
             setTxHash("");
             const tempTxs: any = [];
+            const batchFlows: iBatchFlowData[] = [];
+            // let batchFlow: iBatchFlowData = {}
             let abiNum,
                 abi,
                 methodName,
@@ -92,6 +93,16 @@ export function useRefinance() {
                 txData = abiInterface.encodeFunctionData(methodName, params);
                 const tx1 = { to: tokenInContractAddress, data: txData };
                 tempTxs.push(tx1);
+
+                let batchFlow: iBatchFlowData = {
+                    network: selectedFromNetwork.chainName,
+                    protocol: selectedFromProtocol,
+                    tokenIn: tokenInName,
+                    tokenOut: nativeTokenIn,
+                    amount: amountIn,
+                    action: "Withdraw",
+                };
+                batchFlows.push(batchFlow);
             }
 
             isSwap = nativeTokenIn != nativeTokenOut ? true : false;
@@ -112,6 +123,15 @@ export function useRefinance() {
                     type: "exactIn",
                 });
                 tempTxs.push(swapData.swapTx);
+                let batchFlow: iBatchFlowData = {
+                    network: selectedFromNetwork.chainName,
+                    protocol: "Uniswap",
+                    tokenIn: nativeTokenIn,
+                    tokenOut: nativeTokenOut,
+                    amount: amount,
+                    action: "Swap",
+                };
+                batchFlows.push(batchFlow);
             }
 
             if (toProtocol != "erc20") {
@@ -146,11 +166,20 @@ export function useRefinance() {
                 txData = abiInterface.encodeFunctionData(methodName, params);
                 const tx2 = { to: tokenOutContractAddress, data: txData };
                 tempTxs.push(tx2);
+                let batchFlow: iBatchFlowData = {
+                    network: selectedFromNetwork.chainName,
+                    protocol: "Uniswap",
+                    tokenIn: newTokenIn,
+                    tokenOut: tokenOutName,
+                    amount: newAmount,
+                    action: "Deposit",
+                };
+                batchFlows.push(batchFlow);
             }
-            const gasCost: number | undefined = await calculategasCost(selectedFromNetwork.chainId)
+            // const gasCost: number | undefined = await calculategasCost(selectedFromNetwork.chainId)
             // alert(gasCost?.toString())
 
-            return tempTxs;
+            return { txArray: tempTxs, batchFlow: batchFlows };
         } catch (error) {
             console.log("refinance-error", error);
         }

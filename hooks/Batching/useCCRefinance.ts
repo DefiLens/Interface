@@ -5,18 +5,20 @@ import { useMutation } from "@tanstack/react-query";
 
 import { useUniswap } from "../useUniswap";
 import { useApprove } from "../useApprove";
-import { iTrade, useTradeStore } from "../../store/TradeStore";
+import { iBatchFlowData, iTrade, useTradeStore } from "../../store/TradeStore";
 import { useCCSendTx } from "../useCCSendTx";
 
 import { iBatchingTxn, useBatchingTxnStore } from "../../store/BatchingTxnStore";
 import { iCrossChainDifi, useCrossChainDifiStore } from "../../store/CrossChainDifiStore";
-import { abiFetcher, abiFetcherNum, buildParams, nativeTokenFetcher, nativeTokenNum, tokensByNetworkForCC } from "./batchingUtils";
 import {
-    _functionType,
-    _nonce,
-    StargateChainIdBychainId,
-    uniswapSwapRouterByChainId,
-} from "../../utils/constants";
+    abiFetcher,
+    abiFetcherNum,
+    buildParams,
+    nativeTokenFetcher,
+    nativeTokenNum,
+    tokensByNetworkForCC,
+} from "./batchingUtils";
+import { _functionType, _nonce, StargateChainIdBychainId, uniswapSwapRouterByChainId } from "../../utils/constants";
 import { useAddress } from "@thirdweb-dev/react";
 
 export function useCCRefinance() {
@@ -26,13 +28,11 @@ export function useCCRefinance() {
     const { mutateAsync: sendTxToChain } = useCCSendTx();
     // const { selectedChain, selectedChainId } = React.useContext(ChainContext);
 
-    const { selectedFromNetwork, selectedToNetwork }: iTrade = useTradeStore((state) => state);
+    const { selectedFromNetwork, selectedToNetwork, selectedFromProtocol, selectedToProtocol, amountIn }: iTrade =
+        useTradeStore((state) => state);
 
     // const { setTxHash }: iCrossChainDifi = useCrossChainDifiStore((state) => state);
-    const {
-        tokensData,
-        setTxHash,
-     }: iBatchingTxn = useBatchingTxnStore((state) => state);
+    const { tokensData, setTxHash }: iBatchingTxn = useBatchingTxnStore((state) => state);
 
     async function refinanceForCC({
         isSCW,
@@ -52,6 +52,7 @@ export function useCCRefinance() {
             }
             setTxHash("");
             let tempTxs: any = [];
+            const batchFlows: iBatchFlowData[] = [];
 
             let abiNum,
                 abi,
@@ -101,6 +102,15 @@ export function useCCRefinance() {
                 txData = abiInterface.encodeFunctionData(methodName, params);
                 const tx1 = { to: tokenInContractAddress, data: txData };
                 tempTxs.push(tx1);
+                let batchFlow: iBatchFlowData = {
+                    network: selectedFromNetwork.chainName,
+                    protocol: selectedFromProtocol,
+                    tokenIn: tokenInName,
+                    tokenOut: nativeTokenIn,
+                    amount: amountIn,
+                    action: "Withdraw",
+                };
+                batchFlows.push(batchFlow);
             }
 
             isSwap = nativeTokenIn != tokensByNetworkForCC[selectedFromNetwork.chainId].usdc ? true : false;
@@ -115,12 +125,21 @@ export function useCCRefinance() {
                 if (approveData) tempTxs.push(approveData);
                 swapData = await swap({
                     tokenIn: nativeTokenIn, //: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
-                    tokenOut: tokensByNetworkForCC[selectedFromNetwork.chainId], // nativeTokenOut, //: "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
+                    tokenOut: tokensByNetworkForCC[selectedFromNetwork.chainId].usdc, // nativeTokenOut, //: "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
                     amountIn: amount, //: BigNumber.from('1000000'),
                     address,
                     type: "exactIn",
                 });
                 tempTxs.push(swapData.swapTx);
+                let batchFlow: iBatchFlowData = {
+                    network: selectedFromNetwork.chainName,
+                    protocol: "Uniswap",
+                    tokenIn: nativeTokenIn,
+                    tokenOut: tokensByNetworkForCC[selectedFromNetwork.chainId].usdc,
+                    amount: amount,
+                    action: "Swap",
+                };
+                batchFlows.push(batchFlow);
             }
 
             if (selectedFromNetwork.chainName != selectedToNetwork.chainName) {
@@ -158,6 +177,25 @@ export function useCCRefinance() {
                     extraOrShareToken: "0x0000000000000000000000000000000000000000",
                 });
                 tempTxs = [...tempTxs, ...txs];
+                let batchFlow: iBatchFlowData = {
+                    network: selectedFromNetwork.chainName,
+                    toNetwork: selectedToNetwork.chainName,
+                    protocol: "Stargate",
+                    tokenIn: "USDC",
+                    tokenOut: "",
+                    amount: amount,
+                    action: "Bridge",
+                };
+                batchFlows.push(batchFlow);
+                batchFlow = {
+                    network: selectedToNetwork.chainName,
+                    protocol: selectedToProtocol,
+                    tokenIn: newTokenIn,
+                    tokenOut: tokenOutName,
+                    amount: amount,
+                    action: "Deposit",
+                };
+                batchFlows.push(batchFlow);
             }
 
             // else if (toProtocol != "erc20") {
@@ -193,7 +231,7 @@ export function useCCRefinance() {
             //     const tx2 = { to: tokenOutContractAddress, data: txData };
             //     tempTxs.push(tx2);
             // }
-            return tempTxs;
+            return { txArray: tempTxs, batchFlow: batchFlows };
         } catch (error) {
             console.log("refinance-error", error);
         }

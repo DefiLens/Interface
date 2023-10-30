@@ -2,60 +2,72 @@ import { create } from "zustand";
 import { BigNumber } from "ethers";
 
 export interface iSelectedNetwork {
-    key: string,
-    chainName: string,
-    chainId: string,
-    icon: any,
-};
+    key: string;
+    chainName: string;
+    chainId: string;
+    icon: any;
+}
 
 export interface iTokenData {
-    chainId: number,
-    address: string,
-    name: string,
-    symbol: string,
-    decimals: number,
+    chainId: number;
+    address: string;
+    name: string;
+    symbol: string;
+    decimals: number;
+    logoURI: string;
+}
+
+export interface iBatchFlowData {
+    network: string;
+    toNetwork?: string;
+    protocol: string;
+    tokenIn: string;
+    tokenOut: string;
+    amount: string;
+    action: string;
 }
 
 export interface iIndividualBatch {
-    id: number,
-    txHash: string[],
+    id: number;
+    txArray: string[];
+    batchesFlow?: iBatchFlowData[];
     data: {
-        fromNetwork: string,
-        toNetwork: string,
-        fromProtocol: string,
-        toProtocol: string,
-        fromToken: string,
-        toToken: string,
-        amountIn: string,
-    },
+        fromNetwork: string;
+        toNetwork: string;
+        fromProtocol: string;
+        toProtocol: string;
+        fromToken: string;
+        toToken: string;
+        amountIn: string;
+    };
     simulation: {
-        isSuccess: boolean,
-        isError: boolean,
-    }
+        isSuccess: boolean;
+        isError: boolean;
+    };
 }
 
 export interface iContract {
     contractName: string;
     contractAddress: string;
     extraOrShareToken?: string;
-};
+}
 
 export interface iContractMetaData {
     methodNames: string[];
     amountFieldIndex: number[];
-};
+}
 
 export interface iTokens {
     [tokenName: string]: string;
-};
+}
 
 export interface iChainPing {
     [network: string]: string;
-};
+}
 
 export interface iStarGateRouter {
     [network: string]: string;
-};
+}
 
 export interface iApiResponse {
     contracts: iContract[];
@@ -63,7 +75,7 @@ export interface iApiResponse {
     tokens: iTokens;
     chainPing: iChainPing;
     starGateRouter: iStarGateRouter;
-};
+}
 
 export interface iFuncArray {
     name: string;
@@ -71,7 +83,7 @@ export interface iFuncArray {
     outputs: any[];
     stateMutability: string;
     type: string;
-};
+}
 
 export interface iTrade {
     maxBalance: string;
@@ -112,16 +124,15 @@ export interface iTrade {
     individualBatch: iIndividualBatch[];
     showIndividualBatchList: number | null;
 
-
     srcPoolId: number;
     destPoolId: number;
 
-    tokenIn: string
+    tokenIn: string;
     tokenInDecimals: number;
     isThisAmount: string | number;
 
     contractIndex: string;
-    selectedToContractAddress: string,
+    selectedToContractAddress: string;
     allNetworkData: iApiResponse | null;
     currentAbi: string;
     currentFunc: string;
@@ -138,7 +149,7 @@ export interface iTrade {
     setMaxBalance: (maxBalance: string) => void;
     setIsmaxBalanceLoading: (ismaxBalanceLoading: boolean) => void;
     setShowSelectNetworkList: (showSelectNetworkList: boolean) => void;
-    
+
     setSelectedFromNetwork: (selectedFromNetwork: iSelectedNetwork) => void;
     setSelectedFromProtocol: (selectedFromProtocol: string) => void;
     setSelectedFromToken: (selectedFromToken: string) => void;
@@ -173,7 +184,6 @@ export interface iTrade {
     setIndividualBatch: (individualBatch: iIndividualBatch[]) => void;
     setShowIndividualBatchList: (showIndividualBatchList: number | null) => void;
 
-
     setSrcPoolId: (srcPoolId: number) => void;
     setDestPoolId: (destPoolId: number) => void;
 
@@ -201,8 +211,8 @@ export const useTradeStore = create<iTrade>((set) => ({
     maxBalance: "0",
     ismaxBalanceLoading: false,
     showSelectNetworkList: false,
-    
-    selectedFromNetwork:  {
+
+    selectedFromNetwork: {
         key: "",
         chainName: "",
         chainId: "",
@@ -211,7 +221,7 @@ export const useTradeStore = create<iTrade>((set) => ({
     selectedFromProtocol: "",
     selectedFromToken: "",
 
-    selectedToNetwork:  {
+    selectedToNetwork: {
         key: "",
         chainName: "",
         chainId: "",
@@ -246,7 +256,7 @@ export const useTradeStore = create<iTrade>((set) => ({
     individualBatch: [
         {
             id: 0,
-            txHash: [],
+            txArray: [],
             data: {
                 fromNetwork: "",
                 toNetwork: "",
@@ -259,11 +269,10 @@ export const useTradeStore = create<iTrade>((set) => ({
             simulation: {
                 isSuccess: false,
                 isError: false,
-            }
+            },
         },
     ],
     showIndividualBatchList: null,
-
 
     srcPoolId: 1,
     destPoolId: 1,
@@ -286,11 +295,11 @@ export const useTradeStore = create<iTrade>((set) => ({
     showExecuteBatchModel: false,
     hasExecutionSuccess: "",
     hasExecutionError: "",
-   
+
     setMaxBalance: (maxBalance) => set(() => ({ maxBalance })),
     setIsmaxBalanceLoading: (ismaxBalanceLoading) => set(() => ({ ismaxBalanceLoading })),
     setShowSelectNetworkList: (showSelectNetworkList) => set(() => ({ showSelectNetworkList })),
-    
+
     setSelectedFromNetwork: (selectedFromNetwork) => set(() => ({ selectedFromNetwork })),
     setSelectedFromProtocol: (selectedFromProtocol) => set(() => ({ selectedFromProtocol })),
     setSelectedFromToken: (selectedFromToken) => set(() => ({ selectedFromToken })),
@@ -321,10 +330,9 @@ export const useTradeStore = create<iTrade>((set) => ({
     setTxHash: (txhash) => set(() => ({ txhash })),
     setSendTxLoading: (sendTxLoading) => set(() => ({ sendTxLoading })),
     setSendTxLoadingForEoa: (sendTxLoadingForEoa) => set(() => ({ sendTxLoadingForEoa })),
-    
+
     setIndividualBatch: (individualBatch) => set(() => ({ individualBatch })),
     setShowIndividualBatchList: (showIndividualBatchList) => set(() => ({ showIndividualBatchList })),
-
 
     setSrcPoolId: (srcPoolId) => set(() => ({ srcPoolId })),
     setDestPoolId: (destPoolId) => set(() => ({ destPoolId })),
