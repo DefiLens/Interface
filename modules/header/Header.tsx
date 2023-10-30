@@ -62,8 +62,8 @@ const Header: React.FC<any> = ({
     });
 
     return (
-        <div className="header-container">
-            <ul className="flex justify-between items-center gap-3 bg-primary-950 p-2 shadow-md shadow-secondary-500">
+        <div className="header-container w-full h-[69px]">
+            <ul className="w-full h-full flex justify-between items-center gap-3 bg-primary-950 p-2 shadow-md shadow-secondary-500">
                 <li className="w-full xl:w-1/3 flex justify-start items-center">
                     <Link href="/" className="text-[30px] font-bold flex flex-row justify-center items-center">
                         <div className="mr-2 p-1">

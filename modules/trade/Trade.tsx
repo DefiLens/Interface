@@ -77,15 +77,15 @@ const Trade: React.FC<any> = ({
     }: iTrade = useTradeStore((state) => state);
 
     return (
-        <div className="w-full flex flex-col justify-center items-center py-5">
+        <div className="w-full h-full flex flex-col justify-start items-center py-5">
             <div
                 className={`${
                     showBatchList ? "!w-full" : "!w-[50%]"
-                }  flex flex-col lg:flex-row justify-center items-start gap-4`}
+                } h-full flex flex-col lg:flex-row justify-center items-start gap-4`}
             >
-                <div className="w-full">
+                <div className="w-full h-full">
                     {showFromSelectionMenu || showToSelectionMenu ? (
-                        <div className="w-full bg-gray-50 flex flex-col gap-2 shadow-md shadow-primary-950 rounded-lg cursor-pointer p-3">
+                        <div className="w-full max-h-full bg-gray-50 flex flex-col gap-2 shadow-md shadow-primary-950 rounded-lg cursor-pointer p-3">
                             <MdOutlineArrowBack
                                 onClick={
                                     showFromSelectionMenu
@@ -783,11 +783,11 @@ const Trade: React.FC<any> = ({
                 {showExecuteBatchModel && <ExecuteBatchModel />}
 
                 {showBatchList && (
-                    <div className="w-full bg-gray-50 flex flex-col justify-start items-center gap-1 shadow-md shadow-primary-950 rounded-2xl cursor-pointer">
+                    <div className="w-full max-h-full bg-gray-50 flex flex-col justify-start items-center gap-1 shadow-md shadow-primary-950 rounded-2xl cursor-pointer">
                         <h1 className="w-full bg-purple-950 text-white text-lg md:text-xl lg:text-2xl text-center font-bold rounded-t-2xl p-5">
                             Batching List
                         </h1>
-                        <div className="w-full flex flex-col gap-5 px-5 py-7">
+                        <div className="w-full max-h-full overflow-auto flex flex-col gap-5 px-5 py-7">
                             {individualBatch.length > 0 && individualBatch[0].txArray.length > 0 ? (
                                 individualBatch.map((bar, inputBarIndex) => (
                                     <>
