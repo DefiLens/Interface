@@ -81,7 +81,7 @@ const Trade: React.FC<any> = ({
             <div
                 className={`${
                     showBatchList ? "!w-full" : "!w-[50%]"
-                } h-full flex flex-col lg:flex-row justify-center items-start gap-4`}
+                } h-full flex flex-col lg:flex-row justify-start items-start gap-4`}
             >
                 <div className="w-full h-full">
                     {showFromSelectionMenu || showToSelectionMenu ? (
@@ -139,8 +139,7 @@ const Trade: React.FC<any> = ({
                                         <div className="w-full max-h-96">
                                             {protocolNames[selectedFromNetwork.chainName]?.key.map(
                                                 (item: any, protocolIndex: number) => {
-                                                    // return protocolNames[selectedFromNetwork.chainName].value[protocolIndex].toLowerCase().includes(filterFromToken.toLowerCase()) ? (
-                                                    return true ? (
+                                                    return protocolNames[selectedFromNetwork.chainName].value[protocolIndex].toLowerCase().includes(filterFromToken.toLowerCase()) ? (
                                                         <div key={item.name} className="w-full">
                                                             <div
                                                                 key={item.name}
@@ -154,10 +153,7 @@ const Trade: React.FC<any> = ({
                                                                     className="h-8 w-8 bg-slate-200 rounded-full cursor-pointer"
                                                                 />
                                                                 <div>
-                                                                    {
-                                                                        protocolNames[selectedFromNetwork.chainName]
-                                                                            .value[protocolIndex]
-                                                                    }
+                                                                    {protocolNames[selectedFromNetwork.chainName].value[protocolIndex]}
                                                                 </div>
                                                             </div>
 
@@ -168,30 +164,22 @@ const Trade: React.FC<any> = ({
                                                                             <input
                                                                                 type="text"
                                                                                 value={filterFromAddress}
-                                                                                onChange={(e) =>
-                                                                                    setFilterFromAddress(e.target.value)
-                                                                                }
+                                                                                onChange={(e) => setFilterFromAddress(e.target.value)}
                                                                                 placeholder="Search by Address"
                                                                                 className="w-full text-sm md:text-base outline-none"
                                                                             />
                                                                             <AiOutlineSearch />
                                                                         </div>
-                                                                        {protocolByNetwork[
-                                                                            selectedFromNetwork.chainName
-                                                                        ][selectedFromProtocol]?.map(
+                                                                        {protocolByNetwork[selectedFromNetwork.chainName][selectedFromProtocol]?.map(
                                                                             (token: any, tokenIndex: number) => {
-                                                                                return token.name
-                                                                                    .toLowerCase()
-                                                                                    .includes(
+                                                                                return token.name.toLowerCase().includes(
                                                                                         filterFromAddress.toLowerCase()
                                                                                     ) ? (
                                                                                     <div
                                                                                         key={tokenIndex}
                                                                                         // onClick={() => setSelectedFromToken(token.name)}
                                                                                         onClick={() =>
-                                                                                            onChangeFromToken(
-                                                                                                token.name
-                                                                                            )
+                                                                                            onChangeFromToken(token.name)
                                                                                         }
                                                                                         className="w-full flex justify-start items-center gap-3 hover:bg-slate-200 active:bg-slate-200 py-2 px-3 rounded-lg cursor-pointer my-2"
                                                                                     >
@@ -216,9 +204,7 @@ const Trade: React.FC<any> = ({
                                                                             <input
                                                                                 type="text"
                                                                                 value={filterFromAddress}
-                                                                                onChange={(e) =>
-                                                                                    setFilterFromAddress(e.target.value)
-                                                                                }
+                                                                                onChange={(e) => setFilterFromAddress(e.target.value)}
                                                                                 placeholder="Search by Address"
                                                                                 className="w-full text-sm md:text-base outline-none"
                                                                             />
@@ -226,9 +212,7 @@ const Trade: React.FC<any> = ({
                                                                         </div>
                                                                         {tokensData?.map(
                                                                             (token: any, tokenIndex: number) => {
-                                                                                return token.symbol
-                                                                                    .toLowerCase()
-                                                                                    .includes(
+                                                                                return token.symbol.toLowerCase().includes(
                                                                                         filterFromAddress.toLowerCase()
                                                                                     ) ? (
                                                                                     <div
@@ -301,10 +285,7 @@ const Trade: React.FC<any> = ({
                                                                     className="h-8 w-8 bg-slate-200 rounded-full cursor-pointer"
                                                                 />
                                                                 <div>
-                                                                    {
-                                                                        protocolNames[selectedToNetwork.chainName]
-                                                                            .value[protocolIndex]
-                                                                    }
+                                                                    {protocolNames[selectedToNetwork.chainName].value[protocolIndex]}
                                                                 </div>
                                                             </div>
                                                             {selectedToProtocol === item.name &&
@@ -313,9 +294,9 @@ const Trade: React.FC<any> = ({
                                                                         <div className="w-full flex justify-start items-center gap-2 bg-white rounded-md shadow py-1.5 px-5">
                                                                             <input
                                                                                 type="text"
-                                                                                value={filterFromAddress}
+                                                                                value={filterToAddress}
                                                                                 onChange={(e) =>
-                                                                                    setFilterFromAddress(e.target.value)
+                                                                                    setFilterToAddress(e.target.value)
                                                                                 }
                                                                                 placeholder="Search by Address"
                                                                                 className="w-full text-sm md:text-base outline-none"
@@ -324,23 +305,28 @@ const Trade: React.FC<any> = ({
                                                                         </div>
                                                                         {protocolByNetwork[selectedToNetwork.chainName][
                                                                             selectedToProtocol
-                                                                        ]?.map((token: any, tokenIndex: number) => (
-                                                                            <div
-                                                                                key={tokenIndex}
-                                                                                // onClick={() => setSelectedToToken(token.name)}
-                                                                                onClick={() =>
-                                                                                    onChangeToToken(token.name)
-                                                                                }
-                                                                                className="w-full flex justify-start items-center gap-3 hover:bg-slate-200 active:bg-slate-200 py-2 px-3 rounded-lg cursor-pointer my-2"
-                                                                            >
-                                                                                <Image
-                                                                                    src={token.icon}
-                                                                                    alt=""
-                                                                                    className="h-7 w-7 bg-slate-200 rounded-full cursor-pointer"
-                                                                                />
-                                                                                {token.name}
-                                                                            </div>
-                                                                        ))}
+                                                                        ]?.map((token: any, tokenIndex: number) => {
+                                                                            return token.name.toLowerCase().includes(
+                                                                                filterToAddress.toLowerCase()
+                                                                            ) ? (
+                                                                                <div
+                                                                                    key={tokenIndex}
+                                                                                    // onClick={() => setSelectedToToken(token.name)}
+                                                                                    onClick={() =>
+                                                                                        onChangeToToken(token.name)
+                                                                                    }
+                                                                                    className="w-full flex justify-start items-center gap-3 hover:bg-slate-200 active:bg-slate-200 py-2 px-3 rounded-lg cursor-pointer my-2"
+                                                                                >
+                                                                                    <Image
+                                                                                        src={token.icon}
+                                                                                        alt=""
+                                                                                        className="h-7 w-7 bg-slate-200 rounded-full cursor-pointer"
+                                                                                    />
+                                                                                    {token.name}
+                                                                                </div>
+                                                                            ) : null;
+                                                                            }
+                                                                        )}
                                                                     </div>
                                                                 )}
                                                             {item.name === "erc20" &&
@@ -350,9 +336,9 @@ const Trade: React.FC<any> = ({
                                                                         <div className="w-full flex justify-start items-center gap-2 bg-white rounded-md shadow py-1.5 px-5">
                                                                             <input
                                                                                 type="text"
-                                                                                value={filterFromAddress}
+                                                                                value={filterToAddress}
                                                                                 onChange={(e) =>
-                                                                                    setFilterFromAddress(e.target.value)
+                                                                                    setFilterToAddress(e.target.value)
                                                                                 }
                                                                                 placeholder="Search by Address"
                                                                                 className="w-full text-sm md:text-base outline-none"

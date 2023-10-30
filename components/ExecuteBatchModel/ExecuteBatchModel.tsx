@@ -17,6 +17,7 @@ const ExecuteBatchModel = ({
 
   const {
     selectedFromNetwork,
+    selectedToNetwork,
     individualBatch,
     setShowExecuteBatchModel,
     hasExecutionSuccess,
@@ -30,45 +31,47 @@ const ExecuteBatchModel = ({
 
   const closeExecuteBatchModel = () => {
     setShowExecuteBatchModel(false);
-    setHasExecutionSuccess('');
+    // if (!hasExecutionError) {
+    //   setIndividualBatch([
+    //     {
+    //         id: 0,
+    //         txArray: [],
+    //         data: {
+    //             fromNetwork: "",
+    //             toNetwork: "",
+    //             fromProtocol: "",
+    //             toProtocol: "",
+    //             fromToken: "",
+    //             toToken: "",
+    //             amountIn: "",
+    //         },
+    //         simulation: {
+    //             isSuccess: false,
+    //             isError: false,
+    //         }
+    //       },
+    //   ]);
+    // }
     setTxHash('');
+    setHasExecutionSuccess('');
     setHasExecutionError('');
-    if (!hasExecutionError) {
-      setIndividualBatch([
-        {
-            id: 0,
-            txHash: [],
-            data: {
-                fromNetwork: "",
-                toNetwork: "",
-                fromProtocol: "",
-                toProtocol: "",
-                fromToken: "",
-                toToken: "",
-                amountIn: "",
-            },
-            simulation: {
-                isSuccess: false,
-                isError: false,
-            }
-          },
-      ]);
-    }
   }
 
   return (
     <div className="fixed w-full h-full flex justify-center items-center top-0 right-0 left-0 bottom-0 z-50 text-black backdrop-brightness-50 p-5 md:p-10">
       <div className="h-auto w-[600px] flex flex-col justify-center items-center gap-2 bg-white border-2 border-gray-300 rounded-2xl p-3">
-        <button
-          type="button"
-          onClick={() => closeExecuteBatchModel()}
-          className="w-8 h-8 place-self-end p-2 bg-slate-50 hover:bg-slate-200 active:bg-slate-100 rounded-xl cursor-pointer outline-none"
-        >
-          <Image
-            src={closeNarrow}
-            alt=""
-          />
-        </button>
+        {txhash || hasExecutionError ? (
+          <button
+            type="button"
+            onClick={() => closeExecuteBatchModel()}
+            className="w-8 h-8 place-self-end p-2 bg-slate-50 hover:bg-slate-200 active:bg-slate-100 rounded-xl cursor-pointer outline-none"
+          >
+            <Image
+              src={closeNarrow}
+              alt=""
+              />
+          </button>
+        ) : null}
         <div className="h-full w-full flex flex-col justify-center items-center gap-2 p-5">
           <Image
             src={txhash ? success : hasExecutionError ? error : loading}
@@ -82,15 +85,18 @@ const ExecuteBatchModel = ({
           </div>
           <div className="w-full overflow-auto">
             {!hasExecutionError && (
-              individualBatch.length > 0 && individualBatch[0].txHash.length > 0 ? (
+              individualBatch.length > 0 && individualBatch[0].txArray.length > 0 ? (
                   <div className="w-full max-h-60 flex flex-col justify-start items-center text-sm md:text-base py-5">
-                    {individualBatch.map((bar) => (
-                      bar.txHash.length > 0 && (
+                    {individualBatch.map((bar: any, index: number) => (
+                      bar.txArray.length > 0 && (
                         <div
                           key={bar.id}
                           className="w-full flex justify-start items-center gap-5 py-2"
                         >
-                          <div className="w-full flex justify-center items-center gap-3">
+                          <div className="w-full flex justify-start items-center gap-3">
+                            <span className="text-base md:text-lg font-semibold">
+                              {index + 1}.
+                            </span>
                             <div className="relative">
                               <Image
                                 src={polygon}
@@ -117,7 +123,7 @@ const ExecuteBatchModel = ({
 
                           <BsArrowRight className="w-10 h-10" />
 
-                          <div className="w-full flex justify-center items-center gap-3">
+                          <div className="w-full flex justify-start items-center gap-3">
                             <div className="relative">
                               <Image
                                 src={base}
@@ -151,13 +157,24 @@ const ExecuteBatchModel = ({
             className="w-full break-words text-center text-base md:text-lg text-teal-500  font-semibold m-2"
           >
             {txhash ? (
-              <a
-                target="_blank"
-                href={buildTxHash(selectedFromNetwork.chainId, txhash, false)}
-                className="cursor-pointer bg-teal-500 text-white rounded-lg px-5 py-1"
-              >
-                View on Explorer
-              </a>
+              <span className="flex flex-col justify-center items-center gap-2">
+                <a
+                  target="_blank"
+                  href={buildTxHash(selectedFromNetwork.chainId, txhash, false)}
+                  className="cursor-pointer bg-teal-500 text-white rounded-lg px-5 py-1"
+                >
+                  View on Explorer
+                </a>
+                {selectedFromNetwork.chainId !== selectedToNetwork.chainId && (
+                  <a
+                    target="_blank"
+                    href={buildTxHash(selectedFromNetwork.chainId, txhash, true)}
+                    className="cursor-pointer bg-blue-700 text-white rounded-lg px-6 py-0.5"
+                  >
+                    View on SocketScan.io
+                  </a>
+                )}
+              </span>
             ) : hasExecutionError ? (
               <span className="text-red-500">
                 {hasExecutionError.includes('code=ACTION_REJECTED') 
