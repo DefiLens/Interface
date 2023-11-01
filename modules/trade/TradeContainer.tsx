@@ -35,32 +35,9 @@ import {
     tokenAddressByProtocol,
     tokensByNetwork,
 } from "../../utils/constants";
+import { iTokenInfo, iTokenList } from "./types";
 
 bg.config({ DECIMAL_PLACES: 10 });
-
-interface TokenInfo {
-    chainId: number;
-    address: string;
-    name: string;
-    symbol: string;
-    decimals: number;
-    logoURI: string;
-    extensions?: Record<string, { tokenAddress: string }>;
-}
-
-interface TokenList {
-    name: string;
-    timestamp: string;
-    version: {
-        major: number;
-        minor: number;
-        patch: number;
-    };
-    tags: Record<string, any>;
-    logoURI: string;
-    keywords: string[];
-    tokens: TokenInfo[];
-}
 
 const TradeContainer: React.FC<any> = () => {
     const chain = useChain(); // Detect the connected address
@@ -227,12 +204,12 @@ const TradeContainer: React.FC<any> = () => {
         await onChangeTokenInHook({ fromChainId: chainId, tokenIn });
     };
 
-    const onChangeFunctions = async (funcIndex: any) => {
+    const onChangeFunctions = async (funcIndex: string) => {
         if (funcIndex == "") return toast.error("Please select operation");
         await onChangeFunctionsHook({ funcIndex, address });
     };
 
-    const simulate = async (funcIndex: any) => {
+    const simulate = async (funcIndex: number) => {
         simulateTx({ funcIndex, address });
     };
 
@@ -363,7 +340,7 @@ const TradeContainer: React.FC<any> = () => {
         return ipfsUri;
     }
 
-    function getTokenListByChainId(chainId: any, tokenList: any): TokenInfo[] {
+    function getTokenListByChainId(chainId: any, tokenList: any): iTokenInfo[] {
         return tokenList.tokens
             .map((token) => {
                 console.log("token.chainId", token.chainId, chainId);
@@ -390,7 +367,7 @@ const TradeContainer: React.FC<any> = () => {
                 // }
                 return null;
             })
-            .filter(Boolean) as TokenInfo[];
+            .filter(Boolean) as iTokenInfo[];
     }
 
     useEffect(() => {

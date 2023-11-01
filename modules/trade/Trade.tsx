@@ -6,9 +6,9 @@ import { AiOutlineSearch } from "react-icons/ai";
 import { MdDelete, MdOutlineArrowBack } from "react-icons/md";
 import { MdKeyboardArrowDown, MdKeyboardArrowUp } from "react-icons/md";
 
-import { tTrade } from "./types";
+import { tTrade, tTradeProtocol } from "./types";
 import { buildTxHash, shorten } from "../../utils/helper";
-import { iTrade, useTradeStore } from "../../store/TradeStore";
+import { iTokenData, iTrade, useTradeStore } from "../../store/TradeStore";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import { avalanche, base, downLine, gas, optimism, polygon, swap, warning } from "../../assets/images";
 import { _functionType, _nonce, NETWORK_LIST, protocolByNetwork, protocolNames } from "../../utils/constants";
@@ -138,7 +138,7 @@ const Trade: React.FC<any> = ({
                                     {showFromSelectionMenu && selectedFromNetwork.chainName && (
                                         <div className="w-full max-h-96">
                                             {protocolNames[selectedFromNetwork.chainName]?.key.map(
-                                                (item: any, protocolIndex: number) => {
+                                                (item: tTradeProtocol, protocolIndex: number) => {
                                                     return protocolNames[selectedFromNetwork.chainName].value[protocolIndex].toLowerCase().includes(filterFromToken.toLowerCase()) ? (
                                                         <div key={item.name} className="w-full">
                                                             <div
@@ -171,7 +171,7 @@ const Trade: React.FC<any> = ({
                                                                             <AiOutlineSearch />
                                                                         </div>
                                                                         {protocolByNetwork[selectedFromNetwork.chainName][selectedFromProtocol]?.map(
-                                                                            (token: any, tokenIndex: number) => {
+                                                                            (token: tTradeProtocol, tokenIndex: number) => {
                                                                                 return token.name.toLowerCase().includes(
                                                                                         filterFromAddress.toLowerCase()
                                                                                     ) ? (
@@ -211,7 +211,7 @@ const Trade: React.FC<any> = ({
                                                                             <AiOutlineSearch />
                                                                         </div>
                                                                         {tokensData?.map(
-                                                                            (token: any, tokenIndex: number) => {
+                                                                            (token: iTokenData, tokenIndex: number) => {
                                                                                 return token.symbol.toLowerCase().includes(
                                                                                         filterFromAddress.toLowerCase()
                                                                                     ) ? (
@@ -262,7 +262,7 @@ const Trade: React.FC<any> = ({
                                     {showToSelectionMenu && selectedToNetwork.chainName && (
                                         <div className="w-full max-h-96">
                                             {protocolNames[selectedToNetwork.chainName]?.key.map(
-                                                (item: any, protocolIndex: number) => {
+                                                (item: tTradeProtocol, protocolIndex: number) => {
                                                     return protocolNames[selectedToNetwork.chainName].value[
                                                         protocolIndex
                                                     ]
@@ -301,7 +301,7 @@ const Trade: React.FC<any> = ({
                                                                         </div>
                                                                         {protocolByNetwork[selectedToNetwork.chainName][
                                                                             selectedToProtocol
-                                                                        ]?.map((token: any, tokenIndex: number) => {
+                                                                        ]?.map((token: tTradeProtocol, tokenIndex: number) => {
                                                                             return token.name.toLowerCase().includes(
                                                                                 filterToAddress.toLowerCase()
                                                                             ) ? (
@@ -342,7 +342,7 @@ const Trade: React.FC<any> = ({
                                                                             <AiOutlineSearch />
                                                                         </div>
                                                                         {tokensData?.map(
-                                                                            (token: any, tokenIndex: number) => {
+                                                                            (token: iTokenData, tokenIndex: number) => {
                                                                                 return token.symbol
                                                                                     .toLowerCase()
                                                                                     .includes(
@@ -694,7 +694,7 @@ const Trade: React.FC<any> = ({
                                                         ? amountIn
                                                         : amountIn
                                                 }
-                                                onChange={(e: any) => onChangeAmountIn(e.target.value)}
+                                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChangeAmountIn(e.target.value)}
                                                 className="w-full text-xl md:text-2xl text-black placeholder:text-slate-500 font-bold outline-none"
                                             />
                                             <div className="text-xs md:text-sm text-slate-500 font-medium">$0.00</div>

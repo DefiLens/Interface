@@ -1,7 +1,7 @@
 import React from 'react';
 import { tExecuteBatchModel } from './types';
 import { iGlobal, useGlobalStore } from '../../store/GlobalStore';
-import { iTrade, useTradeStore } from '../../store/TradeStore';
+import { iIndividualBatch, iTrade, useTradeStore } from '../../store/TradeStore';
 import { base, closeNarrow, downLine, polygon, sideLine } from '../../assets/images';
 import Image from 'next/image';
 import { error, loading, success } from '../../assets/gifs';
@@ -87,7 +87,7 @@ const ExecuteBatchModel = ({
             {!hasExecutionError && (
               individualBatch.length > 0 && individualBatch[0].txArray.length > 0 ? (
                   <div className="w-full max-h-60 flex flex-col justify-start items-center text-sm md:text-base py-5">
-                    {individualBatch.map((bar: any, index: number) => (
+                    {individualBatch.map((bar: iIndividualBatch, index: number) => (
                       bar.txArray.length > 0 && (
                         <div
                           key={bar.id}
@@ -165,7 +165,7 @@ const ExecuteBatchModel = ({
                 >
                   View on Explorer
                 </a>
-                {selectedFromNetwork.chainId !== selectedToNetwork.chainId && (
+                {selectedFromNetwork.chainId !== selectedToNetwork.chainId ? (
                   <a
                     target="_blank"
                     href={buildTxHash(selectedFromNetwork.chainId, txhash, true)}
@@ -173,7 +173,7 @@ const ExecuteBatchModel = ({
                   >
                     View on SocketScan.io
                   </a>
-                )}
+                ): null}
               </span>
             ) : hasExecutionError ? (
               <span className="text-red-500">

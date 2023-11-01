@@ -25,3 +25,32 @@ export type tTrade = {
     closeFromSelectionMenu: () => void,
     closeToSelectionMenu: () => void,
 };
+
+export type tTradeProtocol = {
+    name: string,
+    icon: any,
+};
+
+export interface iTokenInfo {
+    chainId: number;
+    address: string;
+    name: string;
+    symbol: string;
+    decimals: number;
+    logoURI: string;
+    extensions?: Record<string, { tokenAddress: string }>;
+}
+
+export interface iTokenList {
+    name: string;
+    timestamp: string;
+    version: {
+        major: number;
+        minor: number;
+        patch: number;
+    };
+    tags: Record<string, any>;
+    logoURI: string;
+    keywords: string[];
+    tokens: iTokenInfo[];
+}
