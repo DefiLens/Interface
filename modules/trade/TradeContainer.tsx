@@ -376,17 +376,18 @@ const TradeContainer: React.FC<any> = () => {
                         decimals: token.decimals,
                         logoURI: token.logoURI.includes("ipfs") ? convertIpfsUrl(token.logoURI) : token.logoURI,
                     };
-                } else if (token.extensions && token.extensions.bridgeInfo[chainId.toString()]) {
-                    const tokenAddress = token.extensions.bridgeInfo[chainId.toString()].tokenAddress;
-                    return {
-                        chainId: chainId,
-                        address: tokenAddress,
-                        name: token.name,
-                        symbol: token.symbol,
-                        decimals: token.decimals,
-                        logoURI: token.logoURI.includes("ipfs") ? convertIpfsUrl(token.logoURI) : token.logoURI,
-                    };
                 }
+                // else if (token.extensions && token.extensions.bridgeInfo[chainId.toString()]) {
+                //     const tokenAddress = token.extensions.bridgeInfo[chainId.toString()].tokenAddress;
+                //     return {
+                //         chainId: chainId,
+                //         address: tokenAddress,
+                //         name: token.name,
+                //         symbol: token.symbol,
+                //         decimals: token.decimals,
+                //         logoURI: token.logoURI.includes("ipfs") ? convertIpfsUrl(token.logoURI) : token.logoURI,
+                //     };
+                // }
                 return null;
             })
             .filter(Boolean) as TokenInfo[];
@@ -417,14 +418,12 @@ const TradeContainer: React.FC<any> = () => {
                     // setSafeState(setFromTokenBalanceForEOA, BigNumber.from(eoaBalance), BIG_ZERO);
                 } else {
                     const filteredTokens = getTokenListByChainId(selectedFromNetwork.chainId, UNISWAP_TOKENS);
-                    console.log("filteredTokens++++++++++:", filteredTokens);
-
                     // const tokensWithChainId = UNISWAP_TOKENS.tokens?.filter((token) => token.chainId === BigNumber.from(selectedFromNetwork.chainId).toNumber());
                     // const filteredTokens = tokensWithChainId.map((token) => {
                     //     const { extensions, logoURI, ...filteredToken } = token;
                     //     return filteredToken;
                     // });
-                    // console.log("filteredTokens++++++++++:", filteredTokens)
+                    // console.log("filteredTokens:", filteredTokens);
 
                     setTokensData(filteredTokens);
                 }
@@ -443,7 +442,7 @@ const TradeContainer: React.FC<any> = () => {
                     //     return filteredToken;
                     // });
                     const filteredTokens = getTokenListByChainId(selectedFromNetwork.chainId, UNISWAP_TOKENS);
-                    console.log("filteredTokenList++++++++++:", filteredTokens);
+                    // console.log("filteredTokens:", filteredTokens);
                     setTokensData(filteredTokens);
                 }
             }

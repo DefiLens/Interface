@@ -55,7 +55,9 @@ export const abiFetcherNum = {
         aLUSD: "1",
         aAAVE: "1",
         aFRAX: "1",
-        aEURS: "1"
+        aEURS: "1",
+        cUSDCev3: "2",
+        cUSDCv3: "3",
     },
     optimism: {
         aDAI: "1",
@@ -149,6 +151,26 @@ export const abiFetcher = {
             contractAddress: "0x794a61358D6845594F94dc1DB02A252b5b4814aD",
             apyFetch: "fetchApyForAaveV3Arbitrum",
         },
+        "2": {
+            depositAbi: "function supply(address asset, uint256 amount)",
+            withdrawAbi: "function withdraw(address asset,uint256 amount)",
+            depositMethodName: "supply",
+            withdrawMethodName: "withdraw",
+            depositParamDetailsMethod: "compound_supply",
+            withdrawParamDetailsMethod: "compound_withdraw",
+            contractAddress: "0xA5EDBDD9646f8dFF606d7448e414884C7d905dCA",
+            apyFetch: "fetchApyForCompoundArbitrum",
+        },
+        "3": {
+            depositAbi: "function supply(address asset, uint256 amount)",
+            withdrawAbi: "function withdraw(address asset,uint256 amount)",
+            depositMethodName: "supply",
+            withdrawMethodName: "withdraw",
+            depositParamDetailsMethod: "compound_supply",
+            withdrawParamDetailsMethod: "compound_withdraw",
+            contractAddress: "0x9c4ec768c28520B50860ea7a15bd7213a9fF58bf",
+            apyFetch: "fetchApyForCompoundArbitrum",
+        },
     },
     optimism: {
         "1": {
@@ -239,7 +261,9 @@ export const nativeTokenNum = {
         aLUSD: "11",
         aAAVE: "12",
         aFRAX: "13",
-        aEURS: "14"
+        aEURS: "14",
+        cUSDCev3: "3",
+        cUSDCv3: "2"
     },
     optimism: {
         aDAI: "1",

@@ -225,10 +225,6 @@ const Trade: React.FC<any> = ({
                                                                                         }
                                                                                         className="w-full flex justify-start items-center gap-3 hover:bg-slate-200 active:bg-slate-200 py-2 px-3 rounded-lg cursor-pointer my-2"
                                                                                     >
-                                                                                        {console.log(
-                                                                                            "token.logoURI",
-                                                                                            token.logoURI
-                                                                                        )}
                                                                                         <Image
                                                                                             src={
                                                                                                 token.logoURI.includes(

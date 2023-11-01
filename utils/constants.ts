@@ -350,11 +350,15 @@ export const protocolNames = {
                 icon: arbitrum,
             },
             {
+                name: "compoundV3",
+                icon: arbitrum,
+            },
+            {
                 name: "erc20",
                 icon: arbitrum,
             },
         ],
-        value: ["AAVE V3", "ERC20"],
+        value: ["AAVE V3", "Compound V3", "ERC20"],
     },
     "optimism": {
         key: [
@@ -577,7 +581,17 @@ export const protocolByNetwork = {
                 name: "aEURS",
                 icon: avalanche,
             },
-        ]
+        ],
+        compoundV3: [
+            {
+                name: "cUSDCev3",
+                icon: arbitrum,
+            },
+            {
+                name: "cUSDCv3",
+                icon: arbitrum,
+            }
+        ],
     },
     optimism: {
         aaveV3: [
@@ -711,6 +725,10 @@ export const tokenAddressByProtocol = {
             aAAVE: "0xf329e36C7bF6E5E86ce2150875a84Ce77f477375",
             aFRAX: "0x38d693cE1dF5AaDF7bC62595A37D667aD57922e5",
             aEURS: "0x6d80113e533a2C0fe82EaBD35f1875DcEA89Ea97",
+        },
+        compoundV3: {
+            cUSDCev3: "0xA5EDBDD9646f8dFF606d7448e414884C7d905dCA",
+            cUSDCv3: "0x9c4ec768c28520B50860ea7a15bd7213a9fF58bf",
         }
     },
     optimism: {
