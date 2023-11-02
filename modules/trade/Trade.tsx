@@ -7,11 +7,10 @@ import { MdDelete, MdOutlineArrowBack } from "react-icons/md";
 import { MdKeyboardArrowDown, MdKeyboardArrowUp } from "react-icons/md";
 
 import { tTrade, tTradeProtocol } from "./types";
-import { buildTxHash, shorten } from "../../utils/helper";
-import { iTokenData, iTrade, useTradeStore } from "../../store/TradeStore";
+import { iIndividualBatch, iTokenData, iTrade, useTradeStore } from "../../store/TradeStore";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import { avalanche, base, downLine, gas, optimism, polygon, swap, warning } from "../../assets/images";
-import { _functionType, _nonce, NETWORK_LIST, protocolByNetwork, protocolNames } from "../../utils/constants";
+import { _functionType, _nonce, NETWORK_LIST, NetworkLogoByNetworkName, protocolByNetwork, ProtocolLogoByProtocolName, protocolNames } from "../../utils/constants";
 import ExecuteBatchModel from "../../components/ExecuteBatchModel/ExecuteBatchModel";
 
 bg.config({ DECIMAL_PLACES: 10 });
@@ -75,7 +74,7 @@ const Trade: React.FC<any> = ({
         individualBatch,
         showExecuteBatchModel,
     }: iTrade = useTradeStore((state) => state);
-
+    
     return (
         <div className="w-full h-full flex flex-col justify-start items-center py-5">
             <div
@@ -771,7 +770,7 @@ const Trade: React.FC<any> = ({
                         </h1>
                         <div className="w-full max-h-full overflow-auto flex flex-col gap-5 px-5 py-7">
                             {individualBatch.length > 0 && individualBatch[0].txArray.length > 0 ? (
-                                individualBatch.map((bar, inputBarIndex) => (
+                                individualBatch.map((bar: any, inputBarIndex) => (
                                     <>
                                         {bar.txArray.length > 0 && (
                                             <div key={bar.id} className="relative">
@@ -798,13 +797,13 @@ const Trade: React.FC<any> = ({
                                                             <div className="flex justify-start items-start gap-5">
                                                                 <div className="relative">
                                                                     <Image
-                                                                        src={polygon}
+                                                                        src={NetworkLogoByNetworkName[bar.data.fromNetwork]}
                                                                         alt=""
                                                                         className="h-10 w-10 bg-slate-200 rounded-full cursor-pointer"
                                                                     />
                                                                     <div className="absolute -bottom-1 -right-1 bg-white h-5 w-5 flex justify-center items-center rounded-full">
                                                                         <Image
-                                                                            src={polygon}
+                                                                            src={ProtocolLogoByProtocolName[bar.data.fromProtocol]}
                                                                             alt=""
                                                                             className="h-4 w-4 bg-slate-200 rounded-full cursor-pointer"
                                                                         />
@@ -830,42 +829,48 @@ const Trade: React.FC<any> = ({
                                                         </div>
                                                         {showIndividualBatchList === bar.id && (
                                                             <div className="flex flex-col justify-start items-start gap-1 pl-10 pt-3">
-                                                                <div className="flex justify-center items-center gap-3">
-                                                                    <div className="relative">
-                                                                        <Image
-                                                                            src={polygon}
-                                                                            alt=""
-                                                                            className="h-8 w-8 bg-slate-200 rounded-full cursor-pointer"
-                                                                        />
-                                                                        <div className="absolute -bottom-1 -right-1 bg-white h-4 w-4 flex justify-center items-center rounded-full">
+                                                               {bar.batchesFlow.length > 0 && bar.batchesFlow.map((item: any, index: number) => (
+                                                                <div
+                                                                    key={item.action}
+                                                                    className="flex flex-col justify-start items-start gap-1"
+                                                                >
+                                                                    <div
+                                                                        key={item.action}
+                                                                        className="flex justify-center items-center gap-3"
+                                                                    >
+                                                                        <div className="relative">
                                                                             <Image
-                                                                                src={polygon}
+                                                                                src={NetworkLogoByNetworkName[item.network]}
                                                                                 alt=""
-                                                                                className="h-3 w-3 bg-slate-200 rounded-full cursor-pointer"
+                                                                                className="h-8 w-8 bg-slate-200 rounded-full cursor-pointer"
                                                                             />
+                                                                            <div className="absolute -bottom-1 -right-1 bg-white h-4 w-4 flex justify-center items-center rounded-full">
+                                                                                <Image
+                                                                                    src={NetworkLogoByNetworkName[item.network]}
+                                                                                    alt=""
+                                                                                    className="h-3 w-3 bg-slate-200 rounded-full cursor-pointer"
+                                                                                />
+                                                                            </div>
+                                                                        </div>
+                                                                        <div className="flex flex-col justify-start items-start">
+                                                                            <span className="text-sm md:text-base font-semibold text-slate-700 break-all">
+                                                                                {item.action} on {item.protocol}
+                                                                            </span>
                                                                         </div>
                                                                     </div>
-                                                                    <div className="flex flex-col justify-start items-start">
-                                                                        <span className="text-sm md:text-base font-semibold text-slate-700">
-                                                                            {bar.data.fromProtocol} on{" "}
-                                                                            {bar.data.fromNetwork}
-                                                                        </span>
-                                                                        <span className="text-xs md:text-sm font-semibold text-slate-700">
-                                                                            {bar.data.amountIn} {bar.data.fromToken}
-                                                                        </span>
-                                                                    </div>
+                                                                    <Image src={downLine} alt="" className="h-8" />
                                                                 </div>
-                                                                <Image src={downLine} alt="" className="h-8" />
+                                                               ))}
                                                                 <div className="flex justify-center items-center gap-3">
                                                                     <div className="relative">
                                                                         <Image
-                                                                            src={base}
+                                                                            src={NetworkLogoByNetworkName[bar.data.toNetwork]}
                                                                             alt=""
                                                                             className="h-8 w-8 bg-slate-200 rounded-full cursor-pointer"
                                                                         />
                                                                         <div className="absolute -bottom-1 -right-1 bg-white h-4 w-4 flex justify-center items-center rounded-full">
                                                                             <Image
-                                                                                src={base}
+                                                                                src={ProtocolLogoByProtocolName[bar.data.toProtocol]}
                                                                                 alt=""
                                                                                 className="h-3 w-3 bg-slate-200 rounded-full cursor-pointer"
                                                                             />
@@ -873,8 +878,7 @@ const Trade: React.FC<any> = ({
                                                                     </div>
                                                                     <div className="flex flex-col justify-start items-start">
                                                                         <span className="text-sm md:text-base font-semibold text-slate-700">
-                                                                            {bar.data.toProtocol} on{" "}
-                                                                            {bar.data.toNetwork}
+                                                                            {bar.data.toProtocol} on {bar.data.toNetwork}
                                                                         </span>
                                                                         <span className="text-xs md:text-sm font-semibold text-slate-700">
                                                                             {bar.data.amountIn} {bar.data.toToken}

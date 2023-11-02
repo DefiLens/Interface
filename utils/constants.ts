@@ -10,7 +10,7 @@ import {
     OPTIMISM_BICONOMY_AA_KEY,
     POLYGON_BICONOMY_AA_KEY,
 } from "./keys";
-import { arbitrum, avalanche, base, ethereum, optimism, polygon } from "../assets/images";
+import { arbitrum, avalanche, base, compoundV3, ethereum, optimism, polygon } from "../assets/images";
 
 export const BIG_ZERO = BigNumber.from(0);
 
@@ -183,6 +183,23 @@ export const NetworkLogoByChainId = {
     "10": optimism,
     "1": ethereum,
     "8453": base,
+};
+
+export const NetworkLogoByNetworkName = {
+    "polygon": polygon,
+    "avalanche": avalanche,
+    "arbitrum": arbitrum,
+    "optimism": optimism,
+    "ethereum": ethereum,
+    "base": base,
+};
+
+export const ProtocolLogoByProtocolName = {
+    "aaveV2": compoundV3,
+    "aaveV3": compoundV3,
+    "compoundV3": compoundV3,
+    "dForce": compoundV3,
+    "erc20": compoundV3,
 };
 
 export const NetworkNameByStargateChainId = {
