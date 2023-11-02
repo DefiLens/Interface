@@ -28,11 +28,11 @@ export function useCCRefinance() {
     const { mutateAsync: sendTxToChain } = useCCSendTx();
     // const { selectedChain, selectedChainId } = React.useContext(ChainContext);
 
-    const { selectedFromNetwork, selectedToNetwork, selectedFromProtocol, selectedToProtocol, amountIn }: iTrade =
+    const { selectedFromNetwork, selectedToNetwork, selectedFromProtocol, selectedToProtocol, amountIn, tokensData }: iTrade =
         useTradeStore((state) => state);
 
     // const { setTxHash }: iCrossChainDifi = useCrossChainDifiStore((state) => state);
-    const { tokensData, setTxHash }: iBatchingTxn = useBatchingTxnStore((state) => state);
+    const { setTxHash }: iBatchingTxn = useBatchingTxnStore((state) => state);
 
     async function refinanceForCC({
         isSCW,
@@ -142,6 +142,7 @@ export function useCCRefinance() {
                 batchFlows.push(batchFlow);
             }
 
+
             if (selectedFromNetwork.chainName != selectedToNetwork.chainName) {
                 abiNum = abiFetcherNum[selectedToNetwork.chainName][tokenOutName];
                 const newTokenIn = isSwap ? tokensByNetworkForCC[selectedFromNetwork.chainId] : nativeTokenIn;
@@ -197,6 +198,7 @@ export function useCCRefinance() {
                 };
                 batchFlows.push(batchFlow);
             }
+
 
             // else if (toProtocol != "erc20") {
             //     const newTokenIn = isSwap ? nativeTokenOut : nativeTokenIn;

@@ -441,7 +441,7 @@ const TradeContainer: React.FC<any> = () => {
                     //     const { extensions, logoURI, ...filteredToken } = token;
                     //     return filteredToken;
                     // });
-                    const filteredTokens = getTokenListByChainId(selectedFromNetwork.chainId, UNISWAP_TOKENS);
+                    const filteredTokens = getTokenListByChainId(selectedToNetwork.chainId, UNISWAP_TOKENS);
                     // console.log("filteredTokens:", filteredTokens);
                     setTokensData(filteredTokens);
                 }
