@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { error, loading, success } from '../../assets/gifs';
 import { BsArrowRight } from 'react-icons/bs';
 import { buildTxHash } from '../../utils/helper';
+import { NetworkLogoByNetworkName, ProtocolLogoByProtocolName } from '../../utils/constants';
 
 const ExecuteBatchModel = ({
 }: tExecuteBatchModel) => {
@@ -99,13 +100,13 @@ const ExecuteBatchModel = ({
                             </span>
                             <div className="relative">
                               <Image
-                                src={polygon}
+                                src={NetworkLogoByNetworkName[bar.data.fromNetwork]}
                                 alt=""
                                 className="h-8 w-8 bg-slate-200 rounded-full cursor-pointer"
                               />
                               <div className="absolute -bottom-1 -right-1 bg-white h-4 w-4 flex justify-center items-center rounded-full">
                                 <Image
-                                  src={polygon}
+                                  src={ProtocolLogoByProtocolName[bar.data.fromProtocol]}
                                   alt=""
                                   className="h-3 w-3 bg-slate-200 rounded-full cursor-pointer"
                                 />
@@ -126,13 +127,13 @@ const ExecuteBatchModel = ({
                           <div className="w-full flex justify-start items-center gap-3">
                             <div className="relative">
                               <Image
-                                src={base}
+                                src={NetworkLogoByNetworkName[bar.data.toNetwork]}
                                 alt=""
                                 className="h-8 w-8 bg-slate-200 rounded-full cursor-pointer"
                               />
                               <div className="absolute -bottom-1 -right-1 bg-white h-4 w-4 flex justify-center items-center rounded-full">
                                 <Image
-                                  src={base}
+                                  src={ProtocolLogoByProtocolName[bar.data.toProtocol]}
                                   alt=""
                                   className="h-3 w-3 bg-slate-200 rounded-full cursor-pointer"
                                 />

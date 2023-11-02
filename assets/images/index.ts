@@ -6,6 +6,7 @@ import ethereum from './ethereum.svg';
 import metamask from './metamask.svg';
 import optimism from './optimism.svg';
 import polygon from './polygon.svg';
+import compoundV3 from './compoundV3.png';
 import wallet from './wallet.png';
 import warning from './warning.png';
 import swap from './swap.png';
@@ -23,6 +24,7 @@ export {
   metamask,
   optimism,
   polygon,
+  compoundV3,
   wallet,
   warning,
   swap,
