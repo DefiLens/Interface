@@ -93,7 +93,6 @@ export function useRefinance() {
                 txData = abiInterface.encodeFunctionData(methodName, params);
                 const tx1 = { to: tokenInContractAddress, data: txData };
                 tempTxs.push(tx1);
-
                 let batchFlow: iBatchFlowData = {
                     network: selectedFromNetwork.chainName,
                     protocol: selectedFromProtocol,
@@ -107,6 +106,12 @@ export function useRefinance() {
 
             isSwap = nativeTokenIn != nativeTokenOut ? true : false;
             if (isSwap) {
+
+                if (selectedFromNetwork.chainId == "43114") {
+                    alert("Avalanche Swap is not available")
+                    throw("Avalanche Swap is not available")
+                }
+
                 const approveData = await approve({
                     tokenIn: nativeTokenIn,
                     spender: uniswapSwapRouterByChainId[selectedFromNetwork.chainId],
@@ -182,6 +187,7 @@ export function useRefinance() {
             return { txArray: tempTxs, batchFlow: batchFlows };
         } catch (error) {
             console.log("refinance-error", error);
+            return
         }
     }
     return useMutation(refinance);

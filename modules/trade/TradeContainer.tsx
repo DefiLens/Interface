@@ -754,7 +754,7 @@ const TradeContainer: React.FC<any> = () => {
                 setAddToBatchLoading(false);
                 return;
             }
-            if (amountIn.length > 0 && maxBalance < amountIn) {
+            if (bg(maxBalance).isLessThan(amountIn)) {
                 toast.error("You don't have enough funds to complete transaction");
                 setAddToBatchLoading(false);
                 return;

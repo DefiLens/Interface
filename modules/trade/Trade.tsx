@@ -731,7 +731,7 @@ const Trade: React.FC<any> = ({
                                 {/* ---------- YOU PAY Section END ---------- */}
 
                                 {/* ---------- Add Batch o List START ---------- */}
-                                {amountIn.length > 0 && maxBalance < amountIn && (
+                                {bg(maxBalance).isLessThan(amountIn) && (
                                     <div className="flex justify-start items-center gap-3 text-sm md:text-base font-medium bg-yellow-400 shadow rounded-lg px-5 py-2">
                                         <Image src={warning} alt="" className="h-8 w-8" />
                                         You don&#39;t have enough funds to complete transaction.
