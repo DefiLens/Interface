@@ -1,5 +1,6 @@
-import { ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { toast } from "react-hot-toast";
+import { BigNumber as bg } from "bignumber.js";
 
 import { useMutation } from "@tanstack/react-query";
 
@@ -56,19 +57,29 @@ export function useRefinance() {
                 swapData,
                 isSwap,
                 nativeTokenIn,
-                nativeTokenOut;
+                nativeTokenInSymbol,
+                nativeTokenInDecimal,
+                nativeTokenOut,
+                nativeTokenOutSymbol,
+                nativeTokenOutDecimal;
 
             if (fromProtocol == "erc20") {
                 nativeTokenIn = tokensData?.filter((token) => token.symbol === tokenInName)[0].address;
+                nativeTokenInSymbol = tokensData?.filter((token) => token.symbol === tokenInName)[0].symbol;
+                nativeTokenInDecimal = tokensData?.filter((token) => token.symbol === tokenInName)[0].decimals;
             }
 
             if (toProtocol == "erc20") {
                 nativeTokenOut = tokensData?.filter((token) => token.symbol === tokenOutName)[0].address;
+                nativeTokenOutSymbol = tokensData?.filter((token) => token.symbol === tokenInName)[0].symbol;
+                nativeTokenOutDecimal = tokensData?.filter((token) => token.symbol === tokenInName)[0].decimals;
             }
 
             if (toProtocol != "erc20") {
                 const tokenOutNum = nativeTokenNum[selectedFromNetwork.chainName][tokenOutName];
                 nativeTokenOut = nativeTokenFetcher[selectedFromNetwork.chainName][tokenOutNum].nativeToken;
+                nativeTokenOutSymbol = nativeTokenFetcher[selectedFromNetwork.chainName][tokenOutNum].symbol;
+                nativeTokenOutDecimal = nativeTokenFetcher[selectedFromNetwork.chainName][tokenOutNum].decimals;
             }
 
             if (fromProtocol != "erc20") {
@@ -79,6 +90,8 @@ export function useRefinance() {
                 tokenInContractAddress = abiFetcher[selectedFromNetwork.chainName][abiNum]["contractAddress"];
                 const tokenInNum = nativeTokenNum[selectedFromNetwork.chainName][tokenInName];
                 nativeTokenIn = nativeTokenFetcher[selectedFromNetwork.chainName][tokenInNum].nativeToken;
+                nativeTokenInSymbol = nativeTokenFetcher[selectedFromNetwork.chainName][tokenInNum].symbol;
+                nativeTokenOutDecimal = nativeTokenFetcher[selectedFromNetwork.chainName][tokenInNum].decimals;
 
                 abiInterface = new ethers.utils.Interface([abi]);
                 params = await buildParams({
@@ -97,7 +110,7 @@ export function useRefinance() {
                     network: selectedFromNetwork.chainName,
                     protocol: selectedFromProtocol,
                     tokenIn: tokenInName,
-                    tokenOut: nativeTokenIn,
+                    tokenOut: nativeTokenInSymbol,
                     amount: amountIn,
                     action: "Withdraw",
                 };
@@ -106,10 +119,9 @@ export function useRefinance() {
 
             isSwap = nativeTokenIn != nativeTokenOut ? true : false;
             if (isSwap) {
-
                 if (selectedFromNetwork.chainId == "43114") {
-                    alert("Avalanche Swap is not available")
-                    throw("Avalanche Swap is not available")
+                    alert("Avalanche Swap is not available");
+                    throw "Avalanche Swap is not available";
                 }
 
                 const approveData = await approve({
@@ -127,13 +139,20 @@ export function useRefinance() {
                     address,
                     type: "exactIn",
                 });
+                // bg(amountIn).dividedBy(bg(10).pow(tokenInDecimals)).toString()
+                console.log(
+                    "swapData",
+                    swapData,
+                    amount,
+                    bg(amount).dividedBy(bg(10).pow(swapData.tokenInDecimals)).toString()
+                );
                 tempTxs.push(swapData.swapTx);
                 let batchFlow: iBatchFlowData = {
                     network: selectedFromNetwork.chainName,
                     protocol: "Uniswap",
-                    tokenIn: nativeTokenIn,
-                    tokenOut: nativeTokenOut,
-                    amount: amount,
+                    tokenIn: nativeTokenInSymbol,
+                    tokenOut: nativeTokenOutSymbol,
+                    amount: amountIn,
                     action: "Swap",
                 };
                 batchFlows.push(batchFlow);
@@ -141,7 +160,11 @@ export function useRefinance() {
 
             if (toProtocol != "erc20") {
                 const newTokenIn = isSwap ? nativeTokenOut : nativeTokenIn;
-                const newAmount = isSwap ? swapData.amountOutprice : amount;
+                const newTokenInSymbol = isSwap ? nativeTokenOutSymbol : nativeTokenInSymbol;
+                const newAmount = isSwap
+                    ? swapData.amountOutprice
+                    : // ? bg(swapData.amountOutprice.toString()).dividedBy(bg(10).pow(swapData.tokenOutDecimals))
+                      amount;
 
                 abiNum = abiFetcherNum[selectedFromNetwork.chainName][tokenOutName];
                 abi = abiFetcher[selectedFromNetwork.chainName][abiNum]["depositAbi"];
@@ -157,6 +180,7 @@ export function useRefinance() {
                     web3JsonProvider: provider,
                 });
                 if (approveData) tempTxs.push(approveData);
+                alert("1");
 
                 abiInterface = new ethers.utils.Interface([abi]);
                 params = await buildParams({
@@ -164,19 +188,23 @@ export function useRefinance() {
                     tokenOut,
                     nativeTokenIn: newTokenIn,
                     nativeTokenOut: "",
-                    amount: newAmount,
+                    amount: BigNumber.from(newAmount),
                     address,
                     paramDetailsMethod,
                 });
                 txData = abiInterface.encodeFunctionData(methodName, params);
                 const tx2 = { to: tokenOutContractAddress, data: txData };
                 tempTxs.push(tx2);
+                alert("5"+nativeTokenOutDecimal);
+
                 let batchFlow: iBatchFlowData = {
                     network: selectedFromNetwork.chainName,
-                    protocol: "Uniswap",
-                    tokenIn: newTokenIn,
+                    protocol: selectedToProtocol,
+                    tokenIn: newTokenInSymbol,
                     tokenOut: tokenOutName,
-                    amount: newAmount,
+                    amount: isSwap
+                        ? bg(newAmount.toString()).dividedBy(bg(10).pow(swapData.tokenOutDecimals)).toString()
+                        : bg(amount.toString()).dividedBy(bg(10).pow(nativeTokenOutDecimal)).toString(),
                     action: "Deposit",
                 };
                 batchFlows.push(batchFlow);
@@ -187,7 +215,7 @@ export function useRefinance() {
             return { txArray: tempTxs, batchFlow: batchFlows };
         } catch (error) {
             console.log("refinance-error", error);
-            return
+            return;
         }
     }
     return useMutation(refinance);

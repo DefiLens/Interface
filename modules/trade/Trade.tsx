@@ -74,7 +74,7 @@ const Trade: React.FC<any> = ({
         individualBatch,
         showExecuteBatchModel,
     }: iTrade = useTradeStore((state) => state);
-    
+
     return (
         <div className="w-full h-full flex flex-col justify-start items-center py-5">
             <div
@@ -182,11 +182,11 @@ const Trade: React.FC<any> = ({
                                                                                         }
                                                                                         className="w-full flex justify-start items-center gap-3 hover:bg-slate-200 active:bg-slate-200 py-2 px-3 rounded-lg cursor-pointer my-2"
                                                                                     >
-                                                                                        <Image
+                                                                                        {/* <Image
                                                                                             src={token.icon}
                                                                                             alt=""
                                                                                             className="h-7 w-7 bg-slate-200 rounded-full cursor-pointer"
-                                                                                        />
+                                                                                        /> */}
                                                                                         {token.name}
                                                                                     </div>
                                                                                 ) : null;
@@ -312,11 +312,11 @@ const Trade: React.FC<any> = ({
                                                                                     }
                                                                                     className="w-full flex justify-start items-center gap-3 hover:bg-slate-200 active:bg-slate-200 py-2 px-3 rounded-lg cursor-pointer my-2"
                                                                                 >
-                                                                                    <Image
+                                                                                    {/* <Image
                                                                                         src={token.icon}
                                                                                         alt=""
                                                                                         className="h-7 w-7 bg-slate-200 rounded-full cursor-pointer"
-                                                                                    />
+                                                                                    /> */}
                                                                                     {token.name}
                                                                                 </div>
                                                                             ) : null;
@@ -811,11 +811,13 @@ const Trade: React.FC<any> = ({
                                                                 </div>
                                                                 <div className="flex flex-col justify-start items-start">
                                                                     <span className="text-lg md:text-xl lg:text-2xl font-bold text-slate-700">
-                                                                        {bar.data.amountIn}
+                                                                        {bar.data.amountIn} {bar.data.fromToken}
                                                                     </span>
                                                                     <span className="text-base md:text-lg font-semibold text-slate-700">
                                                                         {bar.data.fromProtocol} on{" "}
-                                                                        {bar.data.fromNetwork}
+                                                                        {bar.data.fromNetwork} {" ... "}
+                                                                        {bar.data.toProtocol} on{" "}
+                                                                        {bar.data.toNetwork}
                                                                     </span>
                                                                 </div>
                                                             </div>
@@ -846,7 +848,7 @@ const Trade: React.FC<any> = ({
                                                                             />
                                                                             <div className="absolute -bottom-1 -right-1 bg-white h-4 w-4 flex justify-center items-center rounded-full">
                                                                                 <Image
-                                                                                    src={NetworkLogoByNetworkName[item.network]}
+                                                                                    src={ProtocolLogoByProtocolName[item.protocol]}
                                                                                     alt=""
                                                                                     className="h-3 w-3 bg-slate-200 rounded-full cursor-pointer"
                                                                                 />
@@ -856,12 +858,15 @@ const Trade: React.FC<any> = ({
                                                                             <span className="text-sm md:text-base font-semibold text-slate-700 break-all">
                                                                                 {item.action} on {item.protocol}
                                                                             </span>
+                                                                            <span className="text-xs md:text-sm font-semibold text-slate-700">
+                                                                                {item.amount.toString()} {item.tokenIn} for {item.tokenOut}
+                                                                            </span>
                                                                         </div>
                                                                     </div>
-                                                                    <Image src={downLine} alt="" className="h-8" />
+                                                                    { bar.batchesFlow.length-1 > index ? <Image src={downLine} alt="" className="h-8" /> : ""}
                                                                 </div>
                                                                ))}
-                                                                <div className="flex justify-center items-center gap-3">
+                                                                {/* <div className="flex justify-center items-center gap-3">
                                                                     <div className="relative">
                                                                         <Image
                                                                             src={NetworkLogoByNetworkName[bar.data.toNetwork]}
@@ -884,7 +889,7 @@ const Trade: React.FC<any> = ({
                                                                             {bar.data.amountIn} {bar.data.toToken}
                                                                         </span>
                                                                     </div>
-                                                                </div>
+                                                                </div> */}
                                                             </div>
                                                         )}
                                                     </div>

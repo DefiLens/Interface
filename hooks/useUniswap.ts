@@ -74,7 +74,7 @@ export function useUniswap() {
                 to: uniswapSwapRouterByChainId[selectedFromNetwork.chainId],
                 data: route.methodParameters?.calldata,
             };
-            return { swapTx, tokenIn, tokenOut, amountOutprice };
+            return { swapTx, tokenIn, tokenOut, amountOutprice, tokenInDecimals, tokenOutDecimals };
         } catch (error) {
             console.log("swapUniV3-error", error);
         }

@@ -65,11 +65,19 @@ export function useCCRefinance() {
                 swapData,
                 isSwap,
                 nativeTokenIn,
-                nativeTokenOut;
+                nativeTokenInSymbol,
+                nativeTokenInDecimal,
+                nativeTokenOut,
+                nativeTokenOutSymbol,
+                nativeTokenOutDecimal;
 
+                console.log('1')
             if (fromProtocol == "erc20") {
                 nativeTokenIn = tokensData?.filter((token) => token.symbol === tokenInName)[0].address;
+                nativeTokenInSymbol = tokensData?.filter((token) => token.symbol === tokenInName)[0].symbol;
+                nativeTokenInDecimal = tokensData?.filter((token) => token.symbol === tokenInName)[0].decimals;
             }
+            console.log('2')
             // if (toProtocol == "erc20") {
             //     nativeTokenOut = tokensData?.filter((token) => token.symbol === tokenOutName)[0].address;
             // }
@@ -77,8 +85,10 @@ export function useCCRefinance() {
             if (toProtocol != "erc20") {
                 const tokenOutNum = nativeTokenNum[selectedToNetwork.chainName][tokenOutName];
                 nativeTokenOut = nativeTokenFetcher[selectedToNetwork.chainName][tokenOutNum].nativeToken;
+                nativeTokenOutSymbol = nativeTokenFetcher[selectedToNetwork.chainName][tokenOutNum].symbol;
+                nativeTokenOutDecimal = nativeTokenFetcher[selectedToNetwork.chainName][tokenOutNum].decimals;
             }
-
+            console.log('3')
             if (fromProtocol != "erc20") {
                 abiNum = abiFetcherNum[selectedFromNetwork.chainName][tokenInName];
                 abi = abiFetcher[selectedFromNetwork.chainName][abiNum]["withdrawAbi"];
@@ -88,6 +98,9 @@ export function useCCRefinance() {
 
                 const tokenInNum = nativeTokenNum[selectedFromNetwork.chainName][tokenInName];
                 nativeTokenIn = nativeTokenFetcher[selectedFromNetwork.chainName][tokenInNum].nativeToken;
+
+                nativeTokenInSymbol = nativeTokenFetcher[selectedFromNetwork.chainName][tokenInNum].symbol;
+                nativeTokenOutDecimal = nativeTokenFetcher[selectedFromNetwork.chainName][tokenInNum].decimals;
 
                 abiInterface = new ethers.utils.Interface([abi]);
                 params = await buildParams({
@@ -106,13 +119,13 @@ export function useCCRefinance() {
                     network: selectedFromNetwork.chainName,
                     protocol: selectedFromProtocol,
                     tokenIn: tokenInName,
-                    tokenOut: nativeTokenIn,
+                    tokenOut: nativeTokenInSymbol,
                     amount: amountIn,
                     action: "Withdraw",
                 };
                 batchFlows.push(batchFlow);
             }
-
+            console.log('4')
             isSwap = nativeTokenIn != tokensByNetworkForCC[selectedFromNetwork.chainId].usdc ? true : false;
             if (isSwap) {
                 const approveData = await approve({
@@ -134,18 +147,18 @@ export function useCCRefinance() {
                 let batchFlow: iBatchFlowData = {
                     network: selectedFromNetwork.chainName,
                     protocol: "Uniswap",
-                    tokenIn: nativeTokenIn,
-                    tokenOut: tokensByNetworkForCC[selectedFromNetwork.chainId].usdc,
-                    amount: amount,
+                    tokenIn: nativeTokenInSymbol,
+                    tokenOut: nativeTokenOutSymbol,
+                    amount: amountIn,
                     action: "Swap",
                 };
                 batchFlows.push(batchFlow);
             }
-
+            console.log('5')
 
             if (selectedFromNetwork.chainName != selectedToNetwork.chainName) {
                 abiNum = abiFetcherNum[selectedToNetwork.chainName][tokenOutName];
-                const newTokenIn = isSwap ? tokensByNetworkForCC[selectedFromNetwork.chainId] : nativeTokenIn;
+                const newTokenIn = isSwap ? tokensByNetworkForCC[selectedFromNetwork.chainId].usdc : nativeTokenIn;
                 paramDetailsMethod = abiFetcher[selectedToNetwork.chainName][abiNum]["depositParamDetailsMethod"];
 
                 params = await buildParams({
@@ -183,23 +196,23 @@ export function useCCRefinance() {
                     toNetwork: selectedToNetwork.chainName,
                     protocol: "Stargate",
                     tokenIn: "USDC",
-                    tokenOut: "",
-                    amount: amount,
-                    action: "Bridge",
+                    tokenOut: "USDC",
+                    amount: amountIn,
+                    action: `Bridge from ${selectedFromNetwork.chainName} to ${selectedToNetwork.chainName}`,
                 };
                 batchFlows.push(batchFlow);
                 batchFlow = {
                     network: selectedToNetwork.chainName,
                     protocol: selectedToProtocol,
-                    tokenIn: newTokenIn,
+                    tokenIn: "USDC",
                     tokenOut: tokenOutName,
-                    amount: amount,
+                    amount: amountIn,
                     action: "Deposit",
                 };
                 batchFlows.push(batchFlow);
             }
 
-
+            console.log('6')
             // else if (toProtocol != "erc20") {
             //     const newTokenIn = isSwap ? nativeTokenOut : nativeTokenIn;
             //     const newAmount = isSwap ? swapData.amountOutprice : amount;

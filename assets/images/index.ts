@@ -7,6 +7,8 @@ import metamask from './metamask.svg';
 import optimism from './optimism.svg';
 import polygon from './polygon.svg';
 import compoundV3 from './compoundV3.png';
+import aave from './aave.png';
+import dforce from './dforce.svg';
 import wallet from './wallet.png';
 import warning from './warning.png';
 import swap from './swap.png';
@@ -25,6 +27,8 @@ export {
   optimism,
   polygon,
   compoundV3,
+  aave,
+  dforce,
   wallet,
   warning,
   swap,

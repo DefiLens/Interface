@@ -10,7 +10,7 @@ import {
     OPTIMISM_BICONOMY_AA_KEY,
     POLYGON_BICONOMY_AA_KEY,
 } from "./keys";
-import { arbitrum, avalanche, base, compoundV3, ethereum, optimism, polygon } from "../assets/images";
+import { arbitrum, avalanche, base, compoundV3, ethereum, optimism, polygon, aave, dforce } from "../assets/images";
 
 export const BIG_ZERO = BigNumber.from(0);
 
@@ -195,10 +195,10 @@ export const NetworkLogoByNetworkName = {
 };
 
 export const ProtocolLogoByProtocolName = {
-    "aaveV2": compoundV3,
-    "aaveV3": compoundV3,
+    "aaveV2": aave,
+    "aaveV3": aave,
     "compoundV3": compoundV3,
-    "dForce": compoundV3,
+    "dForce": dforce,
     "erc20": compoundV3,
 };
 
@@ -330,23 +330,23 @@ export const protocolNames = {
         key: [
             {
                 name: "aaveV2",
-                icon: optimism,
+                icon: aave,
             },
             {
                 name: "aaveV3",
-                icon: ethereum,
+                icon: aave,
             },
             {
                 name: "compoundV3",
-                icon: avalanche,
+                icon: compoundV3,
             },
             {
                 name: "dForce",
-                icon: ethereum,
+                icon: dforce,
             },
             {
                 name: "erc20",
-                icon: optimism,
+                icon: polygon,
             },
         ],
         value: ["AAVE V2", "AAVE V3", "Compound V3", "dForce", "ERC20"],
@@ -355,7 +355,7 @@ export const protocolNames = {
         key: [
             {
                 name: "aaveV3",
-                icon: avalanche,
+                icon: aave,
             },
             {
                 name: "erc20",
@@ -368,11 +368,11 @@ export const protocolNames = {
         key: [
             {
                 name: "aaveV3",
-                icon: arbitrum,
+                icon: aave,
             },
             {
                 name: "compoundV3",
-                icon: arbitrum,
+                icon: compoundV3,
             },
             {
                 name: "erc20",
@@ -385,7 +385,7 @@ export const protocolNames = {
         key: [
             {
                 name: "aaveV3",
-                icon: optimism,
+                icon: aave,
             },
             {
                 name: "erc20",
@@ -398,15 +398,15 @@ export const protocolNames = {
         key: [
             {
                 name: "aaveV3",
-                icon: ethereum,
+                icon: aave,
             },
             {
                 name: "compoundV3",
-                icon: optimism,
+                icon: compoundV3,
             },
             {
                 name: "erc20",
-                icon: avalanche,
+                icon: base,
             },
         ],
         value: ["AAVE V3", "Compound V3", "ERC20"],
