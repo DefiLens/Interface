@@ -83,14 +83,30 @@ const TransferContainer: React.FC<any> = () => {
         onChangeFromProtocol();
     }, [showTransferFundToggle]);
 
+    useEffect(() => {
+        if (address && smartAccount) {
+            setBalance(true)
+        }
+    }, [address, smartAccount])
+
     const onOptionChange = async (e) => {
         try {
             setGasCost(0);
             setAmountIn(0);
             setAmountInDecimals(0);
             setTokenAddress("");
-            setIsnative(!isNative);
-            if (isNative) {
+            const tempChcekNative = isNative ? false : true; // because isNative can not access after just updated
+            setIsnative(tempChcekNative);
+            await setBalance(tempChcekNative)
+        } catch (error) {
+            console.log("send-error: ", error);
+            return;
+        }
+    };
+
+    const setBalance = async (_isNative) => {
+        try {
+            if (_isNative) {
                 let provider = await new ethers.providers.Web3Provider(web3.givenProvider);
                 if (!provider) {
                     toast.error("no provider");
@@ -111,11 +127,11 @@ const TransferContainer: React.FC<any> = () => {
                 setTokenInDecimals(0);
             }
         } catch (error) {
-            console.log("send-error: ", error);
+            console.log("setBalance-error: ", error);
             toast.error("Error: " + error);
             return;
         }
-    };
+    }
 
     const onOptionChangeForWallet = (e) => {
         setGasCost(0);
