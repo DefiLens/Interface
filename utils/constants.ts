@@ -908,7 +908,7 @@ export const tokenAddressByProtocol = {
 // }
 
 export const buttonStyle =
-    "bg-primary-600 hover:bg-primary-700 py-1 px-5 rounded-lg text-primary-100 font-medium border-b-4 border-primary-800 hover:border-primary-900 transition duration-300";
+    "bg-button-100 hover:bg-primary-700 py-1 px-5 rounded-lg text-primary-100 font-medium border-b-4 border-primary-800 hover:border-primary-900 transition duration-300";
 
 export const inputContainer = "w-full relative float-label-input shadow-md rounded-md";
 

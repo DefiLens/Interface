@@ -87,7 +87,7 @@ export default function App({ Component, pageProps }: AppProps) {
 
                        <HeaderContainer />
 
-                        <div className="w-screen h-[calc(100%-69px)] flex justify-center items-start">
+                        <div className="w-screen h-[calc(100%-69px)] bg-backgound-100 flex justify-center items-start">
                             <main className="w-full h-full overflow-y-scroll  overflow-x-hidden p-4">
                               <Component {...pageProps} />
                             </main>

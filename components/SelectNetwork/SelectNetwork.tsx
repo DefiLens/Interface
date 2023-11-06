@@ -38,7 +38,7 @@ const SelectNetwork = ({
         onClick={() => setShowSelectNetworkList(!showSelectNetworkList)}
       >
         {selectedFromNetwork?.chainName ? (
-            <div className="bg-slate-100 hover:bg-slate-300 active:bg-slate-400 rounded-full p-1">
+            <div className="rounded-full p-1">
               <Image
                 src={selectedFromNetwork.icon}
                 alt=""
@@ -46,7 +46,7 @@ const SelectNetwork = ({
               />
             </div>
           ) : (
-            <div  className={`${buttonStyle} border-primary-800 hover:border-primary-900 flex justify-center items-center gap-2`}>
+            <div  className={`${buttonStyle} border-button-300 hover:border-button-400 flex justify-center items-center gap-2`}>
               Select a Network
             </div>
           ) 
@@ -62,21 +62,21 @@ const SelectNetwork = ({
         {showSelectNetworkList && (
           <div 
             ref={selectNetworkRef}
-            className="w-48 flex flex-col gap-1 p-3 rounded-xl bg-slate-800 border-2 border-slate-700 shadow-md shadow-slate-950"
+            className="w-48 flex flex-col gap-1 p-3 rounded-xl bg-backgound-300 border-2 border-backgound-600 shadow shadow-backgound-600"
           >
             {NETWORK_LIST?.map((item) => {
               return (
                 <div
                   key={item.chainName}
                   onClick={() => handleSelectNetwork(item)}
-                  className="flex justify-start items-center gap-3 hover:bg-slate-950 p-2 rounded-full cursor-pointer"
+                  className="flex justify-start items-center gap-3 hover:bg-backgound-100 p-2 rounded-full cursor-pointer"
                 >
                   <Image
                     src={item.icon}
                     alt="logo"
                     className="h-10 w-10 rounded-full"
                   />
-                  <div className="text-sm md:text-base text-white">{item.key}</div>
+                  <div className="text-sm md:text-base text-font-100">{item.key}</div>
                 </div>
               );
             })}
