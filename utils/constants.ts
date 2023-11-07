@@ -10,7 +10,7 @@ import {
     OPTIMISM_BICONOMY_AA_KEY,
     POLYGON_BICONOMY_AA_KEY,
 } from "./keys";
-import { arbitrum, avalanche, base, compoundV3, ethereum, optimism, polygon, aave, dforce } from "../assets/images";
+import { arbitrum, avalanche, base, compoundV3, ethereum, optimism, polygon, aavev2, aavev3, dforce } from "../assets/images";
 
 export const BIG_ZERO = BigNumber.from(0);
 
@@ -195,8 +195,8 @@ export const NetworkLogoByNetworkName = {
 };
 
 export const ProtocolLogoByProtocolName = {
-    "aaveV2": aave,
-    "aaveV3": aave,
+    "aaveV2": aavev2,
+    "aaveV3": aavev3,
     "compoundV3": compoundV3,
     "dForce": dforce,
     "erc20": compoundV3,
@@ -299,42 +299,16 @@ export const uniswapSwapRouterByChainId = {
     "8453": "0x2626664c2603336E57B271c5C0b26F421741e481",
 };
 
-
-// export const protocolNames = {
-//     "base": {
-//         key: ["aaveV3", "compoundV3", "erc20"],
-//         value: ["AAVE V3", "Compound V3", "ERC20"],
-//     },
-//     "polygon": {
-//         key: ["aaveV2", "aaveV3", "compoundV3", "dForce", "erc20"],
-//         value: ["AAVE V2", "AAVE V3", "Compound V3", "dForce", "ERC20"],
-//     }
-// };
-
-
-// export const protocolByNetwork = {
-//     base: {
-//         aaveV3: ["aBasUSDbC", "aBasWETH"],
-//         compoundV3: ["cUSDbCv3"],
-//     },
-//     polygon: {
-//         aaveV2: ["aUSDC", "aUSDT", "aDAI", "aWETH", "aWMATIC", "aAAVE", "aWBTC"],
-//         aaveV3: ["aUSDCv3", "aUSDTv3", "aDAIv3", "aWETHv3", "aWMATICv3", "aAAVEv3", "aWBTCv3", "aBALv3"],
-//         compoundV3: ["cUSDC"],
-//         dForce: ["dForceUSDC"],
-//     }
-// };
-
 export const protocolNames = {
     "polygon": {
         key: [
             {
                 name: "aaveV2",
-                icon: aave,
+                icon: aavev2,
             },
             {
                 name: "aaveV3",
-                icon: aave,
+                icon: aavev3,
             },
             {
                 name: "compoundV3",
@@ -355,7 +329,7 @@ export const protocolNames = {
         key: [
             {
                 name: "aaveV3",
-                icon: aave,
+                icon: aavev3,
             },
             {
                 name: "erc20",
@@ -368,7 +342,7 @@ export const protocolNames = {
         key: [
             {
                 name: "aaveV3",
-                icon: aave,
+                icon: aavev3,
             },
             {
                 name: "compoundV3",
@@ -385,7 +359,7 @@ export const protocolNames = {
         key: [
             {
                 name: "aaveV3",
-                icon: aave,
+                icon: aavev3,
             },
             {
                 name: "erc20",
@@ -398,7 +372,7 @@ export const protocolNames = {
         key: [
             {
                 name: "aaveV3",
-                icon: aave,
+                icon: aavev3,
             },
             {
                 name: "compoundV3",
@@ -779,133 +753,6 @@ export const tokenAddressByProtocol = {
         }
     },
 };
-
-// export const contractDataByNetwork = [
-//     {
-//         109: {
-//             "0x794a61358D6845594F94dc1DB02A252b5b4814aD": {
-//                 methodNames: ["supply",],
-//                 // methodNames: ["repay", "supply",],
-//                 amountFieldIndex: [1],
-//                 contractName: "Polygon: AAVE Lending POOL-V3",
-//                 network: "Polygon",
-//             },
-//         },
-//     },
-//     {
-//         106: {
-//             "0x794a61358D6845594F94dc1DB02A252b5b4814aD": {
-//                 methodNames: ["supply"],
-//                 amountFieldIndex: [1],
-//                 contractName: "Avalanche: AAVE Lending POOL-V3",
-//                 network: "Avalanche",
-//             },
-//         },
-//     },
-//     {
-//         110: {
-//             "0x794a61358D6845594F94dc1DB02A252b5b4814aD": {
-//                 methodNames: ["supply", "supply"],
-//                 amountFieldIndex: [1, -1],
-//                 // methodNames: ["repay", "repay", "supply", "supply",],
-//                 // amountFieldIndex: [-1, 1, 1, -1],
-//                 contractName: "Arbitrum: AAVE Lending POOL-V3",
-//                 network: "Arbitrum",
-//             },
-//         },
-//     },
-//     {
-//         111: {
-//             "0x794a61358D6845594F94dc1DB02A252b5b4814aD": {
-//                 methodNames: ["supply", "supply"],
-//                 amountFieldIndex: [1, -1],
-//                 // methodNames: ["repay", "repay", "supply", "supply",],
-//                 // amountFieldIndex: [-1, 1, 1, -1],
-//                 contractName: "Optimism: AAVE Lending POOL-V3",
-//                 network: "Optimism",
-//             },
-//         },
-//     },
-//     {
-//         101: {
-//             "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2": {
-//                 methodNames: ["supply"],
-//                 amountFieldIndex: [1],
-//                 // methodNames: ["repay", "supply"],
-//                 // amountFieldIndex: [1, 1],
-//                 contractName: "Ethereum: AAVE Lending POOL-V3",
-//                 network: "Ethereum",
-//             },
-//         },
-//     },
-// ]
-
-// export const allNetworkDetails = {
-//     '109': { // Polygon
-//         contractAddresses: [
-//             {
-//                 contractName: "Polygon: AAVE Lending POOL-V3",
-//                 contractAddress: "0x794a61358D6845594F94dc1DB02A252b5b4814aD",
-//             }
-//         ],
-//         USDC: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
-//         stargateRouter: "0x45A01E4e04F14f7A4a6702c74187c5F6222033cd",
-//         rpcURL: `https://polygon-mainnet.infura.io/v3/${MAINNET_INFURA}`,
-//         network: "Polygon"
-//     },
-//     '106': { // Avalanche
-//         contractAddresses: [
-//             {
-//                 contractName: "Avalanche: AAVE Lending POOL-V3",
-//                 contractAddress: "0x794a61358D6845594F94dc1DB02A252b5b4814aD",
-//             }
-//         ],
-//         USDC: "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E",
-//         ChainPing: "0x6FE8e3E0c47043f136640dF7972C1e3F144B807F",
-//         stargateRouter: "0x45A01E4e04F14f7A4a6702c74187c5F6222033cd",
-//         rpcURL: `https://avalanche-mainnet.infura.io/v3/${MAINNET_INFURA}`,
-//         network: "Avalanche"
-//     },
-//     '110': { // Arbitrum
-//         contractAddresses: [
-//             {
-//                 contractName: "Arbitrum: AAVE Lending POOL-V3",
-//                 contractAddress: "0x794a61358D6845594F94dc1DB02A252b5b4814aD",
-//             }
-//         ],
-//         USDC: "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8",
-//         ChainPing: "0xBA821135197bB2614F5Bd8943b5d1607288DC60d",
-//         stargateRouter: "0x53Bf833A5d6c4ddA888F69c22C88C9f356a41614",
-//         rpcURL: `https://arbitrum-mainnet.infura.io/v3/${MAINNET_INFURA}`,
-//         network: "Arbitrum"
-//     },
-//     '111': { // Optimism
-//         contractAddresses: [
-//             {
-//                 contractName: "Optimism: AAVE Lending POOL-V3",
-//                 contractAddress: "0x794a61358D6845594F94dc1DB02A252b5b4814aD",
-//             }
-//         ],
-//         USDC: "0x7F5c764cBc14f9669B88837ca1490cCa17c31607",
-//         ChainPing: "0x934E5421D4ce678ae4c4B136306Fbee91bfDBbC8",
-//         stargateRouter: "0xB0D502E938ed5f4df2E681fE6E419ff29631d62b",
-//         rpcURL: `https://optimism-mainnet.infura.io/v3/${MAINNET_INFURA}`,
-//         network: "Optimism"
-//     },
-//     '101': { // Ethereum
-//         contractAddresses: [
-//             {
-//                 contractName: "Ethereum: AAVE Lending POOL-V3",
-//                 contractAddress: "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2",
-//             }
-//         ],
-//         USDC: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-//         // ChainPing: "0xBA821135197bB2614F5Bd8943b5d1607288DC60d",
-//         stargateRouter: "0x8731d54E9D02c286767d56ac03e8037C07e01e98",
-//         rpcURL: `https://mainnet.infura.io/v3/${MAINNET_INFURA}`,
-//         network: "Ethereum"
-//     }
-// }
 
 export const buttonStyle =
     "bg-primary-600 hover:bg-primary-700 py-1 px-5 rounded-lg text-primary-100 font-medium border-b-4 border-primary-800 hover:border-primary-900 transition duration-300";
