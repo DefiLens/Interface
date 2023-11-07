@@ -486,7 +486,7 @@ const Trade: React.FC<any> = ({
                                                     />
                                                     <div className="absolute -bottom-1 -right-1 bg-backgound-100 h-6 w-6 flex justify-center items-center rounded-full">
                                                         <Image
-                                                            src={selectedFromNetwork.icon}
+                                                            src={ProtocolLogoByProtocolName[selectedFromProtocol]}
                                                             alt=""
                                                             className="h-5 w-5 bg-backgound-300 rounded-full cursor-pointer"
                                                         />
@@ -509,7 +509,7 @@ const Trade: React.FC<any> = ({
                                                     <div className="text-xs text-font-300 font-medium">
                                                         {selectedFromProtocol && <span>on {selectedFromProtocol}</span>}
                                                         {selectedFromToken && (
-                                                            <span>Chain ( {selectedFromToken} )</span>
+                                                            <span> ({selectedFromToken})</span>
                                                         )}
                                                     </div>
                                                 </div>
@@ -560,7 +560,7 @@ const Trade: React.FC<any> = ({
                                                     />
                                                     <div className="absolute -bottom-1 -right-1 bg-backgound-100 h-6 w-6 flex justify-center items-center rounded-full">
                                                         <Image
-                                                            src={selectedToNetwork.icon}
+                                                            src={ProtocolLogoByProtocolName[selectedToProtocol]}
                                                             alt=""
                                                             className="h-5 w-5 bg-backgound-300 rounded-full cursor-pointer"
                                                         />
@@ -582,7 +582,7 @@ const Trade: React.FC<any> = ({
                                                     </div>
                                                     <div className="text-xs text-font-300 font-medium">
                                                         {selectedToProtocol && <span>on {selectedToProtocol}</span>}
-                                                        {selectedToToken && <span>Chain ( {selectedToToken} )</span>}
+                                                        {selectedToToken && <span> ({selectedToToken})</span>}
                                                     </div>
                                                 </div>
                                             ) : (
@@ -668,7 +668,7 @@ const Trade: React.FC<any> = ({
                                                 />
                                                 <div className="absolute -bottom-1 -right-1 bg-backgound-100 h-6 w-6 flex justify-center items-center rounded-full">
                                                     <Image
-                                                        src={selectedFromNetwork.icon}
+                                                        src={ProtocolLogoByProtocolName[selectedFromProtocol]}
                                                         alt=""
                                                         className="h-5 w-5 bg-backgound-300 rounded-full cursor-pointer"
                                                     />

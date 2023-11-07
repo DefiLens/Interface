@@ -180,7 +180,6 @@ export function useRefinance() {
                     web3JsonProvider: provider,
                 });
                 if (approveData) tempTxs.push(approveData);
-                alert("1");
 
                 abiInterface = new ethers.utils.Interface([abi]);
                 params = await buildParams({
@@ -195,7 +194,6 @@ export function useRefinance() {
                 txData = abiInterface.encodeFunctionData(methodName, params);
                 const tx2 = { to: tokenOutContractAddress, data: txData };
                 tempTxs.push(tx2);
-                alert("5"+nativeTokenOutDecimal);
 
                 let batchFlow: iBatchFlowData = {
                     network: selectedFromNetwork.chainName,
