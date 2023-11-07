@@ -80,18 +80,18 @@ const Trade: React.FC<any> = ({
             <div
                 className={`${
                     showBatchList ? "!w-full" : "!w-[50%]"
-                } h-full flex flex-col lg:flex-row justify-start items-start gap-4`}
+                } h-full flex flex-col lg:flex-row justify-center items-start gap-4`}
             >
-                <div className="w-full h-full">
+                <div className="w-full md:max-w-xl h-full">
                     {showFromSelectionMenu || showToSelectionMenu ? (
-                        <div className="w-full max-h-full bg-gray-50 flex flex-col gap-2 shadow-md shadow-primary-950 rounded-lg cursor-pointer p-3">
+                        <div className="w-full max-h-full bg-backgound-300 border border-backgound-600 shadow shadow-backgound-500 flex flex-col gap-2 rounded-lg cursor-pointer p-3">
                             <MdOutlineArrowBack
                                 onClick={
                                     showFromSelectionMenu
                                         ? () => closeFromSelectionMenu()
                                         : () => closeToSelectionMenu()
                                 }
-                                className="rounded-full h-10 w-10 p-2 hover:bg-gray-100 active:bg-gray-200  text-black"
+                                className="rounded-full h-10 w-10 p-2 hover:bg-font-1100 active:bg-font-1000  text-font-100"
                             />
                             <div className="flex flex-col justify-center items-center gap-5 px-4">
                                 <div className="flex flex-wrap justify-center items-center gap-2">
@@ -104,22 +104,22 @@ const Trade: React.FC<any> = ({
                                                         ? () => handleSelectFromNetwork(item)
                                                         : () => handleSelectToNetwork(item)
                                                 }
-                                                className={`${
+                                                className={`h-14 w-14 flex justify-center items-center gap-3 bg-font-100 hover:bg-font-200 active:bg-font-400 border-2 border-font-200 hover:border-font-300 shadow-sm rounded-md cursor-pointer  ${
                                                     showFromSelectionMenu
                                                         ? selectedFromNetwork.chainName === item.chainName
-                                                            ? "!shadow-sm !shadow-slate-800"
+                                                            ? "!shadow-sm !shadow-backgound-600 !bg-font-300"
                                                             : ""
                                                         : selectedToNetwork.chainName === item.chainName
-                                                        ? "!shadow-sm !shadow-slate-800"
+                                                        ? "!shadow-sm !shadow-backgound-600 !bg-font-300"
                                                         : ""
-                                                } h-14 w-14 flex justify-center items-center gap-3 bg-white hover:bg-slate-100 active:bg-slate-200 border-2 border-slate-200 hover:border-slate-300 shadow-sm rounded-md cursor-pointer`}
+                                                }`}
                                             >
                                                 <Image src={item.icon} alt="" className="h-10 w-10 rounded-full" />
                                             </div>
                                         );
                                     })}
                                 </div>
-                                <div className="w-full flex justify-start items-center gap-2 bg-white border-2 border-slate-200 rounded-md py-2 px-5">
+                                <div className="w-full flex justify-start items-center gap-2 bg-font-100 border-2 border-font-300 rounded-md py-2 px-5">
                                     <input
                                         type="text"
                                         value={showFromSelectionMenu ? filterFromToken : filterToToken}
@@ -129,7 +129,7 @@ const Trade: React.FC<any> = ({
                                                 : (e) => setFilterToToken(e.target.value)
                                         }
                                         placeholder="Search by Token name"
-                                        className="w-full text-sm md:text-base outline-none"
+                                        className="w-full text-sm md:text-base outline-none placeholder-font-500 text-1100"
                                     />
                                     <AiOutlineSearch />
                                 </div>
@@ -144,12 +144,12 @@ const Trade: React.FC<any> = ({
                                                                 key={item.name}
                                                                 // onClick={() => setSelectedFromProtocol(item.name)}
                                                                 onClick={() => onChangeFromProtocol(item.name)}
-                                                                className="w-full flex justify-start items-center gap-3 hover:bg-slate-300 active:bg-slate-200 py-2 px-3 rounded-lg cursor-pointer"
+                                                                className="w-full flex justify-start items-center gap-3 text-font-300 hover:text-font-100 hover:bg-backgound-100 active:bg-backgound-200 py-2 px-3 my-1 rounded-lg cursor-pointer"
                                                             >
                                                                 <Image
                                                                     src={item.icon}
                                                                     alt=""
-                                                                    className="h-8 w-8 bg-slate-200 rounded-full cursor-pointer"
+                                                                    className="h-8 w-8 bg-font-200 rounded-full cursor-pointer"
                                                                 />
                                                                 <div>
                                                                     {protocolNames[selectedFromNetwork.chainName].value[protocolIndex]}
@@ -158,14 +158,14 @@ const Trade: React.FC<any> = ({
 
                                                             {selectedFromProtocol === item.name &&
                                                                 selectedFromProtocol !== "erc20" && (
-                                                                    <div className="bg-blue-200 rounded-lg p-3 my-1.5">
-                                                                        <div className="w-full flex justify-start items-center gap-2 bg-white rounded-md shadow py-1.5 px-5">
+                                                                    <div className="bg-backgound-100 text-font-200 rounded-lg p-3 my-1.5">
+                                                                        <div className="w-full flex justify-start items-center gap-2 bg-font-100 rounded-md shadow py-1.5 px-5">
                                                                             <input
                                                                                 type="text"
                                                                                 value={filterFromAddress}
                                                                                 onChange={(e) => setFilterFromAddress(e.target.value)}
                                                                                 placeholder="Search by Address"
-                                                                                className="w-full text-sm md:text-base outline-none"
+                                                                                className="w-full text-sm md:text-base outline-none placeholder-font-500 text-1100"
                                                                             />
                                                                             <AiOutlineSearch />
                                                                         </div>
@@ -180,12 +180,12 @@ const Trade: React.FC<any> = ({
                                                                                         onClick={() =>
                                                                                             onChangeFromToken(token.name)
                                                                                         }
-                                                                                        className="w-full flex justify-start items-center gap-3 hover:bg-slate-200 active:bg-slate-200 py-2 px-3 rounded-lg cursor-pointer my-2"
+                                                                                        className="w-full flex justify-start items-center gap-3 hover:bg-backgound-200 active:bg-backgound-100 py-2 px-3 rounded-lg cursor-pointer my-2"
                                                                                     >
                                                                                         {/* <Image
                                                                                             src={token.icon}
                                                                                             alt=""
-                                                                                            className="h-7 w-7 bg-slate-200 rounded-full cursor-pointer"
+                                                                                            className="h-7 w-7 bg-font-200 rounded-full cursor-pointer"
                                                                                         /> */}
                                                                                         {token.name}
                                                                                     </div>
@@ -198,14 +198,14 @@ const Trade: React.FC<any> = ({
                                                             {item.name === "erc20" &&
                                                                 selectedFromProtocol === "erc20" &&
                                                                 tokensData && (
-                                                                    <div className="bg-blue-200 rounded-lg p-3 my-1.5">
-                                                                        <div className="w-full flex justify-start items-center gap-2 bg-white rounded-md shadow py-1.5 px-5">
+                                                                    <div className="bg-backgound-100 text-font-200 rounded-lg p-3 my-1.5">
+                                                                        <div className="w-full flex justify-start items-center gap-2 bg-font-100 rounded-md shadow py-1.5 px-5">
                                                                             <input
                                                                                 type="text"
                                                                                 value={filterFromAddress}
                                                                                 onChange={(e) => setFilterFromAddress(e.target.value)}
                                                                                 placeholder="Search by Address"
-                                                                                className="w-full text-sm md:text-base outline-none"
+                                                                                className="w-full text-sm md:text-base outline-none placeholder-font-500 text-1100"
                                                                             />
                                                                             <AiOutlineSearch />
                                                                         </div>
@@ -222,7 +222,7 @@ const Trade: React.FC<any> = ({
                                                                                                 token.symbol
                                                                                             )
                                                                                         }
-                                                                                        className="w-full flex justify-start items-center gap-3 hover:bg-slate-200 active:bg-slate-200 py-2 px-3 rounded-lg cursor-pointer my-2"
+                                                                                        className="w-full flex justify-start items-center gap-3 text-font-300 hover:text-font-100 hover:bg-backgound-100 active:bg-backgound-200 py-2 px-3 rounded-lg cursor-pointer my-2"
                                                                                     >
                                                                                         <Image
                                                                                             src={
@@ -235,14 +235,14 @@ const Trade: React.FC<any> = ({
                                                                                             alt=""
                                                                                             width={10}
                                                                                             height={10}
-                                                                                            className="h-10 w-10 bg-slate-200 rounded-full cursor-pointer"
+                                                                                            className="h-10 w-10 bg-font-200 rounded-full cursor-pointer"
                                                                                         />
                                                                                         {/* <Image
                                                                                             src="https://assets.coingecko.com/coins/images/14061/thumb/Shared_HOPR_logo_512px.png?1614073468"
                                                                                             alt="HOPR Logo"
                                                                                             width={10}
                                                                                             height={10}
-                                                                                            className="h-7 w-7 bg-slate-200 rounded-full cursor-pointer"
+                                                                                            className="h-7 w-7 bg-font-200 rounded-full cursor-pointer"
                                                                                         /> */}
                                                                                         {token.symbol}
                                                                                     </div>
@@ -272,12 +272,12 @@ const Trade: React.FC<any> = ({
                                                                 key={item.name}
                                                                 // onClick={() => setSelectedToProtocol(item.name)}
                                                                 onClick={() => onChangeToProtocol(item.name)}
-                                                                className="w-full flex justify-start items-center gap-3 hover:bg-slate-300 active:bg-slate-200 py-2 px-3 rounded-lg cursor-pointer"
+                                                                className="w-full flex justify-start items-center gap-3 text-font-300 hover:text-font-100 hover:bg-backgound-100 active:bg-backgound-200 py-2 px-3 my-1 rounded-lg cursor-pointer"
                                                             >
                                                                 <Image
                                                                     src={item.icon}
                                                                     alt=""
-                                                                    className="h-8 w-8 bg-slate-200 rounded-full cursor-pointer"
+                                                                    className="h-8 w-8 bg-font-200 rounded-full cursor-pointer"
                                                                 />
                                                                 <div>
                                                                     {protocolNames[selectedToNetwork.chainName].value[protocolIndex]}
@@ -285,8 +285,8 @@ const Trade: React.FC<any> = ({
                                                             </div>
                                                             {selectedToProtocol === item.name &&
                                                                 selectedToProtocol !== "erc20" && (
-                                                                    <div className="bg-blue-200 rounded-lg p-3 my-1.5">
-                                                                        <div className="w-full flex justify-start items-center gap-2 bg-white rounded-md shadow py-1.5 px-5">
+                                                                    <div className="bg-backgound-100 text-font-200 rounded-lg p-3 my-1.5">
+                                                                        <div className="w-full flex justify-start items-center gap-2 bg-font-100 rounded-md shadow py-1.5 px-5">
                                                                             <input
                                                                                 type="text"
                                                                                 value={filterToAddress}
@@ -294,7 +294,7 @@ const Trade: React.FC<any> = ({
                                                                                     setFilterToAddress(e.target.value)
                                                                                 }
                                                                                 placeholder="Search by Address"
-                                                                                className="w-full text-sm md:text-base outline-none"
+                                                                                className="w-full text-sm md:text-base outline-none placeholder-font-500 text-1100"
                                                                             />
                                                                             <AiOutlineSearch />
                                                                         </div>
@@ -310,12 +310,12 @@ const Trade: React.FC<any> = ({
                                                                                     onClick={() =>
                                                                                         onChangeToToken(token.name)
                                                                                     }
-                                                                                    className="w-full flex justify-start items-center gap-3 hover:bg-slate-200 active:bg-slate-200 py-2 px-3 rounded-lg cursor-pointer my-2"
+                                                                                    className="w-full flex justify-start items-center gap-3 hover:bg-backgound-200 active:bg-backgound-100 py-2 px-3 rounded-lg cursor-pointer my-2"
                                                                                 >
                                                                                     {/* <Image
                                                                                         src={token.icon}
                                                                                         alt=""
-                                                                                        className="h-7 w-7 bg-slate-200 rounded-full cursor-pointer"
+                                                                                        className="h-7 w-7 bg-font-200 rounded-full cursor-pointer"
                                                                                     /> */}
                                                                                     {token.name}
                                                                                 </div>
@@ -327,8 +327,8 @@ const Trade: React.FC<any> = ({
                                                             {item.name === "erc20" &&
                                                                 selectedToProtocol === "erc20" &&
                                                                 tokensData && (
-                                                                    <div className="bg-blue-200 rounded-lg p-3 my-1.5">
-                                                                        <div className="w-full flex justify-start items-center gap-2 bg-white rounded-md shadow py-1.5 px-5">
+                                                                    <div className="bg-backgound-100 text-font-200 rounded-lg p-3 my-1.5">
+                                                                        <div className="w-full flex justify-start items-center gap-2 bg-font-100 rounded-md shadow py-1.5 px-5">
                                                                             <input
                                                                                 type="text"
                                                                                 value={filterToAddress}
@@ -336,7 +336,7 @@ const Trade: React.FC<any> = ({
                                                                                     setFilterToAddress(e.target.value)
                                                                                 }
                                                                                 placeholder="Search by Address"
-                                                                                className="w-full text-sm md:text-base outline-none"
+                                                                                className="w-full text-sm md:text-base outline-none placeholder-font-500 text-1100"
                                                                             />
                                                                             <AiOutlineSearch />
                                                                         </div>
@@ -355,7 +355,7 @@ const Trade: React.FC<any> = ({
                                                                                                 token.symbol
                                                                                             )
                                                                                         }
-                                                                                        className="w-full flex justify-start items-center gap-3 hover:bg-slate-300 active:bg-slate-200 py-2 px-3 rounded-lg cursor-pointer"
+                                                                                        className="w-full flex justify-start items-center gap-3  text-font-300 hover:text-font-100 hover:bg-backgound-100 active:bg-backgound-200 py-2 px-3 my-1 rounded-lg cursor-pointer"
                                                                                     >
                                                                                         <Image
                                                                                             src={
@@ -368,7 +368,7 @@ const Trade: React.FC<any> = ({
                                                                                             alt=""
                                                                                             width={10}
                                                                                             height={10}
-                                                                                            className="h-10 w-10 bg-slate-200 rounded-full cursor-pointer"
+                                                                                            className="h-10 w-10 bg-font-200 rounded-full cursor-pointer"
                                                                                         />
                                                                                         {token.symbol}
                                                                                     </div>
@@ -451,8 +451,8 @@ const Trade: React.FC<any> = ({
                         //         </div>
                         //     </div>
                         // )
-                        <div className="w-full bg-gray-50 flex flex-col gap-1 shadow-md shadow-primary-950 rounded-2xl cursor-pointer">
-                            <h1 className="w-full bg-purple-950 text-white text-lg md:text-xl lg:text-2xl text-center font-bold rounded-t-2xl p-5">
+                        <div className="w-full bg-backgound-300 flex flex-col gap-1 shadow shadow-backgound-800 rounded-2xl cursor-pointer">
+                            <h1 className="w-full bg-backgound-300 text-font-100 text-lg md:text-xl lg:text-2xl text-center font-bold rounded-t-2xl p-5">
                                 Building Batch No. {individualBatch.length}
                             </h1>
                             <div className="w-full flex flex-col gap-5 px-5 py-7">
@@ -471,9 +471,9 @@ const Trade: React.FC<any> = ({
                                     {/* ---------- FROM Section START ---------- */}
                                     <div
                                         onClick={() => setShowFromSelectionMenu(true)}
-                                        className="w-full bg-white border border-slate-300 shadow rounded-lg px-5 py-3"
+                                        className="w-full bg-backgound-100 border border-backgound-300 rounded-lg px-5 py-3"
                                     >
-                                        <h5 className="text-sm md:text-base lg:text-lg font-medium md:font-semibold text-slate-800">
+                                        <h5 className="text-sm md:text-base lg:text-lg font-medium md:font-semibold text-font-100">
                                             From
                                         </h5>
                                         <div className="flex flex-row justify-start items-center gap-8 py-3">
@@ -482,31 +482,31 @@ const Trade: React.FC<any> = ({
                                                     <Image
                                                         src={selectedFromNetwork.icon}
                                                         alt=""
-                                                        className="h-12 w-12 bg-slate-200 rounded-full cursor-pointer"
+                                                        className="h-12 w-12 bg-backgound-300 rounded-full cursor-pointer"
                                                     />
-                                                    <div className="absolute -bottom-1 -right-1 bg-white h-6 w-6 flex justify-center items-center rounded-full">
+                                                    <div className="absolute -bottom-1 -right-1 bg-backgound-100 h-6 w-6 flex justify-center items-center rounded-full">
                                                         <Image
                                                             src={selectedFromNetwork.icon}
                                                             alt=""
-                                                            className="h-5 w-5 bg-slate-200 rounded-full cursor-pointer"
+                                                            className="h-5 w-5 bg-backgound-300 rounded-full cursor-pointer"
                                                         />
                                                     </div>
                                                 </div>
                                             ) : (
                                                 <div className="relative">
-                                                    <div className="h-12 w-12 bg-slate-200 rounded-full cursor-pointer" />
-                                                    <div className="absolute -bottom-1 -right-1 bg-white h-6 w-6 flex justify-center items-center rounded-full">
-                                                        <div className="h-5 w-5 bg-slate-200 rounded-full cursor-pointer" />
+                                                    <div className="h-12 w-12 bg-backgound-300 rounded-full cursor-pointer" />
+                                                    <div className="absolute -bottom-1 -right-1 bg-backgound-100 h-6 w-6 flex justify-center items-center rounded-full">
+                                                        <div className="h-5 w-5 bg-backgound-300 rounded-full cursor-pointer" />
                                                     </div>
                                                 </div>
                                             )}
 
                                             {selectedFromNetwork.chainName ? (
-                                                <div className="text-slate-400">
-                                                    <div className="text-base md:text-lg text-black font-semibold">
+                                                <div className="text-font-100">
+                                                    <div className="text-base md:text-lg text-font-100 font-semibold">
                                                         {selectedFromNetwork.key}
                                                     </div>
-                                                    <div className="text-xs text-slate-500 font-medium">
+                                                    <div className="text-xs text-font-300 font-medium">
                                                         {selectedFromProtocol && <span>on {selectedFromProtocol}</span>}
                                                         {selectedFromToken && (
                                                             <span>Chain ( {selectedFromToken} )</span>
@@ -514,7 +514,7 @@ const Trade: React.FC<any> = ({
                                                     </div>
                                                 </div>
                                             ) : (
-                                                <div className="text-base md:text-lg text-slate-400">
+                                                <div className="text-base md:text-lg text-font-300">
                                                     Select Chain and token
                                                 </div>
                                             )}
@@ -524,19 +524,19 @@ const Trade: React.FC<any> = ({
 
                                     <div
                                         onClick={handleSwap}
-                                        className="absolute flex justify-center items-center border-2 bg-white hover:bg-slate-50 active:bg-slate-100 rounded-full"
+                                        className="absolute flex justify-center items-center border-2 bg-font-200 hover:bg-font-100 active:bg-font-400 rounded-full"
                                     >
                                         <Image
                                             src={swap}
                                             alt=""
-                                            className={`h-12 w-12 p-3 ${
+                                            className={`h-12 w-12 p-1.5 ${
                                                 selectedToNetwork.chainName &&
                                                 selectedToProtocol &&
                                                 selectedToToken &&
                                                 selectedFromNetwork.chainName &&
                                                 selectedFromProtocol &&
                                                 selectedFromToken
-                                                    ? "!rotate-90"
+                                                    ? "!rotate-90 h-9 w-9 p-2"
                                                     : "!rotate-0"
                                             }`}
                                         />
@@ -545,9 +545,9 @@ const Trade: React.FC<any> = ({
                                     {/* ---------- To Section START ---------- */}
                                     <div
                                         onClick={() => setShowToSelectionMenu(true)}
-                                        className="w-full bg-white border border-slate-300 shadow rounded-lg px-5 py-3"
+                                        className="w-full bg-backgound-100 border border-backgound-300 rounded-lg px-5 py-3"
                                     >
-                                        <h5 className="text-sm md:text-base lg:text-lg font-medium md:font-semibold text-slate-800">
+                                        <h5 className="text-sm md:text-base lg:text-lg font-medium md:font-semibold text-font-100">
                                             To
                                         </h5>
                                         <div className="flex flex-row justify-start items-center gap-8 py-3">
@@ -556,37 +556,37 @@ const Trade: React.FC<any> = ({
                                                     <Image
                                                         src={selectedToNetwork.icon}
                                                         alt=""
-                                                        className="h-12 w-12 bg-slate-200 rounded-full cursor-pointer"
+                                                        className="h-12 w-12 bg-backgound-300 rounded-full cursor-pointer"
                                                     />
-                                                    <div className="absolute -bottom-1 -right-1 bg-white h-6 w-6 flex justify-center items-center rounded-full">
+                                                    <div className="absolute -bottom-1 -right-1 bg-backgound-100 h-6 w-6 flex justify-center items-center rounded-full">
                                                         <Image
                                                             src={selectedToNetwork.icon}
                                                             alt=""
-                                                            className="h-5 w-5 bg-slate-200 rounded-full cursor-pointer"
+                                                            className="h-5 w-5 bg-backgound-300 rounded-full cursor-pointer"
                                                         />
                                                     </div>
                                                 </div>
                                             ) : (
                                                 <div className="relative">
-                                                    <div className="h-12 w-12 bg-slate-200 rounded-full cursor-pointer" />
-                                                    <div className="absolute -bottom-1 -right-1 bg-white h-6 w-6 flex justify-center items-center rounded-full">
-                                                        <div className="h-5 w-5 bg-slate-200 rounded-full cursor-pointer" />
+                                                    <div className="h-12 w-12 bg-backgound-300 rounded-full cursor-pointer" />
+                                                    <div className="absolute -bottom-1 -right-1 bg-backgound-100 h-6 w-6 flex justify-center items-center rounded-full">
+                                                        <div className="h-5 w-5 bg-backgound-300 rounded-full cursor-pointer" />
                                                     </div>
                                                 </div>
                                             )}
 
                                             {selectedToNetwork.chainName ? (
-                                                <div className="text-slate-400">
-                                                    <div className="text-base md:text-lg text-black font-semibold">
+                                                <div className="text-font-100">
+                                                    <div className="text-base md:text-lg text-white font-semibold">
                                                         {selectedToNetwork.key}
                                                     </div>
-                                                    <div className="text-xs text-slate-500 font-medium">
+                                                    <div className="text-xs text-font-300 font-medium">
                                                         {selectedToProtocol && <span>on {selectedToProtocol}</span>}
                                                         {selectedToToken && <span>Chain ( {selectedToToken} )</span>}
                                                     </div>
                                                 </div>
                                             ) : (
-                                                <div className="text-base md:text-lg text-slate-400">
+                                                <div className="text-base md:text-lg text-font-300">
                                                     Select Chain and token
                                                 </div>
                                             )}
@@ -654,8 +654,8 @@ const Trade: React.FC<any> = ({
                                 {/* ---------- Contract Address Section END ---------- */}
 
                                 {/* ---------- YOU PAY Section START ---------- */}
-                                <div className="bg-white border border-slate-300 shadow rounded-lg px-5 py-3">
-                                    <h5 className="text-sm md:text-base lg:text-lg font-medium md:font-semibold text-slate-800">
+                                <div className="bg-backgound-100 border border-backgound-300 rounded-lg px-5 py-3">
+                                    <h5 className="text-sm md:text-base lg:text-lg font-medium md:font-semibold text-font-100">
                                         You Pay
                                     </h5>
                                     <div className="relative flex flex-row justify-start items-center gap-8 py-3">
@@ -664,26 +664,26 @@ const Trade: React.FC<any> = ({
                                                 <Image
                                                     src={selectedFromNetwork.icon}
                                                     alt=""
-                                                    className="h-12 w-12 bg-slate-200 rounded-full cursor-pointer"
+                                                    className="h-12 w-12 bg-backgound-300 rounded-full cursor-pointer"
                                                 />
-                                                <div className="absolute -bottom-1 -right-1 bg-white h-6 w-6 flex justify-center items-center rounded-full">
+                                                <div className="absolute -bottom-1 -right-1 bg-backgound-100 h-6 w-6 flex justify-center items-center rounded-full">
                                                     <Image
                                                         src={selectedFromNetwork.icon}
                                                         alt=""
-                                                        className="h-5 w-5 bg-slate-200 rounded-full cursor-pointer"
+                                                        className="h-5 w-5 bg-backgound-300 rounded-full cursor-pointer"
                                                     />
                                                 </div>
                                             </div>
                                         ) : (
                                             <div className="relative">
-                                                <div className="h-12 w-12 bg-slate-200 rounded-full cursor-pointer" />
-                                                <div className="absolute -bottom-1 -right-1 bg-white h-6 w-6 flex justify-center items-center rounded-full">
-                                                    <div className="h-5 w-5 bg-slate-200 rounded-full cursor-pointer" />
+                                                <div className="h-12 w-12 bg-backgound-300 rounded-full cursor-pointer" />
+                                                <div className="absolute -bottom-1 -right-1 bg-backgound-100 h-6 w-6 flex justify-center items-center rounded-full">
+                                                    <div className="h-5 w-5 bg-backgound-300 rounded-full cursor-pointer" />
                                                 </div>
                                             </div>
                                         )}
 
-                                        <div className="text-slate-400">
+                                        <div className="text-font-100">
                                             <input
                                                 min="0"
                                                 type="number"
@@ -694,30 +694,30 @@ const Trade: React.FC<any> = ({
                                                         : amountIn
                                                 }
                                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChangeAmountIn(e.target.value)}
-                                                className="w-full text-xl md:text-2xl text-black placeholder:text-slate-500 font-bold outline-none"
+                                                className="w-full text-xl md:text-2xl text-white bg-backgound-100 placeholder:text-slate-200 font-bold outline-none"
                                             />
-                                            <div className="text-xs md:text-sm text-slate-500 font-medium">$0.00</div>
+                                            <div className="text-xs md:text-sm text-font-300 font-medium">$0.00</div>
                                             <div className="absolute right-0 bottom-0 flex flex-col justify-center items-end gap-1">
                                                 {maxBalance !== amountIn && maxBalance !== "0" ? (
                                                     <span
                                                         onClick={() =>
                                                             onChangeAmountIn(maxBalance ? maxBalance.toString() : "0")
                                                         }
-                                                        className="text-xs md:text-sm text-purple-100 font-medium bg-purple-700 rounded-xl px-3 py-1"
+                                                        className="text-xs md:text-sm text-font-100 font-medium bg-button-100 rounded-xl px-3 py-1"
                                                     >
                                                         Max
                                                     </span>
                                                 ) : maxBalance == "0" ? (
-                                                    <span className="text-xs md:text-sm text-purple-100 font-medium bg-red-700 rounded-xl px-3 py-1">
+                                                    <span className="text-xs md:text-sm text-font-100 font-medium bg-red-700 rounded-xl px-3 py-1">
                                                         No Balance
                                                     </span>
                                                 ) : null}
-                                                <span className="flex gap-2 text-xs md:text-sm text-slate-600 font-semibold">
+                                                <span className="flex gap-2 text-xs md:text-sm text-font-300 font-semibold">
                                                     Balance:
                                                     {ismaxBalanceLoading ? (
                                                         <ImSpinner className="animate-spin h-4 w-4" />
                                                     ) : (
-                                                        <span className="text-slate-700">
+                                                        <span className="text-font-400">
                                                             {maxBalance ? maxBalance : 0}{" "}
                                                             {selectedFromToken && selectedFromToken}
                                                         </span>
@@ -737,11 +737,11 @@ const Trade: React.FC<any> = ({
                                     </div>
                                 )}
 
-                                <div className="w-full flex flex-col justify-center items-center gap-3">
+                                <div className="w-full flex justify-center items-center gap-3">
                                     <button
                                         type="button"
                                         onClick={() => sendSingleBatchToList(true)}
-                                        className="w-full flex justify-center items-center gap-2 bg-purple-900 hover:bg-purple-950 py-2 px-5 rounded-full text-white font-medium border-b-4 border-purple-950 transition duration-300"
+                                        className="w-full flex justify-center items-center gap-2 bg-button-100 hover:bg-button-100 py-2 px-5 rounded-lg text-font-100 font-medium border-b-4 border-button-100 transition duration-300"
                                     >
                                         {addToBatchLoading && <ImSpinner className="animate-spin h-5 w-5" />}
                                         Add Batch to List
@@ -749,7 +749,7 @@ const Trade: React.FC<any> = ({
                                     <button
                                         type="button"
                                         onClick={() => ExecuteAllBatches(true)}
-                                        className="w-full flex justify-center items-center gap-2 bg-purple-900 hover:bg-purple-950 py-2 px-5 rounded-full text-white font-medium border-b-4 border-purple-950 transition duration-300"
+                                        className="w-full flex justify-center items-center gap-2 bg-button-100 hover:bg-button-100 py-2 px-5 rounded-lg text-font-100 font-medium border-b-4 border-button-100 transition duration-300"
                                     >
                                         {/* {sendTxLoading && <ImSpinner className="animate-spin h-5 w-5" />} */}
                                         Execute Batch
@@ -764,8 +764,8 @@ const Trade: React.FC<any> = ({
                 {showExecuteBatchModel && <ExecuteBatchModel />}
 
                 {showBatchList && (
-                    <div className="w-full max-h-full bg-gray-50 flex flex-col justify-start items-center gap-1 shadow-md shadow-primary-950 rounded-2xl cursor-pointer">
-                        <h1 className="w-full bg-purple-950 text-white text-lg md:text-xl lg:text-2xl text-center font-bold rounded-t-2xl p-5">
+                    <div className="w-full md:max-w-2xl max-h-full bg-backgound-300 border border-backgound-600 shadow shadow-backgound-500 flex flex-col justify-start items-center gap-1 rounded-2xl cursor-pointer">
+                        <h1 className="w-full bg-backgound-300 text-font-100 text-lg md:text-xl lg:text-2xl text-center font-bold rounded-t-2xl p-5">
                             Batching List
                         </h1>
                         <div className="w-full max-h-full overflow-auto flex flex-col gap-5 px-5 py-7">
@@ -774,9 +774,9 @@ const Trade: React.FC<any> = ({
                                     <>
                                         {bar.txArray.length > 0 && (
                                             <div key={bar.id} className="relative">
-                                                <div className="simulation-success flex flex-col justify-center items-start gap-6 bg-purple-100 p-5 rounded-xl text-black font-medium border-2 border-purple-300 shadow-md transition duration-300">
+                                                <div className="simulation-success flex flex-col justify-center items-start gap-6 bg-backgound-100 p-5 rounded-xl text-black font-medium transition duration-300">
                                                     <div className="w-full flex justify-between items-center gap-2">
-                                                        <h1 className="flex justify-center items-center gap-3 text-black font-semibold text-base">
+                                                        <h1 className="flex justify-center items-center gap-3 text-font-100 font-semibold text-base">
                                                             {inputBarIndex + 1}.
                                                             <span>
                                                                 {bar.data.fromNetwork} To {bar.data.toNetwork}
@@ -786,11 +786,11 @@ const Trade: React.FC<any> = ({
                                                             color="red"
                                                             size="40px"
                                                             onClick={() => removeBatch(inputBarIndex)}
-                                                            className="hover:bg-slate-50 active:bg-slate-100 p-2 rounded-full"
+                                                            className="hover:bg-backgound-600 active:bg-backgound-400 p-2 rounded-full"
                                                         />
                                                     </div>
                                                     <div
-                                                        className="w-full flex flex-col justify-between items-start gap-2 p-3 rounded-xl bg-white shadow-sm"
+                                                        className="w-full flex flex-col justify-between items-start gap-2 p-3 rounded-xl bg-backgound-300 shadow-sm"
                                                         onClick={() => toggleShowBatchList(bar.id)}
                                                     >
                                                         <div className="w-full flex justify-between items-center gap-2">
@@ -799,21 +799,21 @@ const Trade: React.FC<any> = ({
                                                                     <Image
                                                                         src={NetworkLogoByNetworkName[bar.data.fromNetwork]}
                                                                         alt=""
-                                                                        className="h-10 w-10 bg-slate-200 rounded-full cursor-pointer"
+                                                                        className="h-10 w-10 bg-font-200 rounded-full cursor-pointer"
                                                                     />
-                                                                    <div className="absolute -bottom-1 -right-1 bg-white h-5 w-5 flex justify-center items-center rounded-full">
+                                                                    <div className="absolute -bottom-1 -right-1 bg-font-100 h-5 w-5 flex justify-center items-center rounded-full">
                                                                         <Image
                                                                             src={ProtocolLogoByProtocolName[bar.data.fromProtocol]}
                                                                             alt=""
-                                                                            className="h-4 w-4 bg-slate-200 rounded-full cursor-pointer"
+                                                                            className="h-4 w-4 bg-font-200 rounded-full cursor-pointer"
                                                                         />
                                                                     </div>
                                                                 </div>
                                                                 <div className="flex flex-col justify-start items-start">
-                                                                    <span className="text-lg md:text-xl lg:text-2xl font-bold text-slate-700">
+                                                                    <span className="text-lg md:text-xl lg:text-2xl font-bold text-font-100">
                                                                         {bar.data.amountIn} {bar.data.fromToken}
                                                                     </span>
-                                                                    <span className="text-base md:text-lg font-semibold text-slate-700">
+                                                                    <span className="text-base md:text-lg font-semibold text-font-400">
                                                                         {bar.data.fromProtocol} on{" "}
                                                                         {bar.data.fromNetwork} {" ... "}
                                                                         {bar.data.toProtocol} on{" "}
@@ -821,11 +821,17 @@ const Trade: React.FC<any> = ({
                                                                     </span>
                                                                 </div>
                                                             </div>
-                                                            <div className="flex justify-center items-center bg-purple-100 hover:bg-purple-200 rounded-full p-0.5">
+                                                            <div className="flex justify-center items-center bg-backgound-500 hover:bg-backgound-100 rounded-full p-0.5">
                                                                 {showIndividualBatchList === bar.id ? (
-                                                                    <MdKeyboardArrowUp size="30px" />
+                                                                    <MdKeyboardArrowUp
+                                                                        size="30px"
+                                                                        className="text-font-500"
+                                                                    />
                                                                 ) : (
-                                                                    <MdKeyboardArrowDown size="30px" />
+                                                                    <MdKeyboardArrowDown
+                                                                        size="30px"
+                                                                        className="text-font-500"
+                                                                    />
                                                                 )}
                                                             </div>
                                                         </div>
@@ -846,19 +852,19 @@ const Trade: React.FC<any> = ({
                                                                                 alt=""
                                                                                 className="h-8 w-8 bg-slate-200 rounded-full cursor-pointer"
                                                                             />
-                                                                            <div className="absolute -bottom-1 -right-1 bg-white h-4 w-4 flex justify-center items-center rounded-full">
+                                                                            <div className="absolute -bottom-1 -right-1 bg-font-100 h-4 w-4 flex justify-center items-center rounded-full">
                                                                                 <Image
                                                                                     src={ProtocolLogoByProtocolName[item.protocol]}
                                                                                     alt=""
-                                                                                    className="h-3 w-3 bg-slate-200 rounded-full cursor-pointer"
+                                                                                    className="h-3 w-3 bg-font-200 rounded-full cursor-pointer"
                                                                                 />
                                                                             </div>
                                                                         </div>
                                                                         <div className="flex flex-col justify-start items-start">
-                                                                            <span className="text-sm md:text-base font-semibold text-slate-700 break-all">
+                                                                            <span className="text-sm md:text-base font-semibold text-font-200 break-all">
                                                                                 {item.action} on {item.protocol}
                                                                             </span>
-                                                                            <span className="text-xs md:text-sm font-semibold text-slate-700">
+                                                                            <span className="text-xs md:text-sm font-semibold text-font-400">
                                                                                 {item.amount.toString()} {item.tokenIn} for {item.tokenOut}
                                                                             </span>
                                                                         </div>
@@ -894,13 +900,13 @@ const Trade: React.FC<any> = ({
                                                         )}
                                                     </div>
                                                     <div className="w-full flex justify-between items-center gap-2">
-                                                        <div className="flex justify-center items-center gap-3 text-black font-semibold text-base">
+                                                        <div className="flex justify-center items-center gap-3 text-font-200 font-semibold text-base">
                                                             <Image src={gas} alt="" className="h-7 w-7" />
                                                             <span>$0.70</span>
                                                         </div>
                                                         <div className="flex justify-center items-center gap-3">
                                                             {bar.simulation.isSuccess ? (
-                                                                <h6 className="flex justify-center items-center gap-3 bg-white text-black shadow-md font-medium text-sm rounded-full p-1 pr-5">
+                                                                <h6 className="flex justify-center items-center gap-3 bg-font-100 text-font-1100 shadow-md font-medium text-sm rounded-full p-1 pr-5">
                                                                     <svg
                                                                         className="h-5 w-5 text-green-500"
                                                                         viewBox="0 0 24 24"
@@ -916,7 +922,7 @@ const Trade: React.FC<any> = ({
                                                                     Simulation Success
                                                                 </h6>
                                                             ) : bar.simulation.isError ? (
-                                                                <h6 className="flex justify-center items-center gap-3 bg-white text-black shadow-md font-medium text-sm rounded-full p-1 pr-5">
+                                                                <h6 className="flex justify-center items-center gap-3 bg-font-100 text-font-1100 shadow-md font-medium text-sm rounded-full p-1 pr-5">
                                                                     <svg
                                                                         className="h-5 w-5 text-red-500"
                                                                         viewBox="0 0 24 24"
@@ -933,7 +939,7 @@ const Trade: React.FC<any> = ({
                                                                     Simulation Error
                                                                 </h6>
                                                             ) : (
-                                                                <h6 className="flex justify-center items-center gap-3 bg-white text-black shadow-md font-medium text-sm rounded-full py-1 px-5">
+                                                                <h6 className="flex justify-center items-center gap-3 bg-font-100 text-font-1100 shadow-md font-medium text-sm rounded-full py-1 px-5">
                                                                     Simulation
                                                                 </h6>
                                                             )}
@@ -945,7 +951,7 @@ const Trade: React.FC<any> = ({
                                     </>
                                 ))
                             ) : (
-                                <div className="text-center text-slate-600 font-semibold text-base md:text-lg">
+                                <div className="text-center text-font-700 font-semibold text-base md:text-lg">
                                     {txhash ? "Last Batches executed, Now create new batches" : "No Batches Found !"}
                                 </div>
                             )}

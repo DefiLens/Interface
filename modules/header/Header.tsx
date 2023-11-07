@@ -63,13 +63,13 @@ const Header: React.FC<any> = ({
 
     return (
         <div className="header-container w-full h-[69px]">
-            <ul className="w-full h-full flex justify-between items-center gap-3 bg-primary-950 p-2 shadow-md shadow-secondary-500">
+            <ul className="w-full h-full flex justify-between items-center gap-3 bg-backgound-100 p-2 shadow-md shadow-secondary-500">
                 <li className="w-full xl:w-1/3 flex justify-start items-center">
                     <Link href="/" className="text-[30px] font-bold flex flex-row justify-center items-center">
                         <div className="mr-2 p-1">
                             <svg
-                                width="45px"
-                                height="45px"
+                                width="40px"
+                                height="40px"
                                 viewBox="0 0 16 16"
                                 fill="none"
                                 xmlns="http://www.w3.org/2000/svg"
@@ -89,17 +89,17 @@ const Header: React.FC<any> = ({
                                 ></path>
                             </svg>
                         </div>
-                        <div className="text-white">DefiLens</div>
+                        <div className="text-font-100">DefiLens</div>
                     </Link>
                 </li>
-                <li className="hidden xl:flex justify-center items-center gap-3 text-lg bg-slate-700 rounded-full p-1">
+                <li className="hidden xl:flex justify-center items-center gap-3 text-lg bg-backgound-300 rounded-full p-1">
                     {NavigationList.length > 0 &&
                         NavigationList?.map((item) => (
                             <Link
                                 href={item.route}
                                 key={item.title}
-                                className={`cursor-pointer px-5 py-1 text-sm md:text-base text-center rounded-full hover:bg-slate-800 transition duration-300 ${
-                                pathname === item.route ? "bg-slate-900" : ""
+                                className={`cursor-pointer px-5 py-1 text-sm md:text-base text-center rounded-full hover:bg-backgound-100 transition duration-300 ${
+                                pathname === item.route ? "bg-backgound-100" : ""
                                 } `}
                             >
                                 {item.title}
@@ -107,13 +107,13 @@ const Header: React.FC<any> = ({
                     ))}
                 </li>
                 <li className="w-full xl:w-1/3 flex flex-wrap justify-end items-center gap-3">
-                    {!smartAccount && !loading && !connected && (
+                    {/* {!smartAccount && !loading && !connected && (
                         <button
-                            className="bg-primary-600 hover:bg-primary-700 py-1 px-5 rounded-lg text-primary-100 font-medium border-b-4 transition duration-300 border-primary-800 hover:border-primary-900 flex justify-center items-center gap-2"
+                            className="bg-button-100 hover:bg-button-200 py-1 px-5 rounded-lg text-font-100 font-medium border-b-4 transition duration-300 border-primary-800 hover:border-primary-900 flex justify-center items-center gap-2"
                             // onClick={handleConnect}
                         >
                             <svg
-                                className="h-4 w-4 text-light"
+                                className="h-4 w-4 text-font-100"
                                 width="24"
                                 height="24"
                                 viewBox="0 0 24 24"
@@ -129,14 +129,14 @@ const Header: React.FC<any> = ({
                             </svg>
                             Connect
                         </button>
-                    )}
+                    )} */}
                     {connected && !smartAccount && !loading && (
                         <button
-                            className="bg-primary-600 hover:bg-primary-700 py-1 px-5 rounded-lg text-primary-100 font-medium border-b-4 transition duration-300 border-primary-800 hover:border-primary-900 flex justify-center items-center gap-2"
+                            className="bg-button-100 hover:bg-button-200 py-1 px-5 rounded-lg text-font-100 font-medium border-b-4 transition duration-300 border-button-300 hover:border-button-400 flex justify-center items-center gap-2"
                             //   onClick={handleConnect}
                         >
                             <svg
-                                className="h-4 w-4 text-light"
+                                className="h-4 w-4 text-font-100"
                                 width="24"
                                 height="24"
                                 viewBox="0 0 24 24"
@@ -155,7 +155,7 @@ const Header: React.FC<any> = ({
                     )}
                     {loading && (
                         <button
-                            className="bg-primary-600 hover:bg-primary-700 py-1 px-5 rounded-lg text-primary-100 font-medium border-b-4 transition duration-300 border-primary-800 hover:border-primary-900 flex justify-center items-center gap-2"
+                            className="bg-button-100 hover:bg-button-200 py-1 px-5 rounded-lg text-font-100 font-medium border-b-4 transition duration-300 border-button-300 hover:border-button-400 flex justify-center items-center gap-2"
                         >
                             <ImSpinner className="animate-spin h-5 w-5" />
                             Loading account details...
@@ -166,12 +166,12 @@ const Header: React.FC<any> = ({
                             <button
                                 type="button"
                                 onClick={() => setShowWalletAddress(!showWalletAddress)}
-                                className="relative wallet-container flex justify-center items-center gap-5 bg-slate-700 p-2 pr-4 rounded-3xl text-primary-100 font-medium transition duration-300"
+                                className="relative wallet-container flex justify-center items-center gap-5 bg-backgound-600 p-2 pr-4 rounded-3xl text-font-100 font-medium transition duration-300"
                             >
                                 <Image
                                     src={metamask}
                                     alt="close"
-                                    className="h-7 w-7 p-1 bg-white rounded-full cursor-pointer"
+                                    className="h-7 w-7 p-1 bg-font-100 rounded-full cursor-pointer"
                                 />
                                 <span className="text-sm font-medium">
                                     {smartAccount &&
@@ -179,7 +179,7 @@ const Header: React.FC<any> = ({
                                 </span>
                                 <span className="flex justify-center items-center gap-2">
                                     <FiCopy
-                                        className="text-white hover:text-gray-300 active:text-gray-500"
+                                        className="text-font-100 hover:text-font-200 active:text-font-400"
                                         onClick={() => copyToClipboard(smartAccount.address, 'Smart account address Copied')}
                                     />
                                     {/* <input
@@ -197,17 +197,17 @@ const Header: React.FC<any> = ({
                             {showWalletAddress && smartAccount && !loading && (
                                 <div 
                                     ref={walletAddressRef} 
-                                    className="w-80 absolute top-16 right-28 z-50 flex flex-col justify-center items-start gap-4 bg-slate-800 border-2 border-slate-700 shadow-md shadow-slate-950 p-3 rounded-lg"
+                                    className="w-80 absolute top-16 right-28 z-50 flex flex-col justify-center items-start gap-4 bg-backgound-600 border-2 border-backgound-500 shadow-md shadow-backgound-100 p-3 rounded-lg"
                                 >
                                     <button className="w-full relative flex justify-between items-center gap-2">
                                         <div className="flex flex-col justify-center items-start">
-                                            <span className="text-white text-base font-medium">
+                                            <span className="text-font-100 text-base font-medium">
                                                 {smartAccount &&
                                                     smartAccount.address.slice(0, 13) +
                                                         "..." +
                                                         smartAccount.address.slice(-3)}
                                             </span>
-                                            <span className="text-gray-300 text-xs">
+                                            <span className="text-font-300 text-xs">
                                                 {smartAccount &&
                                                     "SmartAccount : (" +
                                                         scwBalance +
@@ -219,18 +219,18 @@ const Header: React.FC<any> = ({
 
                                         <FiCopy
                                             size="35px"
-                                            className="text-white active:text-gray-400 p-2 hover:bg-slate-600 rounded-md"
+                                            className="text-font-100 active:text-font-300 p-2 hover:bg-backgound-700 rounded-md"
                                             onClick={() => copyToClipboard(smartAccount.address, 'Smart account address Copied')}
                                         />
                                     </button>
                                     <button className="w-full flex justify-between items-center gap-2">
                                         <div className="flex flex-col justify-center items-start">
-                                            <span className="text-white text-base font-medium">
+                                            <span className="text-font-100 text-base font-medium">
                                                 {smartAccount &&
                                                     address &&
                                                     address.slice(0, 13) + "..." + address.slice(-3)}
                                             </span>
-                                            <span className="text-gray-300 text-xs">
+                                            <span className="text-font-300 text-xs">
                                                 {smartAccount &&
                                                     "EOA : (" +
                                                         eoaBalance +
@@ -242,7 +242,7 @@ const Header: React.FC<any> = ({
 
                                         <FiCopy
                                             size="35px"
-                                            className="text-white active:text-gray-400 p-2 hover:bg-slate-600 rounded-md"
+                                            className="text-font-100 active:text-font-300 p-2 hover:bg-backgound-700 rounded-md"
                                             onClick={() => copyToClipboard(address, 'EOA address Copied')}
                                         />
                                     </button>
@@ -255,14 +255,14 @@ const Header: React.FC<any> = ({
                         switchOnSpecificChain={switchOnSpecificChain}
                     />
                     
-                    {/* <div className="relative border-2 border-secondary-300 text-secondary-800 bg-white shadow-md rounded-md">
+                    {/* <div className="relative border-2 border-secondary-300 text-backgound-100 bg-font-100 shadow-md rounded-md">
                         <label htmlFor="fromNetwork" className="sr-only">
                             Connect Network
                         </label>
                         <select
                             id="fromNetwork"
                             name="networks"
-                            className="w-44 appearance-none py-1 px-3 bg-white rounded-md"
+                            className="w-44 appearance-none py-1 px-3 bg-font-100 rounded-md"
                             value={String(selectedChain)}
                             onChange={(e) => switchOnSpecificChain(e.target.value)}
                         >
@@ -318,7 +318,7 @@ const Header: React.FC<any> = ({
                     </div> */}
 
                     <div className="flex flex-wrap justify-start items-center gap-3 text-base">
-                        <div className="relative flex justify-center items-center gap-5 bg-white rounded-full font-medium  transition duration-300 overflow-hidden">
+                        <div className="relative flex justify-center items-center gap-5 bg-font-100 rounded-full font-medium  transition duration-300 overflow-hidden">
                             <span className="flex justify-center items-center gap-2">
                                 <input
                                     type="checkbox"
@@ -331,7 +331,7 @@ const Header: React.FC<any> = ({
                                     <Image
                                         src={wallet}
                                         alt="close"
-                                        className="h-10 w-10 p-2 bg-white hover:bg-gray-200 active:bg-gray-300 rounded-lg cursor-pointer"
+                                        className="h-10 w-10 p-2 bg-font-100 hover:bg-font-200 active:font-400 rounded-lg cursor-pointer"
                                     />
                                 </label>
                             </span>

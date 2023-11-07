@@ -42,7 +42,7 @@ const Transfer: React.FC<any> = ({
     const chain = useChain();
 
     return (
-        <div className="w-full h-full overflow-scroll bg-gradient-to-t from-gray-900 via-gray-800 to-gray-900 flex flex-col gap-5 shadow-md shadow-primary-950 cursor-pointer p-5">
+        <div className="w-full h-full overflow-scroll bg-backgound-100 flex flex-col gap-5 shadow-lg shadow-slate-500 cursor-pointer p-5">
                 {!smartAccount && (
                     <div className="flex justify-center items-center border-2 border-gray-500 shadow-sm shadow-primary-950 rounded-lg cursor-pointer">
                         <h3 className="font-semibold text-lg md:text-2xl text-gray-200 py-4 bg-transparent">
@@ -237,7 +237,7 @@ const Transfer: React.FC<any> = ({
                             <button
                                 type="button"
                                 onClick={(e: any) => send()}
-                                className="flex justify-center items-center gap-2 bg-success-600 hover:bg-success-700 py-2 px-5 rounded-lg text-white font-medium border-b-4 border-success-800 hover:border-success-900 transition duration-300 mt-3"
+                                className="flex justify-center items-center gap-2 bg-button-100 hover:bg-button-100 py-2 px-5 rounded-lg text-white font-medium border-b-4 border-button-100 hover:border-button-100 transition duration-300 mt-3"
                             >
                                 {sendTxLoading && <ImSpinner className="animate-spin h-5 w-5" />}
                                 {isSCW ? "Send SmartAccount to EOA" : "Send EOA to SmartAccount"}
