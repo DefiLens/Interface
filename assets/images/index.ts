@@ -18,6 +18,7 @@ import gas from './gas.png';
 import bridgeCost from './bridgeCost.png';
 import downLine from './downLine.png';
 import sideLine from './sideLine.png';
+import defaultBlue from './defaultBlue.png';
 
 export {
   closeNarrow,
@@ -40,4 +41,5 @@ export {
   bridgeCost,
   downLine,
   sideLine,
+  defaultBlue,
 };

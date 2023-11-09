@@ -1,4 +1,5 @@
 import { BigNumber as bg } from "bignumber.js";
+import { startCase } from 'lodash';
 
 import Image from "next/image";
 import { ImSpinner } from "react-icons/im";
@@ -9,7 +10,7 @@ import { MdKeyboardArrowDown, MdKeyboardArrowUp } from "react-icons/md";
 import { tTrade, tTradeProtocol } from "./types";
 import { iIndividualBatch, iTokenData, iTrade, useTradeStore } from "../../store/TradeStore";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
-import { avalanche, base, downLine, gas, optimism, polygon, swap, warning } from "../../assets/images";
+import { avalanche, base, defaultBlue, downLine, gas, optimism, polygon, swap, warning } from "../../assets/images";
 import { _functionType, _nonce, NETWORK_LIST, NetworkLogoByNetworkName, protocolByNetwork, ProtocolLogoByProtocolName, protocolNames } from "../../utils/constants";
 import ExecuteBatchModel from "../../components/ExecuteBatchModel/ExecuteBatchModel";
 
@@ -222,7 +223,7 @@ const Trade: React.FC<any> = ({
                                                                                                 token.symbol
                                                                                             )
                                                                                         }
-                                                                                        className="w-full flex justify-start items-center gap-3 text-font-300 hover:text-font-100 hover:bg-backgound-100 active:bg-backgound-200 py-2 px-3 rounded-lg cursor-pointer my-2"
+                                                                                        className="w-full flex justify-start items-center gap-3 text-font-300 hover:text-font-100 hover:bg-backgound-200 active:bg-backgound-100 py-2 px-3 rounded-lg cursor-pointer my-2"
                                                                                     >
                                                                                         <Image
                                                                                             src={
@@ -355,7 +356,7 @@ const Trade: React.FC<any> = ({
                                                                                                 token.symbol
                                                                                             )
                                                                                         }
-                                                                                        className="w-full flex justify-start items-center gap-3  text-font-300 hover:text-font-100 hover:bg-backgound-100 active:bg-backgound-200 py-2 px-3 my-1 rounded-lg cursor-pointer"
+                                                                                        className="w-full flex justify-start items-center gap-3  text-font-300 hover:text-font-100 hover:bg-backgound-200 active:bg-backgound-100 py-2 px-3 my-1 rounded-lg cursor-pointer"
                                                                                     >
                                                                                         <Image
                                                                                             src={
@@ -486,7 +487,7 @@ const Trade: React.FC<any> = ({
                                                     />
                                                     <div className="absolute -bottom-1 -right-1 bg-backgound-100 h-6 w-6 flex justify-center items-center rounded-full">
                                                         <Image
-                                                            src={ProtocolLogoByProtocolName[selectedFromProtocol]}
+                                                            src={ProtocolLogoByProtocolName[selectedFromProtocol] || defaultBlue}
                                                             alt=""
                                                             className="h-5 w-5 bg-backgound-300 rounded-full cursor-pointer"
                                                         />
@@ -529,14 +530,14 @@ const Trade: React.FC<any> = ({
                                         <Image
                                             src={swap}
                                             alt=""
-                                            className={`h-12 w-12 p-1.5 ${
+                                            className={`h-10 w-10 p-2 ${
                                                 selectedToNetwork.chainName &&
                                                 selectedToProtocol &&
                                                 selectedToToken &&
                                                 selectedFromNetwork.chainName &&
                                                 selectedFromProtocol &&
                                                 selectedFromToken
-                                                    ? "!rotate-90 h-9 w-9 p-2"
+                                                    ? "!rotate-90 h-9 w-9 p-1.5"
                                                     : "!rotate-0"
                                             }`}
                                         />
@@ -560,7 +561,7 @@ const Trade: React.FC<any> = ({
                                                     />
                                                     <div className="absolute -bottom-1 -right-1 bg-backgound-100 h-6 w-6 flex justify-center items-center rounded-full">
                                                         <Image
-                                                            src={ProtocolLogoByProtocolName[selectedToProtocol]}
+                                                            src={ProtocolLogoByProtocolName[selectedToProtocol] || defaultBlue}
                                                             alt=""
                                                             className="h-5 w-5 bg-backgound-300 rounded-full cursor-pointer"
                                                         />
@@ -668,7 +669,7 @@ const Trade: React.FC<any> = ({
                                                 />
                                                 <div className="absolute -bottom-1 -right-1 bg-backgound-100 h-6 w-6 flex justify-center items-center rounded-full">
                                                     <Image
-                                                        src={ProtocolLogoByProtocolName[selectedFromProtocol]}
+                                                        src={ProtocolLogoByProtocolName[selectedFromProtocol] || defaultBlue}
                                                         alt=""
                                                         className="h-5 w-5 bg-backgound-300 rounded-full cursor-pointer"
                                                     />
@@ -779,7 +780,7 @@ const Trade: React.FC<any> = ({
                                                         <h1 className="flex justify-center items-center gap-3 text-font-100 font-semibold text-base">
                                                             {inputBarIndex + 1}.
                                                             <span>
-                                                                {bar.data.fromNetwork} To {bar.data.toNetwork}
+                                                                {startCase(bar.data.fromNetwork)} To {startCase(bar.data.toNetwork)}
                                                             </span>
                                                         </h1>
                                                         <MdDelete
@@ -813,7 +814,7 @@ const Trade: React.FC<any> = ({
                                                                     <span className="text-lg md:text-xl lg:text-2xl font-bold text-font-100">
                                                                         {bar.data.amountIn} {bar.data.fromToken}
                                                                     </span>
-                                                                    <span className="text-base md:text-lg font-semibold text-font-400">
+                                                                    <span className="text-sm md:text-base font-semibold text-font-400">
                                                                         {bar.data.fromProtocol} on{" "}
                                                                         {bar.data.fromNetwork} {" ... "}
                                                                         {bar.data.toProtocol} on{" "}
