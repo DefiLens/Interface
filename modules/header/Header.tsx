@@ -330,10 +330,10 @@ const Header: React.FC<any> = ({
                         </div>
                         <div
                             ref={transferModuleRef}
-                            className={`absolute w-96 h-[calc(100%-69px)] top-[69px] z-40 shadow-xl shadow-gray-900 ${
+                            className={`absolute w-full lg:w-[50%] h-[calc(100%-69px)] top-[69px] z-40 shadow-xl shadow-gray-900 ${
                                 showTransferFundToggle
                                     ? "!right-0 !translate-x-0 !transition !duration-1000 !ease-out"
-                                    : "!-right-96 !translate-x-96 !transition !duration-700 !ease-out"
+                                    : "!-right-full lg:!-right-[50%] !translate-x-96 !transition !duration-700 !ease-out"
                             } `}
                         >
                             <TransferContainer />

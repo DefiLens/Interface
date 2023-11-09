@@ -82,7 +82,7 @@ const Trade: React.FC<any> = ({
             <div
                 className={`${
                     showBatchList ? "!w-full" : "!w-[50%]"
-                } h-full flex flex-col lg:flex-row justify-center items-start gap-4`}
+                } h-full flex flex-col lg:flex-row justify-start lg:justify-center items-center lg:items-start gap-4`}
             >
                 <div className="w-full md:max-w-xl h-full">
                     {showFromSelectionMenu || showToSelectionMenu ? (

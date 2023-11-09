@@ -133,7 +133,7 @@ const TransferContainer: React.FC<any> = () => {
         }
     }
 
-    const onOptionChangeForWallet = (e) => {
+    const onOptionChangeForWallet = () => {
         setGasCost(0);
         setAmountIn(0);
         setAmountInDecimals(0);
@@ -214,6 +214,10 @@ const TransferContainer: React.FC<any> = () => {
         }
     };
     const send = async () => {
+        if (amountIn == "") {
+            toast.error("Please Enter Amount");
+            return;
+        };
         try {
             setSendtxLoading(true);
             setTxHash("");
@@ -265,6 +269,8 @@ const TransferContainer: React.FC<any> = () => {
                 // });
                 // const txReciept = await txResponseOfBiconomyAA?.wait();
                 setTxHash(txReciept?.receipt.transactionHash);
+                setAmountIn(0);
+                setAmountInDecimals(0);
                 setSendtxLoading(false);
                 toast.success(`Tx Succefully done: ${txReciept?.receipt.transactionHash}`);
             } else {
@@ -275,12 +281,16 @@ const TransferContainer: React.FC<any> = () => {
                 const txReciept = await signer.sendTransaction(tx);
                 await txReciept?.wait();
                 setTxHash(txReciept?.hash);
+                setAmountIn(0);
+                setAmountInDecimals(0);
                 setSendtxLoading(false);
                 toast.success(`Tx Succefully done: ${txReciept?.hash}`);
             }
         } catch (error) {
             console.log("send-error: ", error);
             toast.error("Transaction Failed");
+            setAmountIn(0);
+            setAmountInDecimals(0);
             setSendtxLoading(false);
             return;
         }
