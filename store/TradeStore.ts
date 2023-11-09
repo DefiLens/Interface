@@ -208,7 +208,7 @@ export interface iTrade {
 }
 
 export const useTradeStore = create<iTrade>((set) => ({
-    maxBalance: "0",
+    maxBalance: "",
     ismaxBalanceLoading: false,
     showSelectNetworkList: false,
 
