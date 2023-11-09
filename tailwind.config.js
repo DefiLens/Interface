@@ -41,6 +41,7 @@ module.exports = {
         "button-200": "#3575de",
         "button-300": "#2f68c5",
         "button-400": "#295bac",
+        "button-1100": "#60a5fa",
 
         "font-100": "#ffffff",
         "font-200": "#e5e5e5",

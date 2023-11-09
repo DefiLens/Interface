@@ -3,11 +3,9 @@ import { useContext, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { FiCopy } from "react-icons/fi";
-import { ImSpinner } from "react-icons/im";
+import { CgSpinner } from "react-icons/cg";
 import { usePathname } from "next/navigation";
-import { FaChevronDown } from "react-icons/fa";
 import { useAddress } from "@thirdweb-dev/react";
-import { RiExchangeFundsFill } from "react-icons/ri";
 import { TbSquareRoundedChevronDownFilled } from "react-icons/tb";
 
 import { tHeader } from "./types";
@@ -154,12 +152,15 @@ const Header: React.FC<any> = ({
                         </button>
                     )}
                     {loading && (
-                        <button
-                            className="bg-button-100 py-2 px-5 rounded-lg text-font-100 font-medium border-b-4 transition duration-300 border-button-300 hover:border-button-400 flex justify-center items-center gap-2"
-                        >
-                            <ImSpinner className="animate-spin h-5 w-5" />
-                            Loading account details...
-                        </button>
+                        <div className="flex flex-wrap justify-start items-center gap-3 text-base">
+                            <button
+                                type="button"
+                                onClick={() => setShowWalletAddress(!showWalletAddress)}
+                                className="relative wallet-container flex justify-center items-center gap-5 bg-backgound-600 p-2 rounded-3xl text-font-100 font-medium transition duration-300"
+                            >
+                                <CgSpinner className="animate-spin h-6 w-6" />
+                            </button>
+                        </div>
                     )}
                     {smartAccount && !loading && (
                         <div className="flex flex-wrap justify-start items-center gap-3 text-base">
@@ -182,15 +183,6 @@ const Header: React.FC<any> = ({
                                         className="text-font-100 hover:text-font-200 active:text-font-400"
                                         onClick={() => copyToClipboard(smartAccount.address, 'Smart account address Copied')}
                                     />
-                                    {/* <input
-                                        type="checkbox"
-                                        id="dropdown-toggle"
-                                        checked={showWalletAddress}
-                                        onChange={(e: any) => setShowWalletAddress(e.target.checked)}
-                                    />
-                                    <label htmlFor="dropdown-toggle" className="drop-down">
-                                        <FaChevronDown className="arrow cursor-pointer" />
-                                    </label> */}
                                 </span>
                             </button>
 

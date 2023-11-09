@@ -2,8 +2,9 @@ import { BigNumber as bg } from "bignumber.js";
 import { startCase } from 'lodash';
 
 import Image from "next/image";
-import { ImSpinner } from "react-icons/im";
+import { BiLoaderAlt } from "react-icons/bi";
 import { AiOutlineSearch } from "react-icons/ai";
+import { CgSpinner } from "react-icons/cg";
 import { MdDelete, MdOutlineArrowBack } from "react-icons/md";
 import { MdKeyboardArrowDown, MdKeyboardArrowUp } from "react-icons/md";
 
@@ -716,7 +717,7 @@ const Trade: React.FC<any> = ({
                                                 <span className="flex gap-2 text-xs md:text-sm text-font-300 font-semibold">
                                                     Balance:
                                                     {ismaxBalanceLoading ? (
-                                                        <ImSpinner className="animate-spin h-4 w-4" />
+                                                        <BiLoaderAlt className="animate-spin h-4 w-4" />
                                                     ) : (
                                                         <span className="text-font-400">
                                                             {maxBalance ? maxBalance : 0}{" "}
@@ -742,17 +743,17 @@ const Trade: React.FC<any> = ({
                                     <button
                                         type="button"
                                         onClick={() => sendSingleBatchToList(true)}
-                                        className="w-full flex justify-center items-center gap-2 bg-button-100 hover:bg-button-100 py-3 px-5 rounded-lg text-base md:text-lg text-font-100 font-bold border-b-4 border-button-100 transition duration-300"
+                                        className={`${addToBatchLoading ? 'bg-button-1100 hover:bg-button-1100' : 'bg-button-100 hover:bg-button-100'}  w-full flex justify-center items-center gap-2  py-3 px-5 rounded-lg text-base md:text-lg text-font-100 font-bold border-b-4 border-button-100 transition duration-300`}
                                     >
-                                        {addToBatchLoading && <ImSpinner className="animate-spin h-5 w-5" />}
+                                        {addToBatchLoading && <CgSpinner className="animate-spin h-7 w-7" />}
                                         Add Batch to List
                                     </button>
                                     <button
                                         type="button"
                                         onClick={() => ExecuteAllBatches(true)}
-                                        className="w-full flex justify-center items-center gap-2 bg-button-100 hover:bg-button-100 py-3 px-5 rounded-lg text-base md:text-lg text-font-100 font-bold border-b-4 border-button-100 transition duration-300"
+                                        className={`${sendTxLoading ? 'bg-button-1100 hover:bg-button-1100' : 'bg-button-100 hover:bg-button-100'}  w-full flex justify-center items-center gap-2  py-3 px-5 rounded-lg text-base md:text-lg text-font-100 font-bold border-b-4 border-button-100 transition duration-300`}
                                     >
-                                        {/* {sendTxLoading && <ImSpinner className="animate-spin h-5 w-5" />} */}
+                                        {sendTxLoading && <CgSpinner className="animate-spin h-7 w-7" />}
                                         Execute Batch
                                     </button>
                                 </div>
