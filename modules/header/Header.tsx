@@ -132,7 +132,7 @@ const Header: React.FC<any> = ({
                     )} */}
                     {connected && !smartAccount && !loading && (
                         <button
-                            className="bg-button-100 hover:bg-button-200 py-1 px-5 rounded-lg text-font-100 font-medium border-b-4 transition duration-300 border-button-300 hover:border-button-400 flex justify-center items-center gap-2"
+                            className="bg-button-100 py-2 px-5 rounded-lg text-font-100 font-medium border-b-4 transition duration-300 border-button-300 hover:border-button-400 flex justify-center items-center gap-2"
                             //   onClick={handleConnect}
                         >
                             <svg
@@ -155,7 +155,7 @@ const Header: React.FC<any> = ({
                     )}
                     {loading && (
                         <button
-                            className="bg-button-100 hover:bg-button-200 py-1 px-5 rounded-lg text-font-100 font-medium border-b-4 transition duration-300 border-button-300 hover:border-button-400 flex justify-center items-center gap-2"
+                            className="bg-button-100 py-2 px-5 rounded-lg text-font-100 font-medium border-b-4 transition duration-300 border-button-300 hover:border-button-400 flex justify-center items-center gap-2"
                         >
                             <ImSpinner className="animate-spin h-5 w-5" />
                             Loading account details...
