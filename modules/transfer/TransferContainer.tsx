@@ -28,7 +28,6 @@ const TransferContainer: React.FC<any> = () => {
 
     const { selectedFromNetwork }: iTrade = useTradeStore((state) => state);
 
-
     const { mutateAsync: calculategasCost } = useCalculateGasCost();
 
     const {

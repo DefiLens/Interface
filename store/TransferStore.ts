@@ -14,6 +14,7 @@ export interface iTransfer {
     eoaBalance: BigNumber;
     tokenInDecimals: number;
     gasCost: number;
+    isGasCostExpanded: boolean;
 
     setTokenAddress: (tokenAddress: number | string) => void;
     setAmountIn: (amountIn: number | string) => void;
@@ -27,7 +28,7 @@ export interface iTransfer {
     setEoaTokenInbalance: (eoaBalance: BigNumber) => void;
     setTokenInDecimals: (tokenInDecimals: number) => void;
     setGasCost: (gasCost: number) => void;
-
+    setIsGasCostExpanded: (isGasCostExpanded: boolean) => void;
 }
 
 export const useTransferStore = create<iTransfer>((set) => ({
@@ -43,6 +44,7 @@ export const useTransferStore = create<iTransfer>((set) => ({
     eoaBalance: BigNumber.from(0),
     tokenInDecimals: 18,
     gasCost: 0,
+    isGasCostExpanded: false,
 
     setTokenAddress: (tokenAddress) => set(() => ({ tokenAddress })),
     setAmountIn: (amountIn) => set(() => ({ amountIn })),
@@ -56,4 +58,5 @@ export const useTransferStore = create<iTransfer>((set) => ({
     setEoaTokenInbalance: (eoaBalance) => set(() => ({ eoaBalance })),
     setTokenInDecimals: (tokenInDecimals) => set(() => ({ tokenInDecimals })),
     setGasCost: (gasCost) => set(() => ({ gasCost })),
+    setIsGasCostExpanded: (isGasCostExpanded) => set(() => ({ isGasCostExpanded })),
 }));

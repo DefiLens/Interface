@@ -15,6 +15,8 @@ import { useTransferStore, iTransfer } from "../../store/TransferStore";
 import Image from "next/image";
 import { change, gas, info, optimism, swap } from "../../assets/images";
 import { iTokenData } from "../../store/TradeStore";
+import { MdKeyboardArrowUp } from "react-icons/md";
+import { AiOutlineSearch } from "react-icons/ai";
 
 const Transfer: React.FC<any> = ({
     onOptionChangeForWallet,
@@ -40,6 +42,8 @@ const Transfer: React.FC<any> = ({
         eoaBalance,
         tokenInDecimals,
         gasCost,
+        isGasCostExpanded,
+        setIsGasCostExpanded,
     }: iTransfer = useTransferStore((state) => state);
 
     const address = useAddress(); // Detect the connected address
@@ -170,7 +174,7 @@ const Transfer: React.FC<any> = ({
                         </div> */}
 
                         <div className="w-full flex flex-col justify-center items-center gap-3 my-1">
-                            <div className="w-full relative rounded-md overflow-hidden">
+                            <div className="w-full relative rounded-md overflow-hidden my-2">
                                 <label htmlFor="tokenAddresses" className="sr-only">
                                     Token Address
                                 </label>
@@ -254,7 +258,11 @@ const Transfer: React.FC<any> = ({
                             </div>
 
                             <div className="w-full flex flex-col justify-center gap-3 border-2 border-gray-600 rounded-lg my-3 p-4">
-                                <div className="flex justify-between items-center gap-1">
+                                <div
+                                    role="presentation"
+                                    onClick={() => setIsGasCostExpanded(!isGasCostExpanded)}
+                                    className="flex justify-between items-center gap-1"
+                                >
                                     <h3 className="flex justify-center items-center gap-1 text-font-100 font-bold text-sm md:text-base">
                                         <Image src={gas} alt="" className="h-7 w-7 mr-2" />
                                         <span>
@@ -264,22 +272,36 @@ const Transfer: React.FC<any> = ({
                                             (estimated)
                                         </span>
                                     </h3>
-                                    <h6 className="text-font-100 font-bold text-base md:text-lg">
-                                        {gasCost && chain ? `${gasCost} ${gasFeesNamesByMainChainId[chain?.chainId]}` : "0"}
-                                    </h6>
+                                    <div className="flex justify-center items-center gap-3">
+                                        <h6 className="text-font-100 font-bold text-base md:text-lg">
+                                            {gasCost && chain ? `${gasCost} ${gasFeesNamesByMainChainId[chain?.chainId]}` : "0"}
+                                        </h6>
+                                        <MdKeyboardArrowUp
+                                            size="25px"
+                                            className={`${isGasCostExpanded ? '!rotate-180' : '!rotate-0'} bg-backgound-600 rounded-full text-font-300 duration-150 transition-all delay-150`}
+                                        />
+                                    </div>
                                 </div>
-                                <div className="flex justify-between items-center gap-1">
-                                    <h3 className="text-green-400 font-bold text-xs">Likely in &#60; 30 seconds</h3>
-                                    <h6 className="text-font-100 font-semibold text-sm">
-                                        Max fee :<span className="px-1 text-font-300 font-medium text-xs">0 Matic</span>
-                                    </h6>
-                                </div>
+
+                                {isGasCostExpanded && (
+                                    <div className="flex justify-between items-center gap-1">
+                                        <h3 className="text-green-400 font-bold text-xs">
+                                            Likely in &#60; 30 seconds
+                                        </h3>
+                                        <h6 className="text-font-100 font-semibold text-sm">
+                                            Max fee :
+                                            <span className="px-1 text-font-300 font-medium text-xs">
+                                                0 Matic
+                                            </span>
+                                        </h6>
+                                    </div>
+                                )}
                             </div>
 
                             <button
                                 type="button"
                                 onClick={(e: any) => send()}
-                                className={`${sendTxLoading ? 'bg-button-1100 hover:bg-button-1100' : 'bg-button-100 hover:bg-button-100'}  w-[50%] flex justify-center items-center gap-2  py-3 px-5 rounded-lg text-base md:text-lg text-font-100 font-bold border-b-4 border-button-100 transition duration-300`}
+                                className={`${sendTxLoading ? 'bg-button-1100 hover:bg-button-1100' : 'bg-button-100 hover:bg-button-100'}  w-[50%] flex justify-center items-center gap-2  py-2.5 px-5 rounded-lg text-base md:text-lg text-font-100 font-bold border-b-4 border-button-100 transition duration-300`}
                             >
                                 {sendTxLoading && <CgSpinner className="animate-spin h-7 w-7" />}
                                 {isSCW ? "Send SmartAccount to EOA" : "Send EOA to SmartAccount"}
