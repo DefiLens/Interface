@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { tExecuteBatchModel } from './types';
 import { iGlobal, useGlobalStore } from '../../store/GlobalStore';
 import { iIndividualBatch, iTrade, useTradeStore } from '../../store/TradeStore';
@@ -57,6 +57,20 @@ const ExecuteBatchModel = ({
     setHasExecutionSuccess('');
     setHasExecutionError('');
   }
+
+  const [hasCrossChainTxs, setHasCrossChainTxs] = useState<iIndividualBatch[] | false>(false);
+
+  const handleIsCrossChainTxs = () => {
+    const txn = individualBatch.length > 0 && 
+    individualBatch.filter((item: iIndividualBatch,  index: number) => (
+      item.data.fromNetwork !== item.data.toNetwork
+    ))
+    setHasCrossChainTxs(txn);
+  };
+
+  useEffect(() => {
+    handleIsCrossChainTxs();
+  }, [individualBatch])
 
   return (
     <div className="fixed w-full h-full flex justify-center items-center top-0 right-0 left-0 bottom-0 z-50 text-black backdrop-brightness-50 p-5 md:p-10">
@@ -166,7 +180,7 @@ const ExecuteBatchModel = ({
                 >
                   View on Explorer
                 </a>
-                {selectedFromNetwork.chainId !== selectedToNetwork.chainId ? (
+                {hasCrossChainTxs && hasCrossChainTxs.length > 0 && (
                   <a
                     target="_blank"
                     href={buildTxHash(selectedFromNetwork.chainId, txhash, true)}
@@ -174,7 +188,7 @@ const ExecuteBatchModel = ({
                   >
                     View on SocketScan.io
                   </a>
-                ): null}
+                )}
               </span>
             ) : hasExecutionError ? (
               <span className="text-red-500">

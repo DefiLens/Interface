@@ -822,6 +822,8 @@ const TradeContainer: React.FC<any> = () => {
                 });
             }
 
+            if (!refinaceData) return;
+
             const simulation = {
                 isSuccess: true,
                 isError: false,
@@ -829,7 +831,7 @@ const TradeContainer: React.FC<any> = () => {
 
             updateInputValues(
                 individualBatch.length - 1,
-                refinaceData.txArray,
+                refinaceData.txArray.length > 0 && refinaceData.txArray,
                 refinaceData.batchFlow,
                 {
                     fromNetwork: selectedFromNetwork.chainName,
@@ -848,8 +850,13 @@ const TradeContainer: React.FC<any> = () => {
         } catch (error: any) {
             setAddToBatchLoading(false);
             setShowBatchList(true);
-            toast.error(error);
-            console.log("sendBatch-error", error);
+
+            if (error.message) {
+                console.log("sendBatch: Error", error.message);
+            } else {
+                console.log("sendBatch: Eerror", error);
+            }
+            return;
         }
     };
 

@@ -71,13 +71,11 @@ export function useCCRefinance() {
                 nativeTokenOutSymbol,
                 nativeTokenOutDecimal;
 
-                console.log('1')
             if (fromProtocol == "erc20") {
                 nativeTokenIn = tokensData?.filter((token) => token.symbol === tokenInName)[0].address;
                 nativeTokenInSymbol = tokensData?.filter((token) => token.symbol === tokenInName)[0].symbol;
                 nativeTokenInDecimal = tokensData?.filter((token) => token.symbol === tokenInName)[0].decimals;
             }
-            console.log('2')
             // if (toProtocol == "erc20") {
             //     nativeTokenOut = tokensData?.filter((token) => token.symbol === tokenOutName)[0].address;
             // }
@@ -88,7 +86,6 @@ export function useCCRefinance() {
                 nativeTokenOutSymbol = nativeTokenFetcher[selectedToNetwork.chainName][tokenOutNum].symbol;
                 nativeTokenOutDecimal = nativeTokenFetcher[selectedToNetwork.chainName][tokenOutNum].decimals;
             }
-            console.log('3')
             if (fromProtocol != "erc20") {
                 abiNum = abiFetcherNum[selectedFromNetwork.chainName][tokenInName];
                 abi = abiFetcher[selectedFromNetwork.chainName][abiNum]["withdrawAbi"];
@@ -115,6 +112,7 @@ export function useCCRefinance() {
                 txData = abiInterface.encodeFunctionData(methodName, params);
                 const tx1 = { to: tokenInContractAddress, data: txData };
                 tempTxs.push(tx1);
+
                 let batchFlow: iBatchFlowData = {
                     network: selectedFromNetwork.chainName,
                     protocol: selectedFromProtocol,
@@ -125,7 +123,6 @@ export function useCCRefinance() {
                 };
                 batchFlows.push(batchFlow);
             }
-            console.log('4')
             isSwap = nativeTokenIn != tokensByNetworkForCC[selectedFromNetwork.chainId].usdc ? true : false;
             if (isSwap) {
                 const approveData = await approve({
@@ -144,6 +141,7 @@ export function useCCRefinance() {
                     type: "exactIn",
                 });
                 tempTxs.push(swapData.swapTx);
+
                 let batchFlow: iBatchFlowData = {
                     network: selectedFromNetwork.chainName,
                     protocol: "Uniswap",
@@ -154,7 +152,6 @@ export function useCCRefinance() {
                 };
                 batchFlows.push(batchFlow);
             }
-            console.log('5')
 
             if (selectedFromNetwork.chainName != selectedToNetwork.chainName) {
                 abiNum = abiFetcherNum[selectedToNetwork.chainName][tokenOutName];
@@ -191,7 +188,11 @@ export function useCCRefinance() {
                     contractAddress: tokenOutContractAddress,
                     extraOrShareToken: "0x0000000000000000000000000000000000000000",
                 });
+
+                if (!txs) return
+
                 tempTxs = [...tempTxs, ...txs];
+
                 let batchFlow: iBatchFlowData = {
                     network: selectedFromNetwork.chainName,
                     toNetwork: selectedToNetwork.chainName,
@@ -213,7 +214,6 @@ export function useCCRefinance() {
                 batchFlows.push(batchFlow);
             }
 
-            console.log('6')
             // else if (toProtocol != "erc20") {
             //     const newTokenIn = isSwap ? nativeTokenOut : nativeTokenIn;
             //     const newAmount = isSwap ? swapData.amountOutprice : amount;
@@ -248,8 +248,13 @@ export function useCCRefinance() {
             //     tempTxs.push(tx2);
             // }
             return { txArray: tempTxs, batchFlow: batchFlows };
-        } catch (error) {
-            console.log("refinance-error", error);
+        } catch (error: any) {
+            if (error.message) {
+                console.log("refinanceForCC: Error", error.message);
+            } else {
+                console.log("refinanceForCC: Error", error);
+            }
+            return;
         }
     }
     return useMutation(refinanceForCC);

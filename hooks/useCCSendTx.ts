@@ -79,11 +79,15 @@ export function useCCSendTx() {
             const balance = await getErc20Balanceof(erc20TokenInInstance, _currentAddress);
 
             if (isSCW) {
-                if (BigNumber.from(balance).lt(BigNumber.from(_tempAmount)))
-                    throw "You don't have enough balance in SmartAccount";
+                if (BigNumber.from(balance).lt(BigNumber.from(_tempAmount))) {
+                    toast.error("You don't have enough balance in SmartAccount")
+                    return;
+                }
             } else {
-                if (BigNumber.from(balance).lt(BigNumber.from(_tempAmount)))
-                    throw "You don't have enough balance in EOA";
+                if (BigNumber.from(balance).lt(BigNumber.from(_tempAmount))) {
+                    toast.error("You don't have enough balance in EOA")
+                    return;
+                }
             }
 
             let approveTx;
@@ -188,9 +192,10 @@ export function useCCSendTx() {
 
             // Extra 1e18 should more as of now
             if (!currentBalance.gt(quoteData[0].add(parseEther("0")))) {
-                throw `Not Enough Balance, You should have at least ${minimumBalanceRequired.toString()} ${
+                toast.error(`${minimumBalanceRequired.toString()} ${
                     gasFeesNames[selectedFromNetwork.chainName]
-                } in your SmartAccount wallet`;
+                } in your SmartAccount wallet`)
+                return;
             }
 
             const sendTx = { to: stargateTx.to, data: stargateTx.data, value: stargateTx.value };
@@ -200,11 +205,10 @@ export function useCCSendTx() {
                 return [sendTx];
             }
         } catch (error: any) {
-            console.log("sendTx-error: ", error);
             if (error.message) {
-                toast.error(error.message);
+                console.log("sendTx: Error: ", error);
             } else {
-                toast.error(error);
+                console.log("sendTx: Error: ", error);
             }
             return;
         }

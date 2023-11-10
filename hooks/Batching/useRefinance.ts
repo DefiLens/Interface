@@ -121,7 +121,8 @@ export function useRefinance() {
             if (isSwap) {
                 if (selectedFromNetwork.chainId == "43114") {
                     alert("Avalanche Swap is not available");
-                    throw "Avalanche Swap is not available";
+                    toast.error("Avalanche Swap is not available");
+                    return;
                 }
 
                 const approveData = await approve({
@@ -211,8 +212,12 @@ export function useRefinance() {
             // alert(gasCost?.toString())
 
             return { txArray: tempTxs, batchFlow: batchFlows };
-        } catch (error) {
-            console.log("refinance-error", error);
+        } catch (error: any) {
+            if (error.message) {
+                console.log("refinance: Error", error.message);
+            } else {
+                console.log("refinance: Error", error);
+            }
             return;
         }
     }
