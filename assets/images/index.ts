@@ -19,6 +19,8 @@ import bridgeCost from './bridgeCost.png';
 import downLine from './downLine.png';
 import sideLine from './sideLine.png';
 import defaultBlue from './defaultBlue.png';
+import info from './info.png';
+import change from './change.png';
 
 export {
   closeNarrow,
@@ -42,4 +44,6 @@ export {
   downLine,
   sideLine,
   defaultBlue,
+  info,
+  change,
 };

@@ -13,7 +13,7 @@ import { useGlobalStore, iGlobal } from "../../store/GlobalStore";
 import { gasFeesNamesByMainChainId } from "../../utils/constants";
 import { useTransferStore, iTransfer } from "../../store/TransferStore";
 import Image from "next/image";
-import { gas, optimism } from "../../assets/images";
+import { change, gas, info, optimism, swap } from "../../assets/images";
 import { iTokenData } from "../../store/TradeStore";
 
 const Transfer: React.FC<any> = ({
@@ -57,33 +57,103 @@ const Transfer: React.FC<any> = ({
                 {smartAccount && (
                     <div className="w-full flex flex-col justify-center items-center gap-3">
                         <h3 className="font-semibold text-lg md:text-2xl text-font-100 pb-5">Transfer Fund</h3>
-                        <div className="w-full flex justify-center items-center gap-5 md:gap-10 bg-backgound-200 text-font-100 p-5 rounded-md">
-                            <div className="w-20 md:w-40 flex justify-center items-baseline gap-3">
+                        <div className="w-full flex flex-col sm:flex-row justify-center items-center gap-5 md:gap-10 bg-backgound-200 text-font-100 p-5 rounded-md">
+                            <div className="w-auto md:w-40 flex justify-center items-baseline gap-3">
                                 <span className="font-bold text-xs text-font-300">
                                     From
                                 </span>
                                 <span className="font-bold text-xl text-font-100">
                                     {isSCW ? 'SCW' : 'EOA'}
                                 </span>
+                                <div className="w-4 h-7 group relative flex justify-center">
+                                    <Image
+                                        src={info}
+                                        alt="icon"
+                                        className="w-4 h-4 bg-font-100 rounded-full cursor-pointer"
+                                    />
+                                    <span className="w-60 absolute z-50 top-7 -right-[65px] scale-0 transition-all group-hover:scale-100 rounded shadow-lg bg-backgound-600 border-2 border-backgound-700 px-3 py-1 font-medium text-start text-xs text-font-100">
+                                        <button className="w-full relative flex justify-between items-center gap-2">
+                                            <div className="flex flex-col justify-center items-start text-font-200 text-sm">
+                                                {isSCW ? (
+                                                    smartAccount &&
+                                                        smartAccount.address &&
+                                                        smartAccount.address.slice(0, 13) + "..." + smartAccount.address.slice(-3)
+                                                ) : (
+                                                    smartAccount &&
+                                                    address &&
+                                                    address.slice(0, 13) + "..." + address.slice(-3)
+                                                )} 
+                                            </div>
+                                            <FiCopy
+                                                size="35px"
+                                                className="text-font-100 active:text-font-300 p-2 hover:bg-backgound-700 rounded-md"
+                                                onClick={() => {
+                                                    if (isSCW) {
+                                                        copyToClipboard(smartAccount.address, 'Smart account address Copied')
+                                                    } else {
+                                                        copyToClipboard(address, 'EOA address Copied')
+                                                    }
+                                                }}
+                                            />
+                                        </button>
+                                    </span>
+                                </div>
                             </div>
                             <button
                                 type="button"
                                 onClick={() => onOptionChangeForWallet()}
-                                className="px-5 py-1 bg-button-100 text-font-100 text-base font-semibold rounded-full"
+                                className="w-10 h-10 rounded-full"
                             >
-                                Swap
+                                <Image
+                                    src={change}
+                                    alt="icon"
+                                    className="w-full h-full p-2  rotate-90 sm:rotate-0 text rounded-full cursor-pointer"
+                                />
                             </button>
-                            <div className="w-20 md:w-40 flex justify-center items-baseline gap-3">
+                            <div className="w-auto md:w-40 flex justify-center items-baseline gap-3">
                                 <span className="font-bold text-xs text-font-300">
                                     To
                                 </span>
                                 <span className="font-bold text-xl text-font-100">
                                     {isSCW ? 'EOA' : 'SCW'}
                                 </span>
+                                <div className="w-4 h-7 group relative flex justify-center">
+                                    <Image
+                                        src={info}
+                                        alt="icon"
+                                        className="w-4 h-4 bg-font-100 rounded-full cursor-pointer"
+                                    />
+                                    <span className="w-60 absolute z-50 top-7 -right-[65px] scale-0 transition-all group-hover:scale-100 rounded shadow-lg bg-backgound-600 border-2 border-backgound-700 px-3 py-1 font-medium text-start text-xs text-font-100">
+                                        <button className="w-full relative flex justify-between items-center gap-2">
+                                            <div className="flex flex-col justify-center items-start text-font-200 text-sm">
+                                                {isSCW ? (
+                                                    smartAccount &&
+                                                        address &&
+                                                        address.slice(0, 13) + "..." + address.slice(-3)
+                                                ) : (
+                                                    smartAccount &&
+                                                    smartAccount.address &&
+                                                    smartAccount.address.slice(0, 13) + "..." + smartAccount.address.slice(-3)
+                                                )} 
+                                            </div>
+                                            <FiCopy
+                                                size="35px"
+                                                className="text-font-100 active:text-font-300 p-2 hover:bg-backgound-700 rounded-md"
+                                                onClick={() => {
+                                                    if (isSCW) {
+                                                        copyToClipboard(address, 'EOA address Copied')
+                                                    } else {
+                                                        copyToClipboard(smartAccount.address, 'Smart account address Copied')
+                                                    }
+                                                }}
+                                            />
+                                        </button>
+                                    </span>
+                                </div>
                             </div>
                         </div>
 
-                        <div className="w-full flex justify-center items-center gap-5 md:gap-10 bg-backgound-200 text-font-100 p-5 rounded-md">
+                        {/* <div className="w-full flex justify-center items-center gap-5 md:gap-10 bg-backgound-200 text-font-100 p-5 rounded-md">
                             <div className="w-auto md:w-40 font-bold text-lg text-center text-font-100 bg-green-700 px-5 py-1 rounded-md">
                                 {isNative ? 'Native Token' : 'ERC20 Token'}
                             </div>
@@ -97,63 +167,9 @@ const Transfer: React.FC<any> = ({
                             <div className="w-auto md:w-40 font-bold text-lg text-center text-font-100 bg-red-700 px-5 py-1 rounded-md">
                                 {isNative ? 'ERC20 Token' : 'Native Token'}
                             </div>
-                        </div>
+                        </div> */}
 
                         <div className="w-full flex flex-col justify-center items-center gap-3 my-1">
-                            {isSCW ? (
-                                <div className="w-full flex flex-col justify-center items-baseline gap-4 p-3">
-                                    <div className="flex flex-col justify-start items-start">
-                                        <h3 className="text-font-300 font-semibold text-sm">
-                                            From
-                                            <span className="px-2 font-semibold text-lg text-font-100">
-                                                SmartAccount Address
-                                            </span>
-                                        </h3>
-                                        <h6 className="text-font-200 font-medium text-sm py-1">
-                                            {shorten(smartAccount.address)}
-                                        </h6>
-                                    </div>
-
-                                    <div className="flex flex-col justify-start items-start">
-                                        <h3 className="text-font-300 font-semibold text-sm">
-                                            To
-                                            <span className="px-2 font-semibold text-lg text-font-100">
-                                                EOA Address
-                                            </span>
-                                        </h3>
-                                        <h6 className="text-font-200 font-medium text-sm py-1">
-                                            {shorten(address)}
-                                        </h6>
-                                    </div>
-                                </div>
-                            ) : (
-                                <div className="w-full flex flex-col justify-center items-baseline gap-4 p-3">
-                                    <div className="flex flex-col justify-start items-start">
-                                        <h3 className="text-font-300 font-semibold text-sm">
-                                            From
-                                            <span className="px-2 font-semibold text-lg text-font-100">
-                                                EOA Address
-                                            </span>
-                                        </h3>
-                                        <h6 className="text-font-200 font-medium text-sm py-1">
-                                            {shorten(address)}
-                                        </h6>
-                                    </div>
-
-                                    <div className="flex flex-col justify-start items-start">
-                                        <h3 className="text-font-300 font-semibold text-sm">
-                                            To
-                                            <span className="px-2 font-semibold text-lg text-font-100">
-                                                SmartAccount Address
-                                            </span>
-                                        </h3>
-                                        <h6 className="text-font-200 font-medium text-sm py-1">
-                                            {shorten(smartAccount.address)}
-                                        </h6>
-                                    </div>
-                                </div>
-                            )}
-
                             <div className="w-full relative rounded-md overflow-hidden">
                                 <label htmlFor="tokenAddresses" className="sr-only">
                                     Token Address
