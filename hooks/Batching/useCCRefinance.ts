@@ -158,7 +158,8 @@ export function useCCRefinance() {
 
             if (selectedFromNetwork.chainName != selectedToNetwork.chainName) {
                 abiNum = abiFetcherNum[selectedToNetwork.chainName][tokenOutName];
-                const newTokenIn = isSwap ? tokensByNetworkForCC[selectedFromNetwork.chainId].usdc : nativeTokenIn;
+                // const newTokenIn = isSwap ? tokensByNetworkForCC[selectedToNetwork.chainId].usdc : nativeTokenIn;
+                const newTokenIn = tokensByNetworkForCC[selectedToNetwork.chainId].usdc;
                 paramDetailsMethod = abiFetcher[selectedToNetwork.chainName][abiNum]["depositParamDetailsMethod"];
 
                 params = await buildParams({
