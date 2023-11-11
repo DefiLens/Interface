@@ -11,6 +11,7 @@ import IStarGateFactory from "../abis/IStarGateFactory.json";
 import IStarGateFeeLibrary from "../abis/IStarGateFeeLibrary.json";
 import { getProvider, getContractInstance } from "./web3Libs/ethers";
 import { TENDERLY_USER, TENDERLY_PROJECT, TENDERLY_ACCESS_KEY, POLYGON_ETHERSCAN_API_KEY, OPTIMISM_ETHERSCAN_API_KEY, ETHERSCAN_API_KEY, BASE_ETHERSCAN_API_KEY, AVAX_ETHERSCAN_API_KEY, ARBITRUM_ETHERSCAN_API_KEY } from "./keys";
+import { iTokenInfo } from "../modules/trade/types";
 
 interface FunctionABI {
     name: string;
@@ -263,8 +264,42 @@ export const buildTxHash = (chainId: string, txhash: string, isSocketScan?: bool
     }
 };
 
- export const copyToClipboard = (id: any, message: string) => {
+export const copyToClipboard = (id: any, message: string) => {
     navigator.clipboard.writeText(id);
     // Alert the copied text
     toast.success(message);
 };
+
+export const convertIpfsUrl = (ipfsUri: string): string =>{
+    // Check if the input URI starts with 'ipfs://'
+    if (ipfsUri.startsWith("ipfs://")) {
+        // Remove the 'ipfs://' prefix
+        const ipfsHash = ipfsUri.replace("ipfs://", "");
+
+        // Create the Cloudflare IPFS URL
+        const cloudflareIpfsUrl = `https://cloudflare-ipfs.com/ipfs/${ipfsHash}`;
+
+        return cloudflareIpfsUrl;
+    }
+
+    // If the input doesn't start with 'ipfs://', return it as is
+    return ipfsUri;
+}
+
+export const  getTokenListByChainId = (chainId: any, tokenList: any): iTokenInfo[] => {
+    return tokenList.tokens
+        .map((token: any) => {
+            if (token.chainId == chainId) {
+                return {
+                    chainId: token.chainId,
+                    address: token.address,
+                    name: token.name,
+                    symbol: token.symbol,
+                    decimals: token.decimals,
+                    logoURI: token.logoURI.includes("ipfs") ? convertIpfsUrl(token.logoURI) : token.logoURI,
+                };
+            }
+            return null;
+        })
+        .filter(Boolean) as iTokenInfo[];
+}

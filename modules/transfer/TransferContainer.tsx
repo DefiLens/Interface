@@ -10,14 +10,16 @@ import { useAddress, useChain, useSigner } from "@thirdweb-dev/react";
 
 import Transfer from "./Transfer";
 import IERC20 from "../../abis/IERC20.json";
+import UNISWAP_TOKENS from "../../abis/tokens/Uniswap.json";
 import { BIG_ZERO } from "../../utils/constants";
-import { setSafeState } from "../../utils/helper";
+import { getTokenListByChainId, setSafeState } from "../../utils/helper";
 import ChainContext from "../../Context/ChainContext";
 import { iTrade, useTradeStore } from "../../store/TradeStore";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import { useCalculateGasCost } from "../../hooks/useCalculateGasCost";
 import { iTransfer, useTransferStore } from "../../store/TransferStore";
 import { getErc20Balanceof, getErc20Decimals } from "../../utils/web3Libs/ethers";
+import { ethereum } from "../../assets/images";
 
 bg.config({ DECIMAL_PLACES: 5 });
 
@@ -69,12 +71,15 @@ const TransferContainer: React.FC<any> = () => {
     useEffect(() => {
         async function onChangeFromProtocol() {
             if (showTransferFundToggle) {
-                const response: any = await axios.get("https://gateway.ipfs.io/ipns/tokens.uniswap.org");
-                const tokensWithChainId = response.data.tokens?.filter((token) => token.chainId.toString() === selectedFromNetwork.chainId.toString());
-                const filteredTokens = tokensWithChainId.map((token) => {
-                    const { extensions, logoURI, ...filteredToken } = token;
-                    return filteredToken;
-                });
+                const filteredTokens = getTokenListByChainId(selectedFromNetwork.chainId, UNISWAP_TOKENS);
+                filteredTokens.unshift({
+                    "chainId": 1,
+                    "address": "",
+                    "name": "ethereum",
+                    "symbol": "Ethereum",
+                    "decimals": 18,
+                    "logoURI": ethereum,
+                })
                 setTokensData(filteredTokens);
             }
         }
@@ -121,9 +126,10 @@ const TransferContainer: React.FC<any> = () => {
                 setEoaTokenInbalance(BigNumber.from(_eoaBalance));
                 setTokenInDecimals(18);
             } else {
-                setScwTokenInbalance(BIG_ZERO);
-                setEoaTokenInbalance(BIG_ZERO);
-                setTokenInDecimals(0);
+                // setScwTokenInbalance(BIG_ZERO);
+                // setEoaTokenInbalance(BIG_ZERO);
+                // setTokenInDecimals(0);
+                // await handleTokenAddress(_tokenAddress)
             }
         } catch (error) {
             console.log("setBalance-error: ", error);

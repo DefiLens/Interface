@@ -754,6 +754,26 @@ export const tokenAddressByProtocol = {
     },
 };
 
+export const ReactSelectStyles = {
+    control: (styles: any) => ({
+      ...styles,
+      border: '2px solid #293347',
+      background: '#15223D',
+      color: '#cccccc !important',
+      padding: '5px',
+      borderRadius: '10px',
+      outline: 'none',
+      boxShadow: styles.isFocused ? 0 : 0,
+      '&:hover': {
+        boxShadow: styles.isFocused ? 0 : 0
+      },
+    }),
+    placeholder: (styles: any) => ({
+      ...styles,
+      color: '#ffffff !important',
+    })
+  };
+
 export const buttonStyle =
     "bg-button-100 hover:bg-primary-700 py-1 px-5 rounded-lg text-primary-100 font-medium border-b-4 border-primary-800 hover:border-primary-900 transition duration-300";
 

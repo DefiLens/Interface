@@ -743,7 +743,7 @@ const Trade: React.FC<any> = ({
                                     <button
                                         type="button"
                                         onClick={() => sendSingleBatchToList(true)}
-                                        className={`${addToBatchLoading ? 'bg-button-1100 hover:bg-button-1100' : 'bg-button-100 hover:bg-button-100'}  w-full flex justify-center items-center gap-2  py-3 px-5 rounded-lg text-base md:text-lg text-font-100 font-bold border-b-4 border-button-100 transition duration-300`}
+                                        className={`${addToBatchLoading ? 'bg-button-1100 hover:bg-button-1100' : 'bg-button-100 hover:bg-button-100'}  w-full flex justify-center items-center gap-2  py-3 px-5 rounded-lg text-base md:text-lg text-font-100 font-bold transition duration-300`}
                                     >
                                         {addToBatchLoading && <CgSpinner className="animate-spin h-7 w-7" />}
                                         Add Batch to List
@@ -751,7 +751,7 @@ const Trade: React.FC<any> = ({
                                     <button
                                         type="button"
                                         onClick={() => ExecuteAllBatches(true)}
-                                        className={`${sendTxLoading ? 'bg-button-1100 hover:bg-button-1100' : 'bg-button-100 hover:bg-button-100'}  w-full flex justify-center items-center gap-2  py-3 px-5 rounded-lg text-base md:text-lg text-font-100 font-bold border-b-4 border-button-100 transition duration-300`}
+                                        className={`${sendTxLoading ? 'bg-button-1100 hover:bg-button-1100' : 'bg-button-100 hover:bg-button-100'}  w-full flex justify-center items-center gap-2  py-3 px-5 rounded-lg text-base md:text-lg text-font-100 font-bold transition duration-300`}
                                     >
                                         {sendTxLoading && <CgSpinner className="animate-spin h-7 w-7" />}
                                         Execute Batch

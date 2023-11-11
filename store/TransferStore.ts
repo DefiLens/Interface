@@ -15,6 +15,9 @@ export interface iTransfer {
     tokenInDecimals: number;
     gasCost: number;
     isGasCostExpanded: boolean;
+    searchToken: string;
+    showTokenList: boolean;
+    selectedToken: Object;
 
     setTokenAddress: (tokenAddress: number | string) => void;
     setAmountIn: (amountIn: number | string) => void;
@@ -29,6 +32,9 @@ export interface iTransfer {
     setTokenInDecimals: (tokenInDecimals: number) => void;
     setGasCost: (gasCost: number) => void;
     setIsGasCostExpanded: (isGasCostExpanded: boolean) => void;
+    setSearchToken: (searchToken: string) => void;
+    setShowTokenList: (showTokenList: boolean) => void;
+    setSelectedToken: (selectedToken: Object) => void;
 }
 
 export const useTransferStore = create<iTransfer>((set) => ({
@@ -45,6 +51,9 @@ export const useTransferStore = create<iTransfer>((set) => ({
     tokenInDecimals: 18,
     gasCost: 0,
     isGasCostExpanded: false,
+    searchToken: "",
+    showTokenList: false,
+    selectedToken: {},
 
     setTokenAddress: (tokenAddress) => set(() => ({ tokenAddress })),
     setAmountIn: (amountIn) => set(() => ({ amountIn })),
@@ -59,4 +68,7 @@ export const useTransferStore = create<iTransfer>((set) => ({
     setTokenInDecimals: (tokenInDecimals) => set(() => ({ tokenInDecimals })),
     setGasCost: (gasCost) => set(() => ({ gasCost })),
     setIsGasCostExpanded: (isGasCostExpanded) => set(() => ({ isGasCostExpanded })),
+    setSearchToken: (searchToken) => set(() => ({ searchToken })),
+    setShowTokenList: (showTokenList) => set(() => ({ showTokenList })),
+    setSelectedToken: (selectedToken) => set(() => ({ selectedToken })),
 }));

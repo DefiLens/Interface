@@ -242,13 +242,13 @@ const TradeContainer: React.FC<any> = () => {
         setIsThisFieldAmount(-1);
     };
 
-    const handleSelectFromNetwork = (_fromNetwork: iSelectedNetwork) => {
+    const handleSelectFromNetwork = async (_fromNetwork: iSelectedNetwork) => {
         clearSelectedBatchData();
         setLoading(true);
         setCurrentFunc("");
         setData(null);
         if (selectedFromNetwork.chainName !== _fromNetwork.chainName) {
-            switchOnSpecificChain(_fromNetwork.chainName);
+            await switchOnSpecificChain(_fromNetwork.chainName);
             setSelectedFromNetwork(_fromNetwork);
         }
         setSelectedFromNetwork(_fromNetwork);
@@ -611,19 +611,47 @@ const TradeContainer: React.FC<any> = () => {
         }
     };
 
-    const handleSwap = () => {
-        let tempNetwork = selectedFromNetwork;
-        let tempProtocol = selectedFromProtocol;
-        let tempToken = selectedFromToken;
+    const handleSwap = async () => {
+        let tempFromNetwork = selectedFromNetwork;
+        let tempFromProtocol = selectedFromProtocol;
+        let tempFromToken = selectedFromToken;
 
-        setSelectedFromNetwork(selectedToNetwork);
-        setSelectedToNetwork(tempNetwork);
+        let tempToNetwork = selectedToNetwork;
+        let tempToProtocol = selectedToProtocol;
+        let tempToToken = selectedToToken;
 
-        setSelectedFromProtocol(selectedToProtocol);
-        setSelectedToProtocol(tempProtocol);
+        try {
+            await handleSelectFromNetwork(tempToNetwork);
+        } catch (err) {
+            console.log("Swap: handleSelectFromNetwork: Error:", err);
+        }
+        try {
+            await handleSelectToNetwork(tempFromNetwork);
+        } catch (err) {
+            console.log("Swap: handleSelectToNetwork: Error:", err);
+        }
 
-        setSelectedFromToken(selectedToToken);
-        setSelectedToToken(tempToken);
+        try {
+            await onChangeFromProtocol(tempToProtocol);
+        } catch (err) {
+            console.log("Swap: onChangeFromProtocol: Error:", err);
+        }
+        try {
+            await onChangeToProtocol(tempFromProtocol);
+        } catch (err) {
+            console.log("Swap: onChangeToProtocol: Error:", err);
+        }
+
+        try {
+            await onChangeFromToken(tempToToken);
+        } catch (err) {
+            console.log("Swap: onChangeFromToken: Error:", err);
+        }
+        try {
+            await onChangeToToken(tempFromToken);
+        } catch (err) {
+            console.log("Swap: onChangeToToken: Error:", err);
+        }
     };
 
     const addBatch = () => {
