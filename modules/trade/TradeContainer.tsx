@@ -613,7 +613,7 @@ const TradeContainer: React.FC<any> = () => {
 
     const handleSwap = () => {
         let tempNetwork = selectedFromNetwork;
-        let tempProtocol = selectedFromToken;
+        let tempProtocol = selectedFromProtocol;
         let tempToken = selectedFromToken;
 
         setSelectedFromNetwork(selectedToNetwork);
