@@ -1,6 +1,5 @@
 import { BigNumber, ethers } from "ethers";
 import { toast } from "react-hot-toast";
-import { BigNumber as bg } from "bignumber.js";
 
 import { useMutation } from "@tanstack/react-query";
 
@@ -10,6 +9,7 @@ import { iBatchFlowData, iTrading, useTradingStore } from "../../store/TradingSt
 import { abiFetcher, abiFetcherNum, buildParams, nativeTokenFetcher, nativeTokenNum } from "./batchingUtils";
 import { _functionType, _nonce, uniswapSwapRouterByChainId, V3_SWAP_ROUTER_ADDRESS } from "../../utils/constants";
 import { useCalculateGasCost } from "../utilsHooks/useCalculateGasCost";
+import { decreasePowerByDecimals } from "../../utils/utils";
 
 export function useRefinance() {
     const { mutateAsync: swap } = useUniswap();
@@ -132,13 +132,6 @@ export function useRefinance() {
                     address,
                     type: "exactIn",
                 });
-                // bg(amountIn).dividedBy(bg(10).pow(tokenInDecimals)).toString()
-                console.log(
-                    "swapData",
-                    swapData,
-                    amount,
-                    bg(amount).dividedBy(bg(10).pow(swapData.tokenInDecimals)).toString()
-                );
                 tempTxs.push(swapData.swapTx);
                 let batchFlow: iBatchFlowData = {
                     network: selectedFromNetwork.chainName,
@@ -156,8 +149,7 @@ export function useRefinance() {
                 const newTokenInSymbol = isSwap ? nativeTokenOutSymbol : nativeTokenInSymbol;
                 const newAmount = isSwap
                     ? swapData.amountOutprice
-                    : // ? bg(swapData.amountOutprice.toString()).dividedBy(bg(10).pow(swapData.tokenOutDecimals))
-                      amount;
+                    : amount;
 
                 abiNum = abiFetcherNum[selectedFromNetwork.chainName][tokenOutName];
                 abi = abiFetcher[selectedFromNetwork.chainName][abiNum]["depositAbi"];
@@ -194,8 +186,8 @@ export function useRefinance() {
                     tokenIn: newTokenInSymbol,
                     tokenOut: tokenOutName,
                     amount: isSwap
-                        ? bg(newAmount.toString()).dividedBy(bg(10).pow(swapData.tokenOutDecimals)).toString()
-                        : bg(amount.toString()).dividedBy(bg(10).pow(nativeTokenOutDecimal)).toString(),
+                        ? await decreasePowerByDecimals(newAmount.toString(), swapData.tokenOutDecimals)
+                        : await decreasePowerByDecimals(amount.toString(), nativeTokenOutDecimal),
                     action: "Deposit",
                 };
                 batchFlows.push(batchFlow);

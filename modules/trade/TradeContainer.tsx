@@ -7,7 +7,7 @@ import { BigNumber as bg } from "bignumber.js";
 import { Bundler, IBundler } from "@biconomy/bundler";
 import { BiconomyPaymaster, IPaymaster } from "@biconomy/paymaster";
 import { BiconomySmartAccount, BiconomySmartAccountConfig, DEFAULT_ENTRYPOINT_ADDRESS } from "@biconomy/account";
-import { useAddress, useChain, useSigner } from "@thirdweb-dev/react";
+import { useAddress, useSigner } from "@thirdweb-dev/react";
 
 import Trade from "./Trade";
 import IERC20 from "../../abis/IERC20.json";
@@ -29,7 +29,7 @@ import {
     protocolByNetwork,
     tokenAddressByProtocol,
 } from "../../utils/constants";
-import { iTokenInfo } from "./types";
+import { decreasePowerByDecimals, getTokenListByChainId, incresePowerByDecimals } from "../../utils/utils";
 
 bg.config({ DECIMAL_PLACES: 10 });
 
@@ -150,37 +150,6 @@ const TradeContainer: React.FC<any> = () => {
             closeToSelectionMenu();
         }
     }, [selectedToNetwork, selectedToProtocol, selectedToToken]);
-
-    function convertIpfsUrl(ipfsUri: string): string {
-        // Check if the input URI starts with 'ipfs://'
-        if (ipfsUri.startsWith("ipfs://")) {
-            // Remove the 'ipfs://' prefix
-            const ipfsHash = ipfsUri.replace("ipfs://", "");
-            // Create the Cloudflare IPFS URL
-            const cloudflareIpfsUrl = `https://cloudflare-ipfs.com/ipfs/${ipfsHash}`;
-            return cloudflareIpfsUrl;
-        }
-        // If the input doesn't start with 'ipfs://', return it as is
-        return ipfsUri;
-    }
-
-    function getTokenListByChainId(chainId: any, tokenList: any): iTokenInfo[] {
-        return tokenList.tokens
-            .map((token) => {
-                if (token.chainId == chainId) {
-                    return {
-                        chainId: token.chainId,
-                        address: token.address,
-                        name: token.name,
-                        symbol: token.symbol,
-                        decimals: token.decimals,
-                        logoURI: token.logoURI.includes("ipfs") ? convertIpfsUrl(token.logoURI) : token.logoURI,
-                    };
-                }
-                return null;
-            })
-            .filter(Boolean) as iTokenInfo[];
-    }
 
     useEffect(() => {
         async function onChangeselectedFromProtocol() {
@@ -315,8 +284,8 @@ const TradeContainer: React.FC<any> = () => {
                 erc20,
                 smartAccount?.address ? smartAccount?.address : scwAddress.address
             );
-            const MaxBalance = bg(maxBal?.toString()).dividedBy(bg(10).pow(fromTokendecimal));
-            setMaxBalance(MaxBalance.toString());
+            const MaxBalance = await decreasePowerByDecimals(maxBal?.toString(), fromTokendecimal);
+            setMaxBalance(MaxBalance);
             setIsmaxBalanceLoading(false);
         } catch (error: any) {
             setIsmaxBalanceLoading(false);
@@ -388,9 +357,7 @@ const TradeContainer: React.FC<any> = () => {
             toast.error("Batching is only supported on polygon as of now");
             return;
         }
-        if (_amountIn && fromTokenDecimal) {
-            let amountInByDecimals = bg(_amountIn.toString());
-            amountInByDecimals = amountInByDecimals.multipliedBy(bg(10).pow(fromTokenDecimal));
+        if (_amountIn) {
             setAmountIn(_amountIn);
         } else {
             setAmountIn("");
@@ -604,8 +571,7 @@ const TradeContainer: React.FC<any> = () => {
                 return;
             }
             const provider = await getProvider(selectedFromNetwork.chainId);
-            const _tempAmount = BigNumber.from(bg(amountIn).multipliedBy(bg(10).pow(fromTokenDecimal)).toString());
-
+            const _tempAmount = BigNumber.from(await incresePowerByDecimals(amountIn, fromTokenDecimal).toString());
             let refinaceData: any;
             let txArray;
             if (selectedFromNetwork.chainName == selectedToNetwork.chainName) {

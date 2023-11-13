@@ -1,12 +1,12 @@
 import axios from "axios";
 import toast from "react-hot-toast";
-import { ethers, BigNumber } from "ethers";
+import { BigNumber } from "ethers";
 
 import { getImplementationAddress } from "@openzeppelin/upgrades-core";
 
 import IStarGatePool from "../abis/IStarGatePool.json";
 import IStarGateRouter from "../abis/IStarGateRouter.json";
-import { rpscURLS, implementation_slot, chainIdByStargateChainId } from "./constants";
+import { implementation_slot, chainIdByStargateChainId } from "./constants";
 import IStarGateFactory from "../abis/IStarGateFactory.json";
 import IStarGateFeeLibrary from "../abis/IStarGateFeeLibrary.json";
 import { getProvider, getContractInstance } from "./web3Libs/ethers";
@@ -76,7 +76,8 @@ export const fetchContractDetails = async (
         const { isProxy, currentImplAddress }: any = await checkIfContractIsProxy(abi, contractAddress, newprovider);
         if (isProxy) {
             const realChainid = await chooseChianId(toChainId);
-            const provider = new ethers.providers.JsonRpcProvider(rpscURLS[realChainid]);
+            const provider = await getProvider(realChainid)
+            if (!provider) throw("No Provider")
             let implementation = await provider.getStorageAt(contractAddress, implementation_slot);
             implementation = "0x" + implementation.slice(26, 66);
             contractAbis = await getAbiUsingExplorereUrl(toChainId, implementation);

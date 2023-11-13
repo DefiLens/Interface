@@ -10,7 +10,6 @@ import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { Polygon, Optimism, Ethereum, Base, Avalanche, Arbitrum } from "@thirdweb-dev/chains";
 
 import { closeNarrow } from "../assets/images";
-import ChainContext from "../Context/ChainContext";
 import { useGlobalStore, iGlobal } from "../store/GlobalStore";
 import HeaderContainer from "../modules/header/HeaderContainer";
 

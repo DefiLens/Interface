@@ -6,7 +6,6 @@ import IERC20 from "../../abis/IERC20.json";
 
 export const getProvider = async (chainId) => {
     try {
-        // const realChainid = await chooseChianId(toChainId);
         const newprovider = new ethers.providers.JsonRpcProvider(rpscURLS[chainId]);
         return newprovider;
     } catch (error) {

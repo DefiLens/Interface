@@ -4,6 +4,7 @@ import { BigNumber as bg } from "bignumber.js";
 import aave_v2_Abi from "../../abis/defi/aave_v2.json";
 import compound_Abi from "../../abis/defi/compound.json";
 import { getContractInstance } from "../../utils/web3Libs/ethers";
+import { decreasePowerByDecimals } from "../../utils/utils";
 
 bg.config({ DECIMAL_PLACES: 20 });
 
@@ -573,12 +574,12 @@ export async function fetchApy({ protocol, contractAddress, provider, signer, to
         let abi = new ethers.utils.Interface(aave_v2_Abi);
         const protocolInstance = await getContractInstance(contractAddress, abi, provider);
         const reserveData = await protocolInstance?.getReserveData(token);
-        return bg(reserveData[3].toString()).dividedBy(1e25);
+        return await decreasePowerByDecimals(reserveData[3].toString().toString(), 25)
     } else if (protocol == "fetchApyForAaveV3Polygon") {
         let abi = new ethers.utils.Interface(aave_v2_Abi);
         const protocolInstance = await getContractInstance(contractAddress, abi, provider);
         const reserveData = await protocolInstance?.getReserveData(token);
-        return bg(reserveData[2].toString()).dividedBy(1e25);
+        return await decreasePowerByDecimals(reserveData[2].toString().toString(), 25)
     } else if (protocol == "fetchApyForCompoundPolygon") {
         let abi = new ethers.utils.Interface(compound_Abi);
         const SecondsPerYear = 60 * 60 * 24 * 365;

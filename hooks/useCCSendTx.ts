@@ -1,7 +1,5 @@
 import { toast } from "react-hot-toast";
 import { ethers, BigNumber } from "ethers";
-import { BigNumber as bg } from "bignumber.js";
-
 import { parseEther } from "ethers/lib/utils";
 import { useMutation } from "@tanstack/react-query";
 
@@ -14,9 +12,10 @@ import { chooseChianId, calculateFees, batch } from "../utils/helper";
 import { gasFeesNames, _nonce, _functionType } from "../utils/constants";
 import { getErc20Balanceof, getErc20Allownace, getContractInstance, getProvider } from "../utils/web3Libs/ethers";
 import { chainPingByNetwork, starGateRouterByNetwork, tokensByNetworkForCC } from "./Batching/batchingUtils";
+import { decreasePowerByDecimals, incresePowerByDecimals } from "../utils/utils";
 
 export function useCCSendTx() {
-    const { smartAccount, currentProvider }: iGlobal = useGlobalStore((state) => state);
+    const { smartAccount }: iGlobal = useGlobalStore((state) => state);
 
     const {
         selectedFromNetwork,
@@ -55,8 +54,7 @@ export function useCCSendTx() {
             // if (!isThisAmount) throw "Select amount field";
             // if (!allNetworkData) throw "a need to fetch";
 
-            const _tempAmount = BigNumber.from(bg(amountIn).multipliedBy(bg(10).pow(fromTokenDecimal)).toString());
-
+            const _tempAmount = BigNumber.from(await incresePowerByDecimals(amountIn, fromTokenDecimal).toString());
             let _currentAddress;
             let _currentProvider;
             if (isSCW) {
@@ -186,9 +184,7 @@ export function useCCSendTx() {
 
             const scwOrEoaNativeBalance = await _currentProvider.getBalance(_currentAddress);
             const currentBalance = BigNumber.from(scwOrEoaNativeBalance);
-            // const minimumBalanceRequired = bg(currentBalance.toString()).plus(parseEther('1').toString()).dividedBy(bg(10).pow(18)).toString()
-
-            const minimumBalanceRequired = bg(quoteData[0].toString()).dividedBy(bg(10).pow(18)).toString();
+            const minimumBalanceRequired = await decreasePowerByDecimals(quoteData[0].toString(), 18)
 
             // Extra 1e18 should more as of now
             if (!currentBalance.gt(quoteData[0].add(parseEther("0")))) {

@@ -1,23 +1,19 @@
 import { BigNumber } from "ethers";
-import { BigNumber as bg } from "bignumber.js";
-import Select from "react-select";
 
 import { FiCopy } from "react-icons/fi";
-import { ImSpinner } from "react-icons/im";
-import { BiSolidChevronDown } from "react-icons/bi";
 import { CgSpinner } from "react-icons/cg";
 import { useChain, useAddress } from "@thirdweb-dev/react";
 
 import { tTransfer } from "./types";
 import { shorten, copyToClipboard } from "../../utils/helper";
 import { useGlobalStore, iGlobal } from "../../store/GlobalStore";
-import { ReactSelectStyles, gasFeesNamesByMainChainId } from "../../utils/constants";
+import { gasFeesNamesByMainChainId } from "../../utils/constants";
 import { useTransferStore, iTransfer } from "../../store/TransferStore";
 import Image from "next/image";
 import { change, gas, info, optimism, swap } from "../../assets/images";
 import { MdKeyboardArrowUp } from "react-icons/md";
-import { AiOutlineSearch } from "react-icons/ai";
 import SelectInput from "../../components/SelectInput/SelectInput";
+import { decreasePowerByDecimals } from "../../utils/utils";
 
 const Transfer: React.FC<any> = ({
     onOptionChangeForWallet,
@@ -26,10 +22,7 @@ const Transfer: React.FC<any> = ({
     handleAmountIn,
     send,
 }: tTransfer) => {
-
-    const {
-        smartAccount,
-    }: iGlobal = useGlobalStore((state) => state);
+    const { smartAccount }: iGlobal = useGlobalStore((state) => state);
 
     const {
         tokenAddress,
@@ -53,8 +46,7 @@ const Transfer: React.FC<any> = ({
         setSelectedToken,
     }: iTransfer = useTransferStore((state) => state);
 
-    console.log("🚀 ~ file: Transfer.tsx:43 ~ tokensData:", tokensData)
-
+    console.log("🚀 ~ file: Transfer.tsx:43 ~ tokensData:", tokensData);
 
     const address = useAddress(); // Detect the connected address
     const chain = useChain();
@@ -73,12 +65,8 @@ const Transfer: React.FC<any> = ({
                     <h3 className="font-semibold text-lg md:text-2xl text-font-100 pb-5">Transfer Fund</h3>
                     <div className="w-full flex flex-col sm:flex-row justify-center items-center gap-5 md:gap-10 bg-backgound-200 text-font-100 p-5 rounded-md">
                         <div className="w-auto md:w-40 flex justify-center items-baseline gap-3">
-                            <span className="font-bold text-xs text-font-300">
-                                From
-                            </span>
-                            <span className="font-bold text-xl text-font-100">
-                                {isSCW ? 'SCW' : 'EOA'}
-                            </span>
+                            <span className="font-bold text-xs text-font-300">From</span>
+                            <span className="font-bold text-xl text-font-100">{isSCW ? "SCW" : "EOA"}</span>
                             <div className="w-4 h-7 group relative flex justify-center">
                                 <Image
                                     src={info}
@@ -88,24 +76,27 @@ const Transfer: React.FC<any> = ({
                                 <span className="w-60 absolute z-50 top-7 -right-[65px] scale-0 transition-all group-hover:scale-100 rounded shadow-lg bg-backgound-600 border-2 border-backgound-700 px-3 py-1 font-medium text-start text-xs text-font-100">
                                     <button className="w-full relative flex justify-between items-center gap-2">
                                         <div className="flex flex-col justify-center items-start text-font-200 text-sm">
-                                            {isSCW ? (
-                                                smartAccount &&
-                                                    smartAccount.address &&
-                                                    smartAccount.address.slice(0, 13) + "..." + smartAccount.address.slice(-3)
-                                            ) : (
-                                                smartAccount &&
-                                                address &&
-                                                address.slice(0, 13) + "..." + address.slice(-3)
-                                            )}
+                                            {isSCW
+                                                ? smartAccount &&
+                                                  smartAccount.address &&
+                                                  smartAccount.address.slice(0, 13) +
+                                                      "..." +
+                                                      smartAccount.address.slice(-3)
+                                                : smartAccount &&
+                                                  address &&
+                                                  address.slice(0, 13) + "..." + address.slice(-3)}
                                         </div>
                                         <FiCopy
                                             size="35px"
                                             className="text-font-100 active:text-font-300 p-2 hover:bg-backgound-700 rounded-md"
                                             onClick={() => {
                                                 if (isSCW) {
-                                                    copyToClipboard(smartAccount.address, 'Smart account address Copied')
+                                                    copyToClipboard(
+                                                        smartAccount.address,
+                                                        "Smart account address Copied"
+                                                    );
                                                 } else {
-                                                    copyToClipboard(address, 'EOA address Copied')
+                                                    copyToClipboard(address, "EOA address Copied");
                                                 }
                                             }}
                                         />
@@ -125,12 +116,8 @@ const Transfer: React.FC<any> = ({
                             />
                         </button>
                         <div className="w-auto md:w-40 flex justify-center items-baseline gap-3">
-                            <span className="font-bold text-xs text-font-300">
-                                To
-                            </span>
-                            <span className="font-bold text-xl text-font-100">
-                                {isSCW ? 'EOA' : 'SCW'}
-                            </span>
+                            <span className="font-bold text-xs text-font-300">To</span>
+                            <span className="font-bold text-xl text-font-100">{isSCW ? "EOA" : "SCW"}</span>
                             <div className="w-4 h-7 group relative flex justify-center">
                                 <Image
                                     src={info}
@@ -140,24 +127,27 @@ const Transfer: React.FC<any> = ({
                                 <span className="w-60 absolute z-50 top-7 -right-[65px] scale-0 transition-all group-hover:scale-100 rounded shadow-lg bg-backgound-600 border-2 border-backgound-700 px-3 py-1 font-medium text-start text-xs text-font-100">
                                     <button className="w-full relative flex justify-between items-center gap-2">
                                         <div className="flex flex-col justify-center items-start text-font-200 text-sm">
-                                            {isSCW ? (
-                                                smartAccount &&
-                                                    address &&
-                                                    address.slice(0, 13) + "..." + address.slice(-3)
-                                            ) : (
-                                                smartAccount &&
-                                                smartAccount.address &&
-                                                smartAccount.address.slice(0, 13) + "..." + smartAccount.address.slice(-3)
-                                            )}
+                                            {isSCW
+                                                ? smartAccount &&
+                                                  address &&
+                                                  address.slice(0, 13) + "..." + address.slice(-3)
+                                                : smartAccount &&
+                                                  smartAccount.address &&
+                                                  smartAccount.address.slice(0, 13) +
+                                                      "..." +
+                                                      smartAccount.address.slice(-3)}
                                         </div>
                                         <FiCopy
                                             size="35px"
                                             className="text-font-100 active:text-font-300 p-2 hover:bg-backgound-700 rounded-md"
                                             onClick={() => {
                                                 if (isSCW) {
-                                                    copyToClipboard(address, 'EOA address Copied')
+                                                    copyToClipboard(address, "EOA address Copied");
                                                 } else {
-                                                    copyToClipboard(smartAccount.address, 'Smart account address Copied')
+                                                    copyToClipboard(
+                                                        smartAccount.address,
+                                                        "Smart account address Copied"
+                                                    );
                                                 }
                                             }}
                                         />
@@ -240,26 +230,24 @@ const Transfer: React.FC<any> = ({
                                     <div className="text-font-300 text-sm">
                                         SmartAccount Balance :
                                         <span className="font-bold text-font-100 text-base px-1">
-                                            {
-                                                !scwBalance.isZero()
-                                                    ? bg(BigNumber.from(scwBalance).toString())
-                                                            .dividedBy(bg(10).pow(tokenInDecimals))
-                                                            .toString()
-                                                    : "0"
-                                            }
+                                            {!scwBalance.isZero()
+                                                ? decreasePowerByDecimals(
+                                                      BigNumber.from(scwBalance).toString(),
+                                                      tokenInDecimals
+                                                  )
+                                                : "0"}
                                         </span>
                                     </div>
                                 ) : (
                                     <div className="text-font-300 text-sm">
                                         EOA Balance :
                                         <span className="font-bold text-font-100 text-base px-1">
-                                            {
-                                                !eoaBalance.isZero()
-                                                ? bg(BigNumber.from(eoaBalance).toString())
-                                                        .dividedBy(bg(10).pow(tokenInDecimals))
-                                                        .toString()
-                                                : "0"
-                                            }
+                                            {!eoaBalance.isZero()
+                                                ? decreasePowerByDecimals(
+                                                      BigNumber.from(eoaBalance).toString(),
+                                                      tokenInDecimals
+                                                  )
+                                                : "0"}
                                         </span>
                                     </div>
                                 )}
@@ -275,15 +263,19 @@ const Transfer: React.FC<any> = ({
                                 />
                                 <button
                                     type="button"
-                                    onClick={() => handleAmountIn(
-                                                isSCW
-                                                ? bg(BigNumber.from(scwBalance).toString())
-                                                    .dividedBy(bg(10).pow(tokenInDecimals))
-                                                    .toString()
-                                                : bg(BigNumber.from(eoaBalance).toString())
-                                                    .dividedBy(bg(10).pow(tokenInDecimals))
-                                                    .toString()
-                                                )}
+                                    onClick={() =>
+                                        handleAmountIn(
+                                            isSCW
+                                                ? decreasePowerByDecimals(
+                                                      BigNumber.from(scwBalance).toString(),
+                                                      tokenInDecimals
+                                                  )
+                                                : decreasePowerByDecimals(
+                                                      BigNumber.from(eoaBalance).toString(),
+                                                      tokenInDecimals
+                                                  )
+                                        )
+                                    }
                                     className="w-20 font-bold text-center text-font-100 bg-button-100 rounded-lg py-1"
                                 >
                                     Max
@@ -299,34 +291,29 @@ const Transfer: React.FC<any> = ({
                             >
                                 <h3 className="flex justify-center items-center gap-1 text-font-100 font-bold text-sm md:text-base">
                                     <Image src={gas} alt="" className="h-7 w-7 mr-2" />
-                                    <span>
-                                        Gas
-                                    </span>
-                                    <span className="text-font-300 font-medium text-xs">
-                                        (estimated)
-                                    </span>
+                                    <span>Gas</span>
+                                    <span className="text-font-300 font-medium text-xs">(estimated)</span>
                                 </h3>
                                 <div className="flex justify-center items-center gap-3">
                                     <h6 className="text-font-100 font-bold text-base md:text-lg">
-                                        {gasCost && chain ? `${gasCost} ${gasFeesNamesByMainChainId[chain?.chainId]}` : "0"}
+                                        {gasCost && chain
+                                            ? `${gasCost} ${gasFeesNamesByMainChainId[chain?.chainId]}`
+                                            : "0"}
                                     </h6>
                                     <MdKeyboardArrowUp
                                         size="25px"
-                                        className={`${isGasCostExpanded ? '!rotate-0' : '!rotate-180'} bg-backgound-600 rounded-full text-font-300 duration-150 transition-all delay-150`}
+                                        className={`${
+                                            isGasCostExpanded ? "!rotate-0" : "!rotate-180"
+                                        } bg-backgound-600 rounded-full text-font-300 duration-150 transition-all delay-150`}
                                     />
                                 </div>
                             </div>
 
                             {isGasCostExpanded && (
                                 <div className="flex justify-between items-center gap-1">
-                                    <h3 className="text-green-400 font-bold text-xs">
-                                        Likely in &#60; 30 seconds
-                                    </h3>
+                                    <h3 className="text-green-400 font-bold text-xs">Likely in &#60; 30 seconds</h3>
                                     <h6 className="text-font-100 font-semibold text-sm">
-                                        Max fee :
-                                        <span className="px-1 text-font-300 font-medium text-xs">
-                                            0 Matic
-                                        </span>
+                                        Max fee :<span className="px-1 text-font-300 font-medium text-xs">0 Matic</span>
                                     </h6>
                                 </div>
                             )}
@@ -335,7 +322,11 @@ const Transfer: React.FC<any> = ({
                         <button
                             type="button"
                             onClick={(e: any) => send()}
-                            className={`${sendTxLoading ? 'bg-button-1100 hover:bg-button-1100' : 'bg-button-100 hover:bg-button-100'} w-full sm:w-[65%] flex justify-center items-center gap-2  py-2.5 px-5 rounded-lg text-base md:text-lg text-font-100 font-bold transition duration-300`}
+                            className={`${
+                                sendTxLoading
+                                    ? "bg-button-1100 hover:bg-button-1100"
+                                    : "bg-button-100 hover:bg-button-100"
+                            } w-full sm:w-[65%] flex justify-center items-center gap-2  py-2.5 px-5 rounded-lg text-base md:text-lg text-font-100 font-bold transition duration-300`}
                         >
                             {sendTxLoading && <CgSpinner className="animate-spin h-7 w-7" />}
                             {isSCW ? "Send SmartAccount to EOA" : "Send EOA to SmartAccount"}

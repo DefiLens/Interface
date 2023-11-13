@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import { BigNumber } from "ethers";
 
 export interface iSelectedNetwork {
     key: string;

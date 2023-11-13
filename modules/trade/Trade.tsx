@@ -9,9 +9,9 @@ import { MdDelete, MdOutlineArrowBack } from "react-icons/md";
 import { MdKeyboardArrowDown, MdKeyboardArrowUp } from "react-icons/md";
 
 import { tTrade, tTradeProtocol } from "./types";
-import { iIndividualBatch, iTokenData, iTrading, useTradingStore } from "../../store/TradingStore";
+import { iTokenData, iTrading, useTradingStore } from "../../store/TradingStore";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
-import { avalanche, base, defaultBlue, downLine, gas, optimism, polygon, swap, warning } from "../../assets/images";
+import { defaultBlue, downLine, gas, optimism, swap, warning } from "../../assets/images";
 import { _functionType, _nonce, NETWORK_LIST, NetworkLogoByNetworkName, protocolByNetwork, ProtocolLogoByProtocolName, protocolNames } from "../../utils/constants";
 import ExecuteBatchModel from "../../components/ExecuteBatchModel/ExecuteBatchModel";
 
@@ -33,8 +33,6 @@ const Trade: React.FC<any> = ({
     closeFromSelectionMenu,
     closeToSelectionMenu,
 }: tTrade) => {
-    const { scwBalance }: iGlobal = useGlobalStore((state) => state);
-
     const {
         maxBalance,
         ismaxBalanceLoading,
@@ -743,30 +741,6 @@ const Trade: React.FC<any> = ({
                                                                     { bar.batchesFlow.length-1 > index ? <Image src={downLine} alt="" className="h-8" /> : ""}
                                                                 </div>
                                                                ))}
-                                                                {/* <div className="flex justify-center items-center gap-3">
-                                                                    <div className="relative">
-                                                                        <Image
-                                                                            src={NetworkLogoByNetworkName[bar.data.toNetwork]}
-                                                                            alt=""
-                                                                            className="h-8 w-8 bg-slate-200 rounded-full cursor-pointer"
-                                                                        />
-                                                                        <div className="absolute -bottom-1 -right-1 bg-white h-4 w-4 flex justify-center items-center rounded-full">
-                                                                            <Image
-                                                                                src={ProtocolLogoByProtocolName[bar.data.toProtocol]}
-                                                                                alt=""
-                                                                                className="h-3 w-3 bg-slate-200 rounded-full cursor-pointer"
-                                                                            />
-                                                                        </div>
-                                                                    </div>
-                                                                    <div className="flex flex-col justify-start items-start">
-                                                                        <span className="text-sm md:text-base font-semibold text-slate-700">
-                                                                            {bar.data.toProtocol} on {bar.data.toNetwork}
-                                                                        </span>
-                                                                        <span className="text-xs md:text-sm font-semibold text-slate-700">
-                                                                            {bar.data.amountIn} {bar.data.toToken}
-                                                                        </span>
-                                                                    </div>
-                                                                </div> */}
                                                             </div>
                                                         )}
                                                     </div>

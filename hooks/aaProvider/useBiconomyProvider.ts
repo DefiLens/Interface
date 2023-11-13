@@ -1,5 +1,3 @@
-import { toast } from "react-hot-toast";
-
 import { useMutation } from "@tanstack/react-query";
 
 import { _nonce, _functionType } from "../../utils/constants";

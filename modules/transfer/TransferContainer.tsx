@@ -17,14 +17,12 @@ import { useCalculateGasCost } from "../../hooks/utilsHooks/useCalculateGasCost"
 import { iTransfer, useTransferStore } from "../../store/TransferStore";
 import { getErc20Balanceof, getErc20Decimals } from "../../utils/web3Libs/ethers";
 import { ethereum } from "../../assets/images";
+import { incresePowerByDecimals } from "../../utils/utils";
 
 bg.config({ DECIMAL_PLACES: 5 });
 
 
 const TransferContainer: React.FC<any> = () => {
-
-    // const { selectedChainId } = useContext(ChainContext);
-
     const { mutateAsync: calculategasCost } = useCalculateGasCost();
 
     const {
@@ -173,8 +171,7 @@ const TransferContainer: React.FC<any> = () => {
         try {
             setAmountInDecimals(_amountIn);
             if (isNative) {
-                let amountInByDecimals = bg(_amountIn);
-                amountInByDecimals = amountInByDecimals.multipliedBy(bg(10).pow(18));
+                let amountInByDecimals = bg(await incresePowerByDecimals(_amountIn, 18));
                 if (amountInByDecimals.eq(0)) {
                     setAmountIn(_amountIn);
                 } else {
@@ -187,8 +184,7 @@ const TransferContainer: React.FC<any> = () => {
                     return;
                 }
                 let decimal = await contract.decimals();
-                let amountInByDecimals = bg(_amountIn);
-                amountInByDecimals = amountInByDecimals.multipliedBy(bg(10).pow(decimal.toString()));
+                let amountInByDecimals = bg(await incresePowerByDecimals(_amountIn, decimal.toString()));
                 if (amountInByDecimals.eq(0)) {
                     setAmountIn(_amountIn);
                 } else {
