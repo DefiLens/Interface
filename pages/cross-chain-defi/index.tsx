@@ -19,7 +19,6 @@ import { metamaskWallet, useAddress, useChain, useConnect, useSigner, useSwitchC
 import IERC20 from "../../abis/IERC20.json";
 import { useSendTx } from "../../hooks/useSendTx";
 import { useSimulate } from "../../hooks/useSimulate";
-import ChainContext from "../../Context/ChainContext";
 import { useGenerateAbis } from "../../hooks/useGenerateAbis";
 import { iTrade, useTradeStore } from "../../store/TradeStore";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
@@ -29,7 +28,19 @@ import { buildTxHash, chooseChianId, setSafeState, shorten } from "../../utils/h
 import { iCrossChainDifi, useCrossChainDifiStore } from "../../store/CrossChainDifiStore";
 import { getContractInstance, getErc20Balanceof, getProvider } from "../../utils/web3Libs/ethers";
 import { useOnChangeFunctions, useOnChangeInput, useOnChangeTokenIn } from "../../hooks/useOnChangeMainForm";
-import { _functionType, _nonce, BIG_ZERO, bundlerURLs, gasFeesNamesByChainId, methodWithApi, NetworkLogoByChainId, NetworkNameByChainId, NetworkNameByStargateChainId, paymasterURLs, tokensByNetwork } from "../../utils/constants";
+import {
+    _functionType,
+    _nonce,
+    BIG_ZERO,
+    bundlerURLs,
+    gasFeesNamesByChainId,
+    methodWithApi,
+    NetworkLogoByChainId,
+    NetworkNameByChainId,
+    NetworkNameByStargateChainId,
+    paymasterURLs,
+    tokensByNetwork,
+} from "../../utils/constants";
 
 bg.config({ DECIMAL_PLACES: 10 });
 
@@ -47,15 +58,10 @@ const CrossChainDefi: React.FC<{}> = () => {
     const { mutateAsync: onChangeFunctionsHook } = useOnChangeFunctions();
     const { mutateAsync: onChangeInputHook } = useOnChangeInput();
     const { mutateAsync: fetchNativeBalance } = useCalculatebalance();
-    // const { selectedChainId, setSelectedChain, setSelectedChainId } = React.useContext(ChainContext);
-
     const { loading, setLoading, connected, smartAccount, setSmartAccount, setCurrentProvider, setConnected }: iGlobal =
         useGlobalStore((state) => state);
 
-    const {
-        selectedFromNetwork,
-        setSelectedFromNetwork,
-    }: iTrade = useTradeStore((state) => state);
+    const { selectedFromNetwork, setSelectedFromNetwork }: iTrade = useTradeStore((state) => state);
 
     const {
         fromChainId,
@@ -127,28 +133,28 @@ const CrossChainDefi: React.FC<{}> = () => {
     useEffect(() => {
         async function changeWallet() {
             if (!address) {
-                setTokenIn("")
-                setFromChainId("")
-                setToChainId("")
-                setAmountIn("")
-                setContractIndex("")
-                setFunctionArray([])
-                setSmartAccount(null)
-                setConnected(false)
+                setTokenIn("");
+                setFromChainId("");
+                setToChainId("");
+                setAmountIn("");
+                setContractIndex("");
+                setFunctionArray([]);
+                setSmartAccount(null);
+                setConnected(false);
 
                 setSelectedFromNetwork({
                     key: "",
                     chainName: "",
                     chainId: "",
                     icon: "",
-                })
+                });
 
                 // setSelectedChain("")
                 // setSelectedChainId("")
             }
         }
         changeWallet();
-    }, [address])
+    }, [address]);
 
     useEffect(() => {
         setIsSimulationOpen(false);
@@ -180,7 +186,7 @@ const CrossChainDefi: React.FC<{}> = () => {
                 if (!response.data) {
                     toast.error("api error");
                     return;
-                };
+                }
                 let _func = [...params];
                 _func[currentFuncIndex] = response.data.params;
                 setParams(_func);
@@ -216,14 +222,14 @@ const CrossChainDefi: React.FC<{}> = () => {
                 setFromChainId("");
                 setTokenIn("");
                 setTokenInDecimals(0);
-console.log('onChangeFromChainId-error: ', error)
+                console.log("onChangeFromChainId-error: ", error);
             }
-
         }
         onChangeFromChainId();
     }, [fromChainId]);
 
-    useEffect(() => {``
+    useEffect(() => {
+        ``;
         if (toChainId) {
             setContractIndex("");
             resetField();
@@ -275,7 +281,7 @@ console.log('onChangeFromChainId-error: ', error)
                 chainName: NetworkNameByChainId[realChainID],
                 chainId: realChainID,
                 icon: NetworkLogoByChainId[realChainID],
-            })
+            });
 
             // setSelectedChain?.(NetworkNameByChainId[realChainID]);
             // setSelectedChainId?.(realChainID);
@@ -339,9 +345,9 @@ console.log('onChangeFromChainId-error: ', error)
             return;
         }
         if (!fromChainId) {
-             toast.error("From network is not selecetd yet");
-             return
-        } 
+            toast.error("From network is not selecetd yet");
+            return;
+        }
         // const provider = await getProvider(selectedChainId);
         const provider = await getProvider(selectedFromNetwork.chainId);
 
@@ -441,7 +447,7 @@ console.log('onChangeFromChainId-error: ', error)
                         chainName: NetworkNameByChainId[_fromN],
                         chainId: _fromN,
                         icon: NetworkNameByChainId[_fromN],
-                    })
+                    });
 
                     // setSelectedChain?.(NetworkNameByChainId[_fromN]);
                     // setSelectedChainId?.(_fromN);
@@ -663,7 +669,8 @@ console.log('onChangeFromChainId-error: ', error)
                                             <option key={-1} value="" selected>
                                                 Select Operation
                                             </option>
-                                            { funcArray && funcArray.length > 0 &&
+                                            {funcArray &&
+                                                funcArray.length > 0 &&
                                                 funcArray.map((funcName: any, funcIndex: any) => (
                                                     <option key={funcIndex} value={funcIndex}>
                                                         {funcName.name}
@@ -743,9 +750,7 @@ console.log('onChangeFromChainId-error: ', error)
                                 </div>
 
                                 <div className="flex justify-start items-baseline gap-3">
-                                    <div className="text-black font-bold text-sm md:text-base">
-                                        Lending Protocol :
-                                    </div>
+                                    <div className="text-black font-bold text-sm md:text-base">Lending Protocol :</div>
                                     <div className="text-black font-medium text-xs md:text-sm">
                                         {allNetworkData?.contracts[contractIndex].contractName}
                                     </div>
@@ -769,18 +774,14 @@ console.log('onChangeFromChainId-error: ', error)
                                 </div>
 
                                 <div className="flex justify-start items-baseline gap-3">
-                                    <div className="text-black font-bold text-sm md:text-base">
-                                        Recipient :
-                                    </div>
+                                    <div className="text-black font-bold text-sm md:text-base">Recipient :</div>
                                     <div className="text-black font-medium text-xs md:text-sm">{shorten(address)}</div>
                                 </div>
 
                                 {gasCost && bridgeGasCost && fromChainId ? (
                                     <>
                                         <div className="flex justify-start items-baseline gap-3">
-                                            <div className="text-black font-bold text-sm md:text-base">
-                                                Gas Cost :
-                                            </div>
+                                            <div className="text-black font-bold text-sm md:text-base">Gas Cost :</div>
                                             <div className="text-black font-medium text-xs md:text-sm">
                                                 {`${gasCost} ${gasFeesNamesByChainId[fromChainId]}`}
                                             </div>
@@ -801,7 +802,9 @@ console.log('onChangeFromChainId-error: ', error)
                                             </div>
                                             <div className="text-black font-medium text-xs md:text-sm">
                                                 {`${
-                                                    bridgeGasCost && gasCost && bg(bridgeGasCost).plus(gasCost).toString()
+                                                    bridgeGasCost &&
+                                                    gasCost &&
+                                                    bg(bridgeGasCost).plus(gasCost).toString()
                                                 } ${gasFeesNamesByChainId[fromChainId]}`}{" "}
                                             </div>
                                         </div>

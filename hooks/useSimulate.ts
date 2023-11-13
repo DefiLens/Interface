@@ -20,7 +20,6 @@ bg.config({ DECIMAL_PLACES: 18 });
 
 export function useSimulate() {
     const { mutateAsync: calculategasCost } = useCalculateGasCost();
-    // const { selectedChainId } = React.useContext(ChainContext);
 
     const { smartAccount, selectedNetwork }: iGlobal = useGlobalStore((state) => state);
 

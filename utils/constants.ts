@@ -29,14 +29,14 @@ export const fetchNetworkDataURL = `${netlifyNodeURL}/common/getNetworkAndContra
 export const fetchContractMetadataURL = `${netlifyNodeURL}/common/getContractMetaData`;
 
 export const NavigationList = [
-    {
-      title: "Cross Chain",
-      route: '/cross-chain-defi',
-    },
-    {
-      title: "Batching",
-      route: '/batching-transactions',
-    },
+    // {
+    //   title: "Cross Chain",
+    //   route: '/cross-chain-defi',
+    // },
+    // {
+    //   title: "Batching",
+    //   route: '/batching-transactions',
+    // },
     // {
     //   title: "Swap",
     //   route: '/swap',
