@@ -8,8 +8,6 @@ import { useApprove } from "../useApprove";
 import { iBatchFlowData, iTrading, useTradingStore } from "../../store/TradingStore";
 import { useCCSendTx } from "../useCCSendTx";
 
-import { iBatchingTxn, useBatchingTxnStore } from "../../store/BatchingTxnStore";
-import { iCrossChainDifi, useCrossChainDifiStore } from "../../store/CrossChainDifiStore";
 import {
     abiFetcher,
     abiFetcherNum,
@@ -35,7 +33,6 @@ export function useCCRefinance() {
         amountIn,
         tokensData,
     }: iTrading = useTradingStore((state) => state);
-    const { setTxHash }: iBatchingTxn = useBatchingTxnStore((state) => state);
 
     async function refinanceForCC({
         isSCW,
@@ -53,7 +50,6 @@ export function useCCRefinance() {
             if (!selectedFromNetwork.chainName) {
                 toast.error("Chain is not selected!!");
             }
-            setTxHash("");
             let tempTxs: any = [];
             const batchFlows: iBatchFlowData[] = [];
 

@@ -7,8 +7,6 @@ import { useMutation } from "@tanstack/react-query";
 import { useUniswap } from "../useUniswap";
 import { useApprove } from "../useApprove";
 import { iBatchFlowData, iTrading, useTradingStore } from "../../store/TradingStore";
-import { iBatchingTxn, useBatchingTxnStore } from "../../store/BatchingTxnStore";
-import { iCrossChainDifi, useCrossChainDifiStore } from "../../store/CrossChainDifiStore";
 import { abiFetcher, abiFetcherNum, buildParams, nativeTokenFetcher, nativeTokenNum } from "./batchingUtils";
 import { _functionType, _nonce, uniswapSwapRouterByChainId, V3_SWAP_ROUTER_ADDRESS } from "../../utils/constants";
 import { useCalculateGasCost } from "../useCalculateGasCost";
@@ -18,7 +16,7 @@ export function useRefinance() {
     const { mutateAsync: approve } = useApprove();
     const { mutateAsync: calculategasCost } = useCalculateGasCost();
 
-    const { selectedFromNetwork, selectedFromProtocol, selectedToProtocol, amountIn, tokensData, setTxHash }: iTrading =
+    const { selectedFromNetwork, selectedFromProtocol, selectedToProtocol, amountIn, tokensData }: iTrading =
         useTradingStore((state) => state);
 
     async function refinance({
@@ -37,10 +35,9 @@ export function useRefinance() {
             if (!selectedFromNetwork.chainName) {
                 toast.error("Chain is not selected!!");
             }
-            setTxHash("");
             const tempTxs: any = [];
             const batchFlows: iBatchFlowData[] = [];
-            // let batchFlow: iBatchFlowData = {}
+
             let abiNum,
                 abi,
                 methodName,
