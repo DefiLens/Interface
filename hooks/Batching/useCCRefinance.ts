@@ -4,7 +4,7 @@ import { toast } from "react-hot-toast";
 import { useMutation } from "@tanstack/react-query";
 
 import { useUniswap } from "../useUniswap";
-import { useApprove } from "../useApprove";
+import { useApprove } from "../utilsHooks/useApprove";
 import { iBatchFlowData, iTrading, useTradingStore } from "../../store/TradingStore";
 import { useCCSendTx } from "../useCCSendTx";
 

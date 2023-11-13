@@ -15,7 +15,6 @@ import { ReactSelectStyles, gasFeesNamesByMainChainId } from "../../utils/consta
 import { useTransferStore, iTransfer } from "../../store/TransferStore";
 import Image from "next/image";
 import { change, gas, info, optimism, swap } from "../../assets/images";
-import { iTokenData } from "../../store/TradeStore";
 import { MdKeyboardArrowUp } from "react-icons/md";
 import { AiOutlineSearch } from "react-icons/ai";
 import SelectInput from "../../components/SelectInput/SelectInput";
@@ -97,7 +96,7 @@ const Transfer: React.FC<any> = ({
                                                 smartAccount &&
                                                 address &&
                                                 address.slice(0, 13) + "..." + address.slice(-3)
-                                            )} 
+                                            )}
                                         </div>
                                         <FiCopy
                                             size="35px"
@@ -149,7 +148,7 @@ const Transfer: React.FC<any> = ({
                                                 smartAccount &&
                                                 smartAccount.address &&
                                                 smartAccount.address.slice(0, 13) + "..." + smartAccount.address.slice(-3)
-                                            )} 
+                                            )}
                                         </div>
                                         <FiCopy
                                             size="35px"
@@ -203,7 +202,7 @@ const Transfer: React.FC<any> = ({
                         placeholder="Select Token"
                         onChange={(value: any) => {
                             handleTokenAddress(value.name)
-                        }} 
+                        }}
                         className="w-full lg:w-72 text-font-100 !placeholder-font-100"
                         styles={ReactSelectStyles}
                     /> */}
@@ -241,7 +240,7 @@ const Transfer: React.FC<any> = ({
                                     <div className="text-font-300 text-sm">
                                         SmartAccount Balance :
                                         <span className="font-bold text-font-100 text-base px-1">
-                                            { 
+                                            {
                                                 !scwBalance.isZero()
                                                     ? bg(BigNumber.from(scwBalance).toString())
                                                             .dividedBy(bg(10).pow(tokenInDecimals))
@@ -254,7 +253,7 @@ const Transfer: React.FC<any> = ({
                                     <div className="text-font-300 text-sm">
                                         EOA Balance :
                                         <span className="font-bold text-font-100 text-base px-1">
-                                            { 
+                                            {
                                                 !eoaBalance.isZero()
                                                 ? bg(BigNumber.from(eoaBalance).toString())
                                                         .dividedBy(bg(10).pow(tokenInDecimals))
@@ -277,13 +276,13 @@ const Transfer: React.FC<any> = ({
                                 <button
                                     type="button"
                                     onClick={() => handleAmountIn(
-                                                isSCW 
+                                                isSCW
                                                 ? bg(BigNumber.from(scwBalance).toString())
                                                     .dividedBy(bg(10).pow(tokenInDecimals))
                                                     .toString()
                                                 : bg(BigNumber.from(eoaBalance).toString())
                                                     .dividedBy(bg(10).pow(tokenInDecimals))
-                                                    .toString() 
+                                                    .toString()
                                                 )}
                                     className="w-20 font-bold text-center text-font-100 bg-button-100 rounded-lg py-1"
                                 >

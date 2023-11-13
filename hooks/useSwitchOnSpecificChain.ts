@@ -10,10 +10,9 @@ import { BiconomySmartAccount, BiconomySmartAccountConfig, DEFAULT_ENTRYPOINT_AD
 import { metamaskWallet, useAddress, useChain, useConnect, useSigner, useSwitchChain } from "@thirdweb-dev/react";
 
 import { iTrading, useTradingStore } from "../store/TradingStore";
-import { iTrade, useTradeStore } from "../store/TradeStore";
 import { iGlobal, useGlobalStore } from "../store/GlobalStore";
 
-import { useCalculatebalance } from "../hooks/useCalculateBalance";
+import { useCalculatebalance } from "../hooks/utilsHooks/useCalculateBalance";
 import { bundlerURLs, NetworkLogoByChainId, paymasterURLs } from "../utils/constants";
 import { arbitrum, avalanche, base, ethereum, optimism, polygon } from "../assets/images";
 
@@ -29,8 +28,7 @@ export function useSwitchOnSpecificChain() {
         setCurrentProvider,
         setSelectedNetwork,
     }: iGlobal = useGlobalStore((state) => state);
-    const { setSelectedFromNetwork }: iTrade = useTradeStore((state) => state);
-    const iTradingMethods: iTrading = useTradingStore((state) => state);
+    const { setSelectedFromNetwork }: iTrading = useTradingStore((state) => state);
     const { mutateAsync: fetchNativeBalance } = useCalculatebalance();
     const switchChain = useSwitchChain();
     const metamaskConfig = metamaskWallet();
@@ -59,12 +57,6 @@ export function useSwitchOnSpecificChain() {
                     chainId: chain?.chainId.toString(),
                     icon: NetworkLogoByChainId[chain?.chainId.toString()],
                 });
-                iTradingMethods.setSelectedFromNetwork({
-                    key: chain?.chain,
-                    chainName: chain?.slug,
-                    chainId: chain?.chainId.toString(),
-                    icon: NetworkLogoByChainId[chain?.chainId.toString()],
-                });
             } else {
                 setSmartAccount(null);
                 setConnected(false);
@@ -77,12 +69,6 @@ export function useSwitchOnSpecificChain() {
                 });
 
                 setSelectedFromNetwork({
-                    key: "",
-                    chainName: "",
-                    chainId: "",
-                    icon: "",
-                });
-                iTradingMethods.setSelectedFromNetwork({
                     key: "",
                     chainName: "",
                     chainId: "",
@@ -192,12 +178,6 @@ export function useSwitchOnSpecificChain() {
                         chainId: "137",
                         icon: polygon,
                     });
-                    iTradingMethods.setSelectedFromNetwork({
-                        key: "Polygon",
-                        chainName: chainName,
-                        chainId: "137",
-                        icon: polygon,
-                    });
                 } else if (chainName == "arbitrum") {
                     await switchChain?.(42161);
                     const _smartAccount = await login(42161);
@@ -211,12 +191,6 @@ export function useSwitchOnSpecificChain() {
                         icon: arbitrum,
                     });
                     setSelectedFromNetwork({
-                        key: "Arbitrum",
-                        chainName: chainName,
-                        chainId: "42161",
-                        icon: arbitrum,
-                    });
-                    iTradingMethods.setSelectedFromNetwork({
                         key: "Arbitrum",
                         chainName: chainName,
                         chainId: "42161",
@@ -240,12 +214,6 @@ export function useSwitchOnSpecificChain() {
                         chainId: "43114",
                         icon: avalanche,
                     });
-                    iTradingMethods.setSelectedFromNetwork({
-                        key: "Avalanche",
-                        chainName: chainName,
-                        chainId: "43114",
-                        icon: avalanche,
-                    });
                 } else if (chainName == "optimism") {
                     await switchChain?.(10);
                     const _smartAccount = await login(10);
@@ -259,12 +227,6 @@ export function useSwitchOnSpecificChain() {
                         icon: optimism,
                     });
                     setSelectedFromNetwork({
-                        key: "Optimism",
-                        chainName: chainName,
-                        chainId: "10",
-                        icon: optimism,
-                    });
-                    iTradingMethods.setSelectedFromNetwork({
                         key: "Optimism",
                         chainName: chainName,
                         chainId: "10",
@@ -288,12 +250,6 @@ export function useSwitchOnSpecificChain() {
                         chainId: "1",
                         icon: ethereum,
                     });
-                    iTradingMethods.setSelectedFromNetwork({
-                        key: "Ethereum",
-                        chainName: chainName,
-                        chainId: "1",
-                        icon: ethereum,
-                    });
                 } else if (chainName == "base") {
                     await switchChain?.(8453);
                     const _smartAccount = await login(8453);
@@ -312,12 +268,6 @@ export function useSwitchOnSpecificChain() {
                         chainId: "8453",
                         icon: base,
                     });
-                    iTradingMethods.setSelectedFromNetwork({
-                        key: "Base",
-                        chainName: chainName,
-                        chainId: "8453",
-                        icon: base,
-                    });
                 }
             } else {
                 if (chain) {
@@ -330,12 +280,6 @@ export function useSwitchOnSpecificChain() {
                         icon: NetworkLogoByChainId[chain?.chainId.toString()],
                     });
                     setSelectedFromNetwork({
-                        key: chain?.chain,
-                        chainName: chain?.slug,
-                        chainId: chain?.chainId.toString(),
-                        icon: NetworkLogoByChainId[chain?.chainId.toString()],
-                    });
-                    iTradingMethods.setSelectedFromNetwork({
                         key: chain?.chain,
                         chainName: chain?.slug,
                         chainId: chain?.chainId.toString(),

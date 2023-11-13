@@ -7,16 +7,12 @@ import { AlphaRouter, SwapType } from "@uniswap/smart-order-router";
 import { CurrencyAmount, Percent, Token, TradeType } from "@uniswap/sdk-core";
 
 import IERC20 from "../abis/IERC20.json";
-import ChainContext from "../Context/ChainContext";
 import { iGlobal, useGlobalStore } from "../store/GlobalStore";
 import { _functionType, _nonce, uniswapSwapRouterByChainId } from "../utils/constants";
-import { getContractInstance, getErc20Data, getErc20Decimals, getProvider } from "../utils/web3Libs/ethers";
+import { getContractInstance, getErc20Decimals, getProvider } from "../utils/web3Libs/ethers";
 
 export function useUniswap() {
-    // const { selectedChainId } = React.useContext(ChainContext);
     const { selectedNetwork }: iGlobal = useGlobalStore((state) => state);
-
-
     async function swap({ tokenIn, tokenOut, amountIn, address, type }: any) {
         try {
             const web3JsonProvider = await getProvider(selectedNetwork.chainId);
@@ -34,19 +30,6 @@ export function useUniswap() {
 
             const tokenInDecimals: any = await getErc20Decimals(erc20In);
             const tokenOutDecimals: any = await getErc20Decimals(erc20Out);
-
-            // const erc20tokenIndata: any = await getErc20Data(
-            //     tokenIn,
-            //     address,
-            //     V3_SWAP_ROUTER_ADDRESS,
-            //     web3JsonProvider
-            // );
-            // const erc20tokenOutdata: any = await getErc20Data(
-            //     tokenOut,
-            //     address,
-            //     V3_SWAP_ROUTER_ADDRESS,
-            //     web3JsonProvider
-            // );
 
             const options = {
                 recipient: address,

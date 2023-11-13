@@ -4,7 +4,6 @@ import { useMutation } from "@tanstack/react-query";
 
 import { _nonce, _functionType } from "../../utils/constants";
 import { useGlobalStore, iGlobal } from "../../store/GlobalStore";
-import { useCrossChainDifiStore, iCrossChainDifi } from "../../store/CrossChainDifiStore";
 import { iTrading, useTradingStore } from "../../store/TradingStore";
 
 export function useBiconomyProvider() {

@@ -1,32 +1,17 @@
-import axios from 'axios';
+import axios from "axios";
 import { toast } from "react-hot-toast";
 import { BigNumber as bg } from "bignumber.js";
 
-import { useMutation } from '@tanstack/react-query';
-
-import { useGlobalStore, iGlobal } from '../store/GlobalStore';
-import { _nonce, _functionType } from '../utils/constants';
-import { useCrossChainDifiStore, iCrossChainDifi } from '../store/CrossChainDifiStore';
-import { BICONOMY_GAS_PRICE_URL } from '../utils/keys';
-import { chooseChianId } from '../utils/helper';
+import { useMutation } from "@tanstack/react-query";
+import { _nonce, _functionType } from "../../utils/constants";
+import { BICONOMY_GAS_PRICE_URL } from "../../utils/keys";
 
 bg.config({ DECIMAL_PLACES: 5 });
 
 export function useCalculateGasCost() {
-    const {
-        setScwBalance,
-        setEoaBalance,
-    }: iGlobal = useGlobalStore((state) => state);
-
     async function calculategasCost(fromChainId) {
         try {
-            const biconomyGasInfo = await axios.get(`${BICONOMY_GAS_PRICE_URL}${fromChainId}`)
-            // const firstObject: any = biconomyGasInfo.data.response[0];
-            // const tokenGasPrice: number = firstObject.tokenGasPrice;
-            // const feeTokenTransferGas: number = firstObject.feeTokenTransferGas;
-
-            // const gasCost = bg(tokenGasPrice).multipliedBy(feeTokenTransferGas).dividedBy(1e18)
-
+            const biconomyGasInfo = await axios.get(`${BICONOMY_GAS_PRICE_URL}${fromChainId}`);
             if (biconomyGasInfo && biconomyGasInfo.data && biconomyGasInfo.data.data) {
                 if (biconomyGasInfo.data.data.response.length > 0) {
                     const firstObject: any = biconomyGasInfo.data.data.response[0];
@@ -38,11 +23,10 @@ export function useCalculateGasCost() {
                         const formattedResult = result.toFixed(15);
                         return bg(formattedResult).toNumber();
                     } else {
-                        return 0
+                        return 0;
                     }
                 }
             }
-
         } catch (error: any) {
             console.log("useCalculatebalance:Error: " + error);
             toast.error(error);

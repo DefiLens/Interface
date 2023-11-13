@@ -5,11 +5,11 @@ import { BigNumber as bg } from "bignumber.js";
 import { useMutation } from "@tanstack/react-query";
 
 import { useUniswap } from "../useUniswap";
-import { useApprove } from "../useApprove";
+import { useApprove } from "../utilsHooks/useApprove";
 import { iBatchFlowData, iTrading, useTradingStore } from "../../store/TradingStore";
 import { abiFetcher, abiFetcherNum, buildParams, nativeTokenFetcher, nativeTokenNum } from "./batchingUtils";
 import { _functionType, _nonce, uniswapSwapRouterByChainId, V3_SWAP_ROUTER_ADDRESS } from "../../utils/constants";
-import { useCalculateGasCost } from "../useCalculateGasCost";
+import { useCalculateGasCost } from "../utilsHooks/useCalculateGasCost";
 
 export function useRefinance() {
     const { mutateAsync: swap } = useUniswap();

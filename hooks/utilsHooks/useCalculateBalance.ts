@@ -4,14 +4,11 @@ import { BigNumber as bg } from "bignumber.js";
 
 import { useMutation } from "@tanstack/react-query";
 
-import { useGlobalStore, iGlobal } from "../store/GlobalStore";
-import { rpscURLS, _nonce, _functionType } from "../utils/constants";
+import { useGlobalStore, iGlobal } from "../../store/GlobalStore";
+import { rpscURLS, _nonce, _functionType } from "../../utils/constants";
 
 export function useCalculatebalance() {
-    const {
-        setScwBalance,
-        setEoaBalance,
-    }: iGlobal = useGlobalStore((state) => state);
+    const { setScwBalance, setEoaBalance }: iGlobal = useGlobalStore((state) => state);
 
     async function fetchNativeBalance({ chainId, eoaAddress, scwAddress }) {
         try {
@@ -27,7 +24,7 @@ export function useCalculatebalance() {
                 setScwBalance(_eoabalance.toString());
             }
         } catch (error: any) {
-console.log("useCalculatebalance:Error: " + error);
+            console.log("useCalculatebalance:Error: " + error);
             toast.error(error);
             return;
         }

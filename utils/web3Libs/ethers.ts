@@ -2,7 +2,6 @@ import toast from "react-hot-toast";
 import { BigNumber, ethers } from "ethers";
 
 import { rpscURLS } from "../constants";
-import { chooseChianId } from "../helper";
 import IERC20 from "../../abis/IERC20.json";
 
 export const getProvider = async (chainId) => {
@@ -74,11 +73,3 @@ export const getErc20Allownace = async (erc20, from, spender): Promise<BigNumber
         return;
     }
 };
-
-// export const getProvider3 = async () => {
-//     try {
-
-//     } catch (error) {
-//         console.log("getProvider3-error", error)
-//     }
-// }

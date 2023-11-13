@@ -11,7 +11,7 @@ import IStarGateRouter from "../abis/IStarGateRouter.json";
 import { useTradingStore, iTrading } from "../store/TradingStore";
 import { useGlobalStore, iGlobal } from "../store/GlobalStore";
 import { chooseChianId, calculateFees, batch } from "../utils/helper";
-import { gasFeesNames, _nonce, _functionType, tokensByNetwork } from "../utils/constants";
+import { gasFeesNames, _nonce, _functionType } from "../utils/constants";
 import { getErc20Balanceof, getErc20Allownace, getContractInstance, getProvider } from "../utils/web3Libs/ethers";
 import { chainPingByNetwork, starGateRouterByNetwork, tokensByNetworkForCC } from "./Batching/batchingUtils";
 

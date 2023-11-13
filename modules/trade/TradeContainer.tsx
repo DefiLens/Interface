@@ -29,7 +29,7 @@ import {
     protocolByNetwork,
     tokenAddressByProtocol,
 } from "../../utils/constants";
-import { iTokenInfo, iTokenList } from "./types";
+import { iTokenInfo } from "./types";
 
 bg.config({ DECIMAL_PLACES: 10 });
 
@@ -707,12 +707,6 @@ const TradeContainer: React.FC<any> = () => {
 
     return (
         <Trade
-            // generateAbis={generateAbis}
-            // handleContractAddress={handleContractAddress}
-            // onChangeTokenIn={onChangeTokenIn}
-            // onChangeFunctions={onChangeFunctions}
-            // simulate={simulate}
-            // resetField={resetField}
             handleSelectFromNetwork={handleSelectFromNetwork}
             handleSelectToNetwork={handleSelectToNetwork}
             onChangeFromProtocol={onChangeFromProtocol}

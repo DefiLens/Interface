@@ -1,4 +1,3 @@
-import axios from "axios";
 import { toast } from "react-hot-toast";
 import { BigNumber, ethers } from "ethers";
 import { BigNumber as bg } from "bignumber.js";
@@ -7,13 +6,11 @@ import { useMutation } from "@tanstack/react-query";
 
 import IERC20 from "../abis/IERC20.json";
 import ChainPing from "../abis/ChainPing.json";
-import ChainContext from "../Context/ChainContext";
 import IStarGateRouter from "../abis/IStarGateRouter.json";
-import { useCalculateGasCost } from "./useCalculateGasCost";
+import { useCalculateGasCost } from "./utilsHooks/useCalculateGasCost";
 import { iGlobal, useGlobalStore } from "../store/GlobalStore";
 import { batch, calculateFees, chooseChianId } from "../utils/helper";
-import { _functionType, _nonce, richAddressByChainId } from "../utils/constants";
-import { iCrossChainDifi, useCrossChainDifiStore } from "../store/CrossChainDifiStore";
+import { _functionType, _nonce } from "../utils/constants";
 import { getContractInstance, getErc20Balanceof, getProvider } from "../utils/web3Libs/ethers";
 
 bg.config({ DECIMAL_PLACES: 18 });
