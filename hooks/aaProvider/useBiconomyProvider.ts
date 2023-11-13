@@ -22,11 +22,6 @@ export function useBiconomyProvider() {
         } catch (error: any) {
             console.log("sendToBiconomy-error: ", error);
             setHasExecutionError(error.message ? error.message : error);
-            // if (error.message) {
-            //     toast.error(error.message);
-            // } else {
-            //     toast.error(error);
-            // }
             return;
         }
     }
