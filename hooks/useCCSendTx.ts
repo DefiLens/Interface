@@ -8,7 +8,7 @@ import { useMutation } from "@tanstack/react-query";
 import IERC20 from "../abis/IERC20.json";
 import ChainPing from "../abis/ChainPing.json";
 import IStarGateRouter from "../abis/IStarGateRouter.json";
-import { useTradeStore, iTrade } from "../store/TradeStore";
+import { useTradingStore, iTrading } from "../store/TradingStore";
 import { useGlobalStore, iGlobal } from "../store/GlobalStore";
 import { chooseChianId, calculateFees, batch } from "../utils/helper";
 import { gasFeesNames, _nonce, _functionType, tokensByNetwork } from "../utils/constants";
@@ -24,7 +24,7 @@ export function useCCSendTx() {
         amountIn,
         fromTokenDecimal,
         setTxHash,
-    }: iTrade = useTradeStore((state) => state);
+    }: iTrading = useTradingStore((state) => state);
 
     async function sendTxToChain({
         tokenIn,

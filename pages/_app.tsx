@@ -11,7 +11,7 @@ import { Polygon, Optimism, Ethereum, Base, Avalanche, Arbitrum } from "@thirdwe
 
 import { closeNarrow } from "../assets/images";
 import ChainContext from "../Context/ChainContext";
-import { useTradeStore, iTrade } from "../store/TradeStore";
+import { useGlobalStore, iGlobal } from "../store/GlobalStore";
 import HeaderContainer from "../modules/header/HeaderContainer";
 
 import "@biconomy/web3-auth/dist/src/style.css";
@@ -21,7 +21,7 @@ import "../assets/styles/index.css";
 export default function App({ Component, pageProps }: AppProps) {
     const metamaskConfig = metamaskWallet({});
 
-    const { selectedFromNetwork }: iTrade = useTradeStore((state) => state);
+    const { selectedNetwork }: iGlobal = useGlobalStore((state) => state);
 
     // const [selectedChain, setSelectedChain] = React.useState("");
     // const [selectedChainId, setSelectedChainId] = React.useState("");
@@ -44,7 +44,7 @@ export default function App({ Component, pageProps }: AppProps) {
                     supportedChains={[Polygon, Arbitrum, Avalanche, Ethereum, Base, Optimism]}
                     clientId={process.env.NEXT_PUBLIC_TEMPLATE_CLIENT_ID}
                     // activeChain={selectedChain}
-                    activeChain={selectedFromNetwork.chainName}
+                    activeChain={selectedNetwork.chainName}
                 >
                     <QueryClientProvider client={queryClient}>
 
@@ -58,7 +58,7 @@ export default function App({ Component, pageProps }: AppProps) {
                         position="top-right"
                       >
                         {(t) => (
-                          <ToastBar 
+                          <ToastBar
                             toast={t}
                           >
                             {({ icon, message }) => (

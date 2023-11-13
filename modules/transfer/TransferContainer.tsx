@@ -1,7 +1,6 @@
-import { useContext, useEffect } from "react";
+import { useEffect } from "react";
 
 import web3 from "web3";
-import axios from "axios";
 import { toast } from "react-hot-toast";
 import { BigNumber, ethers } from "ethers";
 import { BigNumber as bg } from "bignumber.js";
@@ -13,8 +12,6 @@ import IERC20 from "../../abis/IERC20.json";
 import UNISWAP_TOKENS from "../../abis/tokens/Uniswap.json";
 import { BIG_ZERO } from "../../utils/constants";
 import { getTokenListByChainId, setSafeState } from "../../utils/helper";
-import ChainContext from "../../Context/ChainContext";
-import { iTrade, useTradeStore } from "../../store/TradeStore";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import { useCalculateGasCost } from "../../hooks/useCalculateGasCost";
 import { iTransfer, useTransferStore } from "../../store/TransferStore";
@@ -28,13 +25,12 @@ const TransferContainer: React.FC<any> = () => {
 
     // const { selectedChainId } = useContext(ChainContext);
 
-    const { selectedFromNetwork }: iTrade = useTradeStore((state) => state);
-
     const { mutateAsync: calculategasCost } = useCalculateGasCost();
 
     const {
         smartAccount,
-        showTransferFundToggle
+        showTransferFundToggle,
+        selectedNetwork
     }: iGlobal = useGlobalStore((state) => state);
 
     const {
@@ -71,7 +67,7 @@ const TransferContainer: React.FC<any> = () => {
     useEffect(() => {
         async function onChangeFromProtocol() {
             if (showTransferFundToggle) {
-                const filteredTokens = getTokenListByChainId(selectedFromNetwork.chainId, UNISWAP_TOKENS);
+                const filteredTokens = getTokenListByChainId(selectedNetwork.chainId, UNISWAP_TOKENS);
                 filteredTokens.unshift({
                     "chainId": 1,
                     "address": "",

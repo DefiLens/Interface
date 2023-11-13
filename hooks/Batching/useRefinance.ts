@@ -6,7 +6,7 @@ import { useMutation } from "@tanstack/react-query";
 
 import { useUniswap } from "../useUniswap";
 import { useApprove } from "../useApprove";
-import { iBatchFlowData, iTrade, useTradeStore } from "../../store/TradeStore";
+import { iBatchFlowData, iTrading, useTradingStore } from "../../store/TradingStore";
 import { iBatchingTxn, useBatchingTxnStore } from "../../store/BatchingTxnStore";
 import { iCrossChainDifi, useCrossChainDifiStore } from "../../store/CrossChainDifiStore";
 import { abiFetcher, abiFetcherNum, buildParams, nativeTokenFetcher, nativeTokenNum } from "./batchingUtils";
@@ -18,13 +18,8 @@ export function useRefinance() {
     const { mutateAsync: approve } = useApprove();
     const { mutateAsync: calculategasCost } = useCalculateGasCost();
 
-    const { selectedFromNetwork, selectedFromProtocol, selectedToProtocol, amountIn }: iTrade = useTradeStore(
-        (state) => state
-    );
-
-    // const { setTxHash }: iCrossChainDifi = useCrossChainDifiStore((state) => state);
-    // const { tokensData }: iBatchingTxn = useBatchingTxnStore((state) => state);
-    const { tokensData, setTxHash }: iTrade = useTradeStore((state) => state);
+    const { selectedFromNetwork, selectedFromProtocol, selectedToProtocol, amountIn, tokensData, setTxHash }: iTrading =
+        useTradingStore((state) => state);
 
     async function refinance({
         isSCW,

@@ -14,7 +14,6 @@ import ChainContext from "../../Context/ChainContext";
 import { metamask, wallet } from "../../assets/images";
 import useClickOutside from "../../hooks/useClickOutside";
 import TransferContainer from "../transfer/TransferContainer";
-import { iTrade, useTradeStore } from "../../store/TradeStore";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import { gasFeesNames, NavigationList } from "../../utils/constants";
 import SelectNetwork from "../../components/SelectNetwork/SelectNetwork";
@@ -23,7 +22,7 @@ const Header: React.FC<any> = ({
     handleConnect,
     switchOnSpecificChain
 }: tHeader) => {
-    
+
     const pathname = usePathname()
 
     const {
@@ -36,11 +35,8 @@ const Header: React.FC<any> = ({
         setShowWalletAddress,
         showTransferFundToggle,
         setShowTransferFundToggle,
+        selectedNetwork
     }: iGlobal = useGlobalStore((state) => state);
-
-    const {
-        selectedFromNetwork,
-    }: iTrade = useTradeStore((state) => state);
 
     // const {
     //     selectedChain,
@@ -187,8 +183,8 @@ const Header: React.FC<any> = ({
                             </button>
 
                             {showWalletAddress && smartAccount && !loading && (
-                                <div 
-                                    ref={walletAddressRef} 
+                                <div
+                                    ref={walletAddressRef}
                                     className="w-80 absolute top-16 right-28 z-50 flex flex-col justify-center items-start gap-4 bg-backgound-600 border-2 border-backgound-500 shadow-md shadow-backgound-100 p-3 rounded-lg"
                                 >
                                     <button className="w-full relative flex justify-between items-center gap-2">
@@ -204,7 +200,7 @@ const Header: React.FC<any> = ({
                                                     "SmartAccount : (" +
                                                         scwBalance +
                                                         " " +
-                                                        `${gasFeesNames[selectedFromNetwork.chainName]}` +
+                                                        `${gasFeesNames[selectedNetwork.chainName]}` +
                                                         ")"}
                                             </span>
                                         </div>
@@ -227,7 +223,7 @@ const Header: React.FC<any> = ({
                                                     "EOA : (" +
                                                         eoaBalance +
                                                         " " +
-                                                        `${gasFeesNames[selectedFromNetwork.chainName]}` +
+                                                        `${gasFeesNames[selectedNetwork.chainName]}` +
                                                         ")"}
                                             </span>
                                         </div>
@@ -246,7 +242,7 @@ const Header: React.FC<any> = ({
                     <SelectNetwork
                         switchOnSpecificChain={switchOnSpecificChain}
                     />
-                    
+
                     {/* <div className="relative border-2 border-secondary-300 text-backgound-100 bg-font-100 shadow-md rounded-md">
                         <label htmlFor="fromNetwork" className="sr-only">
                             Connect Network

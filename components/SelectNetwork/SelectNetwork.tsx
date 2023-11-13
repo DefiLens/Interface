@@ -1,11 +1,11 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 
 import Image from 'next/image';
 
 import { tSelectNetwork } from './types';
 import useClickOutside from '../../hooks/useClickOutside';
-import { iTrade, useTradeStore } from '../../store/TradeStore';
-import { buttonStyle, NETWORK_LIST } from '../../utils/constants';
+import { iGlobal, useGlobalStore } from '../../store/GlobalStore';
+import { NETWORK_LIST } from '../../utils/constants';
 
 const SelectNetwork = ({
   switchOnSpecificChain,
@@ -16,12 +16,12 @@ const SelectNetwork = ({
   const {
     showSelectNetworkList,
     setShowSelectNetworkList,
-    selectedFromNetwork,
-  }: iTrade = useTradeStore((state) => state);
-  
+    selectedNetwork,
+  }: iGlobal = useGlobalStore((state) => state);
+
   const handleSelectNetwork = (data: any) => {
     setShowSelectNetworkList(!showSelectNetworkList);
-    if (selectedFromNetwork.chainName !== data.chainName) {
+    if (selectedNetwork.chainName !== data.chainName) {
       switchOnSpecificChain(data.chainName)
     }
   };
@@ -37,10 +37,10 @@ const SelectNetwork = ({
         className="flex justify-between items-center  cursor-pointer"
         onClick={() => setShowSelectNetworkList(!showSelectNetworkList)}
       >
-        {selectedFromNetwork?.chainName ? (
+        {selectedNetwork?.chainName ? (
             <div className="rounded-full p-1">
               <Image
-                src={selectedFromNetwork.icon}
+                src={selectedNetwork.icon}
                 alt=""
                 className="h-8 w-8 rounded-full cursor-pointer"
               />
@@ -51,7 +51,7 @@ const SelectNetwork = ({
             >
               Select a Network
             </div>
-          ) 
+          )
         }
       </div>
 
@@ -62,7 +62,7 @@ const SelectNetwork = ({
           } rounded-xl transition-all delay-100 duration-300 ease-linear`}
       >
         {showSelectNetworkList && (
-          <div 
+          <div
             ref={selectNetworkRef}
             className="w-48 flex flex-col gap-1 p-3 rounded-xl bg-backgound-300 border-2 border-backgound-600 shadow shadow-backgound-600"
           >
@@ -78,7 +78,7 @@ const SelectNetwork = ({
                     alt="logo"
                     className="h-10 w-10 rounded-full"
                   />
-                  <div className="text-sm md:text-base text-font-100">{item.key}</div>
+                  <div className="text-sm md:text-base text-font-100">{item.key}</div>a
                 </div>
               );
             })}

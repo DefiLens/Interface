@@ -7,23 +7,19 @@ import { BigNumber as bg } from "bignumber.js";
 import { Bundler, IBundler } from "@biconomy/bundler";
 import { BiconomyPaymaster, IPaymaster } from "@biconomy/paymaster";
 import { BiconomySmartAccount, BiconomySmartAccountConfig, DEFAULT_ENTRYPOINT_ADDRESS } from "@biconomy/account";
-import { metamaskWallet, useAddress, useChain, useConnect, useSigner, useSwitchChain } from "@thirdweb-dev/react";
+import { useAddress, useChain, useSigner } from "@thirdweb-dev/react";
 
 import Trade from "./Trade";
 import IERC20 from "../../abis/IERC20.json";
 import { setSafeState } from "../../utils/helper";
-import { useSimulate } from "../../hooks/useSimulate";
 import UNISWAP_TOKENS from "../../abis/tokens/Uniswap.json";
-import { getNetworkAndContractData } from "../../utils/apis";
-import { useGenerateAbis } from "../../hooks/useGenerateAbis";
 import { useRefinance } from "../../hooks/Batching/useRefinance";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import { useCCRefinance } from "../../hooks/Batching/useCCRefinance";
 import { useEoaProvider } from "../../hooks/aaProvider/useEoaProvider";
 import { useSwitchOnSpecificChain } from "../../hooks/useSwitchOnSpecificChain";
-import { iSelectedNetwork, iTrade, useTradeStore } from "../../store/TradeStore";
+import { iSelectedNetwork, iTrading, useTradingStore } from "../../store/TradingStore";
 import { useBiconomyProvider } from "../../hooks/aaProvider/useBiconomyProvider";
-import { useOnChangeFunctions, useOnChangeTokenIn } from "../../hooks/useOnChangeMainForm";
 import { getContractInstance, getErc20Balanceof, getErc20Decimals, getProvider } from "../../utils/web3Libs/ethers";
 import {
     _functionType,
@@ -31,37 +27,22 @@ import {
     bundlerURLs,
     paymasterURLs,
     protocolByNetwork,
-    StargateChainIdBychainId,
     tokenAddressByProtocol,
-    tokensByNetwork,
 } from "../../utils/constants";
 import { iTokenInfo, iTokenList } from "./types";
 
 bg.config({ DECIMAL_PLACES: 10 });
 
 const TradeContainer: React.FC<any> = () => {
-    const chain = useChain(); // Detect the connected address
     const address = useAddress(); // Detect the connected address
+    const signer: any = useSigner(); // Detect the connected address
 
     const { mutateAsync: sendToBiconomy } = useBiconomyProvider();
     const { mutateAsync: sendTxTrditionally } = useEoaProvider();
     const { mutateAsync: refinance } = useRefinance();
     const { mutateAsync: refinanceForCC } = useCCRefinance();
-
-    const switchChain = useSwitchChain();
-    const signer: any = useSigner(); // Detect the connected address
-    const connect = useConnect();
-    const metamaskConfig = metamaskWallet();
-    const { mutateAsync: simulateTx } = useSimulate();
-    const { mutateAsync: generateAbisForContract } = useGenerateAbis();
-    const { mutateAsync: onChangeTokenInHook } = useOnChangeTokenIn();
-    const { mutateAsync: onChangeFunctionsHook } = useOnChangeFunctions();
-
     const { mutateAsync: switchOnSpecificChain } = useSwitchOnSpecificChain();
-
-    const { scwBalance, smartAccount, setLoading, setSmartAccount, setConnected }: iGlobal = useGlobalStore(
-        (state) => state
-    );
+    const { smartAccount, setLoading, setSmartAccount, setConnected }: iGlobal = useGlobalStore((state) => state);
 
     const {
         maxBalance,
@@ -79,139 +60,30 @@ const TradeContainer: React.FC<any> = () => {
         setSelectedToProtocol,
         selectedToToken,
         setSelectedToToken,
-        showFromSelectionMenu,
         setShowFromSelectionMenu,
-        showToSelectionMenu,
         setShowToSelectionMenu,
-        showCrossChainSelectionMenu,
-        setShowCrossChainSelectionMenu,
         tokensData,
         setTokensData,
         amountIn,
         setAmountIn,
         fromTokenDecimal,
         setFromTokenDecimal,
-        fromTokenBalanceForSCW,
-        setFromTokenBalanceForSCW,
-        fromTokenBalanceForEOA,
-        setFromTokenBalanceForEOA,
-        filterFromToken,
         setFilterFromToken,
-        filterToToken,
         setFilterToToken,
-        filterFromAddress,
         setFilterFromAddress,
-        filterToAddress,
         setFilterToAddress,
         addToBatchLoading,
         setAddToBatchLoading,
-        showBatchList,
         setShowBatchList,
         showIndividualBatchList,
         setShowIndividualBatchList,
-        txhash,
         setTxHash,
-        sendTxLoading,
         setSendTxLoading,
-        sendTxLoadingForEoa,
-        setSendTxLoadingForEoa,
         individualBatch,
         setIndividualBatch,
-
-        tokenIn,
-        setTokenIn,
-        tokenInDecimals,
-        setTokenInDecimals,
-        isThisAmount,
-        setIsThisFieldAmount,
-
-        contractIndex,
-        setContractIndex,
-        selectedToContractAddress,
-        setSelectedToContractAddress,
-        allNetworkData,
-        setData,
-        setAbi,
-        currentFunc,
-        setCurrentFunc,
-        currentFuncIndex,
-        setCurrentFuncIndex,
-
-        funcArray,
-        setFunctionArray,
-        params,
-        setParams,
-        fixParams,
-        setFixParams,
-
         setShowExecuteBatchModel,
         setHasExecutionError,
-    }: iTrade = useTradeStore((state) => state);
-
-    const generateAbis = async () => {
-        await generateAbisForContract();
-    };
-
-    const fetchMaxbalance = async () => {
-        let tokenAddress: string;
-        const provider = await getProvider(selectedFromNetwork.chainId);
-
-        if (selectedFromProtocol == "erc20") {
-            tokenAddress = tokensData?.filter((token) => token.symbol === selectedFromToken)[0].address;
-        } else {
-            tokenAddress =
-                tokenAddressByProtocol[selectedFromNetwork.chainName][selectedFromProtocol][selectedFromToken];
-        }
-
-        const erc20 = await getContractInstance(tokenAddress, IERC20, provider);
-        const maxBal: any = await getErc20Balanceof(erc20, smartAccount.address);
-        const fromTokendecimal: any = await getErc20Decimals(erc20);
-        const MaxBalance = bg(maxBal?.toString()).dividedBy(bg(10).pow(fromTokendecimal));
-
-        return MaxBalance.toString();
-    };
-
-    const handleContractAddress = async (_contractIndex: string, _contractDetail: any) => {
-        // if (simulateLoading || sendTxLoading || sendTxLoadingForEoa) {
-        //     toast.error("wait, tx loading currently ...");
-        //     return;
-        // }
-        if (!smartAccount) {
-            toast.error("You need to biconomy login");
-            return;
-        }
-        setContractIndex(_contractIndex);
-        setSelectedToContractAddress(_contractDetail.contractName);
-    };
-
-    // for e.g usdt -> usdc
-    const onChangeTokenIn = async (tokenIn: any) => {
-        if (!selectedFromNetwork.chainId) {
-            toast.error("From network is not selecetd yet");
-            return;
-        }
-        const provider = await getProvider(selectedFromNetwork.chainId);
-
-        const token = tokensByNetwork[selectedFromNetwork.chainId];
-        const erc20 = await getContractInstance(token.usdc, IERC20, provider);
-        const scwBalance = await getErc20Balanceof(erc20, smartAccount.address);
-        const eoaBalance = await getErc20Balanceof(erc20, address);
-
-        // setSafeState(setScwTokenInbalance, BigNumber.from(scwBalance), BIG_ZERO);
-        // setSafeState(setEoaTokenInbalance, BigNumber.from(eoaBalance), BIG_ZERO);
-
-        const { chainId } = selectedFromNetwork;
-        await onChangeTokenInHook({ fromChainId: chainId, tokenIn });
-    };
-
-    const onChangeFunctions = async (funcIndex: string) => {
-        if (funcIndex == "") return toast.error("Please select operation");
-        await onChangeFunctionsHook({ funcIndex, address });
-    };
-
-    const simulate = async (funcIndex: number) => {
-        simulateTx({ funcIndex, address });
-    };
+    }: iTrading = useTradingStore((state) => state);
 
     useEffect(() => {
         if (individualBatch.length === 1 && individualBatch[0].txArray.length === 0) {
@@ -219,34 +91,9 @@ const TradeContainer: React.FC<any> = () => {
         }
     }, [individualBatch]);
 
-    useEffect(() => {
-        if (selectedToNetwork.chainId) {
-            setContractIndex("");
-            resetField();
-        }
-    }, [selectedToNetwork]);
-
-    useEffect(() => {
-        if (contractIndex) {
-            resetField();
-            generateAbis();
-        }
-    }, [contractIndex]);
-
-    const resetField = async () => {
-        setFunctionArray(null);
-        setParams([]);
-        setFixParams([]);
-        setCurrentFunc("");
-        setCurrentFuncIndex(0);
-        setIsThisFieldAmount(-1);
-    };
-
     const handleSelectFromNetwork = async (_fromNetwork: iSelectedNetwork) => {
         clearSelectedBatchData();
         setLoading(true);
-        setCurrentFunc("");
-        setData(null);
         if (selectedFromNetwork.chainName !== _fromNetwork.chainName) {
             await switchOnSpecificChain(_fromNetwork.chainName);
             setSelectedFromNetwork(_fromNetwork);
@@ -257,15 +104,7 @@ const TradeContainer: React.FC<any> = () => {
 
     const handleSelectToNetwork = async (_toNetwork: iSelectedNetwork) => {
         try {
-            setData(null);
             setSelectedToNetwork(_toNetwork);
-            const response: any = await getNetworkAndContractData(
-                StargateChainIdBychainId[selectedFromNetwork.chainId],
-                StargateChainIdBychainId[_toNetwork.chainId]
-            );
-            if (response.data) {
-                setData(response.data);
-            }
         } catch (error) {
             console.error("API Error:", error);
         }
@@ -286,15 +125,9 @@ const TradeContainer: React.FC<any> = () => {
     useEffect(() => {
         async function changeWallet() {
             if (!address) {
-                setTokenIn("");
-                // setFromChainId("")
-                // setToChainId("")
                 setAmountIn("");
-                setContractIndex("");
-                setFunctionArray([]);
                 setSmartAccount(null);
                 setConnected(false);
-
                 setSelectedFromNetwork({
                     key: "",
                     chainName: "",
@@ -318,24 +151,15 @@ const TradeContainer: React.FC<any> = () => {
         }
     }, [selectedToNetwork, selectedToProtocol, selectedToToken]);
 
-    useEffect(() => {
-        if (contractIndex && currentFunc) {
-            setShowCrossChainSelectionMenu(false);
-        }
-    }, [contractIndex, currentFunc]);
-
     function convertIpfsUrl(ipfsUri: string): string {
         // Check if the input URI starts with 'ipfs://'
         if (ipfsUri.startsWith("ipfs://")) {
             // Remove the 'ipfs://' prefix
             const ipfsHash = ipfsUri.replace("ipfs://", "");
-
             // Create the Cloudflare IPFS URL
             const cloudflareIpfsUrl = `https://cloudflare-ipfs.com/ipfs/${ipfsHash}`;
-
             return cloudflareIpfsUrl;
         }
-
         // If the input doesn't start with 'ipfs://', return it as is
         return ipfsUri;
     }
@@ -343,7 +167,6 @@ const TradeContainer: React.FC<any> = () => {
     function getTokenListByChainId(chainId: any, tokenList: any): iTokenInfo[] {
         return tokenList.tokens
             .map((token) => {
-                console.log("token.chainId", token.chainId, chainId);
                 if (token.chainId == chainId) {
                     return {
                         chainId: token.chainId,
@@ -354,17 +177,6 @@ const TradeContainer: React.FC<any> = () => {
                         logoURI: token.logoURI.includes("ipfs") ? convertIpfsUrl(token.logoURI) : token.logoURI,
                     };
                 }
-                // else if (token.extensions && token.extensions.bridgeInfo[chainId.toString()]) {
-                //     const tokenAddress = token.extensions.bridgeInfo[chainId.toString()].tokenAddress;
-                //     return {
-                //         chainId: chainId,
-                //         address: tokenAddress,
-                //         name: token.name,
-                //         symbol: token.symbol,
-                //         decimals: token.decimals,
-                //         logoURI: token.logoURI.includes("ipfs") ? convertIpfsUrl(token.logoURI) : token.logoURI,
-                //     };
-                // }
                 return null;
             })
             .filter(Boolean) as iTokenInfo[];
@@ -376,32 +188,18 @@ const TradeContainer: React.FC<any> = () => {
                 if (selectedFromProtocol !== "erc20") {
                     setAmountIn("");
                     setFromTokenDecimal(0);
-                    // setFromTokenBalanceForSCW(BIG_ZERO);
-                    // setFromTokenBalanceForEOA(BIG_ZERO);
 
                     const firstFromToken =
                         protocolByNetwork[selectedFromNetwork.chainName][selectedFromProtocol][0].name;
-                    // setSelectedFromToken(firstFromToken);
 
                     const provider = await getProvider(selectedFromNetwork.chainId);
                     const tokenAddress =
                         tokenAddressByProtocol[selectedFromNetwork.chainName][selectedFromProtocol][firstFromToken];
                     const erc20 = await getContractInstance(tokenAddress, IERC20, provider);
-                    // const scwBalance = await getErc20Balanceof(erc20, smartAccount?.address);
-                    // const eoaBalance = await getErc20Balanceof(erc20, address);
                     const fromTokendecimal = await getErc20Decimals(erc20);
                     setSafeState(setFromTokenDecimal, fromTokendecimal, 0);
-                    // setSafeState(setFromTokenBalanceForSCW, BigNumber.from(scwBalance), BIG_ZERO);
-                    // setSafeState(setFromTokenBalanceForEOA, BigNumber.from(eoaBalance), BIG_ZERO);
                 } else {
                     const filteredTokens = getTokenListByChainId(selectedFromNetwork.chainId, UNISWAP_TOKENS);
-                    // const tokensWithChainId = UNISWAP_TOKENS.tokens?.filter((token) => token.chainId === BigNumber.from(selectedFromNetwork.chainId).toNumber());
-                    // const filteredTokens = tokensWithChainId.map((token) => {
-                    //     const { extensions, logoURI, ...filteredToken } = token;
-                    //     return filteredToken;
-                    // });
-                    // console.log("filteredTokens:", filteredTokens);
-
                     setTokensData(filteredTokens);
                 }
             }
@@ -413,13 +211,7 @@ const TradeContainer: React.FC<any> = () => {
         async function onChangeselectedToProtocol() {
             if (selectedToProtocol) {
                 if (selectedToProtocol == "erc20" && tokensData.length < 1) {
-                    // const tokensWithChainId = UNISWAP_TOKENS.tokens?.filter((token) => token.chainId === BigNumber.from(selectedToNetwork.chainId).toNumber());
-                    // const filteredTokens = tokensWithChainId.map((token) => {
-                    //     const { extensions, logoURI, ...filteredToken } = token;
-                    //     return filteredToken;
-                    // });
                     const filteredTokens = getTokenListByChainId(selectedToNetwork.chainId, UNISWAP_TOKENS);
-                    // console.log("filteredTokens:", filteredTokens);
                     setTokensData(filteredTokens);
                 }
             }
@@ -481,8 +273,6 @@ const TradeContainer: React.FC<any> = () => {
             setIsmaxBalanceLoading(true);
             setAmountIn("");
             setFromTokenDecimal(0);
-            // setFromTokenBalanceForSCW(BIG_ZERO);
-            // setFromTokenBalanceForEOA(BIG_ZERO);
 
             setSelectedFromToken(_fromToken);
             const provider = await getProvider(selectedFromNetwork.chainId);
@@ -494,12 +284,8 @@ const TradeContainer: React.FC<any> = () => {
                     ? tokenAddressByProtocol[selectedFromNetwork.chainName][selectedFromProtocol][_fromToken]
                     : erc20Address[0].address;
             const erc20 = await getContractInstance(tokenAddress, IERC20, provider);
-            // const scwBalance = await getErc20Balanceof(erc20, smartAccount.address);
-            // const eoaBalance = await getErc20Balanceof(erc20, address);
             const fromTokendecimal: any = await getErc20Decimals(erc20);
             setSafeState(setFromTokenDecimal, fromTokendecimal, 0);
-            // setSafeState(setFromTokenBalanceForSCW, BigNumber.from(scwBalance), BIG_ZERO);
-            // setSafeState(setFromTokenBalanceForEOA, BigNumber.from(eoaBalance), BIG_ZERO);
 
             let scwAddress: any;
             if (!smartAccount?.address) {
@@ -900,7 +686,7 @@ const TradeContainer: React.FC<any> = () => {
             if (isSCW) {
                 setSendTxLoading(true);
             } else {
-                setSendTxLoadingForEoa(true);
+                // setSendTxLoadingForEoa(true);
             }
             const mergeArray: any = [];
             await individualBatch.map((bar) => bar.txArray.map((hash) => mergeArray.push(hash)));
@@ -914,22 +700,19 @@ const TradeContainer: React.FC<any> = () => {
                 setTxHash(tempTxhash);
             }
             setSendTxLoading(false);
-            setSendTxLoadingForEoa(false);
-            // addBatch();
         } catch (error) {
             setSendTxLoading(false);
-            setSendTxLoadingForEoa(false);
         }
     };
 
     return (
         <Trade
-            generateAbis={generateAbis}
-            handleContractAddress={handleContractAddress}
-            onChangeTokenIn={onChangeTokenIn}
-            onChangeFunctions={onChangeFunctions}
-            simulate={simulate}
-            resetField={resetField}
+            // generateAbis={generateAbis}
+            // handleContractAddress={handleContractAddress}
+            // onChangeTokenIn={onChangeTokenIn}
+            // onChangeFunctions={onChangeFunctions}
+            // simulate={simulate}
+            // resetField={resetField}
             handleSelectFromNetwork={handleSelectFromNetwork}
             handleSelectToNetwork={handleSelectToNetwork}
             onChangeFromProtocol={onChangeFromProtocol}

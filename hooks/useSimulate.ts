@@ -10,7 +10,6 @@ import ChainPing from "../abis/ChainPing.json";
 import ChainContext from "../Context/ChainContext";
 import IStarGateRouter from "../abis/IStarGateRouter.json";
 import { useCalculateGasCost } from "./useCalculateGasCost";
-import { iTrade, useTradeStore } from "../store/TradeStore";
 import { iGlobal, useGlobalStore } from "../store/GlobalStore";
 import { batch, calculateFees, chooseChianId } from "../utils/helper";
 import { _functionType, _nonce, richAddressByChainId } from "../utils/constants";
@@ -23,10 +22,7 @@ export function useSimulate() {
     const { mutateAsync: calculategasCost } = useCalculateGasCost();
     // const { selectedChainId } = React.useContext(ChainContext);
 
-    const { selectedFromNetwork }: iTrade = useTradeStore((state) => state);
-
-
-    const { smartAccount }: iGlobal = useGlobalStore((state) => state);
+    const { smartAccount, selectedNetwork }: iGlobal = useGlobalStore((state) => state);
 
     const {
         fromChainId,
@@ -77,7 +73,7 @@ export function useSimulate() {
             if (contractIndex == "") {
                 toast.error("Enter contractIndex field");
                 return;
-            }; 
+            };
             if (!amountIn) {
                 toast.error("Enter amountIn field");
                 return;
@@ -92,7 +88,7 @@ export function useSimulate() {
             };
             const _tempAmount = BigNumber.from(bg(amountIn).multipliedBy(bg(10).pow(tokenInDecimals)).toString());
 
-            const provider = await getProvider(selectedFromNetwork.chainId);
+            const provider = await getProvider(selectedNetwork.chainId);
             const fromStarGateRouter = allNetworkData.starGateRouter;
             const toUsdc = allNetworkData.tokens.usdc;
             const toChainPing = allNetworkData.chainPing;

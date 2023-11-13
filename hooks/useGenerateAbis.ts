@@ -12,14 +12,6 @@ export function useGenerateAbis() {
         smartAccount,
     }: iGlobal = useGlobalStore((state) => state);
 
-    // const {
-    //     toChainId,
-    //     contractIndex,
-    //     allNetworkData,
-    //     setFunctionArray,
-    //     setAbi
-    // }: iCrossChainDifi = useCrossChainDifiStore((state) => state);
-
     const {
         selectedToNetwork,
         contractIndex,

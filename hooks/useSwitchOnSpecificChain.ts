@@ -9,14 +9,15 @@ import { BiconomyPaymaster, IPaymaster } from "@biconomy/paymaster";
 import { BiconomySmartAccount, BiconomySmartAccountConfig, DEFAULT_ENTRYPOINT_ADDRESS } from "@biconomy/account";
 import { metamaskWallet, useAddress, useChain, useConnect, useSigner, useSwitchChain } from "@thirdweb-dev/react";
 
+import { iTrading, useTradingStore } from "../store/TradingStore";
 import { iTrade, useTradeStore } from "../store/TradeStore";
 import { iGlobal, useGlobalStore } from "../store/GlobalStore";
+
 import { useCalculatebalance } from "../hooks/useCalculateBalance";
 import { bundlerURLs, NetworkLogoByChainId, paymasterURLs } from "../utils/constants";
 import { arbitrum, avalanche, base, ethereum, optimism, polygon } from "../assets/images";
 
 bg.config({ DECIMAL_PLACES: 5 });
-
 
 export function useSwitchOnSpecificChain() {
     const {
@@ -26,13 +27,10 @@ export function useSwitchOnSpecificChain() {
         smartAccount,
         setSmartAccount,
         setCurrentProvider,
+        setSelectedNetwork,
     }: iGlobal = useGlobalStore((state) => state);
-
-    const {
-        setSelectedFromNetwork,
-    }: iTrade = useTradeStore((state) => state);
-
-
+    const { setSelectedFromNetwork }: iTrade = useTradeStore((state) => state);
+    const iTradingMethods: iTrading = useTradingStore((state) => state);
     const { mutateAsync: fetchNativeBalance } = useCalculatebalance();
     const switchChain = useSwitchChain();
     const metamaskConfig = metamaskWallet();
@@ -49,23 +47,47 @@ export function useSwitchOnSpecificChain() {
                 // @ts-ignore
                 await isNetworkCorrect(chain?.chainId, _smartAccount.address);
 
+                setSelectedNetwork({
+                    key: chain?.chain,
+                    chainName: chain?.slug,
+                    chainId: chain?.chainId.toString(),
+                    icon: NetworkLogoByChainId[chain?.chainId.toString()],
+                });
                 setSelectedFromNetwork({
                     key: chain?.chain,
                     chainName: chain?.slug,
                     chainId: chain?.chainId.toString(),
                     icon: NetworkLogoByChainId[chain?.chainId.toString()],
-                })
-
+                });
+                iTradingMethods.setSelectedFromNetwork({
+                    key: chain?.chain,
+                    chainName: chain?.slug,
+                    chainId: chain?.chainId.toString(),
+                    icon: NetworkLogoByChainId[chain?.chainId.toString()],
+                });
             } else {
-                setSmartAccount(null)
-                setConnected(false)
+                setSmartAccount(null);
+                setConnected(false);
+
+                setSelectedNetwork({
+                    key: "",
+                    chainName: "",
+                    chainId: "",
+                    icon: "",
+                });
 
                 setSelectedFromNetwork({
-                    key: '',
-                    chainName: '',
-                    chainId: '',
-                    icon: '',
-                })
+                    key: "",
+                    chainName: "",
+                    chainId: "",
+                    icon: "",
+                });
+                iTradingMethods.setSelectedFromNetwork({
+                    key: "",
+                    chainName: "",
+                    chainId: "",
+                    icon: "",
+                });
             }
         }
         changeWallet();
@@ -103,16 +125,16 @@ export function useSwitchOnSpecificChain() {
         let biconomySmartAccount = new BiconomySmartAccount(biconomySmartAccountConfig);
         biconomySmartAccount = await biconomySmartAccount.init();
         return biconomySmartAccount;
-    }
-    
+    };
+
     const isNetworkCorrect = async (chainId: any, smartAccountAddress: any) => {
         try {
             const chainIds = [137, 42161, 10, 1, 43114, 8453];
             if (chainIds.includes(chainId)) {
-                await fetchNativeBalance({ 
+                await fetchNativeBalance({
                     chainId: chainId,
                     eoaAddress: address,
-                    scwAddress: smartAccountAddress
+                    scwAddress: smartAccountAddress,
                 });
             } else {
             }
@@ -125,8 +147,8 @@ export function useSwitchOnSpecificChain() {
         if (!chainId) {
             toast.error("No ChainId");
             return;
-        };
-       
+        }
+
         return setupSmartAccount(chainId);
     };
 
@@ -145,7 +167,7 @@ export function useSwitchOnSpecificChain() {
             setLoading(false);
             console.log("error setting up smart account... ", err);
         }
-    }
+    };
 
     const changeChain = async (chainName: string) => {
         try {
@@ -158,88 +180,167 @@ export function useSwitchOnSpecificChain() {
                     // @ts-ignore
                     await isNetworkCorrect(137, _smartAccount.address);
 
+                    setSelectedNetwork({
+                        key: "Polygon",
+                        chainName: chainName,
+                        chainId: "137",
+                        icon: polygon,
+                    });
                     setSelectedFromNetwork({
                         key: "Polygon",
                         chainName: chainName,
                         chainId: "137",
                         icon: polygon,
-                    })
-
+                    });
+                    iTradingMethods.setSelectedFromNetwork({
+                        key: "Polygon",
+                        chainName: chainName,
+                        chainId: "137",
+                        icon: polygon,
+                    });
                 } else if (chainName == "arbitrum") {
                     await switchChain?.(42161);
                     const _smartAccount = await login(42161);
                     // @ts-ignore
                     await isNetworkCorrect(42161, _smartAccount.address);
 
+                    setSelectedNetwork({
+                        key: "Arbitrum",
+                        chainName: chainName,
+                        chainId: "42161",
+                        icon: arbitrum,
+                    });
                     setSelectedFromNetwork({
                         key: "Arbitrum",
                         chainName: chainName,
                         chainId: "42161",
                         icon: arbitrum,
-                    })
-
+                    });
+                    iTradingMethods.setSelectedFromNetwork({
+                        key: "Arbitrum",
+                        chainName: chainName,
+                        chainId: "42161",
+                        icon: arbitrum,
+                    });
                 } else if (chainName == "avalanche") {
                     await switchChain(43114);
                     const _smartAccount = await login(43114);
                     // @ts-ignore
                     await isNetworkCorrect(43114, _smartAccount.address);
 
+                    setSelectedNetwork({
+                        key: "Avalanche",
+                        chainName: chainName,
+                        chainId: "43114",
+                        icon: avalanche,
+                    });
                     setSelectedFromNetwork({
                         key: "Avalanche",
                         chainName: chainName,
                         chainId: "43114",
                         icon: avalanche,
-                    })
-
+                    });
+                    iTradingMethods.setSelectedFromNetwork({
+                        key: "Avalanche",
+                        chainName: chainName,
+                        chainId: "43114",
+                        icon: avalanche,
+                    });
                 } else if (chainName == "optimism") {
                     await switchChain?.(10);
                     const _smartAccount = await login(10);
                     // @ts-ignore
                     await isNetworkCorrect(10, _smartAccount.address);
 
+                    setSelectedNetwork({
+                        key: "Optimism",
+                        chainName: chainName,
+                        chainId: "10",
+                        icon: optimism,
+                    });
                     setSelectedFromNetwork({
                         key: "Optimism",
                         chainName: chainName,
                         chainId: "10",
                         icon: optimism,
-                    })
-                    
+                    });
+                    iTradingMethods.setSelectedFromNetwork({
+                        key: "Optimism",
+                        chainName: chainName,
+                        chainId: "10",
+                        icon: optimism,
+                    });
                 } else if (chainName == "ethereum") {
                     await switchChain(1);
                     const _smartAccount = await login(1);
                     // @ts-ignore
                     await isNetworkCorrect(1, _smartAccount.address);
 
+                    setSelectedNetwork({
+                        key: "Ethereum",
+                        chainName: chainName,
+                        chainId: "1",
+                        icon: ethereum,
+                    });
                     setSelectedFromNetwork({
                         key: "Ethereum",
                         chainName: chainName,
                         chainId: "1",
                         icon: ethereum,
-                    })
-
+                    });
+                    iTradingMethods.setSelectedFromNetwork({
+                        key: "Ethereum",
+                        chainName: chainName,
+                        chainId: "1",
+                        icon: ethereum,
+                    });
                 } else if (chainName == "base") {
                     await switchChain?.(8453);
                     const _smartAccount = await login(8453);
                     // @ts-ignore
                     await isNetworkCorrect(8453, _smartAccount.address);
 
+                    setSelectedNetwork({
+                        key: "Base",
+                        chainName: chainName,
+                        chainId: "8453",
+                        icon: base,
+                    });
                     setSelectedFromNetwork({
                         key: "Base",
                         chainName: chainName,
                         chainId: "8453",
                         icon: base,
-                    })
+                    });
+                    iTradingMethods.setSelectedFromNetwork({
+                        key: "Base",
+                        chainName: chainName,
+                        chainId: "8453",
+                        icon: base,
+                    });
                 }
             } else {
                 if (chain) {
                     const _smartAccount = await login(chain?.chainId);
 
+                    setSelectedNetwork({
+                        key: chain?.chain,
+                        chainName: chain?.slug,
+                        chainId: chain?.chainId.toString(),
+                        icon: NetworkLogoByChainId[chain?.chainId.toString()],
+                    });
                     setSelectedFromNetwork({
                         key: chain?.chain,
                         chainName: chain?.slug,
                         chainId: chain?.chainId.toString(),
                         icon: NetworkLogoByChainId[chain?.chainId.toString()],
-                    })
+                    });
+                    iTradingMethods.setSelectedFromNetwork({
+                        key: chain?.chain,
+                        chainName: chain?.slug,
+                        chainId: chain?.chainId.toString(),
+                        icon: NetworkLogoByChainId[chain?.chainId.toString()],
+                    });
 
                     // @ts-ignore
                     await isNetworkCorrect(chain?.chainId, _smartAccount.address);
@@ -248,7 +349,7 @@ export function useSwitchOnSpecificChain() {
         } catch (error: any) {
             console.log("changeChain-error", error);
         }
-    }
+    };
 
     const switchOnSpecificChain = async (chainName: string) => {
         try {
@@ -261,7 +362,7 @@ export function useSwitchOnSpecificChain() {
             console.log("switchToChain-error: ", error);
             return 0;
         }
-    }
+    };
 
     return useMutation(switchOnSpecificChain);
 }

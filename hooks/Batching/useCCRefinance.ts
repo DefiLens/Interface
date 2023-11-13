@@ -5,7 +5,7 @@ import { useMutation } from "@tanstack/react-query";
 
 import { useUniswap } from "../useUniswap";
 import { useApprove } from "../useApprove";
-import { iBatchFlowData, iTrade, useTradeStore } from "../../store/TradeStore";
+import { iBatchFlowData, iTrading, useTradingStore } from "../../store/TradingStore";
 import { useCCSendTx } from "../useCCSendTx";
 
 import { iBatchingTxn, useBatchingTxnStore } from "../../store/BatchingTxnStore";
@@ -26,12 +26,15 @@ export function useCCRefinance() {
     const { mutateAsync: swap } = useUniswap();
     const { mutateAsync: approve } = useApprove();
     const { mutateAsync: sendTxToChain } = useCCSendTx();
-    // const { selectedChain, selectedChainId } = React.useContext(ChainContext);
 
-    const { selectedFromNetwork, selectedToNetwork, selectedFromProtocol, selectedToProtocol, amountIn, tokensData }: iTrade =
-        useTradeStore((state) => state);
-
-    // const { setTxHash }: iCrossChainDifi = useCrossChainDifiStore((state) => state);
+    const {
+        selectedFromNetwork,
+        selectedToNetwork,
+        selectedFromProtocol,
+        selectedToProtocol,
+        amountIn,
+        tokensData,
+    }: iTrading = useTradingStore((state) => state);
     const { setTxHash }: iBatchingTxn = useBatchingTxnStore((state) => state);
 
     async function refinanceForCC({
@@ -189,7 +192,7 @@ export function useCCRefinance() {
                     extraOrShareToken: "0x0000000000000000000000000000000000000000",
                 });
 
-                if (!txs) return
+                if (!txs) return;
 
                 tempTxs = [...tempTxs, ...txs];
 

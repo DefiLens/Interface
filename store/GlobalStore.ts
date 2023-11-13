@@ -2,10 +2,19 @@ import { create } from "zustand";
 
 import { BiconomySmartAccount } from "@biconomy/account";
 
+export interface iSelectedNetwork {
+    key: string;
+    chainName: string;
+    chainId: string;
+    icon: any;
+}
+
 export interface iGlobal {
+    selectedNetwork: iSelectedNetwork;
     activeChainName: string;
     activeChainId: number;
 
+    showSelectNetworkList: boolean;
     showTransferFundToggle: boolean;
     showWalletAddress: boolean;
 
@@ -16,10 +25,12 @@ export interface iGlobal {
     eoaBalance: string;
 
     currentProvider: string;
-    
+
+    setSelectedNetwork: (selectedNetwork: iSelectedNetwork) => void;
     setActiveChainName: (activeChainName: string) => void;
     setActiveChainId: (activeChainId: number) => void;
-   
+
+    setShowSelectNetworkList: (showSelectNetworkList: boolean) => void;
     setShowTransferFundToggle: (showTransferFundToggle: boolean) => void;
     setShowWalletAddress: (showWalletAddress: boolean) => void;
 
@@ -33,9 +44,16 @@ export interface iGlobal {
 }
 
 export const useGlobalStore = create<iGlobal>((set) => ({
+    selectedNetwork: {
+        key: "",
+        chainName: "",
+        chainId: "",
+        icon: "",
+    },
     activeChainName: "polygon",
     activeChainId: 137,
 
+    showSelectNetworkList: false,
     showTransferFundToggle: false,
     showWalletAddress: false,
 
@@ -47,9 +65,11 @@ export const useGlobalStore = create<iGlobal>((set) => ({
 
     currentProvider: "",
 
+    setSelectedNetwork: (selectedNetwork) => set(() => ({ selectedNetwork })),
     setActiveChainName: (activeChainName) => set(() => ({ activeChainName })),
     setActiveChainId: (activeChainId) => set(() => ({ activeChainId })),
-  
+
+    setShowSelectNetworkList: (showSelectNetworkList) => set(() => ({ showSelectNetworkList })),
     setShowTransferFundToggle: (showTransferFundToggle) => set(() => ({ showTransferFundToggle })),
     setShowWalletAddress: (showWalletAddress) => set(() => ({ showWalletAddress })),
 

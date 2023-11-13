@@ -5,12 +5,12 @@ import { useMutation } from "@tanstack/react-query";
 import { _nonce, _functionType } from "../../utils/constants";
 import { useGlobalStore, iGlobal } from "../../store/GlobalStore";
 import { useCrossChainDifiStore, iCrossChainDifi } from "../../store/CrossChainDifiStore";
-import { iTrade, useTradeStore } from "../../store/TradeStore";
+import { iTrading, useTradingStore } from "../../store/TradingStore";
 
 export function useBiconomyProvider() {
     const { smartAccount }: iGlobal = useGlobalStore((state) => state);
 
-    const { setHasExecutionError }: iTrade = useTradeStore((state) => state);
+    const { setHasExecutionError }: iTrading = useTradingStore((state) => state);
 
     async function sendToBiconomy(txs) {
         try {

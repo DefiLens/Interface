@@ -10,9 +10,7 @@ import IERC20 from "../abis/IERC20.json";
 import { setSafeState } from "../utils/helper";
 import { useUniswap } from "../hooks/useUniswap";
 import { useApprove } from "../hooks/useApprove";
-import ChainContext from "../Context/ChainContext";
 import { iSwap, useSwapStore } from "../store/SwapStore";
-import { iTrade, useTradeStore } from "../store/TradeStore";
 import { iGlobal, useGlobalStore } from "../store/GlobalStore";
 import { useEoaProvider } from "../hooks/aaProvider/useEoaProvider";
 import { getErc20Decimals, getProvider } from "../utils/web3Libs/ethers";
@@ -26,12 +24,7 @@ const Swap: React.FC<{}> = () => {
     const { mutateAsync: approve } = useApprove();
     const { mutateAsync: sendTxTrditionally } = useEoaProvider();
     const { mutateAsync: sendToBiconomy } = useBiconomyProvider();
-    // const { selectedChainId } = React.useContext(ChainContext);
-
-    const { selectedFromNetwork }: iTrade = useTradeStore((state) => state);
-
-
-    const { smartAccount }: iGlobal = useGlobalStore((state) => state);
+    const { smartAccount, selectedNetwork }: iGlobal = useGlobalStore((state) => state);
 
     const {
         tokenInDecimals,
@@ -54,7 +47,7 @@ const Swap: React.FC<{}> = () => {
 
     const handleTokenIn = async (_tokenIn: any) => {
         setTokenIn(_tokenIn);
-        const web3JsonProvider = await getProvider(selectedFromNetwork.chainId);
+        const web3JsonProvider = await getProvider(selectedNetwork.chainId);
         const erc20 = await new ethers.Contract(_tokenIn, IERC20, web3JsonProvider);
         const decimals = await getErc20Decimals(erc20);
         setSafeState(setTokenInDecimals, decimals, 0);
@@ -62,7 +55,7 @@ const Swap: React.FC<{}> = () => {
     };
     const handleTokenOut = async (_tokenOut: any) => {
         setTokenOut(_tokenOut);
-        const web3JsonProvider = await getProvider(selectedFromNetwork.chainId);
+        const web3JsonProvider = await getProvider(selectedNetwork.chainId);
         const erc20 = await new ethers.Contract(_tokenOut, IERC20, web3JsonProvider);
         const decimals = await getErc20Decimals(erc20);
         setSafeState(setTokenOutDecimals, decimals, 0);
@@ -104,13 +97,13 @@ const Swap: React.FC<{}> = () => {
                 toast.error("please login by metamask");
                 return;
             };
-            const web3JsonProvider = await getProvider(selectedFromNetwork.chainId);
+            const web3JsonProvider = await getProvider(selectedNetwork.chainId);
             let _address = isScw ? smartAccount.address : address;
             let _provider = isScw ? smartAccount.provider : web3JsonProvider;
             toast.error("_address: " + _address);
             const approveData = await approve({
                 tokenIn,
-                spender: uniswapSwapRouterByChainId[selectedFromNetwork.chainId],
+                spender: uniswapSwapRouterByChainId[selectedNetwork.chainId],
                 amountIn,
                 address: _address,
                 web3JsonProvider: _provider,

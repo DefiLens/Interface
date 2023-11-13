@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { tExecuteBatchModel } from './types';
-import { iGlobal, useGlobalStore } from '../../store/GlobalStore';
-import { iIndividualBatch, iTrade, useTradeStore } from '../../store/TradeStore';
-import { base, closeNarrow, downLine, polygon, sideLine } from '../../assets/images';
+import { iIndividualBatch, iTrading, useTradingStore } from '../../store/TradingStore';
+import { closeNarrow } from '../../assets/images';
 import Image from 'next/image';
 import { error, loading, success } from '../../assets/gifs';
 import { BsArrowRight } from 'react-icons/bs';
@@ -13,22 +12,15 @@ const ExecuteBatchModel = ({
 }: tExecuteBatchModel) => {
 
   const {
-    scwBalance,
-  }: iGlobal = useGlobalStore((state) => state);
-
-  const {
     selectedFromNetwork,
-    selectedToNetwork,
     individualBatch,
     setShowExecuteBatchModel,
-    hasExecutionSuccess,
     setHasExecutionSuccess,
     hasExecutionError,
     setHasExecutionError,
     txhash,
     setTxHash,
-    setIndividualBatch,
-  }: iTrade = useTradeStore((state) => state);
+  }: iTrading = useTradingStore((state) => state);
 
   const closeExecuteBatchModel = () => {
     setShowExecuteBatchModel(false);
@@ -61,7 +53,7 @@ const ExecuteBatchModel = ({
   const [hasCrossChainTxs, setHasCrossChainTxs] = useState<iIndividualBatch[] | false>(false);
 
   const handleIsCrossChainTxs = () => {
-    const txn = individualBatch.length > 0 && 
+    const txn = individualBatch.length > 0 &&
     individualBatch.filter((item: iIndividualBatch,  index: number) => (
       item.data.fromNetwork !== item.data.toNetwork
     ))
@@ -192,7 +184,7 @@ const ExecuteBatchModel = ({
               </span>
             ) : hasExecutionError ? (
               <span className="text-red-500">
-                {hasExecutionError.includes('code=ACTION_REJECTED') 
+                {hasExecutionError.includes('code=ACTION_REJECTED')
                   ? "MetaMask Tx Signature: User denied Transaction Signature."
                   : "Something went wrong."}
               </span>
