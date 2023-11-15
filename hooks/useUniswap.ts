@@ -8,8 +8,8 @@ import { CurrencyAmount, Percent, Token, TradeType } from "@uniswap/sdk-core";
 
 import IERC20 from "../abis/IERC20.json";
 import { iGlobal, useGlobalStore } from "../store/GlobalStore";
-import { _functionType, _nonce, uniswapSwapRouterByChainId } from "../utils/constants";
 import { getContractInstance, getErc20Decimals, getProvider } from "../utils/web3Libs/ethers";
+import { uniswapSwapRouterByChainId } from "../utils/helpers/protocols";
 
 export function useUniswap() {
     const { selectedNetwork }: iGlobal = useGlobalStore((state) => state);
@@ -19,7 +19,7 @@ export function useUniswap() {
             if (!web3JsonProvider) {
                 toast.error("No provider");
                 return;
-            };
+            }
             const router = new AlphaRouter({
                 chainId: BigNumber.from(selectedNetwork.chainId).toNumber(),
                 provider: web3JsonProvider,
@@ -39,7 +39,11 @@ export function useUniswap() {
             };
 
             const currencyIn = new Token(BigNumber.from(selectedNetwork.chainId).toNumber(), tokenIn, tokenInDecimals);
-            const currencyOut = new Token(BigNumber.from(selectedNetwork.chainId).toNumber(), tokenOut, tokenOutDecimals);
+            const currencyOut = new Token(
+                BigNumber.from(selectedNetwork.chainId).toNumber(),
+                tokenOut,
+                tokenOutDecimals
+            );
 
             const baseCurrency = type === "exactIn" ? currencyIn : currencyOut;
             const quoteCurrency = type === "exactIn" ? currencyOut : currencyIn;

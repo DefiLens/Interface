@@ -15,9 +15,10 @@ import {
     nativeTokenFetcher,
     nativeTokenNum,
     tokensByNetworkForCC,
-} from "./batchingUtils";
-import { _functionType, _nonce, StargateChainIdBychainId, uniswapSwapRouterByChainId } from "../../utils/constants";
+    uniswapSwapRouterByChainId,
+} from "../../utils/helpers/protocols";
 import { useAddress } from "@thirdweb-dev/react";
+import { ChainIdDetails } from "../../utils/helpers/network";
 
 export function useCCRefinance() {
     const address = useAddress(); // Detect the connected address
@@ -80,23 +81,23 @@ export function useCCRefinance() {
             // }
 
             if (toProtocol != "erc20") {
-                const tokenOutNum = nativeTokenNum[selectedToNetwork.chainName][tokenOutName];
-                nativeTokenOut = nativeTokenFetcher[selectedToNetwork.chainName][tokenOutNum].nativeToken;
-                nativeTokenOutSymbol = nativeTokenFetcher[selectedToNetwork.chainName][tokenOutNum].symbol;
-                nativeTokenOutDecimal = nativeTokenFetcher[selectedToNetwork.chainName][tokenOutNum].decimals;
+                const tokenOutNum = nativeTokenNum[selectedToNetwork.chainId][tokenOutName];
+                nativeTokenOut = nativeTokenFetcher[selectedToNetwork.chainId][tokenOutNum].nativeToken;
+                nativeTokenOutSymbol = nativeTokenFetcher[selectedToNetwork.chainId][tokenOutNum].symbol;
+                nativeTokenOutDecimal = nativeTokenFetcher[selectedToNetwork.chainId][tokenOutNum].decimals;
             }
             if (fromProtocol != "erc20") {
-                abiNum = abiFetcherNum[selectedFromNetwork.chainName][tokenInName];
-                abi = abiFetcher[selectedFromNetwork.chainName][abiNum]["withdrawAbi"];
-                methodName = abiFetcher[selectedFromNetwork.chainName][abiNum]["withdrawMethodName"];
-                paramDetailsMethod = abiFetcher[selectedFromNetwork.chainName][abiNum]["withdrawParamDetailsMethod"];
-                tokenInContractAddress = abiFetcher[selectedFromNetwork.chainName][abiNum]["contractAddress"];
+                abiNum = abiFetcherNum[selectedFromNetwork.chainId][tokenInName];
+                abi = abiFetcher[selectedFromNetwork.chainId][abiNum]["withdrawAbi"];
+                methodName = abiFetcher[selectedFromNetwork.chainId][abiNum]["withdrawMethodName"];
+                paramDetailsMethod = abiFetcher[selectedFromNetwork.chainId][abiNum]["withdrawParamDetailsMethod"];
+                tokenInContractAddress = abiFetcher[selectedFromNetwork.chainId][abiNum]["contractAddress"];
 
-                const tokenInNum = nativeTokenNum[selectedFromNetwork.chainName][tokenInName];
-                nativeTokenIn = nativeTokenFetcher[selectedFromNetwork.chainName][tokenInNum].nativeToken;
+                const tokenInNum = nativeTokenNum[selectedFromNetwork.chainId][tokenInName];
+                nativeTokenIn = nativeTokenFetcher[selectedFromNetwork.chainId][tokenInNum].nativeToken;
 
-                nativeTokenInSymbol = nativeTokenFetcher[selectedFromNetwork.chainName][tokenInNum].symbol;
-                nativeTokenOutDecimal = nativeTokenFetcher[selectedFromNetwork.chainName][tokenInNum].decimals;
+                nativeTokenInSymbol = nativeTokenFetcher[selectedFromNetwork.chainId][tokenInNum].symbol;
+                nativeTokenOutDecimal = nativeTokenFetcher[selectedFromNetwork.chainId][tokenInNum].decimals;
 
                 abiInterface = new ethers.utils.Interface([abi]);
                 params = await buildParams({
@@ -113,7 +114,8 @@ export function useCCRefinance() {
                 tempTxs.push(tx1);
 
                 let batchFlow: iBatchFlowData = {
-                    network: selectedFromNetwork.chainName,
+                    fromChainId: selectedFromNetwork.chainId,
+                    toChainId: selectedFromNetwork.chainId,
                     protocol: selectedFromProtocol,
                     tokenIn: tokenInName,
                     tokenOut: nativeTokenInSymbol,
@@ -142,7 +144,8 @@ export function useCCRefinance() {
                 tempTxs.push(swapData.swapTx);
 
                 let batchFlow: iBatchFlowData = {
-                    network: selectedFromNetwork.chainName,
+                    fromChainId: selectedFromNetwork.chainId,
+                    toChainId: selectedFromNetwork.chainId,
                     protocol: "Uniswap",
                     tokenIn: nativeTokenInSymbol,
                     tokenOut: nativeTokenOutSymbol,
@@ -153,10 +156,10 @@ export function useCCRefinance() {
             }
 
             if (selectedFromNetwork.chainName != selectedToNetwork.chainName) {
-                abiNum = abiFetcherNum[selectedToNetwork.chainName][tokenOutName];
+                abiNum = abiFetcherNum[selectedToNetwork.chainId][tokenOutName];
                 // const newTokenIn = isSwap ? tokensByNetworkForCC[selectedToNetwork.chainId].usdc : nativeTokenIn;
                 const newTokenIn = tokensByNetworkForCC[selectedToNetwork.chainId].usdc;
-                paramDetailsMethod = abiFetcher[selectedToNetwork.chainName][abiNum]["depositParamDetailsMethod"];
+                paramDetailsMethod = abiFetcher[selectedToNetwork.chainId][abiNum]["depositParamDetailsMethod"];
 
                 params = await buildParams({
                     tokenIn,
@@ -167,11 +170,11 @@ export function useCCRefinance() {
                     address,
                     paramDetailsMethod,
                 });
-                abiNum = abiFetcherNum[selectedToNetwork.chainName][tokenOutName];
-                abi = abiFetcher[selectedToNetwork.chainName][abiNum]["depositAbi"];
-                methodName = abiFetcher[selectedToNetwork.chainName][abiNum]["depositMethodName"];
-                paramDetailsMethod = abiFetcher[selectedToNetwork.chainName][abiNum]["depositParamDetailsMethod"];
-                const tokenOutContractAddress = abiFetcher[selectedToNetwork.chainName][abiNum]["contractAddress"];
+                abiNum = abiFetcherNum[selectedToNetwork.chainId][tokenOutName];
+                abi = abiFetcher[selectedToNetwork.chainId][abiNum]["depositAbi"];
+                methodName = abiFetcher[selectedToNetwork.chainId][abiNum]["depositMethodName"];
+                paramDetailsMethod = abiFetcher[selectedToNetwork.chainId][abiNum]["depositParamDetailsMethod"];
+                const tokenOutContractAddress = abiFetcher[selectedToNetwork.chainId][abiNum]["contractAddress"];
                 let txs: any = await sendTxToChain({
                     tokenIn: nativeTokenIn,
                     address,
@@ -180,8 +183,8 @@ export function useCCRefinance() {
                     isThisAmount: "1",
                     srcPoolId: "1",
                     destPoolId: "1",
-                    fromChainId: StargateChainIdBychainId[selectedFromNetwork.chainId],
-                    toChainId: StargateChainIdBychainId[selectedToNetwork.chainId],
+                    fromChainId: ChainIdDetails[selectedFromNetwork.chainId].stargateChainId,
+                    toChainId: ChainIdDetails[selectedToNetwork.chainId].stargateChainId,
                     currentFunc: methodName,
                     currentAbi: [abi],
                     contractAddress: tokenOutContractAddress,
@@ -193,8 +196,8 @@ export function useCCRefinance() {
                 tempTxs = [...tempTxs, ...txs];
 
                 let batchFlow: iBatchFlowData = {
-                    network: selectedFromNetwork.chainName,
-                    toNetwork: selectedToNetwork.chainName,
+                    fromChainId: selectedFromNetwork.chainId,
+                    toChainId: selectedToNetwork.chainId,
                     protocol: "Stargate",
                     tokenIn: "USDC",
                     tokenOut: "USDC",
@@ -203,7 +206,8 @@ export function useCCRefinance() {
                 };
                 batchFlows.push(batchFlow);
                 batchFlow = {
-                    network: selectedToNetwork.chainName,
+                    fromChainId: selectedToNetwork.chainId,
+                    toChainId: selectedToNetwork.chainId,
                     protocol: selectedToProtocol,
                     tokenIn: "USDC",
                     tokenOut: tokenOutName,
@@ -212,40 +216,6 @@ export function useCCRefinance() {
                 };
                 batchFlows.push(batchFlow);
             }
-
-            // else if (toProtocol != "erc20") {
-            //     const newTokenIn = isSwap ? nativeTokenOut : nativeTokenIn;
-            //     const newAmount = isSwap ? swapData.amountOutprice : amount;
-
-            //     abiNum = abiFetcherNum[selectedToNetwork.chainName][tokenOutName];
-            //     abi = abiFetcher[selectedToNetwork.chainName][abiNum]["depositAbi"];
-            //     methodName = abiFetcher[selectedToNetwork.chainName][abiNum]["depositMethodName"];
-            //     paramDetailsMethod = abiFetcher[selectedToNetwork.chainName][abiNum]["depositParamDetailsMethod"];
-            //     const tokenOutContractAddress = abiFetcher[selectedToNetwork.chainName][abiNum]["contractAddress"];
-
-            //     const approveData = await approve({
-            //         tokenIn: newTokenIn,
-            //         spender: tokenOutContractAddress,
-            //         amountIn: newAmount,
-            //         address,
-            //         web3JsonProvider: provider,
-            //     });
-            //     if (approveData) tempTxs.push(approveData);
-
-            //     abiInterface = new ethers.utils.Interface([abi]);
-            //     params = await buildParams({
-            //         tokenIn,
-            //         tokenOut,
-            //         nativeTokenIn: newTokenIn,
-            //         nativeTokenOut: "",
-            //         amount: newAmount,
-            //         address,
-            //         paramDetailsMethod,
-            //     });
-            //     txData = abiInterface.encodeFunctionData(methodName, params);
-            //     const tx2 = { to: tokenOutContractAddress, data: txData };
-            //     tempTxs.push(tx2);
-            // }
             return { txArray: tempTxs, batchFlow: batchFlows };
         } catch (error: any) {
             if (error.message) {

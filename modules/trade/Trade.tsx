@@ -1,5 +1,5 @@
 import { BigNumber as bg } from "bignumber.js";
-import { startCase } from 'lodash';
+import { startCase } from "lodash";
 
 import Image from "next/image";
 import { BiLoaderAlt } from "react-icons/bi";
@@ -10,10 +10,10 @@ import { MdKeyboardArrowDown, MdKeyboardArrowUp } from "react-icons/md";
 
 import { tTrade, tTradeProtocol } from "./types";
 import { iTokenData, iTrading, useTradingStore } from "../../store/TradingStore";
-import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import { defaultBlue, downLine, gas, optimism, swap, warning } from "../../assets/images";
-import { _functionType, _nonce, NETWORK_LIST, NetworkLogoByNetworkName, protocolByNetwork, ProtocolLogoByProtocolName, protocolNames } from "../../utils/constants";
 import ExecuteBatchModel from "../../components/ExecuteBatchModel/ExecuteBatchModel";
+import { ChainIdDetails, NETWORK_LIST } from "../../utils/helpers/network";
+import { protocolNames } from "../../utils/helpers/protocols";
 
 bg.config({ DECIMAL_PLACES: 10 });
 
@@ -127,9 +127,13 @@ const Trade: React.FC<any> = ({
                                 <div className="w-full overflow-auto flex flex-col justify-center items-center py-3">
                                     {showFromSelectionMenu && selectedFromNetwork.chainName && (
                                         <div className="w-full max-h-96">
-                                            {protocolNames[selectedFromNetwork.chainName]?.key.map(
+                                            {protocolNames[selectedFromNetwork.chainId]?.key.map(
                                                 (item: tTradeProtocol, protocolIndex: number) => {
-                                                    return protocolNames[selectedFromNetwork.chainName].value[protocolIndex].toLowerCase().includes(filterFromToken.toLowerCase()) ? (
+                                                    return protocolNames[selectedFromNetwork.chainId].value[
+                                                        protocolIndex
+                                                    ]
+                                                        .toLowerCase()
+                                                        .includes(filterFromToken.toLowerCase()) ? (
                                                         <div key={item.name} className="w-full">
                                                             <div
                                                                 key={item.name}
@@ -143,7 +147,10 @@ const Trade: React.FC<any> = ({
                                                                     className="h-8 w-8 bg-font-200 rounded-full cursor-pointer"
                                                                 />
                                                                 <div>
-                                                                    {protocolNames[selectedFromNetwork.chainName].value[protocolIndex]}
+                                                                    {
+                                                                        protocolNames[selectedFromNetwork.chainId]
+                                                                            .value[protocolIndex]
+                                                                    }
                                                                 </div>
                                                             </div>
 
@@ -154,35 +161,45 @@ const Trade: React.FC<any> = ({
                                                                             <input
                                                                                 type="text"
                                                                                 value={filterFromAddress}
-                                                                                onChange={(e) => setFilterFromAddress(e.target.value)}
+                                                                                onChange={(e) =>
+                                                                                    setFilterFromAddress(e.target.value)
+                                                                                }
                                                                                 placeholder="Search by Address"
                                                                                 className="w-full text-sm md:text-base outline-none placeholder-font-500 text-1100"
                                                                             />
                                                                             <AiOutlineSearch />
                                                                         </div>
-                                                                        {protocolByNetwork[selectedFromNetwork.chainName][selectedFromProtocol]?.map(
-                                                                            (token: tTradeProtocol, tokenIndex: number) => {
-                                                                                return token.name.toLowerCase().includes(
-                                                                                        filterFromAddress.toLowerCase()
-                                                                                    ) ? (
-                                                                                    <div
-                                                                                        key={tokenIndex}
-                                                                                        // onClick={() => setSelectedFromToken(token.name)}
-                                                                                        onClick={() =>
-                                                                                            onChangeFromToken(token.name)
-                                                                                        }
-                                                                                        className="w-full flex justify-start items-center gap-3 hover:bg-backgound-200 active:bg-backgound-100 py-2 px-3 rounded-lg cursor-pointer my-2"
-                                                                                    >
-                                                                                        {/* <Image
+                                                                        {item.tokenList.length > 0 &&
+                                                                            item.tokenList?.map(
+                                                                                (
+                                                                                    token: tTradeProtocol,
+                                                                                    tokenIndex: number
+                                                                                ) => {
+                                                                                    return token.name
+                                                                                        .toLowerCase()
+                                                                                        .includes(
+                                                                                            filterFromAddress.toLowerCase()
+                                                                                        ) ? (
+                                                                                        <div
+                                                                                            key={tokenIndex}
+                                                                                            // onClick={() => setSelectedFromToken(token.name)}
+                                                                                            onClick={() =>
+                                                                                                onChangeFromToken(
+                                                                                                    token.name
+                                                                                                )
+                                                                                            }
+                                                                                            className="w-full flex justify-start items-center gap-3 hover:bg-backgound-200 active:bg-backgound-100 py-2 px-3 rounded-lg cursor-pointer my-2"
+                                                                                        >
+                                                                                            {/* <Image
                                                                                             src={token.icon}
                                                                                             alt=""
                                                                                             className="h-7 w-7 bg-font-200 rounded-full cursor-pointer"
                                                                                         /> */}
-                                                                                        {token.name}
-                                                                                    </div>
-                                                                                ) : null;
-                                                                            }
-                                                                        )}
+                                                                                            {token.name}
+                                                                                        </div>
+                                                                                    ) : null;
+                                                                                }
+                                                                            )}
                                                                     </div>
                                                                 )}
 
@@ -194,7 +211,9 @@ const Trade: React.FC<any> = ({
                                                                             <input
                                                                                 type="text"
                                                                                 value={filterFromAddress}
-                                                                                onChange={(e) => setFilterFromAddress(e.target.value)}
+                                                                                onChange={(e) =>
+                                                                                    setFilterFromAddress(e.target.value)
+                                                                                }
                                                                                 placeholder="Search by Address"
                                                                                 className="w-full text-sm md:text-base outline-none placeholder-font-500 text-1100"
                                                                             />
@@ -202,7 +221,9 @@ const Trade: React.FC<any> = ({
                                                                         </div>
                                                                         {tokensData?.map(
                                                                             (token: iTokenData, tokenIndex: number) => {
-                                                                                return token.symbol.toLowerCase().includes(
+                                                                                return token.symbol
+                                                                                    .toLowerCase()
+                                                                                    .includes(
                                                                                         filterFromAddress.toLowerCase()
                                                                                     ) ? (
                                                                                     <div
@@ -251,11 +272,9 @@ const Trade: React.FC<any> = ({
 
                                     {showToSelectionMenu && selectedToNetwork.chainName && (
                                         <div className="w-full max-h-96">
-                                            {protocolNames[selectedToNetwork.chainName]?.key.map(
+                                            {protocolNames[selectedToNetwork.chainId]?.key.map(
                                                 (item: tTradeProtocol, protocolIndex: number) => {
-                                                    return protocolNames[selectedToNetwork.chainName].value[
-                                                        protocolIndex
-                                                    ]
+                                                    return protocolNames[selectedToNetwork.chainId].value[protocolIndex]
                                                         .toLowerCase()
                                                         .includes(filterToToken.toLowerCase()) ? (
                                                         <div key={item.name} className="w-full">
@@ -271,7 +290,11 @@ const Trade: React.FC<any> = ({
                                                                     className="h-8 w-8 bg-font-200 rounded-full cursor-pointer"
                                                                 />
                                                                 <div>
-                                                                    {protocolNames[selectedToNetwork.chainName].value[protocolIndex]}
+                                                                    {
+                                                                        protocolNames[selectedToNetwork.chainId].value[
+                                                                            protocolIndex
+                                                                        ]
+                                                                    }
                                                                 </div>
                                                             </div>
                                                             {selectedToProtocol === item.name &&
@@ -289,30 +312,37 @@ const Trade: React.FC<any> = ({
                                                                             />
                                                                             <AiOutlineSearch />
                                                                         </div>
-                                                                        {protocolByNetwork[selectedToNetwork.chainName][
-                                                                            selectedToProtocol
-                                                                        ]?.map((token: tTradeProtocol, tokenIndex: number) => {
-                                                                            return token.name.toLowerCase().includes(
-                                                                                filterToAddress.toLowerCase()
-                                                                            ) ? (
-                                                                                <div
-                                                                                    key={tokenIndex}
-                                                                                    // onClick={() => setSelectedToToken(token.name)}
-                                                                                    onClick={() =>
-                                                                                        onChangeToToken(token.name)
-                                                                                    }
-                                                                                    className="w-full flex justify-start items-center gap-3 hover:bg-backgound-200 active:bg-backgound-100 py-2 px-3 rounded-lg cursor-pointer my-2"
-                                                                                >
-                                                                                    {/* <Image
+                                                                        {item.tokenList.length > 0 &&
+                                                                            item.tokenList?.map(
+                                                                                (
+                                                                                    token: tTradeProtocol,
+                                                                                    tokenIndex: number
+                                                                                ) => {
+                                                                                    return token.name
+                                                                                        .toLowerCase()
+                                                                                        .includes(
+                                                                                            filterToAddress.toLowerCase()
+                                                                                        ) ? (
+                                                                                        <div
+                                                                                            key={tokenIndex}
+                                                                                            // onClick={() => setSelectedToToken(token.name)}
+                                                                                            onClick={() =>
+                                                                                                onChangeToToken(
+                                                                                                    token.name
+                                                                                                )
+                                                                                            }
+                                                                                            className="w-full flex justify-start items-center gap-3 hover:bg-backgound-200 active:bg-backgound-100 py-2 px-3 rounded-lg cursor-pointer my-2"
+                                                                                        >
+                                                                                            {/* <Image
                                                                                         src={token.icon}
                                                                                         alt=""
                                                                                         className="h-7 w-7 bg-font-200 rounded-full cursor-pointer"
                                                                                     /> */}
-                                                                                    {token.name}
-                                                                                </div>
-                                                                            ) : null;
-                                                                            }
-                                                                        )}
+                                                                                            {token.name}
+                                                                                        </div>
+                                                                                    ) : null;
+                                                                                }
+                                                                            )}
                                                                     </div>
                                                                 )}
                                                             {item.name === "erc20" &&
@@ -404,7 +434,7 @@ const Trade: React.FC<any> = ({
                                             From
                                         </h5>
                                         <div className="flex flex-row justify-start items-center gap-8 py-3">
-                                            {selectedFromNetwork.chainName ? (
+                                            {selectedFromNetwork.chainName && selectedFromProtocol ? (
                                                 <div className="relative">
                                                     <Image
                                                         src={selectedFromNetwork.icon}
@@ -413,7 +443,11 @@ const Trade: React.FC<any> = ({
                                                     />
                                                     <div className="absolute -bottom-1 -right-1 bg-backgound-100 h-6 w-6 flex justify-center items-center rounded-full">
                                                         <Image
-                                                            src={ProtocolLogoByProtocolName[selectedFromProtocol] || defaultBlue}
+                                                            src={
+                                                                protocolNames[selectedFromNetwork.chainId].key.find(
+                                                                    (entry: any) => entry.name == selectedFromProtocol
+                                                                ).icon || defaultBlue
+                                                            }
                                                             alt=""
                                                             className="h-5 w-5 bg-backgound-300 rounded-full cursor-pointer"
                                                         />
@@ -435,9 +469,7 @@ const Trade: React.FC<any> = ({
                                                     </div>
                                                     <div className="text-xs text-font-300 font-medium">
                                                         {selectedFromProtocol && <span>on {selectedFromProtocol}</span>}
-                                                        {selectedFromToken && (
-                                                            <span> ({selectedFromToken})</span>
-                                                        )}
+                                                        {selectedFromToken && <span> ({selectedFromToken})</span>}
                                                     </div>
                                                 </div>
                                             ) : (
@@ -487,7 +519,11 @@ const Trade: React.FC<any> = ({
                                                     />
                                                     <div className="absolute -bottom-1 -right-1 bg-backgound-100 h-6 w-6 flex justify-center items-center rounded-full">
                                                         <Image
-                                                            src={ProtocolLogoByProtocolName[selectedToProtocol] || defaultBlue}
+                                                            src={
+                                                                protocolNames[selectedToNetwork.chainId].key.find(
+                                                                    (entry: any) => entry.name == selectedToProtocol
+                                                                ).icon || defaultBlue
+                                                            }
                                                             alt=""
                                                             className="h-5 w-5 bg-backgound-300 rounded-full cursor-pointer"
                                                         />
@@ -528,7 +564,7 @@ const Trade: React.FC<any> = ({
                                         You Pay
                                     </h5>
                                     <div className="relative flex flex-row justify-start items-center gap-8 py-3">
-                                        {selectedFromNetwork.chainName ? (
+                                        {selectedFromNetwork.chainName && selectedFromProtocol ? (
                                             <div className="relative">
                                                 <Image
                                                     src={selectedFromNetwork.icon}
@@ -537,7 +573,11 @@ const Trade: React.FC<any> = ({
                                                 />
                                                 <div className="absolute -bottom-1 -right-1 bg-backgound-100 h-6 w-6 flex justify-center items-center rounded-full">
                                                     <Image
-                                                        src={ProtocolLogoByProtocolName[selectedFromProtocol] || defaultBlue}
+                                                        src={
+                                                            protocolNames[selectedFromNetwork.chainId].key.find(
+                                                                (entry: any) => entry.name == selectedFromProtocol
+                                                            ).icon || defaultBlue
+                                                        }
                                                         alt=""
                                                         className="h-5 w-5 bg-backgound-300 rounded-full cursor-pointer"
                                                     />
@@ -562,7 +602,9 @@ const Trade: React.FC<any> = ({
                                                         ? amountIn
                                                         : amountIn
                                                 }
-                                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChangeAmountIn(e.target.value)}
+                                                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                                                    onChangeAmountIn(e.target.value)
+                                                }
                                                 className="w-full text-xl md:text-2xl text-white bg-backgound-100 placeholder:text-slate-200 font-bold outline-none"
                                             />
                                             <div className="text-xs md:text-sm text-font-300 font-medium">$0.00</div>
@@ -610,7 +652,11 @@ const Trade: React.FC<any> = ({
                                     <button
                                         type="button"
                                         onClick={() => sendSingleBatchToList(true)}
-                                        className={`${addToBatchLoading ? 'bg-button-1100 hover:bg-button-1100' : 'bg-button-100 hover:bg-button-100'}  w-full flex justify-center items-center gap-2  py-3 px-5 rounded-lg text-base md:text-lg text-font-100 font-bold transition duration-300`}
+                                        className={`${
+                                            addToBatchLoading
+                                                ? "bg-button-1100 hover:bg-button-1100"
+                                                : "bg-button-100 hover:bg-button-100"
+                                        }  w-full flex justify-center items-center gap-2  py-3 px-5 rounded-lg text-base md:text-lg text-font-100 font-bold transition duration-300`}
                                     >
                                         {addToBatchLoading && <CgSpinner className="animate-spin h-7 w-7" />}
                                         Add Batch to List
@@ -618,7 +664,11 @@ const Trade: React.FC<any> = ({
                                     <button
                                         type="button"
                                         onClick={() => ExecuteAllBatches(true)}
-                                        className={`${sendTxLoading ? 'bg-button-1100 hover:bg-button-1100' : 'bg-button-100 hover:bg-button-100'}  w-full flex justify-center items-center gap-2  py-3 px-5 rounded-lg text-base md:text-lg text-font-100 font-bold transition duration-300`}
+                                        className={`${
+                                            sendTxLoading
+                                                ? "bg-button-1100 hover:bg-button-1100"
+                                                : "bg-button-100 hover:bg-button-100"
+                                        }  w-full flex justify-center items-center gap-2  py-3 px-5 rounded-lg text-base md:text-lg text-font-100 font-bold transition duration-300`}
                                     >
                                         {sendTxLoading && <CgSpinner className="animate-spin h-7 w-7" />}
                                         Execute Batch
@@ -638,7 +688,9 @@ const Trade: React.FC<any> = ({
                             Batching List
                         </h1>
                         <div className="w-full max-h-full overflow-auto flex flex-col gap-5 px-5 py-7">
-                            {individualBatch.length > 0 && individualBatch[0].txArray.length > 0 ? (
+                            {selectedFromNetwork.chainId &&
+                            individualBatch.length > 0 &&
+                            individualBatch[0].txArray.length > 0 ? (
                                 individualBatch.map((bar: any, inputBarIndex) => (
                                     <>
                                         {bar.txArray.length > 0 && (
@@ -648,7 +700,8 @@ const Trade: React.FC<any> = ({
                                                         <h1 className="flex justify-center items-center gap-3 text-font-100 font-semibold text-base">
                                                             {inputBarIndex + 1}.
                                                             <span>
-                                                                {startCase(bar.data.fromNetwork)} To {startCase(bar.data.toNetwork)}
+                                                                {startCase(bar.data.fromNetwork)} To{" "}
+                                                                {startCase(bar.data.toNetwork)}
                                                             </span>
                                                         </h1>
                                                         <MdDelete
@@ -666,13 +719,24 @@ const Trade: React.FC<any> = ({
                                                             <div className="flex justify-start items-start gap-5">
                                                                 <div className="relative">
                                                                     <Image
-                                                                        src={NetworkLogoByNetworkName[bar.data.fromNetwork]}
+                                                                        src={
+                                                                            ChainIdDetails[selectedFromNetwork.chainId]
+                                                                                .networkLogo
+                                                                        }
                                                                         alt=""
                                                                         className="h-10 w-10 bg-font-200 rounded-full cursor-pointer"
                                                                     />
                                                                     <div className="absolute -bottom-1 -right-1 bg-font-100 h-5 w-5 flex justify-center items-center rounded-full">
                                                                         <Image
-                                                                            src={ProtocolLogoByProtocolName[bar.data.fromProtocol]}
+                                                                            src={
+                                                                                protocolNames[
+                                                                                    selectedFromNetwork.chainId
+                                                                                ].key.find(
+                                                                                    (entry: any) =>
+                                                                                        entry.name ==
+                                                                                        bar.data.fromProtocol
+                                                                                ).icon || defaultBlue
+                                                                            }
                                                                             alt=""
                                                                             className="h-4 w-4 bg-font-200 rounded-full cursor-pointer"
                                                                         />
@@ -685,8 +749,7 @@ const Trade: React.FC<any> = ({
                                                                     <span className="text-sm md:text-base font-semibold text-font-400">
                                                                         {bar.data.fromProtocol} on{" "}
                                                                         {bar.data.fromNetwork} {" ... "}
-                                                                        {bar.data.toProtocol} on{" "}
-                                                                        {bar.data.toNetwork}
+                                                                        {bar.data.toProtocol} on {bar.data.toNetwork}
                                                                     </span>
                                                                 </div>
                                                             </div>
@@ -706,41 +769,64 @@ const Trade: React.FC<any> = ({
                                                         </div>
                                                         {showIndividualBatchList === bar.id && (
                                                             <div className="flex flex-col justify-start items-start gap-1 pl-10 pt-3">
-                                                               {bar.batchesFlow.length > 0 && bar.batchesFlow.map((item: any, index: number) => (
-                                                                <div
-                                                                    key={item.action}
-                                                                    className="flex flex-col justify-start items-start gap-1"
-                                                                >
-                                                                    <div
-                                                                        key={item.action}
-                                                                        className="flex justify-center items-center gap-3"
-                                                                    >
-                                                                        <div className="relative">
-                                                                            <Image
-                                                                                src={NetworkLogoByNetworkName[item.network]}
-                                                                                alt=""
-                                                                                className="h-8 w-8 bg-slate-200 rounded-full cursor-pointer"
-                                                                            />
-                                                                            <div className="absolute -bottom-1 -right-1 bg-font-100 h-4 w-4 flex justify-center items-center rounded-full">
-                                                                                <Image
-                                                                                    src={ProtocolLogoByProtocolName[item.protocol]}
-                                                                                    alt=""
-                                                                                    className="h-3 w-3 bg-font-200 rounded-full cursor-pointer"
-                                                                                />
+                                                                {bar.batchesFlow.length > 0 &&
+                                                                    bar.batchesFlow.map((item: any, index: number) => (
+                                                                        <div
+                                                                            key={item.action}
+                                                                            className="flex flex-col justify-start items-start gap-1"
+                                                                        >
+                                                                            <div
+                                                                                key={item.action}
+                                                                                className="flex justify-center items-center gap-3"
+                                                                            >
+                                                                                <div className="relative">
+                                                                                    <Image
+                                                                                        src={
+                                                                                            ChainIdDetails[
+                                                                                                item.fromChainId
+                                                                                            ].networkLogo
+                                                                                        }
+                                                                                        alt=""
+                                                                                        className="h-8 w-8 bg-slate-200 rounded-full cursor-pointer"
+                                                                                    />
+                                                                                    <div className="absolute -bottom-1 -right-1 bg-font-100 h-4 w-4 flex justify-center items-center rounded-full">
+                                                                                        <Image
+                                                                                            src={
+                                                                                                protocolNames[
+                                                                                                    item.fromChainId
+                                                                                                ].key.find(
+                                                                                                    (entry: any) =>
+                                                                                                        entry.name ===
+                                                                                                        item.protocol
+                                                                                                )?.icon || defaultBlue
+                                                                                            }
+                                                                                            alt=""
+                                                                                            className="h-3 w-3 bg-font-200 rounded-full cursor-pointer"
+                                                                                        />
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div className="flex flex-col justify-start items-start">
+                                                                                    <span className="text-sm md:text-base font-semibold text-font-200 break-all">
+                                                                                        {item.action} on {item.protocol}
+                                                                                    </span>
+                                                                                    <span className="text-xs md:text-sm font-semibold text-font-400">
+                                                                                        {item.amount.toString()}{" "}
+                                                                                        {item.tokenIn} for{" "}
+                                                                                        {item.tokenOut}
+                                                                                    </span>
+                                                                                </div>
                                                                             </div>
+                                                                            {bar.batchesFlow.length - 1 > index ? (
+                                                                                <Image
+                                                                                    src={downLine}
+                                                                                    alt=""
+                                                                                    className="h-8"
+                                                                                />
+                                                                            ) : (
+                                                                                ""
+                                                                            )}
                                                                         </div>
-                                                                        <div className="flex flex-col justify-start items-start">
-                                                                            <span className="text-sm md:text-base font-semibold text-font-200 break-all">
-                                                                                {item.action} on {item.protocol}
-                                                                            </span>
-                                                                            <span className="text-xs md:text-sm font-semibold text-font-400">
-                                                                                {item.amount.toString()} {item.tokenIn} for {item.tokenOut}
-                                                                            </span>
-                                                                        </div>
-                                                                    </div>
-                                                                    { bar.batchesFlow.length-1 > index ? <Image src={downLine} alt="" className="h-8" /> : ""}
-                                                                </div>
-                                                               ))}
+                                                                    ))}
                                                             </div>
                                                         )}
                                                     </div>

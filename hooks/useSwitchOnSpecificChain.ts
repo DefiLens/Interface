@@ -13,8 +13,8 @@ import { iTrading, useTradingStore } from "../store/TradingStore";
 import { iGlobal, useGlobalStore } from "../store/GlobalStore";
 
 import { useCalculatebalance } from "../hooks/utilsHooks/useCalculateBalance";
-import { bundlerURLs, NetworkLogoByChainId, paymasterURLs } from "../utils/constants";
 import { arbitrum, avalanche, base, ethereum, optimism, polygon } from "../assets/images";
+import { ChainIdDetails } from "../utils/helpers/network";
 
 bg.config({ DECIMAL_PLACES: 5 });
 
@@ -49,13 +49,13 @@ export function useSwitchOnSpecificChain() {
                     key: chain?.chain,
                     chainName: chain?.slug,
                     chainId: chain?.chainId.toString(),
-                    icon: NetworkLogoByChainId[chain?.chainId.toString()],
+                    icon: ChainIdDetails[chain?.chainId.toString()].networkLogo,
                 });
                 setSelectedFromNetwork({
                     key: chain?.chain,
                     chainName: chain?.slug,
                     chainId: chain?.chainId.toString(),
-                    icon: NetworkLogoByChainId[chain?.chainId.toString()],
+                    icon: ChainIdDetails[chain?.chainId.toString()].networkLogo,
                 });
             } else {
                 setSmartAccount(null);
@@ -95,12 +95,12 @@ export function useSwitchOnSpecificChain() {
 
     const createAccount = async (chainId: any) => {
         const bundler: IBundler = new Bundler({
-            bundlerUrl: bundlerURLs[chainId],
+            bundlerUrl: ChainIdDetails[chainId].bundlerURL,
             chainId: chainId,
             entryPointAddress: DEFAULT_ENTRYPOINT_ADDRESS,
         });
         const paymaster: IPaymaster = new BiconomyPaymaster({
-            paymasterUrl: paymasterURLs[chainId],
+            paymasterUrl: ChainIdDetails[chainId].paymasterURL,
         });
         const biconomySmartAccountConfig: BiconomySmartAccountConfig = {
             signer: signer,
@@ -277,13 +277,13 @@ export function useSwitchOnSpecificChain() {
                         key: chain?.chain,
                         chainName: chain?.slug,
                         chainId: chain?.chainId.toString(),
-                        icon: NetworkLogoByChainId[chain?.chainId.toString()],
+                        icon: ChainIdDetails[chain?.chainId.toString()].networkLogo,
                     });
                     setSelectedFromNetwork({
                         key: chain?.chain,
                         chainName: chain?.slug,
                         chainId: chain?.chainId.toString(),
-                        icon: NetworkLogoByChainId[chain?.chainId.toString()],
+                        icon: ChainIdDetails[chain?.chainId.toString()].networkLogo,
                     });
 
                     // @ts-ignore

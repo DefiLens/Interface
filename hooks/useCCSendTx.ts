@@ -9,21 +9,18 @@ import IStarGateRouter from "../abis/IStarGateRouter.json";
 import { useTradingStore, iTrading } from "../store/TradingStore";
 import { useGlobalStore, iGlobal } from "../store/GlobalStore";
 import { chooseChianId, calculateFees, batch } from "../utils/helper";
-import { gasFeesNames, _nonce, _functionType } from "../utils/constants";
 import { getErc20Balanceof, getErc20Allownace, getContractInstance, getProvider } from "../utils/web3Libs/ethers";
-import { chainPingByNetwork, starGateRouterByNetwork, tokensByNetworkForCC } from "./Batching/batchingUtils";
 import { decreasePowerByDecimals, incresePowerByDecimals } from "../utils/utils";
+import { chainPingByNetwork, starGateRouterByNetwork, tokensByNetworkForCC } from "../utils/helpers/protocols";
+import { ChainIdDetails } from "../utils/helpers/network";
+import { _functionType, _nonce } from "../utils/helpers/constants";
 
 export function useCCSendTx() {
     const { smartAccount }: iGlobal = useGlobalStore((state) => state);
 
-    const {
-        selectedFromNetwork,
-        selectedToNetwork,
-        amountIn,
-        fromTokenDecimal,
-        setTxHash,
-    }: iTrading = useTradingStore((state) => state);
+    const { selectedFromNetwork, selectedToNetwork, amountIn, fromTokenDecimal, setTxHash }: iTrading = useTradingStore(
+        (state) => state
+    );
 
     async function sendTxToChain({
         tokenIn,
@@ -38,7 +35,7 @@ export function useCCSendTx() {
         currentFunc,
         currentAbi,
         contractAddress,
-        extraOrShareToken
+        extraOrShareToken,
     }) {
         try {
             // if (isSCW) {
@@ -78,12 +75,12 @@ export function useCCSendTx() {
 
             if (isSCW) {
                 if (BigNumber.from(balance).lt(BigNumber.from(_tempAmount))) {
-                    toast.error("You don't have enough balance in SmartAccount")
+                    toast.error("You don't have enough balance in SmartAccount");
                     return;
                 }
             } else {
                 if (BigNumber.from(balance).lt(BigNumber.from(_tempAmount))) {
-                    toast.error("You don't have enough balance in EOA")
+                    toast.error("You don't have enough balance in EOA");
                     return;
                 }
             }
@@ -91,7 +88,10 @@ export function useCCSendTx() {
             let approveTx;
             const allowance = await getErc20Allownace(erc20TokenInInstance, _currentAddress, fromStarGateRouter);
             if (!BigNumber.from(allowance).gte(BigNumber.from(_tempAmount))) {
-                const approveData = await erc20TokenInInstance.populateTransaction.approve(fromStarGateRouter, _tempAmount);
+                const approveData = await erc20TokenInInstance.populateTransaction.approve(
+                    fromStarGateRouter,
+                    _tempAmount
+                );
                 approveTx = { to: approveData.to, data: approveData.data };
             }
             const amountAfterSlippage = await calculateFees(
@@ -107,10 +107,7 @@ export function useCCSendTx() {
 
             let abiInterfaceForDestDefiProtocol = new ethers.utils.Interface(currentAbi);
             // const destChainExecData = abiInterfaceForDestDefiProtocol.encodeFunctionData(currentFunc, params[funcIndex])
-            const destChainExecData = abiInterfaceForDestDefiProtocol.encodeFunctionData(
-                currentFunc,
-                params
-            );
+            const destChainExecData = abiInterfaceForDestDefiProtocol.encodeFunctionData(currentFunc, params);
 
             // const contractAddress = allNetworkData?.contracts[contractIndex].contractAddress;
             // const extraOrShareToken = allNetworkData?.contracts[contractIndex].extraOrShareToken;
@@ -184,13 +181,15 @@ export function useCCSendTx() {
 
             const scwOrEoaNativeBalance = await _currentProvider.getBalance(_currentAddress);
             const currentBalance = BigNumber.from(scwOrEoaNativeBalance);
-            const minimumBalanceRequired = await decreasePowerByDecimals(quoteData[0].toString(), 18)
+            const minimumBalanceRequired = await decreasePowerByDecimals(quoteData[0].toString(), 18);
 
             // Extra 1e18 should more as of now
             if (!currentBalance.gt(quoteData[0].add(parseEther("0")))) {
-                toast.error(`${minimumBalanceRequired.toString()} ${
-                    gasFeesNames[selectedFromNetwork.chainName]
-                } in your SmartAccount wallet`)
+                toast.error(
+                    `${minimumBalanceRequired.toString()} ${
+                        ChainIdDetails[selectedFromNetwork.chainId].gasFeesName
+                    } in your SmartAccount wallet`
+                );
                 return;
             }
 

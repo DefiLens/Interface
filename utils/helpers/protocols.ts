@@ -1,15 +1,132 @@
 import { ethers } from "ethers";
 import { BigNumber as bg } from "bignumber.js";
-
+import { arbitrum, avalanche, base, compoundV3, optimism, polygon, aavev2, aavev3, dforce } from "../../assets/images";
+import { tokenAddressByProtocol, tokensByProtocol } from "./tokensByProtocol";
+import { decreasePowerByDecimals } from "../utils";
+import { getContractInstance } from "../web3Libs/ethers";
 import aave_v2_Abi from "../../abis/defi/aave_v2.json";
 import compound_Abi from "../../abis/defi/compound.json";
-import { getContractInstance } from "../../utils/web3Libs/ethers";
-import { decreasePowerByDecimals } from "../../utils/utils";
 
-bg.config({ DECIMAL_PLACES: 20 });
+export const protocolNames = {
+    "137": {
+        key: [
+            {
+                name: "aaveV2",
+                icon: aavev2,
+                tokenList: tokensByProtocol.polygon.aaveV2,
+                tokenAddresses: tokenAddressByProtocol.polygon.aaveV2,
+            },
+            {
+                name: "aaveV3",
+                icon: aavev3,
+                tokenList: tokensByProtocol.polygon.aaveV3,
+                tokenAddresses: tokenAddressByProtocol.polygon.aaveV3,
+            },
+            {
+                name: "compoundV3",
+                icon: compoundV3,
+                tokenList: tokensByProtocol.polygon.compoundV3,
+                tokenAddresses: tokenAddressByProtocol.polygon.compoundV3,
+            },
+            {
+                name: "dForce",
+                icon: dforce,
+                tokenList: tokensByProtocol.polygon.dForce,
+                tokenAddresses: tokenAddressByProtocol.polygon.dForce,
+            },
+            {
+                name: "erc20",
+                icon: polygon,
+                tokenList: "tokenList",
+                tokenAddresses: "tokenAddresses",
+            },
+        ],
+        value: ["AAVE V2", "AAVE V3", "Compound V3", "dForce", "ERC20"],
+    },
+    "43114": {
+        key: [
+            {
+                name: "aaveV3",
+                icon: aavev3,
+                tokenList: tokensByProtocol.avalanche.aaveV3,
+                tokenAddresses: tokenAddressByProtocol.avalanche.aaveV3,
+            },
+            {
+                name: "erc20",
+                icon: avalanche,
+                tokenList: "tokenList",
+                tokenAddresses: "tokenAddresses",
+            },
+        ],
+        value: ["AAVE V3", "ERC20"],
+    },
+    "42161": {
+        key: [
+            {
+                name: "aaveV3",
+                icon: aavev3,
+                tokenList: tokensByProtocol.arbitrum.aaveV3,
+                tokenAddresses: tokenAddressByProtocol.arbitrum.aaveV3,
+            },
+            {
+                name: "compoundV3",
+                icon: compoundV3,
+                tokenList: tokensByProtocol.arbitrum.compoundV3,
+                tokenAddresses: tokenAddressByProtocol.arbitrum.compoundV3,
+            },
+            {
+                name: "erc20",
+                icon: arbitrum,
+                tokenList: "tokenList",
+                tokenAddresses: "tokenAddresses",
+            },
+        ],
+        value: ["AAVE V3", "Compound V3", "ERC20"],
+    },
+    "10": {
+        key: [
+            {
+                name: "aaveV3",
+                icon: aavev3,
+                tokenList: tokensByProtocol.optimism.aaveV3,
+                tokenAddresses: tokenAddressByProtocol.optimism.aaveV3,
+            },
+            {
+                name: "erc20",
+                icon: optimism,
+                tokenList: "tokenList",
+                tokenAddresses: "tokenAddresses",
+            },
+        ],
+        value: ["AAVE V3", "ERC20"],
+    },
+    "8453": {
+        key: [
+            {
+                name: "aaveV3",
+                icon: aavev3,
+                tokenList: tokensByProtocol.base.aaveV3,
+                tokenAddresses: tokenAddressByProtocol.base.aaveV3,
+            },
+            {
+                name: "compoundV3",
+                icon: compoundV3,
+                tokenList: tokensByProtocol.base.compoundV3,
+                tokenAddresses: tokenAddressByProtocol.base.compoundV3,
+            },
+            {
+                name: "erc20",
+                icon: base,
+                tokenList: "tokenList",
+                tokenAddresses: "tokenAddresses",
+            },
+        ],
+        value: ["AAVE V3", "Compound V3", "ERC20"],
+    },
+};
 
 export const abiFetcherNum = {
-    polygon: {
+    "137": {
         cUSDC: "1",
         aUSDC: "2",
         aUSDT: "2",
@@ -28,7 +145,7 @@ export const abiFetcherNum = {
         aWBTCv3: "4",
         aBALv3: "4",
     },
-    avalanche: {
+    "43114": {
         aUSDT: "1",
         aUSDC: "1",
         aWAVAX: "1",
@@ -42,7 +159,7 @@ export const abiFetcherNum = {
         aMAI: "1",
         aFRAX: "1",
     },
-    arbitrum: {
+    "42161": {
         aWETH: "1",
         aUSDC: "1",
         aUSDCe: "1",
@@ -60,7 +177,7 @@ export const abiFetcherNum = {
         cUSDCev3: "2",
         cUSDCv3: "3",
     },
-    optimism: {
+    "10": {
         aDAI: "1",
         aOP: "1",
         aWETH: "1",
@@ -74,7 +191,7 @@ export const abiFetcherNum = {
         aAAVE: "1",
         aLUSD: "1",
     },
-    base: {
+    "8453": {
         cUSDbCv3: "1",
         aBasUSDbC: "2",
         aBasWETH: "2",
@@ -82,7 +199,7 @@ export const abiFetcherNum = {
 };
 
 export const abiFetcher = {
-    polygon: {
+    "137": {
         "1": {
             depositAbi: "function supply(address asset, uint256 amount)",
             withdrawAbi: "function withdraw(address asset,uint256 amount)",
@@ -127,7 +244,7 @@ export const abiFetcher = {
             apyFetch: "fetchApyForAaveV3Polygon",
         },
     },
-    avalanche: {
+    "43114": {
         "1": {
             depositAbi: "function supply(address asset, uint256 amount, address onBehalfOf, uint16 referralCode)",
             withdrawAbi: "function withdraw(address asset, uint256 amount, address to)",
@@ -140,7 +257,7 @@ export const abiFetcher = {
             apyFetch: "fetchApyForAaveV3Avalanche",
         },
     },
-    arbitrum: {
+    "42161": {
         "1": {
             depositAbi: "function supply(address asset, uint256 amount, address onBehalfOf, uint16 referralCode)",
             withdrawAbi: "function withdraw(address asset, uint256 amount, address to)",
@@ -173,7 +290,7 @@ export const abiFetcher = {
             apyFetch: "fetchApyForCompoundArbitrum",
         },
     },
-    optimism: {
+    "10": {
         "1": {
             depositAbi: "function supply(address asset, uint256 amount, address onBehalfOf, uint16 referralCode)",
             withdrawAbi: "function withdraw(address asset, uint256 amount, address to)",
@@ -186,7 +303,7 @@ export const abiFetcher = {
             apyFetch: "fetchApyForAaveV3Optimism",
         },
     },
-    base: {
+    "8453": {
         "1": {
             depositAbi: "function supply(address asset, uint256 amount)",
             withdrawAbi: "function withdraw(address asset,uint256 amount)",
@@ -212,7 +329,7 @@ export const abiFetcher = {
 };
 
 export const nativeTokenNum = {
-    polygon: {
+    "137": {
         cUSDC: "1",
 
         aUSDC: "1",
@@ -234,7 +351,7 @@ export const nativeTokenNum = {
         aWBTCv3: "7",
         aBALv3: "8",
     },
-    avalanche: {
+    "43114": {
         aUSDT: "1",
         aUSDC: "2",
         aWAVAX: "3",
@@ -248,7 +365,7 @@ export const nativeTokenNum = {
         aMAI: "11",
         aFRAX: "12",
     },
-    arbitrum: {
+    "42161": {
         aWETH: "1",
         aUSDC: "2",
         aUSDCe: "3",
@@ -264,9 +381,9 @@ export const nativeTokenNum = {
         aFRAX: "13",
         aEURS: "14",
         cUSDCev3: "3",
-        cUSDCv3: "2"
+        cUSDCv3: "2",
     },
-    optimism: {
+    "10": {
         aDAI: "1",
         aOP: "2",
         aWETH: "3",
@@ -280,7 +397,7 @@ export const nativeTokenNum = {
         aAAVE: "11",
         aLUSD: "12",
     },
-    base: {
+    "8453": {
         cUSDbCv3: "1",
         aBasUSDbC: "1",
         aBasWETH: "2",
@@ -288,7 +405,7 @@ export const nativeTokenNum = {
 };
 
 export const nativeTokenFetcher = {
-    polygon: {
+    "137": {
         "1": {
             nativeToken: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
             symbol: "usdc",
@@ -330,7 +447,7 @@ export const nativeTokenFetcher = {
             decimals: 18,
         },
     },
-    avalanche: {
+    "43114": {
         "1": {
             nativeToken: "0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7",
             symbol: "usdt",
@@ -392,7 +509,7 @@ export const nativeTokenFetcher = {
             decimals: 18,
         },
     },
-    arbitrum: {
+    "42161": {
         "1": {
             nativeToken: "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
             symbol: "weth",
@@ -464,24 +581,7 @@ export const nativeTokenFetcher = {
             decimals: 2,
         },
     },
-    base: {
-        "1": {
-            nativeToken: "0xd9aAEc86B65D86f6A7B5B1b0c42FFA531710b6CA", // USDC
-            symbol: "usdc",
-            decimals: 6,
-        },
-        "2": {
-            nativeToken: "0x4200000000000000000000000000000000000006", // WETH
-            symbol: "weth",
-            decimals: 18,
-        },
-        "3": {
-            nativeToken: "0x2Ae3F1Ec7F1F5012CFEab0185bfc7aa3cf0DEc22", // cbETH
-            symbol: "cbeth",
-            decimals: 18,
-        },
-    },
-    optimism: {
+    "10": {
         "1": {
             nativeToken: "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1", // USDC
             symbol: "dai",
@@ -543,6 +643,23 @@ export const nativeTokenFetcher = {
             decimals: 18,
         },
     },
+    "8453": {
+        "1": {
+            nativeToken: "0xd9aAEc86B65D86f6A7B5B1b0c42FFA531710b6CA", // USDC
+            symbol: "usdc",
+            decimals: 6,
+        },
+        "2": {
+            nativeToken: "0x4200000000000000000000000000000000000006", // WETH
+            symbol: "weth",
+            decimals: 18,
+        },
+        "3": {
+            nativeToken: "0x2Ae3F1Ec7F1F5012CFEab0185bfc7aa3cf0DEc22", // cbETH
+            symbol: "cbeth",
+            decimals: 18,
+        },
+    },
 };
 
 export async function buildParams({
@@ -574,12 +691,12 @@ export async function fetchApy({ protocol, contractAddress, provider, signer, to
         let abi = new ethers.utils.Interface(aave_v2_Abi);
         const protocolInstance = await getContractInstance(contractAddress, abi, provider);
         const reserveData = await protocolInstance?.getReserveData(token);
-        return await decreasePowerByDecimals(reserveData[3].toString().toString(), 25)
+        return await decreasePowerByDecimals(reserveData[3].toString().toString(), 25);
     } else if (protocol == "fetchApyForAaveV3Polygon") {
         let abi = new ethers.utils.Interface(aave_v2_Abi);
         const protocolInstance = await getContractInstance(contractAddress, abi, provider);
         const reserveData = await protocolInstance?.getReserveData(token);
-        return await decreasePowerByDecimals(reserveData[2].toString().toString(), 25)
+        return await decreasePowerByDecimals(reserveData[2].toString().toString(), 25);
     } else if (protocol == "fetchApyForCompoundPolygon") {
         let abi = new ethers.utils.Interface(compound_Abi);
         const SecondsPerYear = 60 * 60 * 24 * 365;
@@ -613,10 +730,8 @@ interface Tokens {
 
 export const chainPingByNetwork: ChainPing = {
     "137": "0x664BFAA3ce3C03aAf18EC2627d81f439576f7969",
-    // '106': '0x6FE8e3E0c47043f136640dF7972C1e3F144B807F',
     "43114": "0x934E5421D4ce678ae4c4B136306Fbee91bfDBbC8",
     "42161": "0xBA821135197bB2614F5Bd8943b5d1607288DC60d",
-    // '111': '0x934E5421D4ce678ae4c4B136306Fbee91bfDBbC8',
     "10": "0x2b2ED70C5B25b71CaA766C1054092A9Ff0900df0",
     "1": "0x0000000000000000000000000000000000000000",
     "8453": "0x5764FfF7629c03aFE36AA35114C250b2218a77E2",
@@ -629,6 +744,15 @@ export const starGateRouterByNetwork: StarGateRouter = {
     "10": "0xeCc19E177d24551aA7ed6Bc6FE566eCa726CC8a9",
     "1": "0xeCc19E177d24551aA7ed6Bc6FE566eCa726CC8a9",
     "8453": "0xeCc19E177d24551aA7ed6Bc6FE566eCa726CC8a9",
+};
+
+export const uniswapSwapRouterByChainId = {
+    "137": "0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45",
+    "43114": "",
+    "42161": "0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45",
+    "10": "0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45",
+    "1": "0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45",
+    "8453": "0x2626664c2603336E57B271c5C0b26F421741e481",
 };
 
 export const tokensByNetworkForCC: Record<string, Tokens> = {

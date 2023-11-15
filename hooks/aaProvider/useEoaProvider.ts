@@ -4,8 +4,6 @@ import { toast } from "react-hot-toast";
 import { useSigner } from "@thirdweb-dev/react";
 import { useMutation } from "@tanstack/react-query";
 
-import { _nonce, _functionType } from "../../utils/constants";
-
 export function useEoaProvider() {
     const signer: any = useSigner(); // Detect the connected address
 

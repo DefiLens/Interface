@@ -21,15 +21,9 @@ import { useSwitchOnSpecificChain } from "../../hooks/useSwitchOnSpecificChain";
 import { iSelectedNetwork, iTrading, useTradingStore } from "../../store/TradingStore";
 import { useBiconomyProvider } from "../../hooks/aaProvider/useBiconomyProvider";
 import { getContractInstance, getErc20Balanceof, getErc20Decimals, getProvider } from "../../utils/web3Libs/ethers";
-import {
-    _functionType,
-    _nonce,
-    bundlerURLs,
-    paymasterURLs,
-    protocolByNetwork,
-    tokenAddressByProtocol,
-} from "../../utils/constants";
 import { decreasePowerByDecimals, getTokenListByChainId, incresePowerByDecimals } from "../../utils/utils";
+import { ChainIdDetails } from "../../utils/helpers/network";
+import { protocolNames } from "../../utils/helpers/protocols";
 
 bg.config({ DECIMAL_PLACES: 10 });
 
@@ -158,12 +152,14 @@ const TradeContainer: React.FC<any> = () => {
                     setAmountIn("");
                     setFromTokenDecimal(0);
 
-                    const firstFromToken =
-                        protocolByNetwork[selectedFromNetwork.chainName][selectedFromProtocol][0].name;
+                    const firstFromToken = protocolNames[selectedFromNetwork.chainId].key.find(
+                        (entry) => entry.name == selectedFromProtocol
+                    ).tokenList[0].name;
 
                     const provider = await getProvider(selectedFromNetwork.chainId);
-                    const tokenAddress =
-                        tokenAddressByProtocol[selectedFromNetwork.chainName][selectedFromProtocol][firstFromToken];
+                    const tokenAddress = protocolNames[selectedFromNetwork.chainId].key.find(
+                        (entry) => entry.name == selectedFromProtocol
+                    ).tokenAddresses[firstFromToken];
                     const erc20 = await getContractInstance(tokenAddress, IERC20, provider);
                     const fromTokendecimal = await getErc20Decimals(erc20);
                     setSafeState(setFromTokenDecimal, fromTokendecimal, 0);
@@ -250,7 +246,8 @@ const TradeContainer: React.FC<any> = () => {
                 selectedFromProtocol == "erc20" ? tokensData.filter((token: any) => token.symbol === _fromToken) : "";
             const tokenAddress =
                 selectedFromProtocol != "erc20"
-                    ? tokenAddressByProtocol[selectedFromNetwork.chainName][selectedFromProtocol][_fromToken]
+                    ? protocolNames[selectedFromNetwork.chainId].key.find((entry) => entry.name == selectedFromProtocol)
+                          .tokenAddresses[_fromToken]
                     : erc20Address[0].address;
             const erc20 = await getContractInstance(tokenAddress, IERC20, provider);
             const fromTokendecimal: any = await getErc20Decimals(erc20);
@@ -260,12 +257,12 @@ const TradeContainer: React.FC<any> = () => {
             if (!smartAccount?.address) {
                 const createAccount = async (chainId: any) => {
                     const bundler: IBundler = new Bundler({
-                        bundlerUrl: bundlerURLs[chainId],
+                        bundlerUrl: ChainIdDetails[chainId].bundlerURL,
                         chainId: chainId,
                         entryPointAddress: DEFAULT_ENTRYPOINT_ADDRESS,
                     });
                     const paymaster: IPaymaster = new BiconomyPaymaster({
-                        paymasterUrl: paymasterURLs[chainId],
+                        paymasterUrl: ChainIdDetails[chainId].paymasterUrl,
                     });
                     const biconomySmartAccountConfig: BiconomySmartAccountConfig = {
                         signer: signer,
@@ -415,6 +412,8 @@ const TradeContainer: React.FC<any> = () => {
                 data: {
                     fromNetwork: "",
                     toNetwork: "",
+                    fromChainId: "",
+                    toChainId: "",
                     fromProtocol: "",
                     toProtocol: "",
                     fromToken: "",
@@ -462,6 +461,8 @@ const TradeContainer: React.FC<any> = () => {
                     data: {
                         fromNetwork: "",
                         toNetwork: "",
+                        fromChainId: "",
+                        toChainId: "",
                         fromProtocol: "",
                         toProtocol: "",
                         fromToken: "",
@@ -489,6 +490,8 @@ const TradeContainer: React.FC<any> = () => {
                 data: {
                     fromNetwork: "",
                     toNetwork: "",
+                    fromChainId: "",
+                    toChainId: "",
                     fromProtocol: "",
                     toProtocol: "",
                     fromToken: "",
@@ -616,6 +619,8 @@ const TradeContainer: React.FC<any> = () => {
                 {
                     fromNetwork: selectedFromNetwork.chainName,
                     toNetwork: selectedToNetwork.chainName,
+                    fromChainId: selectedFromNetwork.chainId,
+                    toChainId: selectedToNetwork.chainId,
                     fromProtocol: selectedFromProtocol,
                     toProtocol: selectedToProtocol,
                     fromToken: selectedFromToken,

@@ -19,11 +19,7 @@ import "../assets/styles/index.css";
 
 export default function App({ Component, pageProps }: AppProps) {
     const metamaskConfig = metamaskWallet({});
-
     const { selectedNetwork }: iGlobal = useGlobalStore((state) => state);
-
-    // const [selectedChain, setSelectedChain] = React.useState("");
-    // const [selectedChainId, setSelectedChainId] = React.useState("");
 
     const queryClient = new QueryClient({
         defaultOptions: {

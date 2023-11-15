@@ -7,13 +7,13 @@ import { useChain, useAddress } from "@thirdweb-dev/react";
 import { tTransfer } from "./types";
 import { shorten, copyToClipboard } from "../../utils/helper";
 import { useGlobalStore, iGlobal } from "../../store/GlobalStore";
-import { gasFeesNamesByMainChainId } from "../../utils/constants";
 import { useTransferStore, iTransfer } from "../../store/TransferStore";
 import Image from "next/image";
 import { change, gas, info, optimism, swap } from "../../assets/images";
 import { MdKeyboardArrowUp } from "react-icons/md";
 import SelectInput from "../../components/SelectInput/SelectInput";
 import { decreasePowerByDecimals } from "../../utils/utils";
+import { ChainIdDetails } from "../../utils/helpers/network";
 
 const Transfer: React.FC<any> = ({
     onOptionChangeForWallet,
@@ -297,7 +297,7 @@ const Transfer: React.FC<any> = ({
                                 <div className="flex justify-center items-center gap-3">
                                     <h6 className="text-font-100 font-bold text-base md:text-lg">
                                         {gasCost && chain
-                                            ? `${gasCost} ${gasFeesNamesByMainChainId[chain?.chainId]}`
+                                            ? `${gasCost} ${ChainIdDetails[chain?.chainId].gasFeesName}`
                                             : "0"}
                                     </h6>
                                     <MdKeyboardArrowUp

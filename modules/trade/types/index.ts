@@ -20,6 +20,8 @@ export type tTrade = {
 export type tTradeProtocol = {
     name: string,
     icon: any,
+    tokenList: any
+    tokenAddresses: any
 };
 
 export interface iTokenInfo {

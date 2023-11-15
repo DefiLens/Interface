@@ -17,8 +17,8 @@ export interface iTokenData {
 }
 
 export interface iBatchFlowData {
-    network: string;
-    toNetwork?: string;
+    fromChainId: string;
+    toChainId?: string;
     protocol: string;
     tokenIn: string;
     tokenOut: string;
@@ -33,6 +33,8 @@ export interface iIndividualBatch {
     data: {
         fromNetwork: string;
         toNetwork: string;
+        fromChainId: string;
+        toChainId: string;
         fromProtocol: string;
         toProtocol: string;
         fromToken: string;
@@ -211,6 +213,8 @@ export const useTradingStore = create<iTrading>((set) => ({
             data: {
                 fromNetwork: "",
                 toNetwork: "",
+                fromChainId: "",
+                toChainId: "",
                 fromProtocol: "",
                 toProtocol: "",
                 fromToken: "",

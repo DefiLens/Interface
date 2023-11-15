@@ -6,12 +6,22 @@ import { getImplementationAddress } from "@openzeppelin/upgrades-core";
 
 import IStarGatePool from "../abis/IStarGatePool.json";
 import IStarGateRouter from "../abis/IStarGateRouter.json";
-import { implementation_slot, chainIdByStargateChainId } from "./constants";
 import IStarGateFactory from "../abis/IStarGateFactory.json";
 import IStarGateFeeLibrary from "../abis/IStarGateFeeLibrary.json";
 import { getProvider, getContractInstance } from "./web3Libs/ethers";
-import { TENDERLY_USER, TENDERLY_PROJECT, TENDERLY_ACCESS_KEY, POLYGON_ETHERSCAN_API_KEY, OPTIMISM_ETHERSCAN_API_KEY, ETHERSCAN_API_KEY, BASE_ETHERSCAN_API_KEY, AVAX_ETHERSCAN_API_KEY, ARBITRUM_ETHERSCAN_API_KEY } from "./keys";
+import {
+    TENDERLY_USER,
+    TENDERLY_PROJECT,
+    TENDERLY_ACCESS_KEY,
+    POLYGON_ETHERSCAN_API_KEY,
+    OPTIMISM_ETHERSCAN_API_KEY,
+    ETHERSCAN_API_KEY,
+    BASE_ETHERSCAN_API_KEY,
+    AVAX_ETHERSCAN_API_KEY,
+    ARBITRUM_ETHERSCAN_API_KEY,
+} from "./keys";
 import { iTokenInfo } from "../modules/trade/types";
+import { implementation_slot } from "./helpers/constants";
 
 interface FunctionABI {
     name: string;
@@ -71,13 +81,13 @@ export const fetchContractDetails = async (
         }
         let contractAbis = await getAbiUsingExplorereUrl(toChainId, contractAddress);
         let abi = JSON.parse(contractAbis.ABI);
-        const newprovider = await getProvider(chainIdByStargateChainId[toChainId]);
+        const newprovider = await getProvider(toChainId);
 
         const { isProxy, currentImplAddress }: any = await checkIfContractIsProxy(abi, contractAddress, newprovider);
         if (isProxy) {
             const realChainid = await chooseChianId(toChainId);
-            const provider = await getProvider(realChainid)
-            if (!provider) throw("No Provider")
+            const provider = await getProvider(realChainid);
+            if (!provider) throw "No Provider";
             let implementation = await provider.getStorageAt(contractAddress, implementation_slot);
             implementation = "0x" + implementation.slice(26, 66);
             contractAbis = await getAbiUsingExplorereUrl(toChainId, implementation);
@@ -150,7 +160,6 @@ export const calculateFees = async (
     provider: any
 ) => {
     try {
-
         const stargateRouterInstance = await getContractInstance(stargateRouter, IStarGateRouter, provider);
         if (!stargateRouterInstance) return;
         const factory = await stargateRouterInstance.factory();
@@ -248,7 +257,7 @@ export function setSafeState<T>(setStateFunction: (value: T) => void, value: T |
 
 export const buildTxHash = (chainId: string, txhash: string, isSocketScan?: boolean) => {
     if (isSocketScan) {
-        return `https://socketscan.io/tx/${txhash}`
+        return `https://socketscan.io/tx/${txhash}`;
     }
     if (chainId == "137") {
         return `https://polygonscan.com/tx/${txhash}`;
@@ -271,7 +280,7 @@ export const copyToClipboard = (id: any, message: string) => {
     toast.success(message);
 };
 
-export const convertIpfsUrl = (ipfsUri: string): string =>{
+export const convertIpfsUrl = (ipfsUri: string): string => {
     // Check if the input URI starts with 'ipfs://'
     if (ipfsUri.startsWith("ipfs://")) {
         // Remove the 'ipfs://' prefix
@@ -285,9 +294,9 @@ export const convertIpfsUrl = (ipfsUri: string): string =>{
 
     // If the input doesn't start with 'ipfs://', return it as is
     return ipfsUri;
-}
+};
 
-export const  getTokenListByChainId = (chainId: any, tokenList: any): iTokenInfo[] => {
+export const getTokenListByChainId = (chainId: any, tokenList: any): iTokenInfo[] => {
     return tokenList.tokens
         .map((token: any) => {
             if (token.chainId == chainId) {
@@ -303,4 +312,4 @@ export const  getTokenListByChainId = (chainId: any, tokenList: any): iTokenInfo
             return null;
         })
         .filter(Boolean) as iTokenInfo[];
-}
+};

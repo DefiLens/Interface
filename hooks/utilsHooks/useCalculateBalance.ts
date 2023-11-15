@@ -3,7 +3,6 @@ import { toast } from "react-hot-toast";
 import { useMutation } from "@tanstack/react-query";
 
 import { useGlobalStore, iGlobal } from "../../store/GlobalStore";
-import { _nonce, _functionType } from "../../utils/constants";
 import { getProvider } from "../../utils/web3Libs/ethers";
 import { decreasePowerByDecimals } from "../../utils/utils";
 
@@ -12,8 +11,8 @@ export function useCalculatebalance() {
 
     async function fetchNativeBalance({ chainId, eoaAddress, scwAddress }) {
         try {
-            const provider = await getProvider(chainId)
-            if (!provider) throw("No Provider")
+            const provider = await getProvider(chainId);
+            if (!provider) throw "No Provider";
             if (eoaAddress) {
                 let _eoabalance: any = await provider.getBalance(eoaAddress);
                 _eoabalance = await decreasePowerByDecimals(_eoabalance.toString(), 18);

@@ -10,7 +10,18 @@ import {
     OPTIMISM_BICONOMY_AA_KEY,
     POLYGON_BICONOMY_AA_KEY,
 } from "./keys";
-import { arbitrum, avalanche, base, compoundV3, ethereum, optimism, polygon, aavev2, aavev3, dforce } from "../assets/images";
+import {
+    arbitrum,
+    avalanche,
+    base,
+    compoundV3,
+    ethereum,
+    optimism,
+    polygon,
+    aavev2,
+    aavev3,
+    dforce,
+} from "../assets/images";
 
 export const BIG_ZERO = BigNumber.from(0);
 
@@ -29,21 +40,13 @@ export const fetchNetworkDataURL = `${netlifyNodeURL}/common/getNetworkAndContra
 export const fetchContractMetadataURL = `${netlifyNodeURL}/common/getContractMetaData`;
 
 export const NavigationList = [
-    // {
-    //   title: "Cross Chain",
-    //   route: '/cross-chain-defi',
-    // },
-    // {
-    //   title: "Batching",
-    //   route: '/batching-transactions',
-    // },
-    // {
-    //   title: "Swap",
-    //   route: '/swap',
-    // },
     {
-      title: "Trade",
-      route: '/trade',
+        title: "Home",
+        route: "/",
+    },
+    {
+        title: "Trade",
+        route: "/trade",
     },
 ];
 
@@ -86,59 +89,69 @@ export const NETWORK_LIST = [
     },
 ];
 
-export const methodWithApi = {
-    "109": {
-        "0x794a61358D6845594F94dc1DB02A252b5b4814aD": {
-            supply: `${netlifyNodeURL}/aave/aavev3/supply`,
-        },
-        "0xF25212E676D1F7F89Cd72fFEe66158f541246445": {
-            supply: `${netlifyNodeURL}/compound/compoundv3/supply`,
-        },
+export const ChainIdDetails = {
+    "137": {
+        'paymasterURL': `https://paymaster.biconomy.io/api/v1/137/${POLYGON_BICONOMY_AA_KEY}`,
+        'bundlerURL': `https://bundler.biconomy.io/api/v2/137/${BICONOMY_MAINNET_BUNDLAR_KEY}`,
+        'rpcURL': `https://polygon-mainnet.infura.io/v3/${MAINNET_INFURA}`,
+        'networkName': "polygon",
+        'networkLogo': polygon,
+        'gasFeesName': 'polygon',
+        'stargateChainId': '109',
+
+
     },
-    "106": {
-        "0x794a61358D6845594F94dc1DB02A252b5b4814aD": {
-            supply: `${netlifyNodeURL}/aave/aavev3/supply`,
-        },
-        "0x8F9b2A7Ae089AA01636996eBAf276f48feFDb916": {
-            deposit: `${netlifyNodeURL}/vector/106/vectorFinance/deposit`,
-        },
-        "0xB715808a78F6041E46d61Cb123C9B4A27056AE9C": {
-            mint: `${netlifyNodeURL}/benqi/106/benqi/mint`,
-        },
+    "43114": {
+        'paymasterURL': `https://paymaster.biconomy.io/api/v1/43114/${AVALANCHE_BICONOMY_AA_KEY}`,
+        'bundlerURL': `https://bundler.biconomy.io/api/v2/43114/${BICONOMY_MAINNET_BUNDLAR_KEY}`,
+        'rpcURL': `https://avalanche-mainnet.infura.io/v3/${MAINNET_INFURA}`,
+        'networkName': "avalanche",
+        'networkLogo': avalanche,
+        'gasFeesName': 'avax',
+        'stargateChainId': '106',
+
     },
-    "110": {
-        "0x794a61358D6845594F94dc1DB02A252b5b4814aD": {
-            supply: `${netlifyNodeURL}/aave/aavev3/supply`,
-        },
+    "42161": {
+        'paymasterURL': `https://paymaster.biconomy.io/api/v1/42161/${ARBITRUM_ETHERSCAN_API_KEY}`,
+        'bundlerURL': `https://bundler.biconomy.io/api/v2/42161/${BICONOMY_MAINNET_BUNDLAR_KEY}`,
+        'rpcURL': `https://arbitrum-mainnet.infura.io/v3/${MAINNET_INFURA}`,
+        'networkName': "arbitrum",
+        'networkLogo': arbitrum,
+        'gasFeesName': 'eth',
+        'stargateChainId': '110',
+
     },
-    "111": {
-        "0x794a61358D6845594F94dc1DB02A252b5b4814aD": {
-            supply: `${netlifyNodeURL}/aave/aavev3/supply`,
-        },
-        "0xEC8FEa79026FfEd168cCf5C627c7f486D77b765F": {
-            mint: `${netlifyNodeURL}/sonne/111/sonneFinance/mint`,
-        },
-        "0x81C9A7B55A4df39A9B7B5F781ec0e53539694873": {
-            deposit: `${netlifyNodeURL}/exactly/111/exactly/deposit`,
-        },
+    "10": {
+        'paymasterURL': `https://paymaster.biconomy.io/api/v1/10/${OPTIMISM_BICONOMY_AA_KEY}`,
+        'bundlerURL': `https://bundler.biconomy.io/api/v2/10/${BICONOMY_MAINNET_BUNDLAR_KEY}`,
+        'rpcURL': `https://optimism-mainnet.infura.io/v3/${MAINNET_INFURA}`,
+        'networkName': "optimism",
+        'networkLogo': optimism,
+        'gasFeesName': 'eth',
+        'stargateChainId': '111',
+
     },
-    "101": {
-        "0x794a61358D6845594F94dc1DB02A252b5b4814aD": {
-            supply: `${netlifyNodeURL}/aave/aavev3/supply`,
-        },
+    "1": {
+        'paymasterURL': `https://paymaster.biconomy.io/api/v1/1/${ETHEREUM_BICONOMY_AA_KEY}`,
+        'bundlerURL': `https://bundler.biconomy.io/api/v2/1/${BICONOMY_MAINNET_BUNDLAR_KEY}`,
+        'rpcURL': `https://mainnet.infura.io/v3/${MAINNET_INFURA}`,
+        'networkName': "ethereum",
+        'networkLogo': ethereum,
+        'gasFeesName': 'eth',
+        'stargateChainId': '101',
+
     },
-    "184": {
-        "0x8184285DfaB372201AFb8B5d6D4718467179E33d": {
-            mint: `${netlifyNodeURL}/swirllend/184/swirllend/mint/`,
-        },
-        "0xA238Dd80C259a72e81d7e4664a9801593F98d1c5": {
-            supply: `${netlifyNodeURL}/aave/aavev3/supply`,
-        },
-        "0x9c4ec768c28520b50860ea7a15bd7213a9ff58bf": {
-            supply: `${netlifyNodeURL}/compound/compoundv3/supply`,
-        },
+    "8453": {
+        'paymasterURL': `https://paymaster.biconomy.io/api/v1/8453/${BASE_BICONOMY_AA_KEY}`,
+        'bundlerURL': `https://bundler.biconomy.io/api/v2/8453/${BICONOMY_MAINNET_BUNDLAR_KEY}`,
+        'rpcURL': `https://mainnet.base.org/`,
+        'networkName': "base",
+        'networkLogo': base,
+        'gasFeesName': 'eth',
+        'stargateChainId': '184',
+
     },
-};
+}
 
 export const paymasterURLs = {
     "137": `https://paymaster.biconomy.io/api/v1/137/${POLYGON_BICONOMY_AA_KEY}`,
@@ -167,6 +180,7 @@ export const rpscURLS = {
     "8453": `https://mainnet.base.org/`,
 };
 
+// not used anywhere
 export const NetworkNameByChainId = {
     "137": "polygon",
     "43114": "avalanche",
@@ -186,31 +200,23 @@ export const NetworkLogoByChainId = {
 };
 
 export const NetworkLogoByNetworkName = {
-    "polygon": polygon,
-    "avalanche": avalanche,
-    "arbitrum": arbitrum,
-    "optimism": optimism,
-    "ethereum": ethereum,
-    "base": base,
+    polygon: polygon,
+    avalanche: avalanche,
+    arbitrum: arbitrum,
+    optimism: optimism,
+    ethereum: ethereum,
+    base: base,
 };
 
 export const ProtocolLogoByProtocolName = {
-    "aaveV2": aavev2,
-    "aaveV3": aavev3,
-    "compoundV3": compoundV3,
-    "dForce": dforce,
-    "erc20": compoundV3,
+    aaveV2: aavev2,
+    aaveV3: aavev3,
+    compoundV3: compoundV3,
+    dForce: dforce,
+    erc20: compoundV3,
 };
 
-export const NetworkNameByStargateChainId = {
-    "109": "Polygon",
-    "106": "Avalanche",
-    "110": "Arbitrum",
-    "111": "Optimism",
-    "101": "Ethereum",
-    "184": "Base",
-};
-
+// not used anywhere indirectly
 export const chainIdByStargateChainId = {
     "109": "137",
     "106": "43114",
@@ -238,15 +244,6 @@ export const gasFeesNames = {
     base: "eth",
 };
 
-export const gasFeesNamesByChainId = {
-    "109": "matic",
-    "106": "avax",
-    "110": "eth",
-    "111": "eth",
-    "101": "eth",
-    "184": "eth",
-};
-
 export const gasFeesNamesByMainChainId = {
     "137": "matic",
     "43114": "avax",
@@ -256,15 +253,7 @@ export const gasFeesNamesByMainChainId = {
     "8453": "eth",
 };
 
-export const richAddressByChainId = {
-    "109": "0xe7804c37c13166fF0b37F5aE0BB07A3aEbb6e245",
-    "106": "0x3A2434c698f8D79af1f5A9e43013157ca8B11a66",
-    "110": "0xB38e8c17e38363aF6EbdCb3dAE12e0243582891D",
-    "111": "0xf89d7b9c864f589bbF53a82105107622B35EaA40",
-    "101": "0xDFd5293D8e347dFe59E90eFd55b2956a1343963d",
-    "184": "0x76db18f9FBA2F757530E8bae30D0DB5B937c5b98",
-};
-
+// not used anywhere indirectly
 export const tokensByNetwork: Record<string, Tokens> = {
     "109": {
         usdc: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
@@ -286,10 +275,6 @@ export const tokensByNetwork: Record<string, Tokens> = {
     },
 };
 
-// Dex
-export const UniversalRouter = "0x4C60051384bd2d3C01bfc845Cf5F4b44bcbE9de5"; // polygon
-export const V3_SWAP_ROUTER_ADDRESS = "0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45";
-
 export const uniswapSwapRouterByChainId = {
     "137": "0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45",
     "43114": "",
@@ -300,7 +285,7 @@ export const uniswapSwapRouterByChainId = {
 };
 
 export const protocolNames = {
-    "polygon": {
+    polygon: {
         key: [
             {
                 name: "aaveV2",
@@ -325,7 +310,7 @@ export const protocolNames = {
         ],
         value: ["AAVE V2", "AAVE V3", "Compound V3", "dForce", "ERC20"],
     },
-    "avalanche": {
+    avalanche: {
         key: [
             {
                 name: "aaveV3",
@@ -338,7 +323,7 @@ export const protocolNames = {
         ],
         value: ["AAVE V3", "ERC20"],
     },
-    "arbitrum": {
+    arbitrum: {
         key: [
             {
                 name: "aaveV3",
@@ -355,7 +340,7 @@ export const protocolNames = {
         ],
         value: ["AAVE V3", "Compound V3", "ERC20"],
     },
-    "optimism": {
+    optimism: {
         key: [
             {
                 name: "aaveV3",
@@ -368,7 +353,7 @@ export const protocolNames = {
         ],
         value: ["AAVE V3", "ERC20"],
     },
-    "base": {
+    base: {
         key: [
             {
                 name: "aaveV3",
@@ -387,7 +372,7 @@ export const protocolNames = {
     },
 };
 
-export const protocolByNetwork = {
+export const tokensByProtocol = {
     polygon: {
         aaveV2: [
             {
@@ -457,13 +442,13 @@ export const protocolByNetwork = {
             {
                 name: "cUSDC",
                 icon: ethereum,
-            }
+            },
         ],
         dForce: [
             {
                 name: "dForceUSDC",
                 icon: optimism,
-            }
+            },
         ],
     },
     avalanche: {
@@ -515,7 +500,7 @@ export const protocolByNetwork = {
             {
                 name: "aFRAX",
                 icon: ethereum,
-            }
+            },
         ],
     },
     arbitrum: {
@@ -585,7 +570,7 @@ export const protocolByNetwork = {
             {
                 name: "cUSDCv3",
                 icon: arbitrum,
-            }
+            },
         ],
     },
     optimism: {
@@ -638,7 +623,7 @@ export const protocolByNetwork = {
                 name: "aLUSD",
                 icon: optimism,
             },
-        ]
+        ],
     },
     base: {
         aaveV3: [
@@ -649,13 +634,13 @@ export const protocolByNetwork = {
             {
                 name: "aBasWETH",
                 icon: ethereum,
-            }
+            },
         ],
         compoundV3: [
             {
                 name: "cUSDbCv3",
                 icon: optimism,
-            }
+            },
         ],
     },
 };
@@ -702,7 +687,7 @@ export const tokenAddressByProtocol = {
             aAAVEe: "0xf329e36C7bF6E5E86ce2150875a84Ce77f477375",
             aMAI: "0x8Eb270e296023E9D92081fdF967dDd7878724424",
             aFRAX: "0xc45A479877e1e9Dfe9FcD4056c699575a1045dAA",
-        }
+        },
     },
     arbitrum: {
         aaveV3: {
@@ -724,7 +709,7 @@ export const tokenAddressByProtocol = {
         compoundV3: {
             cUSDCev3: "0xA5EDBDD9646f8dFF606d7448e414884C7d905dCA",
             cUSDCv3: "0x9c4ec768c28520B50860ea7a15bd7213a9fF58bf",
-        }
+        },
     },
     optimism: {
         aDAI: "0x82E64f49Ed5EC1bC6e43DAD4FC8Af9bb3A2312EE",
@@ -740,39 +725,37 @@ export const tokenAddressByProtocol = {
         aAAVE: "0xf329e36C7bF6E5E86ce2150875a84Ce77f477375",
         aLUSD: "0x8Eb270e296023E9D92081fdF967dDd7878724424",
     },
-    ethereum: {
-
-    },
+    ethereum: {},
     base: {
         aaveV3: {
             aBasUSDbC: "0x0a1d576f3eFeF75b330424287a95A366e8281D54",
-            aBasWETH: "0xD4a0e0b9149BCee3C920d2E00b5dE09138fd8bb7"
+            aBasWETH: "0xD4a0e0b9149BCee3C920d2E00b5dE09138fd8bb7",
         },
         compoundV3: {
-            cUSDbCv3: "0x9c4ec768c28520B50860ea7a15bd7213a9fF58bf"
-        }
+            cUSDbCv3: "0x9c4ec768c28520B50860ea7a15bd7213a9fF58bf",
+        },
     },
 };
 
 export const ReactSelectStyles = {
     control: (styles: any) => ({
-      ...styles,
-      border: '2px solid #293347',
-      background: '#15223D',
-      color: '#cccccc !important',
-      padding: '5px',
-      borderRadius: '10px',
-      outline: 'none',
-      boxShadow: styles.isFocused ? 0 : 0,
-      '&:hover': {
-        boxShadow: styles.isFocused ? 0 : 0
-      },
+        ...styles,
+        border: "2px solid #293347",
+        background: "#15223D",
+        color: "#cccccc !important",
+        padding: "5px",
+        borderRadius: "10px",
+        outline: "none",
+        boxShadow: styles.isFocused ? 0 : 0,
+        "&:hover": {
+            boxShadow: styles.isFocused ? 0 : 0,
+        },
     }),
     placeholder: (styles: any) => ({
-      ...styles,
-      color: '#ffffff !important',
-    })
-  };
+        ...styles,
+        color: "#ffffff !important",
+    }),
+};
 
 export const buttonStyle =
     "bg-button-100 hover:bg-primary-700 py-1 px-5 rounded-lg text-primary-100 font-medium border-b-4 border-primary-800 hover:border-primary-900 transition duration-300";

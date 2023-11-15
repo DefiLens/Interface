@@ -1,6 +1,4 @@
 import { useMutation } from "@tanstack/react-query";
-
-import { _nonce, _functionType } from "../../utils/constants";
 import { useGlobalStore, iGlobal } from "../../store/GlobalStore";
 import { iTrading, useTradingStore } from "../../store/TradingStore";
 

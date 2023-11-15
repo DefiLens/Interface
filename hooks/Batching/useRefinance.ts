@@ -6,8 +6,14 @@ import { useMutation } from "@tanstack/react-query";
 import { useUniswap } from "../useUniswap";
 import { useApprove } from "../utilsHooks/useApprove";
 import { iBatchFlowData, iTrading, useTradingStore } from "../../store/TradingStore";
-import { abiFetcher, abiFetcherNum, buildParams, nativeTokenFetcher, nativeTokenNum } from "./batchingUtils";
-import { _functionType, _nonce, uniswapSwapRouterByChainId, V3_SWAP_ROUTER_ADDRESS } from "../../utils/constants";
+import {
+    abiFetcher,
+    abiFetcherNum,
+    buildParams,
+    nativeTokenFetcher,
+    nativeTokenNum,
+    uniswapSwapRouterByChainId,
+} from "../../utils/helpers/protocols";
 import { useCalculateGasCost } from "../utilsHooks/useCalculateGasCost";
 import { decreasePowerByDecimals } from "../../utils/utils";
 
@@ -68,22 +74,22 @@ export function useRefinance() {
             }
 
             if (toProtocol != "erc20") {
-                const tokenOutNum = nativeTokenNum[selectedFromNetwork.chainName][tokenOutName];
-                nativeTokenOut = nativeTokenFetcher[selectedFromNetwork.chainName][tokenOutNum].nativeToken;
-                nativeTokenOutSymbol = nativeTokenFetcher[selectedFromNetwork.chainName][tokenOutNum].symbol;
-                nativeTokenOutDecimal = nativeTokenFetcher[selectedFromNetwork.chainName][tokenOutNum].decimals;
+                const tokenOutNum = nativeTokenNum[selectedFromNetwork.chainId][tokenOutName];
+                nativeTokenOut = nativeTokenFetcher[selectedFromNetwork.chainId][tokenOutNum].nativeToken;
+                nativeTokenOutSymbol = nativeTokenFetcher[selectedFromNetwork.chainId][tokenOutNum].symbol;
+                nativeTokenOutDecimal = nativeTokenFetcher[selectedFromNetwork.chainId][tokenOutNum].decimals;
             }
 
             if (fromProtocol != "erc20") {
-                abiNum = abiFetcherNum[selectedFromNetwork.chainName][tokenInName];
-                abi = abiFetcher[selectedFromNetwork.chainName][abiNum]["withdrawAbi"];
-                methodName = abiFetcher[selectedFromNetwork.chainName][abiNum]["withdrawMethodName"];
-                paramDetailsMethod = abiFetcher[selectedFromNetwork.chainName][abiNum]["withdrawParamDetailsMethod"];
-                tokenInContractAddress = abiFetcher[selectedFromNetwork.chainName][abiNum]["contractAddress"];
-                const tokenInNum = nativeTokenNum[selectedFromNetwork.chainName][tokenInName];
-                nativeTokenIn = nativeTokenFetcher[selectedFromNetwork.chainName][tokenInNum].nativeToken;
-                nativeTokenInSymbol = nativeTokenFetcher[selectedFromNetwork.chainName][tokenInNum].symbol;
-                nativeTokenOutDecimal = nativeTokenFetcher[selectedFromNetwork.chainName][tokenInNum].decimals;
+                abiNum = abiFetcherNum[selectedFromNetwork.chainId][tokenInName];
+                abi = abiFetcher[selectedFromNetwork.chainId][abiNum]["withdrawAbi"];
+                methodName = abiFetcher[selectedFromNetwork.chainId][abiNum]["withdrawMethodName"];
+                paramDetailsMethod = abiFetcher[selectedFromNetwork.chainId][abiNum]["withdrawParamDetailsMethod"];
+                tokenInContractAddress = abiFetcher[selectedFromNetwork.chainId][abiNum]["contractAddress"];
+                const tokenInNum = nativeTokenNum[selectedFromNetwork.chainId][tokenInName];
+                nativeTokenIn = nativeTokenFetcher[selectedFromNetwork.chainId][tokenInNum].nativeToken;
+                nativeTokenInSymbol = nativeTokenFetcher[selectedFromNetwork.chainId][tokenInNum].symbol;
+                nativeTokenOutDecimal = nativeTokenFetcher[selectedFromNetwork.chainId][tokenInNum].decimals;
 
                 abiInterface = new ethers.utils.Interface([abi]);
                 params = await buildParams({
@@ -99,7 +105,8 @@ export function useRefinance() {
                 const tx1 = { to: tokenInContractAddress, data: txData };
                 tempTxs.push(tx1);
                 let batchFlow: iBatchFlowData = {
-                    network: selectedFromNetwork.chainName,
+                    fromChainId: selectedFromNetwork.chainId,
+                    toChainId: selectedFromNetwork.chainId,
                     protocol: selectedFromProtocol,
                     tokenIn: tokenInName,
                     tokenOut: nativeTokenInSymbol,
@@ -134,7 +141,8 @@ export function useRefinance() {
                 });
                 tempTxs.push(swapData.swapTx);
                 let batchFlow: iBatchFlowData = {
-                    network: selectedFromNetwork.chainName,
+                    fromChainId: selectedFromNetwork.chainId,
+                    toChainId: selectedFromNetwork.chainId,
                     protocol: "Uniswap",
                     tokenIn: nativeTokenInSymbol,
                     tokenOut: nativeTokenOutSymbol,
@@ -147,15 +155,13 @@ export function useRefinance() {
             if (toProtocol != "erc20") {
                 const newTokenIn = isSwap ? nativeTokenOut : nativeTokenIn;
                 const newTokenInSymbol = isSwap ? nativeTokenOutSymbol : nativeTokenInSymbol;
-                const newAmount = isSwap
-                    ? swapData.amountOutprice
-                    : amount;
+                const newAmount = isSwap ? swapData.amountOutprice : amount;
 
-                abiNum = abiFetcherNum[selectedFromNetwork.chainName][tokenOutName];
-                abi = abiFetcher[selectedFromNetwork.chainName][abiNum]["depositAbi"];
-                methodName = abiFetcher[selectedFromNetwork.chainName][abiNum]["depositMethodName"];
-                paramDetailsMethod = abiFetcher[selectedFromNetwork.chainName][abiNum]["depositParamDetailsMethod"];
-                const tokenOutContractAddress = abiFetcher[selectedFromNetwork.chainName][abiNum]["contractAddress"];
+                abiNum = abiFetcherNum[selectedFromNetwork.chainId][tokenOutName];
+                abi = abiFetcher[selectedFromNetwork.chainId][abiNum]["depositAbi"];
+                methodName = abiFetcher[selectedFromNetwork.chainId][abiNum]["depositMethodName"];
+                paramDetailsMethod = abiFetcher[selectedFromNetwork.chainId][abiNum]["depositParamDetailsMethod"];
+                const tokenOutContractAddress = abiFetcher[selectedFromNetwork.chainId][abiNum]["contractAddress"];
 
                 const approveData = await approve({
                     tokenIn: newTokenIn,
@@ -181,7 +187,8 @@ export function useRefinance() {
                 tempTxs.push(tx2);
 
                 let batchFlow: iBatchFlowData = {
-                    network: selectedFromNetwork.chainName,
+                    fromChainId: selectedFromNetwork.chainId,
+                    toChainId: selectedFromNetwork.chainId,
                     protocol: selectedToProtocol,
                     tokenIn: newTokenInSymbol,
                     tokenOut: tokenOutName,

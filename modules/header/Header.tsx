@@ -6,24 +6,19 @@ import { FiCopy } from "react-icons/fi";
 import { CgSpinner } from "react-icons/cg";
 import { usePathname } from "next/navigation";
 import { useAddress } from "@thirdweb-dev/react";
-import { TbSquareRoundedChevronDownFilled } from "react-icons/tb";
 
 import { tHeader } from "./types";
 import { copyToClipboard } from "../../utils/helper";
-import ChainContext from "../../Context/ChainContext";
 import { metamask, wallet } from "../../assets/images";
 import useClickOutside from "../../hooks/useClickOutside";
 import TransferContainer from "../transfer/TransferContainer";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
-import { gasFeesNames, NavigationList } from "../../utils/constants";
+import { NavigationList } from "../../utils/helpers/navigation";
 import SelectNetwork from "../../components/SelectNetwork/SelectNetwork";
+import { ChainIdDetails } from "../../utils/helpers/network";
 
-const Header: React.FC<any> = ({
-    handleConnect,
-    switchOnSpecificChain
-}: tHeader) => {
-
-    const pathname = usePathname()
+const Header: React.FC<any> = ({ switchOnSpecificChain }: tHeader) => {
+    const pathname = usePathname();
 
     const {
         connected,
@@ -35,12 +30,8 @@ const Header: React.FC<any> = ({
         setShowWalletAddress,
         showTransferFundToggle,
         setShowTransferFundToggle,
-        selectedNetwork
+        selectedNetwork,
     }: iGlobal = useGlobalStore((state) => state);
-
-    // const {
-    //     selectedChain,
-    // } = useContext(ChainContext);
 
     const address: any = useAddress(); // Detect the connected address
 
@@ -49,7 +40,7 @@ const Header: React.FC<any> = ({
 
     useClickOutside([walletAddressRef], () => {
         setShowWalletAddress(false);
-      });
+    });
 
     useClickOutside([transferModuleRef], () => {
         setShowTransferFundToggle(false);
@@ -93,37 +84,14 @@ const Header: React.FC<any> = ({
                                 href={item.route}
                                 key={item.title}
                                 className={`cursor-pointer px-5 py-1 text-sm md:text-base text-center rounded-full hover:bg-backgound-100 transition duration-300 ${
-                                pathname === item.route ? "bg-backgound-100" : ""
+                                    pathname === item.route ? "bg-backgound-100" : ""
                                 } `}
                             >
                                 {item.title}
                             </Link>
-                    ))}
+                        ))}
                 </li>
                 <li className="w-full xl:w-1/3 flex flex-wrap justify-end items-center gap-3">
-                    {/* {!smartAccount && !loading && !connected && (
-                        <button
-                            className="bg-button-100 hover:bg-button-200 py-1 px-5 rounded-lg text-font-100 font-medium border-b-4 transition duration-300 border-primary-800 hover:border-primary-900 flex justify-center items-center gap-2"
-                            // onClick={handleConnect}
-                        >
-                            <svg
-                                className="h-4 w-4 text-font-100"
-                                width="24"
-                                height="24"
-                                viewBox="0 0 24 24"
-                                stroke-width="2"
-                                stroke="currentColor"
-                                fill="none"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                            >
-                                <path stroke="none" d="M0 0h24v24H0z" />{" "}
-                                <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />{" "}
-                                <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
-                            </svg>
-                            Connect
-                        </button>
-                    )} */}
                     {connected && !smartAccount && !loading && (
                         <button
                             className="bg-button-100 py-2 px-5 rounded-lg text-font-100 font-medium border-b-4 transition duration-300 border-button-300 hover:border-button-400 flex justify-center items-center gap-2"
@@ -177,7 +145,9 @@ const Header: React.FC<any> = ({
                                 <span className="flex justify-center items-center gap-2">
                                     <FiCopy
                                         className="text-font-100 hover:text-font-200 active:text-font-400"
-                                        onClick={() => copyToClipboard(smartAccount.address, 'Smart account address Copied')}
+                                        onClick={() =>
+                                            copyToClipboard(smartAccount.address, "Smart account address Copied")
+                                        }
                                     />
                                 </span>
                             </button>
@@ -200,7 +170,10 @@ const Header: React.FC<any> = ({
                                                     "SmartAccount : (" +
                                                         scwBalance +
                                                         " " +
-                                                        `${gasFeesNames[selectedNetwork.chainName]}` +
+                                                        `${
+                                                            ChainIdDetails[selectedNetwork.chainId.toString()]
+                                                                .gasFeesName
+                                                        }` +
                                                         ")"}
                                             </span>
                                         </div>
@@ -208,7 +181,9 @@ const Header: React.FC<any> = ({
                                         <FiCopy
                                             size="35px"
                                             className="text-font-100 active:text-font-300 p-2 hover:bg-backgound-700 rounded-md"
-                                            onClick={() => copyToClipboard(smartAccount.address, 'Smart account address Copied')}
+                                            onClick={() =>
+                                                copyToClipboard(smartAccount.address, "Smart account address Copied")
+                                            }
                                         />
                                     </button>
                                     <button className="w-full flex justify-between items-center gap-2">
@@ -223,7 +198,10 @@ const Header: React.FC<any> = ({
                                                     "EOA : (" +
                                                         eoaBalance +
                                                         " " +
-                                                        `${gasFeesNames[selectedNetwork.chainName]}` +
+                                                        `${
+                                                            ChainIdDetails[selectedNetwork.chainId.toString()]
+                                                                .gasFeesName
+                                                        }` +
                                                         ")"}
                                             </span>
                                         </div>
@@ -231,7 +209,7 @@ const Header: React.FC<any> = ({
                                         <FiCopy
                                             size="35px"
                                             className="text-font-100 active:text-font-300 p-2 hover:bg-backgound-700 rounded-md"
-                                            onClick={() => copyToClipboard(address, 'EOA address Copied')}
+                                            onClick={() => copyToClipboard(address, "EOA address Copied")}
                                         />
                                     </button>
                                 </div>
@@ -239,71 +217,7 @@ const Header: React.FC<any> = ({
                         </div>
                     )}
 
-                    <SelectNetwork
-                        switchOnSpecificChain={switchOnSpecificChain}
-                    />
-
-                    {/* <div className="relative border-2 border-secondary-300 text-backgound-100 bg-font-100 shadow-md rounded-md">
-                        <label htmlFor="fromNetwork" className="sr-only">
-                            Connect Network
-                        </label>
-                        <select
-                            id="fromNetwork"
-                            name="networks"
-                            className="w-44 appearance-none py-1 px-3 bg-font-100 rounded-md"
-                            value={String(selectedChain)}
-                            onChange={(e) => switchOnSpecificChain(e.target.value)}
-                        >
-                            <option value="" disabled selected={selectedChain == "" || !selectedChain ? true : false}>
-                                Select Network
-                            </option>
-                            <option
-                                value="polygon"
-                                disabled={selectedChain == "polygon" ? true : false}
-                                selected={selectedChain == "polygon" ? true : false}
-                            >
-                                Polygon
-                            </option>
-                            <option
-                                value="arbitrum"
-                                disabled={selectedChain == "arbitrum" ? true : false}
-                                selected={selectedChain == "arbitrum" ? true : false}
-                            >
-                                Arbitrum
-                            </option>
-                            <option
-                                value="avalanche"
-                                disabled={selectedChain == "avalanche" ? true : false}
-                                selected={selectedChain == "avalanche" ? true : false}
-                            >
-                                Avalanche
-                            </option>
-                            <option
-                                value="optimism"
-                                disabled={selectedChain == "optimism" ? true : false}
-                                selected={selectedChain == "optimism" ? true : false}
-                            >
-                                Optimism
-                            </option>
-                            <option
-                                value="ethereum"
-                                disabled={selectedChain == "ethereum" ? true : false}
-                                selected={selectedChain == "ethereum" ? true : false}
-                            >
-                                Ethereum
-                            </option>
-                            <option
-                                value="base"
-                                disabled={selectedChain == "base" ? true : false}
-                                selected={selectedChain == "base" ? true : false}
-                            >
-                                Base
-                            </option>
-                        </select>
-                        <div className="absolute right-0 top-0 bottom-0 pointer-events-none flex items-center px-1">
-                            <TbSquareRoundedChevronDownFilled size="25px" />
-                        </div>
-                    </div> */}
+                    <SelectNetwork switchOnSpecificChain={switchOnSpecificChain} />
 
                     <div className="flex flex-wrap justify-start items-center gap-3 text-base">
                         <div className="relative flex justify-center items-center gap-5 bg-font-100 rounded-full font-medium  transition duration-300 overflow-hidden">

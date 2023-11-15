@@ -1,12 +1,12 @@
 import toast from "react-hot-toast";
 import { BigNumber, ethers } from "ethers";
 
-import { rpscURLS } from "../constants";
 import IERC20 from "../../abis/IERC20.json";
+import { ChainIdDetails } from "../helpers/network";
 
 export const getProvider = async (chainId) => {
     try {
-        const newprovider = new ethers.providers.JsonRpcProvider(rpscURLS[chainId]);
+        const newprovider = new ethers.providers.JsonRpcProvider(ChainIdDetails[chainId].rpcURL);
         return newprovider;
     } catch (error) {
         console.log("getProvider-error", error);
@@ -29,7 +29,7 @@ export async function getErc20Data(token, address, spender, provider) {
         if (!address || !spender) {
             toast.error("Invalid addresses");
             return;
-        };
+        }
         const erc20: any = await getContractInstance(token, IERC20, provider);
 
         const [name, symbol, decimals, totalSupply, balance, allowance] = await Promise.all([
