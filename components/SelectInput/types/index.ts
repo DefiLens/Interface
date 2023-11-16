@@ -4,7 +4,7 @@ export type tSelectInput = {
     inputPlaceholder: string;
     inputClassName: string;
     selectOptions: any[];
-    handleSelectOption: (selectOption: string) => void;
+    handleSelectOption: (tokenName: string, selectOption: string) => void;
     showOptionList: boolean;
     setShowOptionList: (showOptionList: boolean) => void;
     selectedOption: any;

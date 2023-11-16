@@ -18,7 +18,7 @@ import { ChainIdDetails } from "../../utils/data/network";
 const Transfer: React.FC<any> = ({
     onOptionChangeForWallet,
     onOptionChange,
-    handleTokenAddress,
+    setBalance,
     handleAmountIn,
     send,
 }: tTransfer) => {
@@ -179,7 +179,7 @@ const Transfer: React.FC<any> = ({
                         inputPlaceholder="Search by Token name"
                         inputClassName=""
                         selectOptions={tokensData}
-                        handleSelectOption={handleTokenAddress}
+                        handleSelectOption={setBalance}
                         showOptionList={showTokenList}
                         setShowOptionList={setShowTokenList}
                         selectedOption={selectedToken}

@@ -43,7 +43,7 @@ const SelectInput = ({
                         <div
                             key={optionIndex}
                             onClick={() => {
-                                handleSelectOption(option.name)
+                                handleSelectOption(option.name, option.address)
                                 setSelectedOption(option)
                                 setShowOptionList(false)
                                 setInputSearch("")

@@ -8,7 +8,7 @@ import {
     NETLIFY_NODE_URL,
     OPTIMISM_BICONOMY_AA_KEY,
     POLYGON_BICONOMY_AA_KEY,
-} from "../keys";
+} from "./../keys";
 import { arbitrum, avalanche, base, ethereum, optimism, polygon } from "../../assets/images";
 
 export const NETWORK_LIST = [

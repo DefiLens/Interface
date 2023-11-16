@@ -83,7 +83,7 @@ const TransferContainer: React.FC<any> = () => {
 
     useEffect(() => {
         if (address && smartAccount) {
-            setBalance(true)
+            setBalance('ethereum', '0x')
         }
     }, [address, smartAccount])
 
@@ -95,16 +95,16 @@ const TransferContainer: React.FC<any> = () => {
             setTokenAddress("");
             const tempChcekNative = isNative ? false : true; // because isNative can not access after just updated
             setIsnative(tempChcekNative);
-            await setBalance(tempChcekNative)
+            await setBalance('ethereum', '0x')
         } catch (error) {
             console.log("send-error: ", error);
             return;
         }
     };
 
-    const setBalance = async (_isNative) => {
+    const setBalance = async (_tokenName, _tokenAddress) => {
         try {
-            if (_isNative) {
+            if (_tokenName == "ethereum") {
                 let provider = await new ethers.providers.Web3Provider(web3.givenProvider);
                 if (!provider) {
                     toast.error("no provider");
@@ -120,10 +120,7 @@ const TransferContainer: React.FC<any> = () => {
                 setEoaTokenInbalance(BigNumber.from(_eoaBalance));
                 setTokenInDecimals(18);
             } else {
-                // setScwTokenInbalance(BIG_ZERO);
-                // setEoaTokenInbalance(BIG_ZERO);
-                // setTokenInDecimals(0);
-                // await handleTokenAddress(_tokenAddress)
+                await handleTokenAddress(_tokenName, _tokenAddress)
             }
         } catch (error) {
             console.log("setBalance-error: ", error);
@@ -140,26 +137,17 @@ const TransferContainer: React.FC<any> = () => {
         setIsSCW(!isSCW);
     };
 
-    const handleTokenAddress = async (_tokenAddress) => {
+    const handleTokenAddress = async (_tokenName, _tokenAddress) => {
         try {
             setAmountIn(0);
             setTokenAddress(_tokenAddress);
             const contract = await getContract(_tokenAddress);
-
-            // const provider = await getProvider(fromChainId);
-            // const erc20 = await getContractInstance(token.usdc, IERC20, provider);
             const _scwBalance: BigNumber | undefined = await getErc20Balanceof(contract, smartAccount.address);
             const _eoaBalance: BigNumber | undefined = await getErc20Balanceof(contract, address);
             const decimals: number | undefined = await getErc20Decimals(contract);
-
-            // setTokenInDecimals(BigNumber.from(decimals)?.toNumber());
-            // setScwTokenInbalance(BigNumber.from(_scwBalance));
-            // setEoaTokenInbalance(BigNumber.from(_eoaBalance));
-
             setSafeState(setTokenInDecimals, decimals, 0);
             setSafeState(setScwTokenInbalance, BigNumber.from(_scwBalance), BIG_ZERO);
             setSafeState(setEoaTokenInbalance, BigNumber.from(_eoaBalance), BIG_ZERO);
-
             if (!contract) {
                 toast.error("Not valid Token address");
             }
@@ -302,7 +290,7 @@ const TransferContainer: React.FC<any> = () => {
         <Transfer
             onOptionChangeForWallet={onOptionChangeForWallet}
             onOptionChange={onOptionChange}
-            handleTokenAddress={handleTokenAddress}
+            setBalance={setBalance}
             handleAmountIn={handleAmountIn}
             send={send}
         />
