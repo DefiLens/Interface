@@ -3,17 +3,17 @@ import { ethers, BigNumber } from "ethers";
 import { parseEther } from "ethers/lib/utils";
 import { useMutation } from "@tanstack/react-query";
 
-import IERC20 from "../abis/IERC20.json";
-import ChainPing from "../abis/ChainPing.json";
-import IStarGateRouter from "../abis/IStarGateRouter.json";
-import { useTradingStore, iTrading } from "../store/TradingStore";
-import { useGlobalStore, iGlobal } from "../store/GlobalStore";
-import { chooseChianId, calculateFees, batch } from "../utils/helper";
-import { getErc20Balanceof, getErc20Allownace, getContractInstance, getProvider } from "../utils/web3Libs/ethers";
-import { decreasePowerByDecimals, incresePowerByDecimals } from "../utils/utils";
-import { chainPingByNetwork, starGateRouterByNetwork, tokensByNetworkForCC } from "../utils/helpers/protocols";
-import { ChainIdDetails } from "../utils/helpers/network";
-import { _functionType, _nonce } from "../utils/helpers/constants";
+import IERC20 from "../../abis/IERC20.json";
+import ChainPing from "../../abis/ChainPing.json";
+import IStarGateRouter from "../../abis/IStarGateRouter.json";
+import { useTradingStore, iTrading } from "../../store/TradingStore";
+import { useGlobalStore, iGlobal } from "../../store/GlobalStore";
+import { chooseChianId, calculateFees, batch } from "../../utils/helper";
+import { getErc20Balanceof, getErc20Allownace, getContractInstance, getProvider } from "../../utils/web3Libs/ethers";
+import { decreasePowerByDecimals, incresePowerByDecimals } from "../../utils/helper";
+import { chainPingByNetwork, starGateRouterByNetwork, tokensByNetworkForCC } from "../../utils/data/protocols";
+import { ChainIdDetails } from "../../utils/data/network";
+import { _functionType, _nonce } from "../../utils/data/constants";
 
 export function useCCSendTx() {
     const { smartAccount }: iGlobal = useGlobalStore((state) => state);

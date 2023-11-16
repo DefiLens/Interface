@@ -12,7 +12,7 @@
 // import { batch, calculateFees, chooseChianId } from "../utils/helper";
 // import { _functionType, _nonce } from "../utils/constants";
 // import { getContractInstance, getErc20Balanceof, getProvider } from "../utils/web3Libs/ethers";
-// import { incresePowerByDecimals } from "../utils/utils";
+// import { incresePowerByDecimals } from "../utils/helper";
 
 // bg.config({ DECIMAL_PLACES: 18 });
 

@@ -6,7 +6,6 @@ import { useMutation } from "@tanstack/react-query";
 
 export function useEoaProvider() {
     const signer: any = useSigner(); // Detect the connected address
-
     async function sendTxTrditionally(txs) {
         let confirmToastId;
         let toastId;

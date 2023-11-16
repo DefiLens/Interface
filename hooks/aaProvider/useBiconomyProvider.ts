@@ -4,9 +4,7 @@ import { iTrading, useTradingStore } from "../../store/TradingStore";
 
 export function useBiconomyProvider() {
     const { smartAccount }: iGlobal = useGlobalStore((state) => state);
-
     const { setHasExecutionError }: iTrading = useTradingStore((state) => state);
-
     async function sendToBiconomy(txs) {
         try {
             const userOp = await smartAccount.buildUserOp(txs);

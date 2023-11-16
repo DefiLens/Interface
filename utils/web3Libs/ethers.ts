@@ -2,7 +2,7 @@ import toast from "react-hot-toast";
 import { BigNumber, ethers } from "ethers";
 
 import IERC20 from "../../abis/IERC20.json";
-import { ChainIdDetails } from "../helpers/network";
+import { ChainIdDetails } from "../data/network";
 
 export const getProvider = async (chainId) => {
     try {

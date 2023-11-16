@@ -3,10 +3,10 @@ import { toast } from "react-hot-toast";
 
 import { useMutation } from "@tanstack/react-query";
 
-import { useUniswap } from "../useUniswap";
+import { useUniswap } from "../swaphooks/useUniswap";
 import { useApprove } from "../utilsHooks/useApprove";
 import { iBatchFlowData, iTrading, useTradingStore } from "../../store/TradingStore";
-import { useCCSendTx } from "../useCCSendTx";
+import { useCCSendTx } from "./useCCSendTx";
 
 import {
     abiFetcher,
@@ -16,9 +16,9 @@ import {
     nativeTokenNum,
     tokensByNetworkForCC,
     uniswapSwapRouterByChainId,
-} from "../../utils/helpers/protocols";
+} from "../../utils/data/protocols";
 import { useAddress } from "@thirdweb-dev/react";
-import { ChainIdDetails } from "../../utils/helpers/network";
+import { ChainIdDetails } from "../../utils/data/network";
 
 export function useCCRefinance() {
     const address = useAddress(); // Detect the connected address

@@ -4,7 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 
 import { useGlobalStore, iGlobal } from "../../store/GlobalStore";
 import { getProvider } from "../../utils/web3Libs/ethers";
-import { decreasePowerByDecimals } from "../../utils/utils";
+import { decreasePowerByDecimals } from "../../utils/helper";
 
 export function useCalculatebalance() {
     const { setScwBalance, setEoaBalance }: iGlobal = useGlobalStore((state) => state);

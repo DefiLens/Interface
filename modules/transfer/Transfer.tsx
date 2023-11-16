@@ -12,8 +12,8 @@ import Image from "next/image";
 import { change, gas, info, optimism, swap } from "../../assets/images";
 import { MdKeyboardArrowUp } from "react-icons/md";
 import SelectInput from "../../components/SelectInput/SelectInput";
-import { decreasePowerByDecimals } from "../../utils/utils";
-import { ChainIdDetails } from "../../utils/helpers/network";
+import { decreasePowerByDecimals } from "../../utils/helper";
+import { ChainIdDetails } from "../../utils/data/network";
 
 const Transfer: React.FC<any> = ({
     onOptionChangeForWallet,

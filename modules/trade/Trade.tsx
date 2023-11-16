@@ -12,8 +12,8 @@ import { tTrade, tTradeProtocol } from "./types";
 import { iTokenData, iTrading, useTradingStore } from "../../store/TradingStore";
 import { defaultBlue, downLine, gas, optimism, swap, warning } from "../../assets/images";
 import ExecuteBatchModel from "../../components/ExecuteBatchModel/ExecuteBatchModel";
-import { ChainIdDetails, NETWORK_LIST } from "../../utils/helpers/network";
-import { protocolNames } from "../../utils/helpers/protocols";
+import { ChainIdDetails, NETWORK_LIST } from "../../utils/data/network";
+import { protocolNames } from "../../utils/data/protocols";
 
 bg.config({ DECIMAL_PLACES: 10 });
 

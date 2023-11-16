@@ -6,10 +6,10 @@ import { useMutation } from "@tanstack/react-query";
 import { AlphaRouter, SwapType } from "@uniswap/smart-order-router";
 import { CurrencyAmount, Percent, Token, TradeType } from "@uniswap/sdk-core";
 
-import IERC20 from "../abis/IERC20.json";
-import { iGlobal, useGlobalStore } from "../store/GlobalStore";
-import { getContractInstance, getErc20Decimals, getProvider } from "../utils/web3Libs/ethers";
-import { uniswapSwapRouterByChainId } from "../utils/helpers/protocols";
+import IERC20 from "../../abis/IERC20.json";
+import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
+import { getContractInstance, getErc20Decimals, getProvider } from "../../utils/web3Libs/ethers";
+import { uniswapSwapRouterByChainId } from "../../utils/data/protocols";
 
 export function useUniswap() {
     const { selectedNetwork }: iGlobal = useGlobalStore((state) => state);

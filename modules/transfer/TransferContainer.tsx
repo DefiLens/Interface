@@ -16,8 +16,8 @@ import { useCalculateGasCost } from "../../hooks/utilsHooks/useCalculateGasCost"
 import { iTransfer, useTransferStore } from "../../store/TransferStore";
 import { getErc20Balanceof, getErc20Decimals } from "../../utils/web3Libs/ethers";
 import { ethereum } from "../../assets/images";
-import { incresePowerByDecimals } from "../../utils/utils";
-import { BIG_ZERO } from "../../utils/helpers/constants";
+import { incresePowerByDecimals } from "../../utils/helper";
+import { BIG_ZERO } from "../../utils/data/constants";
 
 bg.config({ DECIMAL_PLACES: 5 });
 

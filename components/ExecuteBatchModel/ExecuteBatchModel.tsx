@@ -6,8 +6,8 @@ import Image from "next/image";
 import { error, loading, success } from "../../assets/gifs";
 import { BsArrowRight } from "react-icons/bs";
 import { buildTxHash } from "../../utils/helper";
-import { ChainIdDetails } from "../../utils/helpers/network";
-import { protocolNames } from "../../utils/helpers/protocols";
+import { ChainIdDetails } from "../../utils/data/network";
+import { protocolNames } from "../../utils/data/protocols";
 
 const ExecuteBatchModel = ({}: tExecuteBatchModel) => {
     const {

@@ -14,7 +14,7 @@ import { iGlobal, useGlobalStore } from "../store/GlobalStore";
 
 import { useCalculatebalance } from "../hooks/utilsHooks/useCalculateBalance";
 import { arbitrum, avalanche, base, ethereum, optimism, polygon } from "../assets/images";
-import { ChainIdDetails } from "../utils/helpers/network";
+import { ChainIdDetails } from "../utils/data/network";
 
 bg.config({ DECIMAL_PLACES: 5 });
 

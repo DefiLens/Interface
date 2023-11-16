@@ -3,7 +3,7 @@ import { toast } from "react-hot-toast";
 
 import { useMutation } from "@tanstack/react-query";
 
-import { useUniswap } from "../useUniswap";
+import { useUniswap } from "../swaphooks/useUniswap";
 import { useApprove } from "../utilsHooks/useApprove";
 import { iBatchFlowData, iTrading, useTradingStore } from "../../store/TradingStore";
 import {
@@ -13,9 +13,9 @@ import {
     nativeTokenFetcher,
     nativeTokenNum,
     uniswapSwapRouterByChainId,
-} from "../../utils/helpers/protocols";
+} from "../../utils/data/protocols";
 import { useCalculateGasCost } from "../utilsHooks/useCalculateGasCost";
-import { decreasePowerByDecimals } from "../../utils/utils";
+import { decreasePowerByDecimals } from "../../utils/helper";
 
 export function useRefinance() {
     const { mutateAsync: swap } = useUniswap();

@@ -21,9 +21,9 @@ import { useSwitchOnSpecificChain } from "../../hooks/useSwitchOnSpecificChain";
 import { iSelectedNetwork, iTrading, useTradingStore } from "../../store/TradingStore";
 import { useBiconomyProvider } from "../../hooks/aaProvider/useBiconomyProvider";
 import { getContractInstance, getErc20Balanceof, getErc20Decimals, getProvider } from "../../utils/web3Libs/ethers";
-import { decreasePowerByDecimals, getTokenListByChainId, incresePowerByDecimals } from "../../utils/utils";
-import { ChainIdDetails } from "../../utils/helpers/network";
-import { protocolNames } from "../../utils/helpers/protocols";
+import { decreasePowerByDecimals, getTokenListByChainId, incresePowerByDecimals } from "../../utils/helper";
+import { ChainIdDetails } from "../../utils/data/network";
+import { protocolNames } from "../../utils/data/protocols";
 
 bg.config({ DECIMAL_PLACES: 10 });
 

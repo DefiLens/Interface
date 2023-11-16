@@ -1,6 +1,7 @@
 import axios from "axios";
 import toast from "react-hot-toast";
 import { BigNumber } from "ethers";
+import { BigNumber as bg } from "bignumber.js";
 
 import { getImplementationAddress } from "@openzeppelin/upgrades-core";
 
@@ -21,7 +22,9 @@ import {
     ARBITRUM_ETHERSCAN_API_KEY,
 } from "./keys";
 import { iTokenInfo } from "../modules/trade/types";
-import { implementation_slot } from "./helpers/constants";
+import { implementation_slot } from "./data/constants";
+
+///// To fetch abi and contract Details
 
 interface FunctionABI {
     name: string;
@@ -30,43 +33,6 @@ interface FunctionABI {
     stateMutability: string;
     payable: boolean;
 }
-
-function findDepositField(abi: FunctionABI[]): FunctionABI | undefined {
-    return abi.find((func) => func.name === "supply");
-}
-
-function findSelectedFunctions(abi: FunctionABI[], selectedFunctions: string[]): FunctionABI[] {
-    return abi.filter((func) => selectedFunctions.includes(func.name) && func.inputs[0].type != "bytes32");
-}
-
-function createUpdatedABI(selectedFunctions: FunctionABI[]): object[] {
-    return selectedFunctions.map((func) => ({
-        name: func.name,
-        inputs: func.inputs,
-        outputs: func.outputs,
-        stateMutability: func.stateMutability,
-        payable: func.payable,
-        type: "function",
-    }));
-}
-
-export const chooseChianId = (stargateChainId: any) => {
-    let realChainId = "0";
-    if (stargateChainId == "106") {
-        realChainId = "43114";
-    } else if (stargateChainId == "109") {
-        realChainId = "137";
-    } else if (stargateChainId == "110") {
-        realChainId = "42161";
-    } else if (stargateChainId == "111") {
-        realChainId = "10";
-    } else if (stargateChainId == "101") {
-        realChainId = "1";
-    } else if (stargateChainId == "184") {
-        realChainId = "8453";
-    }
-    return realChainId;
-};
 
 export const fetchContractDetails = async (
     provider: any,
@@ -149,6 +115,27 @@ export const checkIfContractIsProxy = async (abi: any, contratAddress: any, prov
         console.log("IfContractProxy-Error: ", error);
     }
 };
+
+function findDepositField(abi: FunctionABI[]): FunctionABI | undefined {
+    return abi.find((func) => func.name === "supply");
+}
+
+function findSelectedFunctions(abi: FunctionABI[], selectedFunctions: string[]): FunctionABI[] {
+    return abi.filter((func) => selectedFunctions.includes(func.name) && func.inputs[0].type != "bytes32");
+}
+
+function createUpdatedABI(selectedFunctions: FunctionABI[]): object[] {
+    return selectedFunctions.map((func) => ({
+        name: func.name,
+        inputs: func.inputs,
+        outputs: func.outputs,
+        stateMutability: func.stateMutability,
+        payable: func.payable,
+        type: "function",
+    }));
+}
+
+///// To find fees for to bridge funds or slippage while bridge the finds
 
 export const calculateFees = async (
     userAddress: any,
@@ -238,13 +225,7 @@ function getTxSequence(userAddress: any, token: any, chainPingContract: any, txd
     ];
 }
 
-export const shorten = (text: any) => {
-    if (text) {
-        return text.substring(0, 6) + "..." + text.substring(text.length - 4, text.length);
-    } else {
-        return;
-    }
-};
+///// use this for all state to set as a safe method
 
 export function setSafeState<T>(setStateFunction: (value: T) => void, value: T | undefined | null, defaultValue: T) {
     if (value !== undefined && value !== null) {
@@ -254,6 +235,8 @@ export function setSafeState<T>(setStateFunction: (value: T) => void, value: T |
         // Optionally, you can log an error or handle it in another way.
     }
 }
+
+///// build txHash link from hash and chainId
 
 export const buildTxHash = (chainId: string, txhash: string, isSocketScan?: boolean) => {
     if (isSocketScan) {
@@ -274,11 +257,7 @@ export const buildTxHash = (chainId: string, txhash: string, isSocketScan?: bool
     }
 };
 
-export const copyToClipboard = (id: any, message: string) => {
-    navigator.clipboard.writeText(id);
-    // Alert the copied text
-    toast.success(message);
-};
+///// from ipfshash, generate ipfs link
 
 export const convertIpfsUrl = (ipfsUri: string): string => {
     // Check if the input URI starts with 'ipfs://'
@@ -296,6 +275,8 @@ export const convertIpfsUrl = (ipfsUri: string): string => {
     return ipfsUri;
 };
 
+///// format erc20 tokenList
+
 export const getTokenListByChainId = (chainId: any, tokenList: any): iTokenInfo[] => {
     return tokenList.tokens
         .map((token: any) => {
@@ -312,4 +293,46 @@ export const getTokenListByChainId = (chainId: any, tokenList: any): iTokenInfo[
             return null;
         })
         .filter(Boolean) as iTokenInfo[];
+};
+
+///// utils functions
+
+export function incresePowerByDecimals(amount: any, decimals: any) {
+    return bg(amount.toString()).multipliedBy(bg(10).pow(decimals)).toString();
+}
+
+export function decreasePowerByDecimals(amount: any, decimals: any) {
+    return bg(amount.toString()).dividedBy(bg(10).pow(decimals)).toString();
+}
+
+export const shorten = (text: any) => {
+    if (text) {
+        return text.substring(0, 6) + "..." + text.substring(text.length - 4, text.length);
+    } else {
+        return;
+    }
+};
+
+export const copyToClipboard = (id: any, message: string) => {
+    navigator.clipboard.writeText(id);
+    // Alert the copied text
+    toast.success(message);
+};
+
+export const chooseChianId = (stargateChainId: any) => {
+    let realChainId = "0";
+    if (stargateChainId == "106") {
+        realChainId = "43114";
+    } else if (stargateChainId == "109") {
+        realChainId = "137";
+    } else if (stargateChainId == "110") {
+        realChainId = "42161";
+    } else if (stargateChainId == "111") {
+        realChainId = "10";
+    } else if (stargateChainId == "101") {
+        realChainId = "1";
+    } else if (stargateChainId == "184") {
+        realChainId = "8453";
+    }
+    return realChainId;
 };
