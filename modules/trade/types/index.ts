@@ -1,4 +1,4 @@
-import { iSelectedNetwork } from "../../../store/TradeStore";
+import { iSelectedNetwork } from "../../../store/TradingStore";
 
 export type tTrade = {
     handleSelectFromNetwork: (_fromNetwork: iSelectedNetwork) => void,
