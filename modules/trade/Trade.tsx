@@ -1,19 +1,20 @@
-import { BigNumber as bg } from "bignumber.js";
 import { startCase } from "lodash";
+import { BigNumber as bg } from "bignumber.js";
 
 import Image from "next/image";
 import { BiLoaderAlt } from "react-icons/bi";
 import { AiOutlineSearch } from "react-icons/ai";
-import { CgSpinner } from "react-icons/cg";
 import { MdDelete, MdOutlineArrowBack } from "react-icons/md";
 import { MdKeyboardArrowDown, MdKeyboardArrowUp } from "react-icons/md";
 
 import { tTrade, tTradeProtocol } from "./types";
-import { iTokenData, iTrading, useTradingStore } from "../../store/TradingStore";
-import { defaultBlue, downLine, gas, optimism, swap, warning } from "../../assets/images";
-import ExecuteBatchModel from "../../components/ExecuteBatchModel/ExecuteBatchModel";
-import { ChainIdDetails, NETWORK_LIST } from "../../utils/data/network";
+import Button from "../../components/Button/Button";
 import { protocolNames } from "../../utils/data/protocols";
+import SelectionBar from "../../components/SelectionBar/SelectionBar";
+import { ChainIdDetails, NETWORK_LIST } from "../../utils/data/network";
+import { iTokenData, iTrading, useTradingStore } from "../../store/TradingStore";
+import ExecuteBatchModel from "../../components/ExecuteBatchModel/ExecuteBatchModel";
+import { defaultBlue, downLine, gas, optimism, swap, warning } from "../../assets/images";
 
 bg.config({ DECIMAL_PLACES: 10 });
 
@@ -426,59 +427,20 @@ const Trade: React.FC<any> = ({
                                     }`}
                                 >
                                     {/* ---------- FROM Section START ---------- */}
-                                    <div
-                                        onClick={() => setShowFromSelectionMenu(true)}
-                                        className="w-full bg-backgound-100 border border-backgound-300 rounded-lg px-5 py-3"
-                                    >
-                                        <h5 className="text-sm md:text-base lg:text-lg font-medium md:font-semibold text-font-100">
-                                            From
-                                        </h5>
-                                        <div className="flex flex-row justify-start items-center gap-8 py-3">
-                                            {selectedFromNetwork.chainName && selectedFromProtocol ? (
-                                                <div className="relative">
-                                                    <Image
-                                                        src={selectedFromNetwork.icon}
-                                                        alt=""
-                                                        className="h-12 w-12 bg-backgound-300 rounded-full cursor-pointer"
-                                                    />
-                                                    <div className="absolute -bottom-1 -right-1 bg-backgound-100 h-6 w-6 flex justify-center items-center rounded-full">
-                                                        <Image
-                                                            src={
-                                                                protocolNames[selectedFromNetwork.chainId].key.find(
-                                                                    (entry: any) => entry.name == selectedFromProtocol
-                                                                ).icon || defaultBlue
-                                                            }
-                                                            alt=""
-                                                            className="h-5 w-5 bg-backgound-300 rounded-full cursor-pointer"
-                                                        />
-                                                    </div>
-                                                </div>
-                                            ) : (
-                                                <div className="relative">
-                                                    <div className="h-12 w-12 bg-backgound-300 rounded-full cursor-pointer" />
-                                                    <div className="absolute -bottom-1 -right-1 bg-backgound-100 h-6 w-6 flex justify-center items-center rounded-full">
-                                                        <div className="h-5 w-5 bg-backgound-300 rounded-full cursor-pointer" />
-                                                    </div>
-                                                </div>
-                                            )}
-
-                                            {selectedFromNetwork.chainName ? (
-                                                <div className="text-font-100">
-                                                    <div className="text-base md:text-lg text-font-100 font-semibold">
-                                                        {selectedFromNetwork.key}
-                                                    </div>
-                                                    <div className="text-xs text-font-300 font-medium">
-                                                        {selectedFromProtocol && <span>on {selectedFromProtocol}</span>}
-                                                        {selectedFromToken && <span> ({selectedFromToken})</span>}
-                                                    </div>
-                                                </div>
-                                            ) : (
-                                                <div className="text-base md:text-lg text-font-300">
-                                                    Select Chain and token
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
+                                    <SelectionBar
+                                        handleSelectionMenu={() => setShowFromSelectionMenu(true)}
+                                        titlePlaceholder="From"
+                                        iconCondition={selectedFromNetwork.chainName && selectedFromProtocol}
+                                        mainIcon={selectedFromNetwork.icon}
+                                        subIcon={protocolNames[selectedFromNetwork.chainId]?.key.find(
+                                            (entry: any) => entry.name == selectedFromProtocol
+                                        )?.icon}
+                                        valueCondition={selectedFromNetwork.chainName}
+                                        valuePlaceholder="Select Chain and token"
+                                        mainValue={selectedFromNetwork.key}
+                                        firstSubValue={selectedFromProtocol}
+                                        secondSubValue={selectedFromToken}
+                                    />
                                     {/* ---------- FROM Section END ---------- */}
 
                                     <div
@@ -502,59 +464,20 @@ const Trade: React.FC<any> = ({
                                     </div>
 
                                     {/* ---------- To Section START ---------- */}
-                                    <div
-                                        onClick={() => setShowToSelectionMenu(true)}
-                                        className="w-full bg-backgound-100 border border-backgound-300 rounded-lg px-5 py-3"
-                                    >
-                                        <h5 className="text-sm md:text-base lg:text-lg font-medium md:font-semibold text-font-100">
-                                            To
-                                        </h5>
-                                        <div className="flex flex-row justify-start items-center gap-8 py-3">
-                                            {selectedToNetwork.chainName ? (
-                                                <div className="relative">
-                                                    <Image
-                                                        src={selectedToNetwork.icon}
-                                                        alt=""
-                                                        className="h-12 w-12 bg-backgound-300 rounded-full cursor-pointer"
-                                                    />
-                                                    <div className="absolute -bottom-1 -right-1 bg-backgound-100 h-6 w-6 flex justify-center items-center rounded-full">
-                                                        <Image
-                                                            src={
-                                                                protocolNames[selectedToNetwork.chainId].key.find(
-                                                                    (entry: any) => entry.name == selectedToProtocol
-                                                                ).icon || defaultBlue
-                                                            }
-                                                            alt=""
-                                                            className="h-5 w-5 bg-backgound-300 rounded-full cursor-pointer"
-                                                        />
-                                                    </div>
-                                                </div>
-                                            ) : (
-                                                <div className="relative">
-                                                    <div className="h-12 w-12 bg-backgound-300 rounded-full cursor-pointer" />
-                                                    <div className="absolute -bottom-1 -right-1 bg-backgound-100 h-6 w-6 flex justify-center items-center rounded-full">
-                                                        <div className="h-5 w-5 bg-backgound-300 rounded-full cursor-pointer" />
-                                                    </div>
-                                                </div>
-                                            )}
-
-                                            {selectedToNetwork.chainName ? (
-                                                <div className="text-font-100">
-                                                    <div className="text-base md:text-lg text-white font-semibold">
-                                                        {selectedToNetwork.key}
-                                                    </div>
-                                                    <div className="text-xs text-font-300 font-medium">
-                                                        {selectedToProtocol && <span>on {selectedToProtocol}</span>}
-                                                        {selectedToToken && <span> ({selectedToToken})</span>}
-                                                    </div>
-                                                </div>
-                                            ) : (
-                                                <div className="text-base md:text-lg text-font-300">
-                                                    Select Chain and token
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
+                                    <SelectionBar
+                                        handleSelectionMenu={() => setShowToSelectionMenu(true)}
+                                        titlePlaceholder="To"
+                                        iconCondition={selectedToNetwork.chainName}
+                                        mainIcon={selectedToNetwork.icon}
+                                        subIcon={protocolNames[selectedToNetwork.chainId]?.key.find(
+                                            (entry: any) => entry.name == selectedToProtocol
+                                        )?.icon}
+                                        valueCondition={selectedToNetwork.chainName}
+                                        valuePlaceholder="Select Chain and token"
+                                        mainValue={selectedToNetwork.key}
+                                        firstSubValue={selectedToProtocol}
+                                        secondSubValue={selectedToToken}
+                                    />
                                     {/* ---------- To Section END ---------- */}
                                 </div>
 
@@ -649,30 +572,18 @@ const Trade: React.FC<any> = ({
                                 )}
 
                                 <div className="w-full flex justify-center items-center gap-3">
-                                    <button
-                                        type="button"
-                                        onClick={() => sendSingleBatchToList(true)}
-                                        className={`${
-                                            addToBatchLoading
-                                                ? "bg-button-1100 hover:bg-button-1100"
-                                                : "bg-button-100 hover:bg-button-100"
-                                        }  w-full flex justify-center items-center gap-2  py-3 px-5 rounded-lg text-base md:text-lg text-font-100 font-bold transition duration-300`}
-                                    >
-                                        {addToBatchLoading && <CgSpinner className="animate-spin h-7 w-7" />}
-                                        Add Batch to List
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => ExecuteAllBatches(true)}
-                                        className={`${
-                                            sendTxLoading
-                                                ? "bg-button-1100 hover:bg-button-1100"
-                                                : "bg-button-100 hover:bg-button-100"
-                                        }  w-full flex justify-center items-center gap-2  py-3 px-5 rounded-lg text-base md:text-lg text-font-100 font-bold transition duration-300`}
-                                    >
-                                        {sendTxLoading && <CgSpinner className="animate-spin h-7 w-7" />}
-                                        Execute Batch
-                                    </button>
+                                    <Button
+                                        handleClick={() => sendSingleBatchToList(true)}
+                                        isLoading={addToBatchLoading}
+                                        customStyle=""
+                                        innerText="Add Batch to List"
+                                    />
+                                    <Button
+                                        handleClick={() => ExecuteAllBatches(true)}
+                                        isLoading={sendTxLoading}
+                                        customStyle=""
+                                        innerText="Execute Batch"
+                                    />
                                 </div>
                                 {/* ---------- Add Batch o List Section END ---------- */}
                             </div>

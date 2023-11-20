@@ -1,19 +1,20 @@
 import { BigNumber } from "ethers";
 
+import Image from "next/image";
 import { FiCopy } from "react-icons/fi";
 import { CgSpinner } from "react-icons/cg";
-import { useChain, useAddress } from "@thirdweb-dev/react";
+import { MdKeyboardArrowUp } from "react-icons/md";
+import { useAddress, useChain } from "@thirdweb-dev/react";
 
 import { tTransfer } from "./types";
-import { shorten, copyToClipboard } from "../../utils/helper";
-import { useGlobalStore, iGlobal } from "../../store/GlobalStore";
-import { useTransferStore, iTransfer } from "../../store/TransferStore";
-import Image from "next/image";
-import { change, gas, info, optimism, swap } from "../../assets/images";
-import { MdKeyboardArrowUp } from "react-icons/md";
-import SelectInput from "../../components/SelectInput/SelectInput";
-import { decreasePowerByDecimals } from "../../utils/helper";
+import Button from "../../components/Button/Button";
+import { change, gas, info } from "../../assets/images";
 import { ChainIdDetails } from "../../utils/data/network";
+import { decreasePowerByDecimals } from "../../utils/helper";
+import { copyToClipboard, shorten } from "../../utils/helper";
+import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
+import SelectInput from "../../components/SelectInput/SelectInput";
+import { iTransfer, useTransferStore } from "../../store/TransferStore";
 
 const Transfer: React.FC<any> = ({
     onOptionChangeForWallet,
@@ -157,22 +158,6 @@ const Transfer: React.FC<any> = ({
                         </div>
                     </div>
 
-                    {/* <div className="w-full flex justify-center items-center gap-5 md:gap-10 bg-backgound-200 text-font-100 p-5 rounded-md">
-                        <div className="w-auto md:w-40 font-bold text-lg text-center text-font-100 bg-green-700 px-5 py-1 rounded-md">
-                            {isNative ? 'Native Token' : 'ERC20 Token'}
-                        </div>
-                        <button
-                            type="button"
-                            onClick={() => onOptionChange()}
-                            className="px-5 py-2 bg-button-100 text-font-100 text-sm font-semibold rounded-full"
-                        >
-                            Change Token
-                        </button>
-                        <div className="w-auto md:w-40 font-bold text-lg text-center text-font-100 bg-red-700 px-5 py-1 rounded-md">
-                            {isNative ? 'ERC20 Token' : 'Native Token'}
-                        </div>
-                    </div> */}
-
                     <SelectInput
                         inputSearch={searchToken}
                         setInputSearch={setSearchToken}
@@ -186,44 +171,7 @@ const Transfer: React.FC<any> = ({
                         setSelectedOption={setSelectedToken}
                     />
 
-                    {/* <Select
-                        defaultValue={tokensData[0]}
-                        options={tokensData || []}
-                        placeholder="Select Token"
-                        onChange={(value: any) => {
-                            handleTokenAddress(value.name)
-                        }}
-                        className="w-full lg:w-72 text-font-100 !placeholder-font-100"
-                        styles={ReactSelectStyles}
-                    /> */}
-
                     <div className="w-full flex flex-col justify-center items-center gap-3 my-1">
-                        {/* <div className="w-full relative rounded-md overflow-hidden my-2">
-                            <label htmlFor="tokenAddresses" className="sr-only">
-                                Token Address
-                            </label>
-                            <select
-                                className="w-full bg-backgound-200 text-font-100 font-medium outline-none shadow-outline border border-backgound-600 rounded-lg py-3 px-5 block appearance-none leading-normal focus:border-transparent"
-                                placeholder="Token Address"
-                                id="tokenAddresses"
-                                value={tokenAddress}
-                                onChange={(e: any) => handleTokenAddress(e.target.value)}
-                            >
-                                <option key={"0x"} value="" disabled selected>
-                                    Token Address
-                                </option>
-                                {tokensData.length > 0 &&
-                                    tokensData.map((token: any, tokenIndex: any) => (
-                                        <option value={token.address} key={tokenIndex}>
-                                            {token.symbol}
-                                        </option>
-                                    ))}
-                            </select>
-                            <div className="text-font-100 pointer-events-none absolute right-2 top-0 bottom-0 flex items-center px-2">
-                                <BiSolidChevronDown size="20px" />
-                            </div>
-                        </div> */}
-
                         <div className="w-full">
                             <div className="flex justify-end items-center gap-2 text-font-100 font-semibold text-xs md:text-sm p-1">
                                 {isSCW ? (
@@ -278,7 +226,7 @@ const Transfer: React.FC<any> = ({
                                     }
                                     className="w-20 font-bold text-center text-font-100 bg-button-100 rounded-lg py-1"
                                 >
-                                    Max
+                                    c
                                 </button>
                             </div>
                         </div>
@@ -319,18 +267,12 @@ const Transfer: React.FC<any> = ({
                             )}
                         </div>
 
-                        <button
-                            type="button"
-                            onClick={(e: any) => send()}
-                            className={`${
-                                sendTxLoading
-                                    ? "bg-button-1100 hover:bg-button-1100"
-                                    : "bg-button-100 hover:bg-button-100"
-                            } w-full sm:w-[65%] flex justify-center items-center gap-2  py-2.5 px-5 rounded-lg text-base md:text-lg text-font-100 font-bold transition duration-300`}
-                        >
-                            {sendTxLoading && <CgSpinner className="animate-spin h-7 w-7" />}
-                            {isSCW ? "Send SmartAccount to EOA" : "Send EOA to SmartAccount"}
-                        </button>
+                        <Button
+                            handleClick={() => send()}
+                            isLoading={sendTxLoading}
+                            customStyle="sm:w-[65%]"
+                            innerText={isSCW ? "Send SmartAccount to EOA" : "Send EOA to SmartAccount"}
+                        />
 
                         {txhash && (
                             <div className="flex flex-wrap justify-start items-center gap-3 text-base">
