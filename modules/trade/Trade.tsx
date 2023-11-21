@@ -576,8 +576,8 @@ const Trade: React.FC<any> = ({
                                         </div>
                                         <div className="flex justify-start items-center gap-3 text-sm md:text-base font-medium bg-yellow-400 shadow rounded-lg px-5 py-2">
                                             <Image src={warning} alt="" className="h-8 w-8" />
-                                            Please transfer the fund from EOA to Smart Account(SCW).
-                                            To Transfer fund, click top right side.
+                                            Please transfer the fund from EOA to Smart Account(SCW). To Transfer fund,
+                                            click top right side.
                                         </div>
                                     </>
                                 )}
