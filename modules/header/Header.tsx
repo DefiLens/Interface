@@ -11,11 +11,11 @@ import { tHeader } from "./types";
 import { copyToClipboard } from "../../utils/helper";
 import { metamask, wallet } from "../../assets/images";
 import useClickOutside from "../../hooks/useClickOutside";
+import { ChainIdDetails } from "../../utils/data/network";
+import { NavigationList } from "../../utils/data/navigation";
 import TransferContainer from "../transfer/TransferContainer";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
-import { NavigationList } from "../../utils/data/navigation";
 import SelectNetwork from "../../components/SelectNetwork/SelectNetwork";
-import { ChainIdDetails } from "../../utils/data/network";
 
 const Header: React.FC<any> = ({ switchOnSpecificChain }: tHeader) => {
     const pathname = usePathname();

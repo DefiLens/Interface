@@ -5,25 +5,25 @@ import { toast } from "react-hot-toast";
 import { BigNumber as bg } from "bignumber.js";
 
 import { Bundler, IBundler } from "@biconomy/bundler";
+import { useAddress, useSigner } from "@thirdweb-dev/react";
 import { BiconomyPaymaster, IPaymaster } from "@biconomy/paymaster";
 import { BiconomySmartAccount, BiconomySmartAccountConfig, DEFAULT_ENTRYPOINT_ADDRESS } from "@biconomy/account";
-import { useAddress, useSigner } from "@thirdweb-dev/react";
 
 import Trade from "./Trade";
 import IERC20 from "../../abis/IERC20.json";
 import { setSafeState } from "../../utils/helper";
+import { ChainIdDetails } from "../../utils/data/network";
+import { protocolNames } from "../../utils/data/protocols";
 import UNISWAP_TOKENS from "../../abis/tokens/Uniswap.json";
 import { useRefinance } from "../../hooks/Batching/useRefinance";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import { useCCRefinance } from "../../hooks/Batching/useCCRefinance";
 import { useEoaProvider } from "../../hooks/aaProvider/useEoaProvider";
 import { useSwitchOnSpecificChain } from "../../hooks/useSwitchOnSpecificChain";
-import { iSelectedNetwork, iTrading, useTradingStore } from "../../store/TradingStore";
 import { useBiconomyProvider } from "../../hooks/aaProvider/useBiconomyProvider";
-import { getContractInstance, getErc20Balanceof, getErc20Decimals, getProvider } from "../../utils/web3Libs/ethers";
+import { iSelectedNetwork, iTrading, useTradingStore } from "../../store/TradingStore";
 import { decreasePowerByDecimals, getTokenListByChainId, incresePowerByDecimals } from "../../utils/helper";
-import { ChainIdDetails } from "../../utils/data/network";
-import { protocolNames } from "../../utils/data/protocols";
+import { getContractInstance, getErc20Balanceof, getErc20Decimals, getProvider } from "../../utils/web3Libs/ethers";
 
 bg.config({ DECIMAL_PLACES: 10 });
 
@@ -605,7 +605,11 @@ const TradeContainer: React.FC<any> = () => {
                 });
             }
 
-            if (!refinaceData) return;
+            if (!refinaceData) {
+                setAddToBatchLoading(false);
+                setShowBatchList(true);
+                return;
+            }
 
             const simulation = {
                 isSuccess: true,

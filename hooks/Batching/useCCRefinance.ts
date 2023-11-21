@@ -1,13 +1,14 @@
 import { ethers } from "ethers";
 import { toast } from "react-hot-toast";
 
+import { useAddress } from "@thirdweb-dev/react";
 import { useMutation } from "@tanstack/react-query";
 
+import { useCCSendTx } from "./useCCSendTx";
 import { useUniswap } from "../swaphooks/useUniswap";
 import { useApprove } from "../utilsHooks/useApprove";
+import { ChainIdDetails } from "../../utils/data/network";
 import { iBatchFlowData, iTrading, useTradingStore } from "../../store/TradingStore";
-import { useCCSendTx } from "./useCCSendTx";
-
 import {
     abiFetcher,
     abiFetcherNum,
@@ -17,8 +18,6 @@ import {
     tokensByNetworkForCC,
     uniswapSwapRouterByChainId,
 } from "../../utils/data/protocols";
-import { useAddress } from "@thirdweb-dev/react";
-import { ChainIdDetails } from "../../utils/data/network";
 
 export function useCCRefinance() {
     const address = useAddress(); // Detect the connected address
@@ -156,6 +155,20 @@ export function useCCRefinance() {
             }
 
             if (selectedFromNetwork.chainName != selectedToNetwork.chainName) {
+                const tokenOutNum = nativeTokenNum[selectedToNetwork.chainId][tokenOutName];
+                const nativeTokenOutTemp = nativeTokenFetcher[selectedToNetwork.chainId][tokenOutNum].symbol;
+                if (nativeTokenOutTemp != "usdc") {
+                    toast(
+                        `Cross-chain Error: Select Usdc Based ToToken on ToNetwork Side like aUSDC, cUSDC.
+                    As of now only Usdc Based trade is possible for cross-chain.
+                    Will update soon...`,
+                        {
+                            duration: 20000,
+                        }
+                    );
+                    return;
+                }
+
                 abiNum = abiFetcherNum[selectedToNetwork.chainId][tokenOutName];
                 // const newTokenIn = isSwap ? tokensByNetworkForCC[selectedToNetwork.chainId].usdc : nativeTokenIn;
                 const newTokenIn = tokensByNetworkForCC[selectedToNetwork.chainId].usdc;
@@ -205,6 +218,7 @@ export function useCCRefinance() {
                     action: `Bridge from ${selectedFromNetwork.chainName} to ${selectedToNetwork.chainName}`,
                 };
                 batchFlows.push(batchFlow);
+                alert("tokenOutName+++---" + tokenOutName);
                 batchFlow = {
                     fromChainId: selectedToNetwork.chainId,
                     toChainId: selectedToNetwork.chainId,

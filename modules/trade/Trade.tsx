@@ -432,9 +432,11 @@ const Trade: React.FC<any> = ({
                                         titlePlaceholder="From"
                                         iconCondition={selectedFromNetwork.chainName && selectedFromProtocol}
                                         mainIcon={selectedFromNetwork.icon}
-                                        subIcon={protocolNames[selectedFromNetwork.chainId]?.key.find(
-                                            (entry: any) => entry.name == selectedFromProtocol
-                                        )?.icon}
+                                        subIcon={
+                                            protocolNames[selectedFromNetwork.chainId]?.key.find(
+                                                (entry: any) => entry.name == selectedFromProtocol
+                                            )?.icon
+                                        }
                                         valueCondition={selectedFromNetwork.chainName}
                                         valuePlaceholder="Select Chain and token"
                                         mainValue={selectedFromNetwork.key}
@@ -469,9 +471,11 @@ const Trade: React.FC<any> = ({
                                         titlePlaceholder="To"
                                         iconCondition={selectedToNetwork.chainName}
                                         mainIcon={selectedToNetwork.icon}
-                                        subIcon={protocolNames[selectedToNetwork.chainId]?.key.find(
-                                            (entry: any) => entry.name == selectedToProtocol
-                                        )?.icon}
+                                        subIcon={
+                                            protocolNames[selectedToNetwork.chainId]?.key.find(
+                                                (entry: any) => entry.name == selectedToProtocol
+                                            )?.icon
+                                        }
                                         valueCondition={selectedToNetwork.chainName}
                                         valuePlaceholder="Select Chain and token"
                                         mainValue={selectedToNetwork.key}

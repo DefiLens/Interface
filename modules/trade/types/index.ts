@@ -1,27 +1,27 @@
 import { iSelectedNetwork } from "../../../store/TradingStore";
 
 export type tTrade = {
-    handleSelectFromNetwork: (_fromNetwork: iSelectedNetwork) => void,
-    handleSelectToNetwork: (_toNetwork: iSelectedNetwork) => void,
-    onChangeFromProtocol: (_fromProtocol: string) => void,
-    onChangeFromToken: (_fromToken: string) => void,
-    onChangeToProtocol: (_toProtocol: string) => void,
-    onChangeToToken: (_toToken: string) => void,
-    onChangeAmountIn: (_amountIn: string) => void,
-    handleSwap: () => void,
-    removeBatch: (index: number) => void,
-    toggleShowBatchList: (id: number) => void,
-    sendSingleBatchToList: (isSCW: any) => void,
-    ExecuteAllBatches: (isSCW: any) => void,
-    closeFromSelectionMenu: () => void,
-    closeToSelectionMenu: () => void,
+    handleSelectFromNetwork: (_fromNetwork: iSelectedNetwork) => void;
+    handleSelectToNetwork: (_toNetwork: iSelectedNetwork) => void;
+    onChangeFromProtocol: (_fromProtocol: string) => void;
+    onChangeFromToken: (_fromToken: string) => void;
+    onChangeToProtocol: (_toProtocol: string) => void;
+    onChangeToToken: (_toToken: string) => void;
+    onChangeAmountIn: (_amountIn: string) => void;
+    handleSwap: () => void;
+    removeBatch: (index: number) => void;
+    toggleShowBatchList: (id: number) => void;
+    sendSingleBatchToList: (isSCW: any) => void;
+    ExecuteAllBatches: (isSCW: any) => void;
+    closeFromSelectionMenu: () => void;
+    closeToSelectionMenu: () => void;
 };
 
 export type tTradeProtocol = {
-    name: string,
-    icon: any,
-    tokenList: any
-    tokenAddresses: any
+    name: string;
+    icon: any;
+    tokenList: any;
+    tokenAddresses: any;
 };
 
 export interface iTokenInfo {

@@ -1,5 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
-import { useGlobalStore, iGlobal } from "../../store/GlobalStore";
+
+import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import { iTrading, useTradingStore } from "../../store/TradingStore";
 
 export function useBiconomyProvider() {

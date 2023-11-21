@@ -80,5 +80,4 @@ export const useGlobalStore = create<iGlobal>((set) => ({
     setEoaBalance: (eoaBalance) => set(() => ({ eoaBalance })),
 
     setCurrentProvider: (currentProvider) => set(() => ({ currentProvider })),
-
 }));

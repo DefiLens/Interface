@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { tExecuteBatchModel } from "./types";
-import { iIndividualBatch, iTrading, useTradingStore } from "../../store/TradingStore";
-import { closeNarrow } from "../../assets/images";
+
 import Image from "next/image";
-import { error, loading, success } from "../../assets/gifs";
 import { BsArrowRight } from "react-icons/bs";
+
+import { tExecuteBatchModel } from "./types";
 import { buildTxHash } from "../../utils/helper";
+import { closeNarrow } from "../../assets/images";
 import { ChainIdDetails } from "../../utils/data/network";
 import { protocolNames } from "../../utils/data/protocols";
+import { error, loading, success } from "../../assets/gifs";
+import { iIndividualBatch, iTrading, useTradingStore } from "../../store/TradingStore";
 
 const ExecuteBatchModel = ({}: tExecuteBatchModel) => {
     const {
@@ -134,9 +136,7 @@ const ExecuteBatchModel = ({}: tExecuteBatchModel) => {
                                                             <div className="absolute -bottom-1 -right-1 bg-white h-4 w-4 flex justify-center items-center rounded-full">
                                                                 <Image
                                                                     src={
-                                                                        protocolNames[
-                                                                          bar.data.toChainId
-                                                                        ].key.find(
+                                                                        protocolNames[bar.data.toChainId].key.find(
                                                                             (entry: any) =>
                                                                                 entry.name == bar.data.toProtocol
                                                                         ).icon

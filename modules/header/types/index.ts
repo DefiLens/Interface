@@ -1,4 +1,4 @@
 export type tHeader = {
-    handleConnect: ()=> void;
+    handleConnect: () => void;
     switchOnSpecificChain: (chainName: string) => void;
 };

@@ -2,9 +2,9 @@ import { toast } from "react-hot-toast";
 
 import { useMutation } from "@tanstack/react-query";
 
-import { useGlobalStore, iGlobal } from "../../store/GlobalStore";
 import { getProvider } from "../../utils/web3Libs/ethers";
 import { decreasePowerByDecimals } from "../../utils/helper";
+import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 
 export function useCalculatebalance() {
     const { setScwBalance, setEoaBalance }: iGlobal = useGlobalStore((state) => state);

@@ -23,7 +23,6 @@ export default function Document() {
                     key="desc"
                 />
                 <link rel="icon" href="/next.svg" />
-
             </Head>
             <body>
                 <Main />

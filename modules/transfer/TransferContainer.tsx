@@ -9,27 +9,22 @@ import { useAddress, useChain, useSigner } from "@thirdweb-dev/react";
 
 import Transfer from "./Transfer";
 import IERC20 from "../../abis/IERC20.json";
-import UNISWAP_TOKENS from "../../abis/tokens/Uniswap.json";
-import { getTokenListByChainId, setSafeState } from "../../utils/helper";
-import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
-import { useCalculateGasCost } from "../../hooks/utilsHooks/useCalculateGasCost";
-import { iTransfer, useTransferStore } from "../../store/TransferStore";
-import { getErc20Balanceof, getErc20Decimals } from "../../utils/web3Libs/ethers";
 import { ethereum } from "../../assets/images";
-import { incresePowerByDecimals } from "../../utils/helper";
 import { BIG_ZERO } from "../../utils/data/constants";
+import UNISWAP_TOKENS from "../../abis/tokens/Uniswap.json";
+import { incresePowerByDecimals } from "../../utils/helper";
+import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
+import { iTransfer, useTransferStore } from "../../store/TransferStore";
+import { getTokenListByChainId, setSafeState } from "../../utils/helper";
+import { useCalculateGasCost } from "../../hooks/utilsHooks/useCalculateGasCost";
+import { getErc20Balanceof, getErc20Decimals } from "../../utils/web3Libs/ethers";
 
 bg.config({ DECIMAL_PLACES: 5 });
-
 
 const TransferContainer: React.FC<any> = () => {
     const { mutateAsync: calculategasCost } = useCalculateGasCost();
 
-    const {
-        smartAccount,
-        showTransferFundToggle,
-        selectedNetwork
-    }: iGlobal = useGlobalStore((state) => state);
+    const { smartAccount, showTransferFundToggle, selectedNetwork }: iGlobal = useGlobalStore((state) => state);
 
     const {
         tokenAddress,
@@ -67,13 +62,13 @@ const TransferContainer: React.FC<any> = () => {
             if (showTransferFundToggle) {
                 const filteredTokens = getTokenListByChainId(selectedNetwork.chainId, UNISWAP_TOKENS);
                 filteredTokens.unshift({
-                    "chainId": 1,
-                    "address": "",
-                    "name": "ethereum",
-                    "symbol": "Ethereum",
-                    "decimals": 18,
-                    "logoURI": ethereum,
-                })
+                    chainId: 1,
+                    address: "",
+                    name: "ethereum",
+                    symbol: "Ethereum",
+                    decimals: 18,
+                    logoURI: ethereum,
+                });
                 setTokensData(filteredTokens);
             }
         }
@@ -83,9 +78,9 @@ const TransferContainer: React.FC<any> = () => {
 
     useEffect(() => {
         if (address && smartAccount) {
-            setBalance('ethereum', '0x')
+            setBalance("ethereum", "0x");
         }
-    }, [address, smartAccount])
+    }, [address, smartAccount]);
 
     const onOptionChange = async (e) => {
         try {
@@ -95,7 +90,7 @@ const TransferContainer: React.FC<any> = () => {
             setTokenAddress("");
             const tempChcekNative = isNative ? false : true; // because isNative can not access after just updated
             setIsnative(tempChcekNative);
-            await setBalance('ethereum', '0x')
+            await setBalance("ethereum", "0x");
         } catch (error) {
             console.log("send-error: ", error);
             return;
@@ -109,25 +104,25 @@ const TransferContainer: React.FC<any> = () => {
                 if (!provider) {
                     toast.error("no provider");
                     return;
-                };
+                }
                 if (!address) {
                     toast.error("no metamask connected");
                     return;
-                };
+                }
                 const _scwBalance = await provider.getBalance(smartAccount.address);
                 const _eoaBalance = await provider.getBalance(address);
                 setScwTokenInbalance(BigNumber.from(_scwBalance));
                 setEoaTokenInbalance(BigNumber.from(_eoaBalance));
                 setTokenInDecimals(18);
             } else {
-                await handleTokenAddress(_tokenName, _tokenAddress)
+                await handleTokenAddress(_tokenName, _tokenAddress);
             }
         } catch (error) {
             console.log("setBalance-error: ", error);
             toast.error("Error: " + error);
             return;
         }
-    }
+    };
 
     const onOptionChangeForWallet = () => {
         setGasCost(0);
@@ -182,7 +177,7 @@ const TransferContainer: React.FC<any> = () => {
             const gasCost: number | undefined = await calculategasCost(chain?.chainId);
             setGasCost(gasCost!);
         } catch (error) {
-            console.log("handleAmountIn-error: ", error)
+            console.log("handleAmountIn-error: ", error);
         }
     };
 
@@ -202,14 +197,14 @@ const TransferContainer: React.FC<any> = () => {
         if (amountIn == "") {
             toast.error("Please Enter Amount");
             return;
-        };
+        }
         try {
             setSendtxLoading(true);
             setTxHash("");
             if (!BigNumber.from(amountIn).gt(0)) {
                 toast.error("Enter valid Amount");
                 return;
-            };
+            }
             let tx;
             const _fromAddress = isSCW ? smartAccount.address : address;
             const _toAdress = isSCW ? address : smartAccount.address;
@@ -218,7 +213,7 @@ const TransferContainer: React.FC<any> = () => {
                 if (!provider) {
                     toast.error("no provider");
                     return;
-                };
+                }
 
                 const balance = await provider.getBalance(_fromAddress);
                 if (!BigNumber.from(balance).gte(amountIn)) {

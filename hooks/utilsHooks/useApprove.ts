@@ -1,9 +1,9 @@
-import { ethers, BigNumber } from "ethers";
+import { BigNumber, ethers } from "ethers";
 
 import { useMutation } from "@tanstack/react-query";
 
 import IERC20 from "../../abis/IERC20.json";
-import { getErc20Allownace, getContractInstance } from "../../utils/web3Libs/ethers";
+import { getContractInstance, getErc20Allownace } from "../../utils/web3Libs/ethers";
 
 export function useApprove() {
     async function approve({ tokenIn, spender, amountIn, address, web3JsonProvider }: any) {

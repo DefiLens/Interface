@@ -8,7 +8,7 @@ export interface iTransfer {
     isNative: boolean;
     isSCW: boolean;
     sendTxLoading: boolean;
-    txhash:boolean | string;
+    txhash: boolean | string;
     tokensData: object[];
     scwBalance: BigNumber;
     eoaBalance: BigNumber;

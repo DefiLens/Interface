@@ -1,2 +1,1 @@
-export type tExecuteBatchModel = {
-};
+export type tExecuteBatchModel = {};

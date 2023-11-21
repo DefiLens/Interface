@@ -35,7 +35,6 @@
     font-family: "Manrope", sans-serif;
 }
 
-
 body {
     width: 100vw;
     height: 100vh;
@@ -107,15 +106,14 @@ li a:hover {
 /* Chrome, Safari, Edge, Opera */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+    -webkit-appearance: none;
+    margin: 0;
 }
 
 /* Firefox */
-input[type=number] {
-  -moz-appearance: textfield;
+input[type="number"] {
+    -moz-appearance: textfield;
 }
-
 
 /* Custom Input */
 

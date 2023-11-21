@@ -226,7 +226,7 @@ const Transfer: React.FC<any> = ({
                                     }
                                     className="w-20 font-bold text-center text-font-100 bg-button-100 rounded-lg py-1"
                                 >
-                                    c
+                                    Max
                                 </button>
                             </div>
                         </div>

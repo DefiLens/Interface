@@ -3,9 +3,9 @@ import React, { useRef } from "react";
 import Image from "next/image";
 
 import { tSelectNetwork } from "./types";
+import { NETWORK_LIST } from "../../utils/data/network";
 import useClickOutside from "../../hooks/useClickOutside";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
-import { NETWORK_LIST } from "../../utils/data/network";
 
 const SelectNetwork = ({ switchOnSpecificChain }: tSelectNetwork) => {
     const selectNetworkRef = useRef(null);

@@ -1,2 +1,1 @@
-export type tDashboard = {
-};
+export type tDashboard = {};

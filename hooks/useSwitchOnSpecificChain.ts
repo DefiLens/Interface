@@ -9,12 +9,11 @@ import { BiconomyPaymaster, IPaymaster } from "@biconomy/paymaster";
 import { BiconomySmartAccount, BiconomySmartAccountConfig, DEFAULT_ENTRYPOINT_ADDRESS } from "@biconomy/account";
 import { metamaskWallet, useAddress, useChain, useConnect, useSigner, useSwitchChain } from "@thirdweb-dev/react";
 
-import { iTrading, useTradingStore } from "../store/TradingStore";
+import { ChainIdDetails } from "../utils/data/network";
 import { iGlobal, useGlobalStore } from "../store/GlobalStore";
-
+import { iTrading, useTradingStore } from "../store/TradingStore";
 import { useCalculatebalance } from "../hooks/utilsHooks/useCalculateBalance";
 import { arbitrum, avalanche, base, ethereum, optimism, polygon } from "../assets/images";
-import { ChainIdDetails } from "../utils/data/network";
 
 bg.config({ DECIMAL_PLACES: 5 });
 
