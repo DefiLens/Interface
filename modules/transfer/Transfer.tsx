@@ -47,8 +47,6 @@ const Transfer: React.FC<any> = ({
         setSelectedToken,
     }: iTransfer = useTransferStore((state) => state);
 
-    console.log("🚀 ~ file: Transfer.tsx:43 ~ tokensData:", tokensData);
-
     const address = useAddress(); // Detect the connected address
     const chain = useChain();
 
