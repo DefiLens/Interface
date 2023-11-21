@@ -114,7 +114,9 @@ const TransferContainer: React.FC<any> = () => {
                 setScwTokenInbalance(BigNumber.from(_scwBalance));
                 setEoaTokenInbalance(BigNumber.from(_eoaBalance));
                 setTokenInDecimals(18);
+                setIsnative(true);
             } else {
+                setIsnative(false);
                 await handleTokenAddress(_tokenName, _tokenAddress);
             }
         } catch (error) {
