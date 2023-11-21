@@ -569,10 +569,17 @@ const Trade: React.FC<any> = ({
 
                                 {/* ---------- Add Batch o List START ---------- */}
                                 {bg(maxBalance).isLessThan(amountIn) && (
-                                    <div className="flex justify-start items-center gap-3 text-sm md:text-base font-medium bg-yellow-400 shadow rounded-lg px-5 py-2">
-                                        <Image src={warning} alt="" className="h-8 w-8" />
-                                        You don&#39;t have enough funds to complete transaction.
-                                    </div>
+                                    <>
+                                        <div className="flex justify-start items-center gap-3 text-sm md:text-base font-medium bg-yellow-400 shadow rounded-lg px-5 py-2">
+                                            <Image src={warning} alt="" className="h-8 w-8" />
+                                            You don&#39;t have enough funds to complete transaction.
+                                        </div>
+                                        <div className="flex justify-start items-center gap-3 text-sm md:text-base font-medium bg-yellow-400 shadow rounded-lg px-5 py-2">
+                                            <Image src={warning} alt="" className="h-8 w-8" />
+                                            Please transfer the fund from EOA to Smart Account(SCW).
+                                            To Transfer fund, click top right side.
+                                        </div>
+                                    </>
                                 )}
 
                                 <div className="w-full flex justify-center items-center gap-3">
@@ -753,22 +760,22 @@ const Trade: React.FC<any> = ({
                                                         <div className="flex justify-center items-center gap-3">
                                                             {bar.simulation.isSuccess ? (
                                                                 <></>
-                                                                // <h6 className="flex justify-center items-center gap-3 bg-font-100 text-font-1100 shadow-md font-medium text-sm rounded-full p-1 pr-5">
-                                                                //     <svg
-                                                                //         className="h-5 w-5 text-green-500"
-                                                                //         viewBox="0 0 24 24"
-                                                                //         fill="none"
-                                                                //         stroke="currentColor"
-                                                                //         stroke-width="2"
-                                                                //         stroke-linecap="round"
-                                                                //         stroke-linejoin="round"
-                                                                //     >
-                                                                //         <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                                                                //         <polyline points="22 4 12 14.01 9 11.01" />
-                                                                //     </svg>
-                                                                //     Simulation Success
-                                                                // </h6>
-                                                            ) : bar.simulation.isError ? (
+                                                            ) : // <h6 className="flex justify-center items-center gap-3 bg-font-100 text-font-1100 shadow-md font-medium text-sm rounded-full p-1 pr-5">
+                                                            //     <svg
+                                                            //         className="h-5 w-5 text-green-500"
+                                                            //         viewBox="0 0 24 24"
+                                                            //         fill="none"
+                                                            //         stroke="currentColor"
+                                                            //         stroke-width="2"
+                                                            //         stroke-linecap="round"
+                                                            //         stroke-linejoin="round"
+                                                            //     >
+                                                            //         <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                                                            //         <polyline points="22 4 12 14.01 9 11.01" />
+                                                            //     </svg>
+                                                            //     Simulation Success
+                                                            // </h6>
+                                                            bar.simulation.isError ? (
                                                                 <h6 className="flex justify-center items-center gap-3 bg-font-100 text-font-1100 shadow-md font-medium text-sm rounded-full p-1 pr-5">
                                                                     <svg
                                                                         className="h-5 w-5 text-red-500"
