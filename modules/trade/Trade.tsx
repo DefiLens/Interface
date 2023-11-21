@@ -6,6 +6,7 @@ import { BiLoaderAlt } from "react-icons/bi";
 import { AiOutlineSearch } from "react-icons/ai";
 import { MdDelete, MdOutlineArrowBack } from "react-icons/md";
 import { MdKeyboardArrowDown, MdKeyboardArrowUp } from "react-icons/md";
+import { CiCircleChevDown } from "react-icons/ci";
 
 import { tTrade, tTradeProtocol } from "./types";
 import Button from "../../components/Button/Button";
@@ -120,12 +121,12 @@ const Trade: React.FC<any> = ({
                                                 ? (e) => setFilterFromToken(e.target.value)
                                                 : (e) => setFilterToToken(e.target.value)
                                         }
-                                        placeholder="Search by Token name"
+                                        placeholder="Search by Protocol"
                                         className="w-full text-sm md:text-base outline-none placeholder-font-500 text-1100"
                                     />
                                     <AiOutlineSearch />
                                 </div>
-                                <div className="w-full overflow-auto flex flex-col justify-center items-center py-3">
+                                <div className="w-full overflow-auto flex flex-col justify-center items-center py-1">
                                     {showFromSelectionMenu && selectedFromNetwork.chainName && (
                                         <div className="w-full max-h-96">
                                             {protocolNames[selectedFromNetwork.chainId]?.key.map(
@@ -135,24 +136,29 @@ const Trade: React.FC<any> = ({
                                                     ]
                                                         .toLowerCase()
                                                         .includes(filterFromToken.toLowerCase()) ? (
-                                                        <div key={item.name} className="w-full">
+                                                        <div key={item.name} className="w-full py-0.5">
                                                             <div
                                                                 key={item.name}
-                                                                // onClick={() => setSelectedFromProtocol(item.name)}
                                                                 onClick={() => onChangeFromProtocol(item.name)}
-                                                                className="w-full flex justify-start items-center gap-3 text-font-300 hover:text-font-100 hover:bg-backgound-100 active:bg-backgound-200 py-2 px-3 my-1 rounded-lg cursor-pointer"
+                                                                className="w-full flex justify-between items-center gap-3 text-font-300 hover:text-font-100 border border-font-1100 bg-backgound-500 hover:bg-backgound-100 active:bg-backgound-200 py-2 px-3 my-1 rounded-lg cursor-pointer"
                                                             >
-                                                                <Image
-                                                                    src={item.icon}
-                                                                    alt=""
-                                                                    className="h-8 w-8 bg-font-200 rounded-full cursor-pointer"
-                                                                />
-                                                                <div>
-                                                                    {
-                                                                        protocolNames[selectedFromNetwork.chainId]
+                                                                <div className="w-full flex justify-start items-center gap-3">
+                                                                    <Image
+                                                                        src={item.icon}
+                                                                        alt=""
+                                                                        className="h-8 w-8 bg-font-200 rounded-full cursor-pointer"
+                                                                        />
+                                                                    <div>
+                                                                        {
+                                                                            protocolNames[selectedFromNetwork.chainId]
                                                                             .value[protocolIndex]
-                                                                    }
+                                                                        }
+                                                                    </div>
                                                                 </div>
+                                                                <CiCircleChevDown
+                                                                    size="30px"
+                                                                    className="text-font-500 h-7 w-7"
+                                                                />
                                                             </div>
 
                                                             {selectedFromProtocol === item.name &&
@@ -165,7 +171,7 @@ const Trade: React.FC<any> = ({
                                                                                 onChange={(e) =>
                                                                                     setFilterFromAddress(e.target.value)
                                                                                 }
-                                                                                placeholder="Search by Address"
+                                                                                placeholder="Search by Token"
                                                                                 className="w-full text-sm md:text-base outline-none placeholder-font-500 text-1100"
                                                                             />
                                                                             <AiOutlineSearch />
@@ -183,7 +189,6 @@ const Trade: React.FC<any> = ({
                                                                                         ) ? (
                                                                                         <div
                                                                                             key={tokenIndex}
-                                                                                            // onClick={() => setSelectedFromToken(token.name)}
                                                                                             onClick={() =>
                                                                                                 onChangeFromToken(
                                                                                                     token.name
@@ -192,10 +197,10 @@ const Trade: React.FC<any> = ({
                                                                                             className="w-full flex justify-start items-center gap-3 hover:bg-backgound-200 active:bg-backgound-100 py-2 px-3 rounded-lg cursor-pointer my-2"
                                                                                         >
                                                                                             {/* <Image
-                                                                                            src={token.icon}
-                                                                                            alt=""
-                                                                                            className="h-7 w-7 bg-font-200 rounded-full cursor-pointer"
-                                                                                        /> */}
+                                                                                                src={token.icon}
+                                                                                                alt=""
+                                                                                                className="h-7 w-7 bg-font-200 rounded-full cursor-pointer"
+                                                                                            /> */}
                                                                                             {token.name}
                                                                                         </div>
                                                                                     ) : null;
@@ -215,7 +220,7 @@ const Trade: React.FC<any> = ({
                                                                                 onChange={(e) =>
                                                                                     setFilterFromAddress(e.target.value)
                                                                                 }
-                                                                                placeholder="Search by Address"
+                                                                                placeholder="Search by Token"
                                                                                 className="w-full text-sm md:text-base outline-none placeholder-font-500 text-1100"
                                                                             />
                                                                             <AiOutlineSearch />
@@ -229,7 +234,6 @@ const Trade: React.FC<any> = ({
                                                                                     ) ? (
                                                                                     <div
                                                                                         key={tokenIndex}
-                                                                                        // onClick={() => setSelectedFromToken(token.symbol)}
                                                                                         onClick={() =>
                                                                                             onChangeFromToken(
                                                                                                 token.symbol
@@ -278,25 +282,30 @@ const Trade: React.FC<any> = ({
                                                     return protocolNames[selectedToNetwork.chainId].value[protocolIndex]
                                                         .toLowerCase()
                                                         .includes(filterToToken.toLowerCase()) ? (
-                                                        <div key={item.name} className="w-full">
+                                                        <div key={item.name} className="w-full py-0.5">
                                                             <div
                                                                 key={item.name}
-                                                                // onClick={() => setSelectedToProtocol(item.name)}
                                                                 onClick={() => onChangeToProtocol(item.name)}
-                                                                className="w-full flex justify-start items-center gap-3 text-font-300 hover:text-font-100 hover:bg-backgound-100 active:bg-backgound-200 py-2 px-3 my-1 rounded-lg cursor-pointer"
+                                                                className="w-full flex justify-between items-center gap-3 text-font-300 hover:text-font-100 border border-font-1100 bg-backgound-500 hover:bg-backgound-100 active:bg-backgound-200 py-2 px-3 my-1 rounded-lg cursor-pointer"
                                                             >
-                                                                <Image
-                                                                    src={item.icon}
-                                                                    alt=""
-                                                                    className="h-8 w-8 bg-font-200 rounded-full cursor-pointer"
-                                                                />
-                                                                <div>
-                                                                    {
-                                                                        protocolNames[selectedToNetwork.chainId].value[
-                                                                            protocolIndex
-                                                                        ]
-                                                                    }
+                                                                <div className="w-full flex justify-start items-center gap-3">
+                                                                    <Image
+                                                                        src={item.icon}
+                                                                        alt=""
+                                                                        className="h-8 w-8 bg-font-200 rounded-full cursor-pointer"
+                                                                    />
+                                                                    <div>
+                                                                        {
+                                                                            protocolNames[selectedToNetwork.chainId].value[
+                                                                                protocolIndex
+                                                                            ]
+                                                                        }
+                                                                    </div>
                                                                 </div>
+                                                                <CiCircleChevDown
+                                                                    size="30px"
+                                                                    className="text-font-500 h-7 w-7"
+                                                                />
                                                             </div>
                                                             {selectedToProtocol === item.name &&
                                                                 selectedToProtocol !== "erc20" && (
@@ -308,7 +317,7 @@ const Trade: React.FC<any> = ({
                                                                                 onChange={(e) =>
                                                                                     setFilterToAddress(e.target.value)
                                                                                 }
-                                                                                placeholder="Search by Address"
+                                                                                placeholder="Search by Token"
                                                                                 className="w-full text-sm md:text-base outline-none placeholder-font-500 text-1100"
                                                                             />
                                                                             <AiOutlineSearch />
@@ -326,7 +335,6 @@ const Trade: React.FC<any> = ({
                                                                                         ) ? (
                                                                                         <div
                                                                                             key={tokenIndex}
-                                                                                            // onClick={() => setSelectedToToken(token.name)}
                                                                                             onClick={() =>
                                                                                                 onChangeToToken(
                                                                                                     token.name
@@ -335,10 +343,10 @@ const Trade: React.FC<any> = ({
                                                                                             className="w-full flex justify-start items-center gap-3 hover:bg-backgound-200 active:bg-backgound-100 py-2 px-3 rounded-lg cursor-pointer my-2"
                                                                                         >
                                                                                             {/* <Image
-                                                                                        src={token.icon}
-                                                                                        alt=""
-                                                                                        className="h-7 w-7 bg-font-200 rounded-full cursor-pointer"
-                                                                                    /> */}
+                                                                                                src={token.icon}
+                                                                                                alt=""
+                                                                                                className="h-7 w-7 bg-font-200 rounded-full cursor-pointer"
+                                                                                            /> */}
                                                                                             {token.name}
                                                                                         </div>
                                                                                     ) : null;
@@ -357,7 +365,7 @@ const Trade: React.FC<any> = ({
                                                                                 onChange={(e) =>
                                                                                     setFilterToAddress(e.target.value)
                                                                                 }
-                                                                                placeholder="Search by Address"
+                                                                                placeholder="Search by Token"
                                                                                 className="w-full text-sm md:text-base outline-none placeholder-font-500 text-1100"
                                                                             />
                                                                             <AiOutlineSearch />
@@ -371,7 +379,6 @@ const Trade: React.FC<any> = ({
                                                                                     ) ? (
                                                                                     <div
                                                                                         key={tokenIndex}
-                                                                                        // onClick={() => setSelectedToToken(token.symbol)}
                                                                                         onClick={() =>
                                                                                             onChangeToToken(
                                                                                                 token.symbol
@@ -431,7 +438,7 @@ const Trade: React.FC<any> = ({
                                         handleSelectionMenu={() => setShowFromSelectionMenu(true)}
                                         titlePlaceholder="From"
                                         iconCondition={selectedFromNetwork.chainName && selectedFromProtocol}
-                                        mainIcon={selectedFromNetwork.icon}
+                                        mainIcon={selectedFromNetwork?.icon}
                                         subIcon={
                                             protocolNames[selectedFromNetwork.chainId]?.key.find(
                                                 (entry: any) => entry.name == selectedFromProtocol
@@ -470,7 +477,7 @@ const Trade: React.FC<any> = ({
                                         handleSelectionMenu={() => setShowToSelectionMenu(true)}
                                         titlePlaceholder="To"
                                         iconCondition={selectedToNetwork.chainName}
-                                        mainIcon={selectedToNetwork.icon}
+                                        mainIcon={selectedToNetwork?.icon}
                                         subIcon={
                                             protocolNames[selectedToNetwork.chainId]?.key.find(
                                                 (entry: any) => entry.name == selectedToProtocol
