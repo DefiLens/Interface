@@ -27,6 +27,7 @@ const nextConfig = {
             "ethereum-optimism.github.io",
             "arbitrum.foundation",
         ], // Add your image domains here
+        unoptimized: true,
         // remotePatterns: [
         //   {
         //     protocol: 'https',
