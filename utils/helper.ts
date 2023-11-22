@@ -3,7 +3,7 @@ import { BigNumber } from "ethers";
 import toast from "react-hot-toast";
 import { BigNumber as bg } from "bignumber.js";
 
-import { getImplementationAddress } from "@openzeppelin/upgrades-core";
+// import { getImplementationAddress } from "@openzeppelin/upgrades-core";
 
 import { iTokenInfo } from "../modules/trade/types";
 import IStarGatePool from "../abis/IStarGatePool.json";
@@ -34,41 +34,41 @@ interface FunctionABI {
     payable: boolean;
 }
 
-export const fetchContractDetails = async (
-    provider: any,
-    contractAddress: string,
-    toChainId: string,
-    methodNames: any
-) => {
-    try {
-        if (contractAddress == "0x8184285DfaB372201AFb8B5d6D4718467179E33d") {
-            const swirllendABi = require("../abis/swirllendUSDC.json");
-            return swirllendABi;
-        }
-        let contractAbis = await getAbiUsingExplorereUrl(toChainId, contractAddress);
-        let abi = JSON.parse(contractAbis.ABI);
-        const newprovider = await getProvider(toChainId);
+// export const fetchContractDetails = async (
+//     provider: any,
+//     contractAddress: string,
+//     toChainId: string,
+//     methodNames: any
+// ) => {
+//     try {
+//         if (contractAddress == "0x8184285DfaB372201AFb8B5d6D4718467179E33d") {
+//             const swirllendABi = require("../abis/swirllendUSDC.json");
+//             return swirllendABi;
+//         }
+//         let contractAbis = await getAbiUsingExplorereUrl(toChainId, contractAddress);
+//         let abi = JSON.parse(contractAbis.ABI);
+//         const newprovider = await getProvider(toChainId);
 
-        const { isProxy, currentImplAddress }: any = await checkIfContractIsProxy(abi, contractAddress, newprovider);
-        if (isProxy) {
-            const realChainid = await chooseChianId(toChainId);
-            const provider = await getProvider(realChainid);
-            if (!provider) throw "No Provider";
-            let implementation = await provider.getStorageAt(contractAddress, implementation_slot);
-            implementation = "0x" + implementation.slice(26, 66);
-            contractAbis = await getAbiUsingExplorereUrl(toChainId, implementation);
-            abi = JSON.parse(contractAbis.ABI);
-        }
+//         const { isProxy, currentImplAddress }: any = await checkIfContractIsProxy(abi, contractAddress, newprovider);
+//         if (isProxy) {
+//             const realChainid = await chooseChianId(toChainId);
+//             const provider = await getProvider(realChainid);
+//             if (!provider) throw "No Provider";
+//             let implementation = await provider.getStorageAt(contractAddress, implementation_slot);
+//             implementation = "0x" + implementation.slice(26, 66);
+//             contractAbis = await getAbiUsingExplorereUrl(toChainId, implementation);
+//             abi = JSON.parse(contractAbis.ABI);
+//         }
 
-        // Find the selected functions
-        const selectedFunctions = findSelectedFunctions(abi, methodNames);
-        // Create the updated ABI
-        abi = createUpdatedABI(selectedFunctions);
-        return abi;
-    } catch (error) {
-        console.log("fetchdetails-error: ", error);
-    }
-};
+//         // Find the selected functions
+//         const selectedFunctions = findSelectedFunctions(abi, methodNames);
+//         // Create the updated ABI
+//         abi = createUpdatedABI(selectedFunctions);
+//         return abi;
+//     } catch (error) {
+//         console.log("fetchdetails-error: ", error);
+//     }
+// };
 
 export const getAbiUsingExplorereUrl = async (network: string, toAddress: string) => {
     try {
@@ -94,27 +94,27 @@ export const getAbiUsingExplorereUrl = async (network: string, toAddress: string
     }
 };
 
-export const checkIfContractIsProxy = async (abi: any, contratAddress: any, provider: any) => {
-    try {
-        let currentImplAddress;
-        let isProxy: boolean = false;
+// export const checkIfContractIsProxy = async (abi: any, contratAddress: any, provider: any) => {
+//     try {
+//         let currentImplAddress;
+//         let isProxy: boolean = false;
 
-        if (
-            abi.filter(function (e: any) {
-                return e.name === "upgradeTo";
-            }).length > 0
-        ) {
-            currentImplAddress = await getImplementationAddress(provider, contratAddress);
-            isProxy = true;
-        } else {
-            currentImplAddress = contratAddress;
-            isProxy = false;
-        }
-        return { isProxy: isProxy, currentImplAddress: currentImplAddress };
-    } catch (error) {
-        console.log("IfContractProxy-Error: ", error);
-    }
-};
+//         if (
+//             abi.filter(function (e: any) {
+//                 return e.name === "upgradeTo";
+//             }).length > 0
+//         ) {
+//             currentImplAddress = await getImplementationAddress(provider, contratAddress);
+//             isProxy = true;
+//         } else {
+//             currentImplAddress = contratAddress;
+//             isProxy = false;
+//         }
+//         return { isProxy: isProxy, currentImplAddress: currentImplAddress };
+//     } catch (error) {
+//         console.log("IfContractProxy-Error: ", error);
+//     }
+// };
 
 function findDepositField(abi: FunctionABI[]): FunctionABI | undefined {
     return abi.find((func) => func.name === "supply");
