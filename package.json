@@ -44,7 +44,6 @@
         "react-icons": "^4.10.1",
         "react-select": "^5.8.0",
         "react-tabs": "^6.0.2",
-        "sharp": "^0.32.6",
         "typescript": "5.0.4",
         "web3": "^1.8.2",
         "zustand": "^4.3.7"
