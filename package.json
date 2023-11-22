@@ -17,7 +17,6 @@
         "@biconomy/paymaster": "^3.1.0",
         "@biconomy/web3-auth": "^3.0.0-alpha.0",
         "@emotion/css": "^11.10.6",
-        "@openzeppelin/upgrades-core": "^1.24.1",
         "@pimlico/erc20-paymaster": "^0.1.1",
         "@tanstack/react-query": "^4.29.5",
         "@thirdweb-dev/react": "^3.14.31",
@@ -43,11 +42,13 @@
         "react-icons": "^4.10.1",
         "react-select": "^5.8.0",
         "react-tabs": "^6.0.2",
+        "sharp": "^0.32.6",
         "typescript": "5.0.4",
         "web3": "^1.8.2",
         "zustand": "^4.3.7"
     },
     "devDependencies": {
+        "assert-strict": "^0.0.2",
         "autoprefixer": "^10.4.14",
         "postcss": "^8.4.27",
         "tailwindcss": "^3.3.3"
