@@ -1,8 +1,5 @@
 .env
 node_modules
-components/Form.tsx
-components/Form2.tsx
-components/PimlicoLogin.tsx
 .next
 contracts
 backup
