@@ -6,3 +6,5 @@ components/PimlicoLogin.tsx
 .next
 contracts
 backup
+# Local Netlify folder
+.netlify

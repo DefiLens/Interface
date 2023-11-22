@@ -46,6 +46,7 @@
         "typescript": "5.0.4",
         "userop": "^0.3.2",
         "web3": "^1.8.2",
+        "web3-shh": "^1.10.3",
         "zustand": "^4.3.7"
     },
     "devDependencies": {
