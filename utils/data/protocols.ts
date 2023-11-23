@@ -6,7 +6,7 @@ import aave_v2_Abi from "../../abis/defi/aave_v2.json";
 import { getContractInstance } from "../web3Libs/ethers";
 import compound_Abi from "../../abis/defi/compound.json";
 import { tokenAddressByProtocol, tokensByProtocol } from "./tokensByProtocol";
-import { aavev2, aavev3, arbitrum, avalanche, base, compoundV3, dforce, optimism, polygon } from "../../assets/images";
+import { aavev2, aavev3, arbitrum, avalanche, base, benqi, compoundV3, dforce, optimism, polygon } from "../../assets/images";
 
 export const protocolNames = {
     "137": {
@@ -53,13 +53,19 @@ export const protocolNames = {
                 tokenAddresses: tokenAddressByProtocol.avalanche.aaveV3,
             },
             {
+                name: "benqi",
+                icon: benqi,
+                tokenList: tokensByProtocol.avalanche.benqi,
+                tokenAddresses: tokenAddressByProtocol.avalanche.benqi,
+            },
+            {
                 name: "erc20",
                 icon: avalanche,
                 tokenList: "tokenList",
                 tokenAddresses: "tokenAddresses",
             },
         ],
-        value: ["AAVE V3", "ERC20"],
+        value: ["AAVE V3", "BENQI",  "ERC20"],
     },
     "42161": {
         key: [
@@ -159,6 +165,19 @@ export const abiFetcherNum = {
         aAAVEe: "1",
         aMAI: "1",
         aFRAX: "1",
+
+        qiAVAX: "2",
+        qisAVAX: "2",
+        qiBTCb: "2",
+        qiBTC: "2",
+        qiETH: "2",
+        qiLINK: "2",
+        qiUSDT: "2",
+        qiUSDC: "2",
+        qiUSDTn: "2",
+        qiUSDCn: "2",
+        qiDAI: "2",
+
     },
     "42161": {
         aWETH: "1",
@@ -209,6 +228,7 @@ export const abiFetcher = {
             depositParamDetailsMethod: "compound_supply",
             withdrawParamDetailsMethod: "compound_withdraw",
             contractAddress: "0xF25212E676D1F7F89Cd72fFEe66158f541246445",
+            isContractSet: false,
             apyFetch: "fetchApyForCompoundPolygon",
         },
         "2": {
@@ -220,6 +240,7 @@ export const abiFetcher = {
             depositParamDetailsMethod: "aave_deposit",
             withdrawParamDetailsMethod: "aave_withdraw",
             contractAddress: "0x8dFf5E27EA6b7AC08EbFdf9eB090F32ee9a30fcf",
+            isContractSet: false,
             apyFetch: "fetchApyForAaveV2Polygon",
         },
         "3": {
@@ -231,6 +252,7 @@ export const abiFetcher = {
             depositParamDetailsMethod: "dForce_deposit",
             withdrawParamDetailsMethod: "dForce_withdraw",
             contractAddress: "0x5268b3c4afb0860D365a093C184985FCFcb65234",
+            isContractSet: false,
             apyFetch: "fetchApyForDForcePolygon",
         },
         "4": {
@@ -242,6 +264,7 @@ export const abiFetcher = {
             depositParamDetailsMethod: "aave_supply_v3",
             withdrawParamDetailsMethod: "aave_withdraw_v3",
             contractAddress: "0x794a61358D6845594F94dc1DB02A252b5b4814aD",
+            isContractSet: false,
             apyFetch: "fetchApyForAaveV3Polygon",
         },
     },
@@ -255,7 +278,33 @@ export const abiFetcher = {
             depositParamDetailsMethod: "aave_supply_v3",
             withdrawParamDetailsMethod: "aave_withdraw_v3",
             contractAddress: "0x794a61358D6845594F94dc1DB02A252b5b4814aD",
+            isContractSet: false,
             apyFetch: "fetchApyForAaveV3Avalanche",
+        },
+        "2": {
+            depositAbi: "function mint(uint256 mintAmount)",
+            withdrawAbi: "function redeemUnderlying(uint256 redeemAmount)",
+            depositMethodName: "mint",
+            withdrawMethodName: "redeemUnderlying",
+            paramDetailsMethod: "benqi_mint",
+            depositParamDetailsMethod: "benqi_mint",
+            withdrawParamDetailsMethod: "benqi_redeemUnderlying",
+            contractAddress: "0x794a61358D6845594F94dc1DB02A252b5b4814aD",
+            isContractSet: true,
+            contractSet: {
+                qiAVAX: "0x5C0401e81Bc07Ca70fAD469b451682c0d747Ef1c",
+                qisAVAX: "0xF362feA9659cf036792c9cb02f8ff8198E21B4cB",
+                qiBTCb: "0x89a415b3D20098E6A6C8f7a59001C67BD3129821",
+                qiBTC: "0xe194c4c5aC32a3C9ffDb358d9Bfd523a0B6d1568",
+                qiETH: "0x334AD834Cd4481BB02d09615E7c11a00579A7909",
+                qiLINK: "0x4e9f683A27a6BdAD3FC2764003759277e93696e6",
+                qiUSDT: "0xc9e5999b8e75C3fEB117F6f73E664b9f3C8ca65C",
+                qiUSDC: "0xBEb5d47A3f720Ec0a390d04b4d41ED7d9688bC7F",
+                qiUSDTn: "0xd8fcDa6ec4Bdc547C0827B8804e89aCd817d56EF",
+                qiUSDCn: "0xB715808a78F6041E46d61Cb123C9B4A27056AE9C",
+                qiDAI: "0x835866d37AFB8CB8F8334dCCdaf66cf01832Ff5D",
+            },
+            apyFetch: "fetchApyForBenqiAvalanche",
         },
     },
     "42161": {
@@ -268,6 +317,7 @@ export const abiFetcher = {
             depositParamDetailsMethod: "aave_supply_v3",
             withdrawParamDetailsMethod: "aave_withdraw_v3",
             contractAddress: "0x794a61358D6845594F94dc1DB02A252b5b4814aD",
+            isContractSet: false,
             apyFetch: "fetchApyForAaveV3Arbitrum",
         },
         "2": {
@@ -278,6 +328,7 @@ export const abiFetcher = {
             depositParamDetailsMethod: "compound_supply",
             withdrawParamDetailsMethod: "compound_withdraw",
             contractAddress: "0xA5EDBDD9646f8dFF606d7448e414884C7d905dCA",
+            isContractSet: false,
             apyFetch: "fetchApyForCompoundArbitrum",
         },
         "3": {
@@ -288,6 +339,7 @@ export const abiFetcher = {
             depositParamDetailsMethod: "compound_supply",
             withdrawParamDetailsMethod: "compound_withdraw",
             contractAddress: "0x9c4ec768c28520B50860ea7a15bd7213a9fF58bf",
+            isContractSet: false,
             apyFetch: "fetchApyForCompoundArbitrum",
         },
     },
@@ -301,6 +353,7 @@ export const abiFetcher = {
             depositParamDetailsMethod: "aave_supply_v3",
             withdrawParamDetailsMethod: "aave_withdraw_v3",
             contractAddress: "0x794a61358D6845594F94dc1DB02A252b5b4814aD",
+            isContractSet: false,
             apyFetch: "fetchApyForAaveV3Optimism",
         },
     },
@@ -313,6 +366,7 @@ export const abiFetcher = {
             depositParamDetailsMethod: "compound_supply",
             withdrawParamDetailsMethod: "compound_withdraw",
             contractAddress: "0x9c4ec768c28520B50860ea7a15bd7213a9fF58bf",
+            isContractSet: false,
             apyFetch: "fetchApyForCompoundPolygon",
         },
         "2": {
@@ -324,6 +378,7 @@ export const abiFetcher = {
             depositParamDetailsMethod: "aave_supply_v3",
             withdrawParamDetailsMethod: "aave_withdraw_v3",
             contractAddress: "0xA238Dd80C259a72e81d7e4664a9801593F98d1c5",
+            isContractSet: false,
             apyFetch: "fetchApyForAaveV3Base",
         },
     },
@@ -365,6 +420,18 @@ export const nativeTokenNum = {
         aAAVEe: "10",
         aMAI: "11",
         aFRAX: "12",
+
+        // qiAVAX: "",
+        qisAVAX: "7",
+        qiBTCb: "4",
+        qiBTC: "6",
+        qiETH: "5",
+        qiLINK: "8",
+        qiUSDT: "13",
+        qiUSDC: "14",
+        qiUSDTn: "1",
+        qiUSDCn: "2",
+        qiDAI: "9",
     },
     "42161": {
         aWETH: "1",
@@ -509,6 +576,16 @@ export const nativeTokenFetcher = {
             symbol: "frax",
             decimals: 18,
         },
+        "13": {
+            nativeToken: "0xc7198437980c041c805A1EDcbA50c1Ce5db95118",
+            symbol: "usdt.e",
+            decimal: 6
+        },
+        "14": {
+            nativeToken: "0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664",
+            symbol: "usdc.e",
+            decimal: 6
+        }
     },
     "42161": {
         "1": {
@@ -684,6 +761,10 @@ export async function buildParams({
         return [address, amount];
     } else if (paramDetailsMethod == "dForce_withdraw") {
         return [address, amount];
+    } else if (paramDetailsMethod == "benqi_mint") {
+        return [amount];
+    } else if (paramDetailsMethod == "benqi_redeemUnderlying") {
+        return [amount];
     }
 }
 
@@ -749,7 +830,7 @@ export const starGateRouterByNetwork: StarGateRouter = {
 
 export const uniswapSwapRouterByChainId = {
     "137": "0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45",
-    "43114": "",
+    "43114": "0x82635AF6146972cD6601161c4472ffe97237D292",
     "42161": "0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45",
     "10": "0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45",
     "1": "0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45",

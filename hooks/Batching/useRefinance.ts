@@ -46,6 +46,7 @@ export function useRefinance() {
             let abiNum,
                 abi,
                 methodName,
+                isContractSet,
                 paramDetailsMethod,
                 tokenInContractAddress,
                 abiInterface,
@@ -84,7 +85,12 @@ export function useRefinance() {
                 abi = abiFetcher[selectedFromNetwork.chainId][abiNum]["withdrawAbi"];
                 methodName = abiFetcher[selectedFromNetwork.chainId][abiNum]["withdrawMethodName"];
                 paramDetailsMethod = abiFetcher[selectedFromNetwork.chainId][abiNum]["withdrawParamDetailsMethod"];
-                tokenInContractAddress = abiFetcher[selectedFromNetwork.chainId][abiNum]["contractAddress"];
+                isContractSet = abiFetcher[selectedFromNetwork.chainId][abiNum]["isContractSet"];
+                if (isContractSet) {
+                    tokenInContractAddress = abiFetcher[selectedFromNetwork.chainId][abiNum]["contractSet"][tokenInName];
+                } else {
+                    tokenInContractAddress = abiFetcher[selectedFromNetwork.chainId][abiNum]["contractAddress"];
+                }
                 const tokenInNum = nativeTokenNum[selectedFromNetwork.chainId][tokenInName];
                 nativeTokenIn = nativeTokenFetcher[selectedFromNetwork.chainId][tokenInNum].nativeToken;
                 nativeTokenInSymbol = nativeTokenFetcher[selectedFromNetwork.chainId][tokenInNum].symbol;
@@ -160,7 +166,15 @@ export function useRefinance() {
                 abi = abiFetcher[selectedFromNetwork.chainId][abiNum]["depositAbi"];
                 methodName = abiFetcher[selectedFromNetwork.chainId][abiNum]["depositMethodName"];
                 paramDetailsMethod = abiFetcher[selectedFromNetwork.chainId][abiNum]["depositParamDetailsMethod"];
-                const tokenOutContractAddress = abiFetcher[selectedFromNetwork.chainId][abiNum]["contractAddress"];
+                // const tokenOutContractAddress = abiFetcher[selectedFromNetwork.chainId][abiNum]["contractAddress"];
+
+                let tokenOutContractAddress;
+                isContractSet = abiFetcher[selectedFromNetwork.chainId][abiNum]["isContractSet"];
+                if (isContractSet) {
+                    tokenOutContractAddress = abiFetcher[selectedFromNetwork.chainId][abiNum]["contractSet"][tokenOutName];
+                } else {
+                    tokenOutContractAddress = abiFetcher[selectedFromNetwork.chainId][abiNum]["contractAddress"];
+                }
 
                 const approveData = await approve({
                     tokenIn: newTokenIn,

@@ -130,6 +130,52 @@ export const tokensByProtocol = {
                 icon: ethereum,
             },
         ],
+        benqi: [
+            // {
+            //     name: "qiAVAX",
+            //     icon: avalanche,
+            // },
+            {
+                name: "qisAVAX",
+                icon: avalanche,
+            },
+            {
+                name: "qiBTCb",
+                icon: avalanche,
+            },
+            {
+                name: "qiBTC",
+                icon: avalanche,
+            },
+            {
+                name: "qiETH",
+                icon: avalanche,
+            },
+            {
+                name: "qiLINK",
+                icon: avalanche,
+            },
+            {
+                name: "qiUSDT",
+                icon: avalanche,
+            },
+            {
+                name: "qiUSDC",
+                icon: avalanche,
+            },
+            {
+                name: "qiUSDTn",
+                icon: avalanche,
+            },
+            {
+                name: "qiUSDCn",
+                icon: avalanche,
+            },
+            {
+                name: "qiDAI",
+                icon: avalanche,
+            },
+        ]
     },
     arbitrum: {
         aaveV3: [
@@ -315,6 +361,19 @@ export const tokenAddressByProtocol = {
             aAAVEe: "0xf329e36C7bF6E5E86ce2150875a84Ce77f477375",
             aMAI: "0x8Eb270e296023E9D92081fdF967dDd7878724424",
             aFRAX: "0xc45A479877e1e9Dfe9FcD4056c699575a1045dAA",
+        },
+        benqi: {
+            qiAVAX: "0x5C0401e81Bc07Ca70fAD469b451682c0d747Ef1c",
+            qisAVAX: "0xF362feA9659cf036792c9cb02f8ff8198E21B4cB",
+            qiBTCb: "0x89a415b3D20098E6A6C8f7a59001C67BD3129821",
+            qiBTC: "0xe194c4c5aC32a3C9ffDb358d9Bfd523a0B6d1568",
+            qiETH: "0x334AD834Cd4481BB02d09615E7c11a00579A7909",
+            qiLINK: "0x4e9f683A27a6BdAD3FC2764003759277e93696e6",
+            qiUSDT: "0xc9e5999b8e75C3fEB117F6f73E664b9f3C8ca65C",
+            qiUSDC: "0xBEb5d47A3f720Ec0a390d04b4d41ED7d9688bC7F",
+            qiUSDTn: "0xd8fcDa6ec4Bdc547C0827B8804e89aCd817d56EF",
+            qiUSDCn: "0xB715808a78F6041E46d61Cb123C9B4A27056AE9C",
+            qiDAI: "0x835866d37AFB8CB8F8334dCCdaf66cf01832Ff5D",
         },
     },
     arbitrum: {

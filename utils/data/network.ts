@@ -24,24 +24,24 @@ export const NETWORK_LIST = [
         chainId: "42161",
         icon: arbitrum,
     },
-    {
-        key: "Avalanche",
-        chainName: "avalanche",
-        chainId: "43114",
-        icon: avalanche,
-    },
+    // {
+    //     key: "Avalanche",
+    //     chainName: "avalanche",
+    //     chainId: "43114",
+    //     icon: avalanche,
+    // },
     {
         key: "Optimism",
         chainName: "optimism",
         chainId: "10",
         icon: optimism,
     },
-    {
-        key: "Ethereum",
-        chainName: "ethereum",
-        chainId: "1",
-        icon: ethereum,
-    },
+    // {
+    //     key: "Ethereum",
+    //     chainName: "ethereum",
+    //     chainId: "1",
+    //     icon: ethereum,
+    // },
     {
         key: "Base",
         chainName: "base",

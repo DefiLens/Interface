@@ -21,6 +21,7 @@ import sideLine from "./sideLine.png";
 import defaultBlue from "./defaultBlue.png";
 import info from "./info.png";
 import change from "./change.png";
+import benqi from "./benqi.svg";
 
 export {
     closeNarrow,
@@ -46,4 +47,5 @@ export {
     defaultBlue,
     info,
     change,
+    benqi
 };
