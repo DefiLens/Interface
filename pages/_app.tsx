@@ -12,6 +12,7 @@ import { Arbitrum, Avalanche, Base, Ethereum, Optimism, Polygon } from "@thirdwe
 import { closeNarrow } from "../assets/images";
 import { iGlobal, useGlobalStore } from "../store/GlobalStore";
 import HeaderContainer from "../modules/header/HeaderContainer";
+import FooterContainer from "../modules/footer/FooterContainer";
 
 import "@biconomy/web3-auth/dist/src/style.css";
 
@@ -76,11 +77,13 @@ export default function App({ Component, pageProps }: AppProps) {
                     <Suspense fallback={<div>Loading...</div>}>
                         <HeaderContainer />
 
-                        <div className="w-screen h-[calc(100%-69px)] bg-backgound-100 flex justify-center items-start">
+                        <div className="w-screen h-[calc(100%-109px)] bg-backgound-100 flex justify-center items-start">
                             <main className="w-full h-full overflow-y-scroll  overflow-x-hidden p-4">
                                 <Component {...pageProps} />
                             </main>
                         </div>
+
+                        <FooterContainer />
                     </Suspense>
                 </QueryClientProvider>
             </ThirdwebProvider>

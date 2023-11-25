@@ -22,6 +22,11 @@ import defaultBlue from "./defaultBlue.png";
 import info from "./info.png";
 import change from "./change.png";
 import benqi from "./benqi.svg";
+import email from "./email.png";
+import github from "./github.png";
+import twitter from "./twitter.png";
+import telegram from "./telegram.png";
+import web from "./web.png";
 
 export {
     closeNarrow,
@@ -47,5 +52,10 @@ export {
     defaultBlue,
     info,
     change,
-    benqi
+    benqi,
+    email,
+    github,
+    twitter,
+    telegram,
+    web,
 };

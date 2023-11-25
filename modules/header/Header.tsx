@@ -50,7 +50,10 @@ const Header: React.FC<any> = ({ switchOnSpecificChain }: tHeader) => {
         <div className="header-container w-full h-[69px]">
             <ul className="w-full h-full flex justify-between items-center gap-3 bg-backgound-100 p-2 shadow-md shadow-secondary-500">
                 <li className="w-full xl:w-1/3 flex justify-start items-center">
-                    <Link href="/" className="text-[30px] font-bold flex flex-row justify-center items-center">
+                    <Link
+                        href="https://defilens.tech"
+                        className="text-[30px] font-bold flex flex-row justify-center items-center"
+                    >
                         <div className="mr-2 p-1">
                             <svg
                                 width="40px"
@@ -78,7 +81,7 @@ const Header: React.FC<any> = ({ switchOnSpecificChain }: tHeader) => {
                     </Link>
                 </li>
                 <li className="hidden xl:flex justify-center items-center gap-3 text-lg bg-backgound-300 rounded-full p-1">
-                    {NavigationList.length > 0 &&
+                    {/* {NavigationList.length > 0 &&
                         NavigationList?.map((item) => (
                             <Link
                                 href={item.route}
@@ -89,7 +92,8 @@ const Header: React.FC<any> = ({ switchOnSpecificChain }: tHeader) => {
                             >
                                 {item.title}
                             </Link>
-                        ))}
+                        ))
+                    } */}
                 </li>
                 <li className="w-full xl:w-1/3 flex flex-wrap justify-end items-center gap-3">
                     {connected && !smartAccount && !loading && (

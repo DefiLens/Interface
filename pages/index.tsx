@@ -1,5 +1,5 @@
-import DashboardContainer from "../modules/dashboard/DashboardContainer";
+import TradeContainer from "../modules/trade/TradeContainer";
 
-const Index = () => <DashboardContainer />;
+const Index = () => <TradeContainer />;
 
 export default Index;
