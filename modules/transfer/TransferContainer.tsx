@@ -9,7 +9,7 @@ import { useAddress, useChain, useSigner } from "@thirdweb-dev/react";
 
 import Transfer from "./Transfer";
 import IERC20 from "../../abis/IERC20.json";
-import { ethereum } from "../../assets/images";
+import { ethereum, polygon } from "../../assets/images";
 import { BIG_ZERO } from "../../utils/data/constants";
 import UNISWAP_TOKENS from "../../abis/tokens/Uniswap.json";
 import { incresePowerByDecimals } from "../../utils/helper";
@@ -61,20 +61,31 @@ const TransferContainer: React.FC<any> = () => {
         async function onChangeFromProtocol() {
             if (showTransferFundToggle) {
                 const filteredTokens = getTokenListByChainId(selectedNetwork.chainId, UNISWAP_TOKENS);
-                filteredTokens.unshift({
-                    chainId: 1,
-                    address: "",
-                    name: "ethereum",
-                    symbol: "Ethereum",
-                    decimals: 18,
-                    logoURI: ethereum,
-                });
+                if (selectedNetwork.chainId === '137') {
+                    filteredTokens.unshift({
+                        chainId: 137,
+                        address: "0x0000000000000000000000000000000000001010",
+                        name: "Matic",
+                        symbol: "MATIC",
+                        decimals: 18,
+                        logoURI: polygon,
+                    });
+                } else {
+                    filteredTokens.unshift({
+                        chainId: 1,
+                        address: "",
+                        name: "ethereum",
+                        symbol: "Ethereum",
+                        decimals: 18,
+                        logoURI: ethereum,
+                    });
+                }
                 setTokensData(filteredTokens);
             }
         }
         setTokenAddress("");
         onChangeFromProtocol();
-    }, [showTransferFundToggle]);
+    }, [showTransferFundToggle, selectedNetwork.chainId]);
 
     useEffect(() => {
         if (address && smartAccount) {
