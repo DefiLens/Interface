@@ -24,6 +24,7 @@ const Header: React.FC<any> = ({ switchOnSpecificChain }: tHeader) => {
         connected,
         loading,
         smartAccount,
+        smartAccountAddress,
         scwBalance,
         eoaBalance,
         showWalletAddress,
@@ -144,13 +145,13 @@ const Header: React.FC<any> = ({ switchOnSpecificChain }: tHeader) => {
                                 />
                                 <span className="text-sm font-medium">
                                     {smartAccount &&
-                                        smartAccount.address.slice(0, 5) + "..." + smartAccount.address.slice(-3)}
+                                        smartAccountAddress.slice(0, 5) + "..." + smartAccountAddress.slice(-3)}
                                 </span>
                                 <span className="flex justify-center items-center gap-2">
                                     <FiCopy
                                         className="text-font-100 hover:text-font-200 active:text-font-400"
                                         onClick={() =>
-                                            copyToClipboard(smartAccount.address, "Smart account address Copied")
+                                            copyToClipboard(smartAccountAddress, "Smart account address Copied")
                                         }
                                     />
                                 </span>
@@ -165,9 +166,9 @@ const Header: React.FC<any> = ({ switchOnSpecificChain }: tHeader) => {
                                         <div className="flex flex-col justify-center items-start">
                                             <span className="text-font-100 text-base font-medium">
                                                 {smartAccount &&
-                                                    smartAccount.address.slice(0, 13) +
+                                                    smartAccountAddress.slice(0, 13) +
                                                         "..." +
-                                                        smartAccount.address.slice(-3)}
+                                                        smartAccountAddress.slice(-3)}
                                             </span>
                                             <span className="text-font-300 text-xs">
                                                 {smartAccount &&
@@ -186,7 +187,7 @@ const Header: React.FC<any> = ({ switchOnSpecificChain }: tHeader) => {
                                             size="35px"
                                             className="text-font-100 active:text-font-300 p-2 hover:bg-backgound-700 rounded-md"
                                             onClick={() =>
-                                                copyToClipboard(smartAccount.address, "Smart account address Copied")
+                                                copyToClipboard(smartAccountAddress, "Smart account address Copied")
                                             }
                                         />
                                     </button>

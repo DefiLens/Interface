@@ -16,10 +16,12 @@ import {
     nativeTokenNum,
     uniswapSwapRouterByChainId,
 } from "../../utils/data/protocols";
+import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 export function useRefinance() {
     const { mutateAsync: swap } = useUniswap();
     const { mutateAsync: approve } = useApprove();
     const { mutateAsync: calculategasCost } = useCalculateGasCost();
+    const { selectedNetwork }: iGlobal = useGlobalStore((state) => state);
 
     const { selectedFromNetwork, selectedFromProtocol, selectedToProtocol, amountIn, tokensData }: iTrading =
         useTradingStore((state) => state);
@@ -143,8 +145,10 @@ export function useRefinance() {
                     amountIn: amount,
                     address,
                     type: "exactIn",
+                    chainId: selectedNetwork.chainId
                 });
                 tempTxs.push(swapData.swapTx);
+
                 let batchFlow: iBatchFlowData = {
                     fromChainId: selectedFromNetwork.chainId,
                     toChainId: selectedFromNetwork.chainId,

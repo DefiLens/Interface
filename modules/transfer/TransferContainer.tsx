@@ -24,7 +24,7 @@ bg.config({ DECIMAL_PLACES: 5 });
 const TransferContainer: React.FC<any> = () => {
     const { mutateAsync: calculategasCost } = useCalculateGasCost();
 
-    const { smartAccount, showTransferFundToggle, selectedNetwork }: iGlobal = useGlobalStore((state) => state);
+    const { smartAccount, smartAccountAddress, showTransferFundToggle, selectedNetwork }: iGlobal = useGlobalStore((state) => state);
 
     const {
         tokenAddress,
@@ -120,8 +120,10 @@ const TransferContainer: React.FC<any> = () => {
                     toast.error("no metamask connected");
                     return;
                 }
-                const _scwBalance = await provider.getBalance(smartAccount.address);
+                console.log('smartAccountAddress-', smartAccountAddress)
+
                 const _eoaBalance = await provider.getBalance(address);
+                const _scwBalance = await smartAccount.provider.getBalance(smartAccountAddress);
                 setScwTokenInbalance(BigNumber.from(_scwBalance));
                 setEoaTokenInbalance(BigNumber.from(_eoaBalance));
                 setTokenInDecimals(18);
@@ -150,7 +152,7 @@ const TransferContainer: React.FC<any> = () => {
             setAmountIn(0);
             setTokenAddress(_tokenAddress);
             const contract = await getContract(_tokenAddress);
-            const _scwBalance: BigNumber | undefined = await getErc20Balanceof(contract, smartAccount.address);
+            const _scwBalance: BigNumber | undefined = await getErc20Balanceof(contract, smartAccountAddress);
             const _eoaBalance: BigNumber | undefined = await getErc20Balanceof(contract, address);
             const decimals: number | undefined = await getErc20Decimals(contract);
             setSafeState(setTokenInDecimals, decimals, 0);
@@ -219,8 +221,8 @@ const TransferContainer: React.FC<any> = () => {
                 return;
             }
             let tx;
-            const _fromAddress = isSCW ? smartAccount.address : address;
-            const _toAdress = isSCW ? address : smartAccount.address;
+            const _fromAddress = isSCW ? smartAccountAddress : address;
+            const _toAdress = isSCW ? address : smartAccountAddress;
             if (isNative) {
                 let provider = await new ethers.providers.Web3Provider(web3.givenProvider);
                 if (!provider) {

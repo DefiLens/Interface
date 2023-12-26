@@ -1,13 +1,22 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import { BigNumber } from "ethers";
 import { toast } from "react-hot-toast";
 import { BigNumber as bg } from "bignumber.js";
 
+import { ethers } from "ethers";
+import { defaultAbiCoder } from "ethers/lib/utils";
+
+import {
+    SessionKeyManagerModule,
+    DEFAULT_SESSION_KEY_MANAGER_MODULE,
+    ECDSAOwnershipValidationModule,
+    DEFAULT_ECDSA_OWNERSHIP_MODULE,
+} from "@biconomy/modules";
 import { Bundler, IBundler } from "@biconomy/bundler";
 import { useAddress, useSigner } from "@thirdweb-dev/react";
 import { BiconomyPaymaster, IPaymaster } from "@biconomy/paymaster";
-import { BiconomySmartAccount, BiconomySmartAccountConfig, DEFAULT_ENTRYPOINT_ADDRESS } from "@biconomy/account";
+import { BiconomySmartAccountV2, BiconomySmartAccountConfig, DEFAULT_ENTRYPOINT_ADDRESS } from "@biconomy/account";
 
 import Trade from "./Trade";
 import IERC20 from "../../abis/IERC20.json";
@@ -21,6 +30,9 @@ import { useCCRefinance } from "../../hooks/Batching/useCCRefinance";
 import { useEoaProvider } from "../../hooks/aaProvider/useEoaProvider";
 import { useSwitchOnSpecificChain } from "../../hooks/useSwitchOnSpecificChain";
 import { useBiconomyProvider } from "../../hooks/aaProvider/useBiconomyProvider";
+import { useBiconomyGasLessProvider } from "../../hooks/aaProvider/useBiconomyGasLessProvider";
+import { useBiconomyERC20Provider } from "../../hooks/aaProvider/useBiconomyERC20Provider";
+import { useBiconomySessionKeyProvider } from "../../hooks/aaProvider/useBiconomySessionKeyProvider";
 import { iSelectedNetwork, iTrading, useTradingStore } from "../../store/TradingStore";
 import { decreasePowerByDecimals, getTokenListByChainId, incresePowerByDecimals } from "../../utils/helper";
 import { getContractInstance, getErc20Balanceof, getErc20Decimals, getProvider } from "../../utils/web3Libs/ethers";
@@ -31,12 +43,26 @@ const TradeContainer: React.FC<any> = () => {
     const address = useAddress(); // Detect the connected address
     const signer: any = useSigner(); // Detect the connected address
 
+    const [isSessionKeyModuleEnabled, setIsSessionKeyModuleEnabled] = useState<boolean>(false);
+    const [isSessionActive, setIsSessionActive] = useState<boolean>(false);
+
     const { mutateAsync: sendToBiconomy } = useBiconomyProvider();
+    const { mutateAsync: sendToGasLessBiconomy } = useBiconomyGasLessProvider();
+    const { mutateAsync: sendToERC20Biconomy } = useBiconomyERC20Provider();
+    const { mutateAsync: sendToSessionKeyBiconomy } = useBiconomySessionKeyProvider();
+
     const { mutateAsync: sendTxTrditionally } = useEoaProvider();
     const { mutateAsync: refinance } = useRefinance();
     const { mutateAsync: refinanceForCC } = useCCRefinance();
     const { mutateAsync: switchOnSpecificChain } = useSwitchOnSpecificChain();
-    const { smartAccount, setLoading, setSmartAccount, setConnected }: iGlobal = useGlobalStore((state) => state);
+    const {
+        smartAccount,
+        smartAccountAddress,
+        setLoading,
+        setSmartAccount,
+        setSmartAccountAddress,
+        setConnected,
+    }: iGlobal = useGlobalStore((state) => state);
 
     const {
         maxBalance,
@@ -80,6 +106,225 @@ const TradeContainer: React.FC<any> = () => {
     }: iTrading = useTradingStore((state) => state);
 
     useEffect(() => {
+        let checkSessionModuleEnabled = async () => {
+            if (!address || !smartAccount) {
+                setIsSessionKeyModuleEnabled(false);
+                return;
+            }
+            try {
+                const isEnabled = await smartAccount.isModuleEnabled(DEFAULT_SESSION_KEY_MANAGER_MODULE);
+                console.log("isSessionKeyModuleEnabled", isEnabled);
+                setIsSessionKeyModuleEnabled(isEnabled);
+                return;
+            } catch (err: any) {
+                console.log("checkSessionModuleEnabled-error", err);
+                console.error(err);
+                setIsSessionKeyModuleEnabled(false);
+                return;
+            }
+        };
+        checkSessionModuleEnabled();
+    }, [isSessionKeyModuleEnabled, address, smartAccount]);
+
+    const createSession = async (enableSessionKeyModule: boolean) => {
+        // toast.info("Creating Session...", {
+        //     position: "top-right",
+        //     autoClose: 15000,
+        //     hideProgressBar: false,
+        //     closeOnClick: true,
+        //     pauseOnHover: true,
+        //     draggable: true,
+        //     progress: undefined,
+        //     theme: "dark",
+        // });
+        if (!address || !smartAccount) {
+            alert("Please connect wallet first");
+        }
+        try {
+            const erc20ModuleAddr = "0x000000D50C68705bd6897B2d17c7de32FB519fDA";
+            // -----> setMerkle tree tx flow
+            // create dapp side session key
+            const sessionSigner = ethers.Wallet.createRandom();
+            const sessionKeyEOA = await sessionSigner.getAddress();
+            console.log("sessionKeyEOA", sessionKeyEOA);
+            // BREWARE JUST FOR DEMO: update local storage with session key
+            window.localStorage.setItem("sessionPKey", sessionSigner.privateKey);
+
+            if (!address) return;
+
+            // generate sessionModule
+            const sessionModule = await SessionKeyManagerModule.create({
+                moduleAddress: DEFAULT_SESSION_KEY_MANAGER_MODULE,
+                smartAccountAddress: smartAccountAddress,
+            });
+
+            // cretae session key data
+            const sessionKeyData = defaultAbiCoder.encode(
+                ["address", "address", "address", "uint256"],
+                [
+                    sessionKeyEOA,
+                    "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174", // erc20 token address
+                    "0x8Acf3088E8922e9Ec462B1D592B5e6aa63B8d2D5", // receiver address
+                    ethers.utils.parseUnits("10".toString(), 6).toHexString(), // 50 usdc amount
+                ]
+            );
+
+            const sessionTxData = await sessionModule.createSessionData([
+                {
+                    validUntil: 0,
+                    validAfter: 0,
+                    sessionValidationModule: erc20ModuleAddr,
+                    sessionPublicKey: sessionKeyEOA,
+                    sessionKeyData: sessionKeyData,
+                },
+            ]);
+            console.log("sessionTxData", sessionTxData);
+
+            // tx to set session key
+            const setSessiontrx = {
+                to: DEFAULT_SESSION_KEY_MANAGER_MODULE, // session manager module address
+                data: sessionTxData.data,
+            };
+            const transactionArray: any = [];
+
+            // if (enableSessionKeyModule) {
+            //     alert('enableSessionKeyModule+1---- ' + enableSessionKeyModule)
+            //     // -----> enableModule session manager module
+            // const enableModuleTrx = await smartAccount.getEnableModuleData(DEFAULT_SESSION_KEY_MANAGER_MODULE);
+            // transactionArray.push(enableModuleTrx);
+            // }
+            // alert('enableSessionKeyModule+2---- ' + enableSessionKeyModule)
+
+            transactionArray.push(setSessiontrx);
+            let partialUserOp = await smartAccount.buildUserOp(transactionArray);
+            console.log("userOp Hash:", partialUserOp);
+
+            const userOpResponse = await smartAccount.sendUserOp(partialUserOp);
+            console.log(`userOp Hash: ${userOpResponse.userOpHash}`);
+            const transactionDetails = await userOpResponse.wait();
+            console.log("txHash", transactionDetails.receipt.transactionHash);
+            setIsSessionActive(true);
+            // toast.success(`Success! Session created succesfully`, {
+            //     position: "top-right",
+            //     autoClose: 18000,
+            //     hideProgressBar: false,
+            //     closeOnClick: true,
+            //     pauseOnHover: true,
+            //     draggable: true,
+            //     progress: undefined,
+            //     theme: "dark",
+            // });
+        } catch (err: any) {
+            console.error(err);
+        }
+    };
+
+    const erc20Transfer = async () => {
+        if (!address || !smartAccount || !address) {
+            alert("Please connect wallet first");
+            return;
+        }
+        try {
+            //   toast.info('Transferring 1 USDC to recipient...', {
+            //     position: "top-right",
+            //     autoClose: 15000,
+            //     hideProgressBar: false,
+            //     closeOnClick: true,
+            //     pauseOnHover: true,
+            //     draggable: true,
+            //     progress: undefined,
+            //     theme: "dark",
+            //     });
+            const erc20ModuleAddr = "0x000000D50C68705bd6897B2d17c7de32FB519fDA";
+            // get session key from local storage
+            const sessionKeyPrivKey = window.localStorage.getItem("sessionPKey");
+            console.log("sessionKeyPrivKey", sessionKeyPrivKey);
+            if (!sessionKeyPrivKey) {
+                alert("Session key not found please create session");
+                return;
+            }
+            const sessionSigner = new ethers.Wallet(sessionKeyPrivKey);
+            console.log("sessionSigner", sessionSigner);
+
+            // generate sessionModule
+            const sessionModule = await SessionKeyManagerModule.create({
+                moduleAddress: DEFAULT_SESSION_KEY_MANAGER_MODULE,
+                smartAccountAddress: smartAccountAddress,
+            });
+
+            // set active module to sessionModule
+            console.log("smartAccount2-1", smartAccount);
+            let smartAccount2: any = await smartAccount.setActiveValidationModule(sessionModule);
+            console.log("smartAccount2-2", smartAccount2);
+
+            const provider = await getProvider(selectedFromNetwork.chainId);
+            const tokenContract: any = await getContractInstance(
+                "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
+                IERC20,
+                provider
+            );
+
+            let decimals = 6;
+
+            try {
+                decimals = await tokenContract.decimals();
+            } catch (error) {
+                throw new Error("invalid token address supplied");
+            }
+
+            const { data } = await tokenContract.populateTransaction.transfer(
+                "0x8Acf3088E8922e9Ec462B1D592B5e6aa63B8d2D5", // receiver address
+                ethers.utils.parseUnits("0.001".toString(), decimals)
+            );
+
+            // generate tx data to erc20 transfer
+            const tx1 = {
+                to: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174", //erc20 token address
+                data: data,
+                value: "0",
+            };
+
+            // build user op
+            let userOp = await smartAccount2.buildUserOp([tx1], {
+                overrides: {
+                    // signature: "0x0000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000456b395c4e107e0302553b90d1ef4a32e9000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000db3d753a1da5a6074a9f74f39a0a779d3300000000000000000000000000000000000000000000000000000000000000c0000000000000000000000000000000000000000000000000000000000000016000000000000000000000000000000000000000000000000000000000000001800000000000000000000000000000000000000000000000000000000000000080000000000000000000000000bfe121a6dcf92c49f6c2ebd4f306ba0ba0ab6f1c000000000000000000000000da5289fcaaf71d52a80a254da614a192b693e97700000000000000000000000042138576848e839827585a3539305774d36b96020000000000000000000000000000000000000000000000000000000002faf08000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000041feefc797ef9e9d8a6a41266a85ddf5f85c8f2a3d2654b10b415d348b150dabe82d34002240162ed7f6b7ffbc40162b10e62c3e35175975e43659654697caebfe1c00000000000000000000000000000000000000000000000000000000000000"
+                    // callGasLimit: 2000000, // only if undeployed account
+                    // verificationGasLimit: 700000
+                },
+                skipBundlerGasEstimation: false,
+                params: {
+                    sessionSigner: sessionSigner,
+                    sessionValidationModule: erc20ModuleAddr,
+                },
+            });
+
+            // send user op
+            const userOpResponse = await smartAccount2.sendUserOp(userOp, {
+                sessionSigner: sessionSigner,
+                sessionValidationModule: erc20ModuleAddr,
+                simulationType: "validation_and_execution",
+            });
+
+            console.log("userOpHash", userOpResponse);
+            const { receipt } = await userOpResponse.wait(1);
+            console.log("txHash", receipt.transactionHash);
+            //   const polygonScanlink = `https://mumbai.polygonscan.com/tx/${receipt.transactionHash}`
+            //   toast.success(<a target="_blank" href={polygonScanlink}>Success Click to view transaction</a>, {
+            //     position: "top-right",
+            //     autoClose: 18000,
+            //     hideProgressBar: false,
+            //     closeOnClick: true,
+            //     pauseOnHover: true,
+            //     draggable: true,
+            //     progress: undefined,
+            //     theme: "dark",
+            //     });
+        } catch (err: any) {
+            console.error(err);
+        }
+    };
+
+    useEffect(() => {
         if (individualBatch.length === 1 && individualBatch[0].txArray.length === 0) {
             setShowBatchList(false);
         }
@@ -121,6 +366,7 @@ const TradeContainer: React.FC<any> = () => {
             if (!address) {
                 setAmountIn("");
                 setSmartAccount(null);
+                setSmartAccountAddress("");
                 setConnected(false);
                 setSelectedFromNetwork({
                     key: "",
@@ -254,7 +500,7 @@ const TradeContainer: React.FC<any> = () => {
             setSafeState(setFromTokenDecimal, fromTokendecimal, 0);
 
             let scwAddress: any;
-            if (!smartAccount?.address) {
+            if (!smartAccountAddress) {
                 const createAccount = async (chainId: any) => {
                     const bundler: IBundler = new Bundler({
                         bundlerUrl: ChainIdDetails[chainId].bundlerURL,
@@ -264,14 +510,30 @@ const TradeContainer: React.FC<any> = () => {
                     const paymaster: IPaymaster = new BiconomyPaymaster({
                         paymasterUrl: ChainIdDetails[chainId].paymasterUrl,
                     });
-                    const biconomySmartAccountConfig: BiconomySmartAccountConfig = {
+
+                    // const biconomySmartAccountConfig: BiconomySmartAccountConfig = {
+                    //     signer: signer,
+                    //     chainId: chainId,
+                    //     bundler: bundler,
+                    //     paymaster: paymaster,
+                    // };
+                    // let biconomySmartAccount = new BiconomySmartAccount(biconomySmartAccountConfig);
+                    // biconomySmartAccount = await biconomySmartAccount.init();
+
+                    const ownerShipModule: any = await ECDSAOwnershipValidationModule.create({
                         signer: signer,
+                        moduleAddress: DEFAULT_ECDSA_OWNERSHIP_MODULE,
+                    });
+                    //   setProvider(provider)
+                    let biconomySmartAccount = await BiconomySmartAccountV2.create({
                         chainId: chainId,
                         bundler: bundler,
                         paymaster: paymaster,
-                    };
-                    let biconomySmartAccount = new BiconomySmartAccount(biconomySmartAccountConfig);
-                    biconomySmartAccount = await biconomySmartAccount.init();
+                        entryPointAddress: DEFAULT_ENTRYPOINT_ADDRESS,
+                        defaultValidationModule: ownerShipModule,
+                        activeValidationModule: ownerShipModule,
+                    });
+                    console.log("biconomySmartAccount-1", biconomySmartAccount);
                     return biconomySmartAccount;
                 };
                 scwAddress = await createAccount(selectedFromNetwork.chainId);
@@ -279,7 +541,7 @@ const TradeContainer: React.FC<any> = () => {
 
             const maxBal: any = await getErc20Balanceof(
                 erc20,
-                smartAccount?.address ? smartAccount?.address : scwAddress.address
+                smartAccountAddress ? smartAccountAddress : scwAddress.address
             );
             const MaxBalance = await decreasePowerByDecimals(maxBal?.toString(), fromTokendecimal);
             setMaxBalance(MaxBalance);
@@ -587,7 +849,7 @@ const TradeContainer: React.FC<any> = () => {
                     tokenOut: "",
                     tokenOutName: selectedToToken,
                     amount: _tempAmount,
-                    address: isSCW ? smartAccount.address : address,
+                    address: isSCW ? smartAccountAddress : address,
                     provider,
                 });
             } else {
@@ -600,7 +862,7 @@ const TradeContainer: React.FC<any> = () => {
                     tokenOut: "",
                     tokenOutName: selectedToToken,
                     amount: _tempAmount,
-                    address: isSCW ? smartAccount.address : address,
+                    address: isSCW ? smartAccountAddress : address,
                     provider,
                 });
             }
@@ -665,9 +927,13 @@ const TradeContainer: React.FC<any> = () => {
             }
             const mergeArray: any = [];
             await individualBatch.map((bar) => bar.txArray.map((hash) => mergeArray.push(hash)));
+            console.log('mergeArray: ', mergeArray)
             let tempTxhash = "";
             if (isSCW) {
                 tempTxhash = await sendToBiconomy(mergeArray);
+                // tempTxhash = await sendToGasLessBiconomy(mergeArray);
+                // tempTxhash = await sendToERC20Biconomy(mergeArray);
+                // tempTxhash = await sendToSessionKeyBiconomy(mergeArray);
             } else {
                 tempTxhash = await sendTxTrditionally(mergeArray);
             }
@@ -699,6 +965,8 @@ const TradeContainer: React.FC<any> = () => {
             ExecuteAllBatches={ExecuteAllBatches}
             closeFromSelectionMenu={closeFromSelectionMenu}
             closeToSelectionMenu={closeToSelectionMenu}
+            createSession={createSession}
+            erc20Transfer={erc20Transfer}
         />
     );
 };

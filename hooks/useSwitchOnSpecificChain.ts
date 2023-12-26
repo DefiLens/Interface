@@ -6,7 +6,7 @@ import { BigNumber as bg } from "bignumber.js";
 import { useMutation } from "@tanstack/react-query";
 import { Bundler, IBundler } from "@biconomy/bundler";
 import { BiconomyPaymaster, IPaymaster } from "@biconomy/paymaster";
-import { BiconomySmartAccount, BiconomySmartAccountConfig, DEFAULT_ENTRYPOINT_ADDRESS } from "@biconomy/account";
+import { BiconomySmartAccountV2, BiconomySmartAccountConfig, DEFAULT_ENTRYPOINT_ADDRESS } from "@biconomy/account";
 import { metamaskWallet, useAddress, useChain, useConnect, useSigner, useSwitchChain } from "@thirdweb-dev/react";
 
 import { ChainIdDetails } from "../utils/data/network";
@@ -14,6 +14,7 @@ import { iGlobal, useGlobalStore } from "../store/GlobalStore";
 import { iTrading, useTradingStore } from "../store/TradingStore";
 import { useCalculatebalance } from "../hooks/utilsHooks/useCalculateBalance";
 import { arbitrum, avalanche, base, ethereum, optimism, polygon } from "../assets/images";
+import { DEFAULT_ECDSA_OWNERSHIP_MODULE, DEFAULT_MULTICHAIN_MODULE, ECDSAOwnershipValidationModule, MultiChainValidationModule } from "@biconomy/modules";
 
 bg.config({ DECIMAL_PLACES: 5 });
 
@@ -23,7 +24,9 @@ export function useSwitchOnSpecificChain() {
         setConnected,
         setLoading,
         smartAccount,
+        smartAccountAddress,
         setSmartAccount,
+        setSmartAccountAddress,
         setCurrentProvider,
         setSelectedNetwork,
     }: iGlobal = useGlobalStore((state) => state);
@@ -41,8 +44,9 @@ export function useSwitchOnSpecificChain() {
             if (address && smartAccount && chain) {
                 if (smartAccount.owner == address) return;
                 const _smartAccount = await login(chain?.chainId);
+                console.log('_smartAccount--use', _smartAccount)
                 // @ts-ignore
-                await isNetworkCorrect(chain?.chainId, _smartAccount.address);
+                await isNetworkCorrect(chain?.chainId, await _smartAccount.getAccountAddress());
 
                 setSelectedNetwork({
                     key: chain?.chain,
@@ -58,6 +62,7 @@ export function useSwitchOnSpecificChain() {
                 });
             } else {
                 setSmartAccount(null);
+                setSmartAccountAddress("");
                 setConnected(false);
 
                 setSelectedNetwork({
@@ -79,7 +84,7 @@ export function useSwitchOnSpecificChain() {
     }, [address]);
 
     useEffect(() => {
-        if (smartAccount) isNetworkCorrect(chain?.chainId, smartAccount.address);
+        if (smartAccount) isNetworkCorrect(chain?.chainId, smartAccountAddress);
     }, []);
 
     const handleConnect = async () => {
@@ -101,14 +106,34 @@ export function useSwitchOnSpecificChain() {
         const paymaster: IPaymaster = new BiconomyPaymaster({
             paymasterUrl: ChainIdDetails[chainId].paymasterURL,
         });
-        const biconomySmartAccountConfig: BiconomySmartAccountConfig = {
+        // const biconomySmartAccountConfig: BiconomySmartAccountConfig = {
+        //     signer: signer,
+        //     chainId: chainId,
+        //     bundler: bundler,
+        //     paymaster: paymaster,
+        // };
+        // let biconomySmartAccount = new BiconomySmartAccount(biconomySmartAccountConfig);
+        // biconomySmartAccount = await biconomySmartAccount.init();
+        const ownerShipModule: any = await ECDSAOwnershipValidationModule.create({
             signer: signer,
+            moduleAddress: DEFAULT_ECDSA_OWNERSHIP_MODULE,
+        });
+        const multiChainModule = await MultiChainValidationModule.create({
+            signer: signer,
+            moduleAddress: DEFAULT_MULTICHAIN_MODULE,
+          });
+        //   setProvider(provider)
+        let biconomySmartAccount = await BiconomySmartAccountV2.create({
             chainId: chainId,
             bundler: bundler,
             paymaster: paymaster,
-        };
-        let biconomySmartAccount = new BiconomySmartAccount(biconomySmartAccountConfig);
-        biconomySmartAccount = await biconomySmartAccount.init();
+            entryPointAddress: DEFAULT_ENTRYPOINT_ADDRESS,
+            defaultValidationModule: multiChainModule,
+            activeValidationModule: multiChainModule,
+        });
+        // await biconomySmartAccount.init()
+        // console.log('biconomySmartAccount-2', biconomySmartAccount)
+
         return biconomySmartAccount;
     };
 
@@ -145,6 +170,10 @@ export function useSwitchOnSpecificChain() {
         try {
             const smartAccount = await createAccount(chainId);
             setSmartAccount(smartAccount);
+            const _smartAccountAddress = await smartAccount.getAccountAddress()
+            console.log('_smartAccountAddress ,', _smartAccountAddress)
+            setSmartAccountAddress(_smartAccountAddress);
+
             setLoading(false);
             setCurrentProvider("Biconomy");
             return smartAccount;
@@ -161,9 +190,11 @@ export function useSwitchOnSpecificChain() {
                 // await logout()
                 if (chainName == "polygon") {
                     await switchChain(137);
-                    const _smartAccount = await login(137);
+                    const _smartAccount: any = await login(137);
+                    const _smartAccountAddress = await _smartAccount.getAccountAddress()
+                    console.log('_smartAccountAddress: ', _smartAccountAddress)
                     // @ts-ignore
-                    await isNetworkCorrect(137, _smartAccount.address);
+                    await isNetworkCorrect(137, _smartAccountAddress);
 
                     setSelectedNetwork({
                         key: "Polygon",
@@ -179,9 +210,11 @@ export function useSwitchOnSpecificChain() {
                     });
                 } else if (chainName == "arbitrum") {
                     await switchChain?.(42161);
-                    const _smartAccount = await login(42161);
+                    const _smartAccount: any = await login(42161);
+                    const _smartAccountAddress = await _smartAccount.getAccountAddress()
+                    console.log('_smartAccountAddress: ', _smartAccountAddress)
                     // @ts-ignore
-                    await isNetworkCorrect(42161, _smartAccount.address);
+                    await isNetworkCorrect(42161, _smartAccountAddress);
 
                     setSelectedNetwork({
                         key: "Arbitrum",
@@ -197,9 +230,12 @@ export function useSwitchOnSpecificChain() {
                     });
                 } else if (chainName == "avalanche") {
                     await switchChain(43114);
-                    const _smartAccount = await login(43114);
+
+                    const _smartAccount: any = await login(43114);
+                    const _smartAccountAddress = await _smartAccount.getAccountAddress()
+                    console.log('_smartAccountAddress: ', _smartAccountAddress)
                     // @ts-ignore
-                    await isNetworkCorrect(43114, _smartAccount.address);
+                    await isNetworkCorrect(43114, _smartAccountAddress);
 
                     setSelectedNetwork({
                         key: "Avalanche",
@@ -215,9 +251,13 @@ export function useSwitchOnSpecificChain() {
                     });
                 } else if (chainName == "optimism") {
                     await switchChain?.(10);
-                    const _smartAccount = await login(10);
+
+                    const _smartAccount: any = await login(10);
+                    const _smartAccountAddress = await _smartAccount.getAccountAddress()
+                    console.log('_smartAccountAddress: ', _smartAccountAddress)
                     // @ts-ignore
-                    await isNetworkCorrect(10, _smartAccount.address);
+                    await isNetworkCorrect(10, _smartAccountAddress);
+
 
                     setSelectedNetwork({
                         key: "Optimism",
@@ -233,9 +273,12 @@ export function useSwitchOnSpecificChain() {
                     });
                 } else if (chainName == "ethereum") {
                     await switchChain(1);
-                    const _smartAccount = await login(1);
+
+                    const _smartAccount: any = await login(1);
+                    const _smartAccountAddress = await _smartAccount.getAccountAddress()
+                    console.log('_smartAccountAddress: ', _smartAccountAddress)
                     // @ts-ignore
-                    await isNetworkCorrect(1, _smartAccount.address);
+                    await isNetworkCorrect(1, _smartAccountAddress);
 
                     setSelectedNetwork({
                         key: "Ethereum",
@@ -251,9 +294,12 @@ export function useSwitchOnSpecificChain() {
                     });
                 } else if (chainName == "base") {
                     await switchChain?.(8453);
-                    const _smartAccount = await login(8453);
+
+                    const _smartAccount: any = await login(8453);
+                    const _smartAccountAddress = await _smartAccount.getAccountAddress()
+                    console.log('_smartAccountAddress: ', _smartAccountAddress)
                     // @ts-ignore
-                    await isNetworkCorrect(8453, _smartAccount.address);
+                    await isNetworkCorrect(8453, _smartAccountAddress);
 
                     setSelectedNetwork({
                         key: "Base",
@@ -270,7 +316,9 @@ export function useSwitchOnSpecificChain() {
                 }
             } else {
                 if (chain) {
-                    const _smartAccount = await login(chain?.chainId);
+                    const _smartAccount: any = await login(chain?.chainId);
+                    const _smartAccountAddress = await _smartAccount.getAccountAddress()
+                    console.log('_smartAccountAddress: ', _smartAccountAddress)
 
                     setSelectedNetwork({
                         key: chain?.chain,
@@ -286,7 +334,7 @@ export function useSwitchOnSpecificChain() {
                     });
 
                     // @ts-ignore
-                    await isNetworkCorrect(chain?.chainId, _smartAccount.address);
+                    await isNetworkCorrect(chain?.chainId, _smartAccountAddress);
                 }
             }
         } catch (error: any) {
@@ -298,6 +346,7 @@ export function useSwitchOnSpecificChain() {
         try {
             setLoading(true);
             setSmartAccount(null);
+            setSmartAccountAddress("");
             await changeChain(chainName);
             setLoading(false);
         } catch (error: any) {

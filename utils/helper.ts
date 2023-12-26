@@ -249,7 +249,7 @@ export const buildTxHash = (chainId: string, txhash: string, isSocketScan?: bool
     } else if (chainId == "42161") {
         return `https://arbiscan.io/tx/${txhash}`;
     } else if (chainId == "10") {
-        return `https://polygonscan.com/tx/${txhash}`;
+        return `https://optimistic.etherscan.io/tx/${txhash}`;
     } else if (chainId == "1") {
         return `https://etherscan.io/tx/${txhash}`;
     } else if (chainId == "8453") {

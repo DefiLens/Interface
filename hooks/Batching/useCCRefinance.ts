@@ -18,12 +18,16 @@ import {
     tokensByNetworkForCC,
     uniswapSwapRouterByChainId,
 } from "../../utils/data/protocols";
+import { useCCSendTx2 } from "./useCCSendTx2";
+import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 
 export function useCCRefinance() {
     const address = useAddress(); // Detect the connected address
     const { mutateAsync: swap } = useUniswap();
     const { mutateAsync: approve } = useApprove();
     const { mutateAsync: sendTxToChain } = useCCSendTx();
+    const { mutateAsync: sendTxToChain2 } = useCCSendTx2();
+    const { selectedNetwork }: iGlobal = useGlobalStore((state) => state);
 
     const {
         selectedFromNetwork,
@@ -146,6 +150,7 @@ export function useCCRefinance() {
                     amountIn: amount, //: BigNumber.from('1000000'),
                     address,
                     type: "exactIn",
+                    chainId: selectedNetwork.chainId
                 });
                 tempTxs.push(swapData.swapTx);
 
@@ -164,17 +169,18 @@ export function useCCRefinance() {
             if (selectedFromNetwork.chainName != selectedToNetwork.chainName) {
                 const tokenOutNum = nativeTokenNum[selectedToNetwork.chainId][tokenOutName];
                 const nativeTokenOutTemp = nativeTokenFetcher[selectedToNetwork.chainId][tokenOutNum].symbol;
-                if (nativeTokenOutTemp != "usdc") {
-                    toast(
-                        `Cross-chain Error: Select Usdc Based ToToken on ToNetwork Side like aUSDC, cUSDC.
-                    As of now only Usdc Based trade is possible for cross-chain.
-                    Will update soon...`,
-                        {
-                            duration: 20000,
-                        }
-                    );
-                    return;
-                }
+                const nativeTokenOutAddress = nativeTokenFetcher[selectedToNetwork.chainId][tokenOutNum].nativeToken;
+                // if (nativeTokenOutTemp != "usdc") {
+                //     toast(
+                //         `Cross-chain Error: Select Usdc Based ToToken on ToNetwork Side like aUSDC, cUSDC.
+                //     As of now only Usdc Based trade is possible for cross-chain.
+                //     Will update soon...`,
+                //         {
+                //             duration: 20000,
+                //         }
+                //     );
+                //     return;
+                // }
 
                 abiNum = abiFetcherNum[selectedToNetwork.chainId][tokenOutName];
                 // const newTokenIn = isSwap ? tokensByNetworkForCC[selectedToNetwork.chainId].usdc : nativeTokenIn;
@@ -184,7 +190,7 @@ export function useCCRefinance() {
                 params = await buildParams({
                     tokenIn,
                     tokenOut,
-                    nativeTokenIn: newTokenIn,
+                    nativeTokenIn: nativeTokenOutTemp != "usdc" ? nativeTokenOutAddress : newTokenIn, // if bothe network different
                     nativeTokenOut,
                     amount,
                     address,
@@ -202,7 +208,7 @@ export function useCCRefinance() {
                 } else {
                     tokenOutContractAddress = abiFetcher[selectedToNetwork.chainId][abiNum]["contractAddress"];
                 }
-                let txs: any = await sendTxToChain({
+                let txs: any = await sendTxToChain2({
                     tokenIn: nativeTokenIn,
                     address,
                     isSCW: true,
@@ -216,6 +222,7 @@ export function useCCRefinance() {
                     currentAbi: [abi],
                     contractAddress: tokenOutContractAddress,
                     extraOrShareToken: "0x0000000000000000000000000000000000000000",
+                    tokenOutNum: tokenOutNum
                 });
 
                 if (!txs) return;
@@ -232,7 +239,6 @@ export function useCCRefinance() {
                     action: `Bridge from ${selectedFromNetwork.chainName} to ${selectedToNetwork.chainName}`,
                 };
                 batchFlows.push(batchFlow);
-                alert("tokenOutName+++---" + tokenOutName);
                 batchFlow = {
                     fromChainId: selectedToNetwork.chainId,
                     toChainId: selectedToNetwork.chainId,

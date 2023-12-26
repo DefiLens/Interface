@@ -34,6 +34,8 @@ const Trade: React.FC<any> = ({
     ExecuteAllBatches,
     closeFromSelectionMenu,
     closeToSelectionMenu,
+    createSession,
+    erc20Transfer,
 }: tTrade) => {
     const {
         maxBalance,
@@ -147,11 +149,11 @@ const Trade: React.FC<any> = ({
                                                                         src={item.icon}
                                                                         alt=""
                                                                         className="h-8 w-8 bg-font-200 rounded-full cursor-pointer"
-                                                                        />
+                                                                    />
                                                                     <div>
                                                                         {
                                                                             protocolNames[selectedFromNetwork.chainId]
-                                                                            .value[protocolIndex]
+                                                                                .value[protocolIndex]
                                                                         }
                                                                     </div>
                                                                 </div>
@@ -296,9 +298,8 @@ const Trade: React.FC<any> = ({
                                                                     />
                                                                     <div>
                                                                         {
-                                                                            protocolNames[selectedToNetwork.chainId].value[
-                                                                                protocolIndex
-                                                                            ]
+                                                                            protocolNames[selectedToNetwork.chainId]
+                                                                                .value[protocolIndex]
                                                                         }
                                                                     </div>
                                                                 </div>
@@ -603,6 +604,22 @@ const Trade: React.FC<any> = ({
                                         innerText="Execute Batch"
                                     />
                                 </div>
+
+                                {/* <div className="w-full flex justify-center items-center gap-3">
+                                    <Button
+                                        handleClick={() => createSession(true)}
+                                        isLoading={addToBatchLoading}
+                                        customStyle=""
+                                        innerText="Create Session"
+                                    />
+                                    <Button
+                                        handleClick={() => erc20Transfer()}
+                                        isLoading={addToBatchLoading}
+                                        customStyle=""
+                                        innerText="Transfer via session"
+                                    />
+                                </div> */}
+
                                 {/* ---------- Add Batch o List Section END ---------- */}
                             </div>
                         </div>

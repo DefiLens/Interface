@@ -23,7 +23,7 @@ const Transfer: React.FC<any> = ({
     handleAmountIn,
     send,
 }: tTransfer) => {
-    const { smartAccount }: iGlobal = useGlobalStore((state) => state);
+    const { smartAccount, smartAccountAddress }: iGlobal = useGlobalStore((state) => state);
 
     const {
         tokenAddress,
@@ -77,10 +77,10 @@ const Transfer: React.FC<any> = ({
                                         <div className="flex flex-col justify-center items-start text-font-200 text-sm">
                                             {isSCW
                                                 ? smartAccount &&
-                                                  smartAccount.address &&
-                                                  smartAccount.address.slice(0, 13) +
+                                                  smartAccountAddress &&
+                                                  smartAccountAddress.slice(0, 13) +
                                                       "..." +
-                                                      smartAccount.address.slice(-3)
+                                                      smartAccountAddress.slice(-3)
                                                 : smartAccount &&
                                                   address &&
                                                   address.slice(0, 13) + "..." + address.slice(-3)}
@@ -91,7 +91,7 @@ const Transfer: React.FC<any> = ({
                                             onClick={() => {
                                                 if (isSCW) {
                                                     copyToClipboard(
-                                                        smartAccount.address,
+                                                        smartAccountAddress,
                                                         "Smart account address Copied"
                                                     );
                                                 } else {
@@ -131,10 +131,10 @@ const Transfer: React.FC<any> = ({
                                                   address &&
                                                   address.slice(0, 13) + "..." + address.slice(-3)
                                                 : smartAccount &&
-                                                  smartAccount.address &&
-                                                  smartAccount.address.slice(0, 13) +
+                                                  smartAccountAddress &&
+                                                  smartAccountAddress.slice(0, 13) +
                                                       "..." +
-                                                      smartAccount.address.slice(-3)}
+                                                      smartAccountAddress.slice(-3)}
                                         </div>
                                         <FiCopy
                                             size="35px"
@@ -144,7 +144,7 @@ const Transfer: React.FC<any> = ({
                                                     copyToClipboard(address, "EOA address Copied");
                                                 } else {
                                                     copyToClipboard(
-                                                        smartAccount.address,
+                                                        smartAccountAddress,
                                                         "Smart account address Copied"
                                                     );
                                                 }

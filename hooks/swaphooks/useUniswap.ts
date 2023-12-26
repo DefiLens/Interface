@@ -10,18 +10,19 @@ import IERC20 from "../../abis/IERC20.json";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import { uniswapSwapRouterByChainId } from "../../utils/data/protocols";
 import { getContractInstance, getErc20Decimals, getProvider } from "../../utils/web3Libs/ethers";
+import { computePoolAddress } from '@uniswap/v3-sdk'
 
 export function useUniswap() {
     const { selectedNetwork }: iGlobal = useGlobalStore((state) => state);
-    async function swap({ tokenIn, tokenOut, amountIn, address, type }: any) {
+    async function swap({ tokenIn, tokenOut, amountIn, address, type, chainId }: any) {
         try {
-            const web3JsonProvider = await getProvider(selectedNetwork.chainId);
+            const web3JsonProvider = await getProvider(chainId);
             if (!web3JsonProvider) {
                 toast.error("No provider");
                 return;
             }
             const router = new AlphaRouter({
-                chainId: BigNumber.from(selectedNetwork.chainId).toNumber(),
+                chainId: BigNumber.from(chainId).toNumber(),
                 provider: web3JsonProvider,
             });
 
@@ -38,9 +39,9 @@ export function useUniswap() {
                 type: SwapType.SWAP_ROUTER_02,
             };
 
-            const currencyIn = new Token(BigNumber.from(selectedNetwork.chainId).toNumber(), tokenIn, tokenInDecimals);
+            const currencyIn = new Token(BigNumber.from(chainId).toNumber(), tokenIn, tokenInDecimals);
             const currencyOut = new Token(
-                BigNumber.from(selectedNetwork.chainId).toNumber(),
+                BigNumber.from(chainId).toNumber(),
                 tokenOut,
                 tokenOutDecimals
             );
@@ -49,16 +50,20 @@ export function useUniswap() {
             const quoteCurrency = type === "exactIn" ? currencyOut : currencyIn;
 
             const amount = await CurrencyAmount.fromRawAmount(baseCurrency, amountIn);
+            console.log('amountIn:', amount)
+            console.log('quoteCurrency:', quoteCurrency, tokenOutDecimals)
+
             const route: any = await router?.route(
                 amount,
                 quoteCurrency,
                 type === "exactIn" ? TradeType.EXACT_INPUT : TradeType.EXACT_OUTPUT,
                 options
             );
+            console.log('route:', route)
             let amountOutprice: any = route?.quote.toExact().toString();
             amountOutprice = parseUnits(amountOutprice, tokenOutDecimals);
             const swapTx = {
-                to: uniswapSwapRouterByChainId[selectedNetwork.chainId],
+                to: uniswapSwapRouterByChainId[chainId],
                 data: route.methodParameters?.calldata,
             };
             return { swapTx, tokenIn, tokenOut, amountOutprice, tokenInDecimals, tokenOutDecimals };

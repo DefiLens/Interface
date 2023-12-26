@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-import { BiconomySmartAccount } from "@biconomy/account";
+import { BiconomySmartAccountV2 } from "@biconomy/account";
 
 export interface iSelectedNetwork {
     key: string;
@@ -20,7 +20,8 @@ export interface iGlobal {
 
     connected: boolean;
     loading: boolean;
-    smartAccount: BiconomySmartAccount | null | any;
+    smartAccount: BiconomySmartAccountV2 | null | any;
+    smartAccountAddress: string | null | any;
     scwBalance: string;
     eoaBalance: string;
 
@@ -36,7 +37,8 @@ export interface iGlobal {
 
     setConnected: (connected: boolean) => void;
     setLoading: (loading: boolean) => void;
-    setSmartAccount: (smartAccount: BiconomySmartAccount | null) => void;
+    setSmartAccount: (smartAccount: BiconomySmartAccountV2 | null) => void;
+    setSmartAccountAddress: (smartAccountAddress: string | null) => void;
     setScwBalance: (scwBalance: string) => void;
     setEoaBalance: (eoaBalance: string) => void;
 
@@ -60,6 +62,7 @@ export const useGlobalStore = create<iGlobal>((set) => ({
     connected: false,
     loading: false,
     smartAccount: null,
+    smartAccountAddress: "",
     scwBalance: "",
     eoaBalance: "",
 
@@ -76,6 +79,7 @@ export const useGlobalStore = create<iGlobal>((set) => ({
     setConnected: (connected) => set(() => ({ connected })),
     setLoading: (loading) => set(() => ({ loading })),
     setSmartAccount: (smartAccount) => set(() => ({ smartAccount })),
+    setSmartAccountAddress: (smartAccountAddress) => set(() => ({ smartAccountAddress })),
     setScwBalance: (scwBalance) => set(() => ({ scwBalance })),
     setEoaBalance: (eoaBalance) => set(() => ({ eoaBalance })),
 

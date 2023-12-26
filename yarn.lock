@@ -128,7 +128,7 @@
     dotenv "^16.0.3"
     ethereumjs-util "^7.1.0"
 
-"@biconomy/account@^3.1.0":
+"@biconomy/account@3.1.1":
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/@biconomy/account/-/account-3.1.1.tgz#5340423dedb08761d9f3a496a35b6508181742f2"
   integrity sha512-4I8Ev4rMsdnWXr0vMErKrJ4CSBarwIISYHsJEfCnaFYyujoEvxM4srpcfA1NMVhCWzNiD2gJiELt1blIY5quWg==
@@ -148,7 +148,7 @@
     loglevel "^1.8.1"
     lru-cache "^10.0.1"
 
-"@biconomy/bundler@^3.1.0", "@biconomy/bundler@^3.1.1":
+"@biconomy/bundler@3.1.1", "@biconomy/bundler@^3.1.1":
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/@biconomy/bundler/-/bundler-3.1.1.tgz#5405fe95eb96e840c368abd188f018b8580d4dd3"
   integrity sha512-R4GvBuOtOIb5XHsQMJRV9WGmL8nIN0yu+Wt4h/PSxjxoDBsiuBfl2PkCm2OTJcpX7Q+hvzcc1ZcQCtOyDJkLdQ==
@@ -158,7 +158,7 @@
     "@ethersproject/providers" "^5.7.2"
     ethers "^5.7.0"
 
-"@biconomy/common@^3.1.0", "@biconomy/common@^3.1.1":
+"@biconomy/common@3.1.1", "@biconomy/common@^3.1.1":
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/@biconomy/common/-/common-3.1.1.tgz#1c830cd1476b8acac35e3bcec6d1a19b84d0ed9b"
   integrity sha512-H8KJ4ZORVso6FJ388JcfY0vWK+vzfPwTYlnf+ns/Zc3UwkwLjyKGpCsvoA6XBe9GcvmEDOyssisXQVjxTirhGA==
@@ -177,7 +177,7 @@
     node-fetch "^2.7.0"
     typechain "^8.1.1"
 
-"@biconomy/core-types@^3.1.0", "@biconomy/core-types@^3.1.1":
+"@biconomy/core-types@3.1.1", "@biconomy/core-types@^3.1.1":
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/@biconomy/core-types/-/core-types-3.1.1.tgz#3a358ac66bdb355b5cf988ec33aa3b4efbe9ceda"
   integrity sha512-BYRHYUxH755orvp5kAs5cAELfWEzZjD0QbDaB+xs7f+yk5EDe5cxTKQ72I+NsCjuABMlLEOFilV54fognyvSZA==
@@ -188,7 +188,7 @@
     ethers "^5.7.2"
     web3-core "^1.7.1"
 
-"@biconomy/modules@^3.1.1":
+"@biconomy/modules@3.1.1", "@biconomy/modules@^3.1.1":
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/@biconomy/modules/-/modules-3.1.1.tgz#f8fa676457c3d5c4eabfa743d274491e1da5312a"
   integrity sha512-Y+z9i0NZW9DtYBYIZw94oquqc2tD4Z0aWGOxCREdz5AOEBEfjZRxjgvEoM1/ydQqZJexSRyP7tGzTwEgw9lAlQ==
@@ -210,7 +210,7 @@
     "@nomiclabs/hardhat-ethers" "^2.1.0"
     node-fetch "^2.6.6"
 
-"@biconomy/paymaster@^3.1.0", "@biconomy/paymaster@^3.1.1":
+"@biconomy/paymaster@3.1.1", "@biconomy/paymaster@^3.1.1":
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/@biconomy/paymaster/-/paymaster-3.1.1.tgz#ef4eb0cfe7b2bc8763c712c4fe543f176daf5ef4"
   integrity sha512-L3KPlVLmuXKzd0PRMhzQ3XDmQ4eVEjSFb04r/yWBtcvHINS3Q9VXFKMY0t55ScE0PmrDTIaWRE3XaOs9d0v7Jw==
@@ -4989,6 +4989,11 @@ es6-iterator@^2.0.3:
     es5-ext "^0.10.35"
     es6-symbol "^3.1.1"
 
+es6-object-assign@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/es6-object-assign/-/es6-object-assign-1.1.0.tgz#c2c3582656247c39ea107cb1e6652b6f9f24523c"
+  integrity sha512-MEl9uirslVwqQU369iHNWZXsI8yaZYGg/D65aOgZkeyFJwHYSxilf7rQzXKI7DdDuBPrBXbfk3sl9hJhmd5AUw==
+
 es6-promise@^4.0.3, es6-promise@^4.2.8:
   version "4.2.8"
   resolved "https://registry.yarnpkg.com/es6-promise/-/es6-promise-4.2.8.tgz#4eb21594c972bc40553d276e510539143db53e0a"
@@ -6453,7 +6458,7 @@ is-map@^2.0.1:
   resolved "https://registry.yarnpkg.com/is-map/-/is-map-2.0.2.tgz#00922db8c9bf73e81b7a335827bc2a43f2b91127"
   integrity sha512-cOZFQQozTha1f4MxLFzlgKYPTyj26picdZTx82hbc/Xf4K/tZOOXSCkMvU4pKioRXGDLJRn0GM7Upe7kR721yg==
 
-is-nan@^1.3.2:
+is-nan@^1.2.1, is-nan@^1.3.2:
   version "1.3.2"
   resolved "https://registry.yarnpkg.com/is-nan/-/is-nan-1.3.2.tgz#043a54adea31748b55b6cd4e09aadafa69bd9e1d"
   integrity sha512-E+zBKpQ2t6MEo1VsonYmluk9NxGrbzpeeLC2xIViuO2EjU2xsXsBPwTr3Ykv9l08UYEVEdWeRZNouaZqF6RN0w==
@@ -7484,7 +7489,7 @@ object-inspect@^1.13.1, object-inspect@^1.9.0:
   resolved "https://registry.yarnpkg.com/object-inspect/-/object-inspect-1.13.1.tgz#b96c6109324ccfef6b12216a956ca4dc2ff94bc2"
   integrity sha512-5qoj1RUiKOMsCCNLV1CBiPYE10sziTsnmNxkAI/rZhiD63CF7IqdFGC/XzjWjpSgLf0LxXX3bDFIh0E18f6UhQ==
 
-object-is@^1.1.5:
+object-is@^1.0.1, object-is@^1.1.5:
   version "1.1.5"
   resolved "https://registry.yarnpkg.com/object-is/-/object-is-1.1.5.tgz#b9deeaa5fc7f1846a0faecdceec138e5778f53ac"
   integrity sha512-3cyDsyHgtmi7I7DfSSI2LDp6SK2lwvtbg0p0R1e0RvTqF5ceGx+K2dfSjm1bKDMVCFEDAQvy+o8c6a7VujOddw==

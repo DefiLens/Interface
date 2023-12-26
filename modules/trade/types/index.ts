@@ -15,6 +15,8 @@ export type tTrade = {
     ExecuteAllBatches: (isSCW: any) => void;
     closeFromSelectionMenu: () => void;
     closeToSelectionMenu: () => void;
+    createSession: () => void;
+    erc20Transfer: () => void;
 };
 
 export type tTradeProtocol = {

@@ -7,7 +7,7 @@ import { decreasePowerByDecimals } from "../../utils/helper";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 
 export function useCalculatebalance() {
-    const { setScwBalance, setEoaBalance }: iGlobal = useGlobalStore((state) => state);
+    const { smartAccount, setScwBalance, setEoaBalance }: iGlobal = useGlobalStore((state) => state);
 
     async function fetchNativeBalance({ chainId, eoaAddress, scwAddress }) {
         try {
@@ -19,7 +19,7 @@ export function useCalculatebalance() {
                 setEoaBalance(_eoabalance);
             }
             if (scwAddress) {
-                let _eoabalance: any = await provider.getBalance(scwAddress);
+                let _eoabalance: any = await smartAccount.provider.getBalance(scwAddress);
                 _eoabalance = await decreasePowerByDecimals(_eoabalance.toString(), 18);
                 setScwBalance(_eoabalance);
             }

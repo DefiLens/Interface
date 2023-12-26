@@ -18,12 +18,12 @@ export const NETWORK_LIST = [
         chainId: "137",
         icon: polygon,
     },
-    {
-        key: "Arbitrum",
-        chainName: "arbitrum",
-        chainId: "42161",
-        icon: arbitrum,
-    },
+    // {
+    //     key: "Arbitrum",
+    //     chainName: "arbitrum",
+    //     chainId: "42161",
+    //     icon: arbitrum,
+    // },
     // {
     //     key: "Avalanche",
     //     chainName: "avalanche",
@@ -42,12 +42,12 @@ export const NETWORK_LIST = [
     //     chainId: "1",
     //     icon: ethereum,
     // },
-    {
-        key: "Base",
-        chainName: "base",
-        chainId: "8453",
-        icon: base,
-    },
+    // {
+    //     key: "Base",
+    //     chainName: "base",
+    //     chainId: "8453",
+    //     icon: base,
+    // },
 ];
 
 export const ChainIdDetails = {
