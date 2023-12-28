@@ -169,10 +169,10 @@ export function useSwitchOnSpecificChain() {
         // const web3Provider = new ethers.providers.Web3Provider(sdkRef.current.provider);
         try {
             const smartAccount = await createAccount(chainId);
-            setSmartAccount(smartAccount);
             const _smartAccountAddress = await smartAccount.getAccountAddress()
             console.log('_smartAccountAddress ,', _smartAccountAddress)
             setSmartAccountAddress(_smartAccountAddress);
+            setSmartAccount(smartAccount);
 
             setLoading(false);
             setCurrentProvider("Biconomy");

@@ -120,8 +120,6 @@ const TransferContainer: React.FC<any> = () => {
                     toast.error("no metamask connected");
                     return;
                 }
-                console.log('smartAccountAddress-', smartAccountAddress)
-
                 const _eoaBalance = await provider.getBalance(address);
                 const _scwBalance = await smartAccount.provider.getBalance(smartAccountAddress);
                 setScwTokenInbalance(BigNumber.from(_scwBalance));

@@ -2,7 +2,6 @@ import { useMutation } from "@tanstack/react-query";
 
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import { iTrading, useTradingStore } from "../../store/TradingStore";
-import { simulateForFullBatch } from "../../utils/helper";
 import { ChainIdDetails } from "../../utils/data/network";
 import { BigNumber, ethers } from "ethers";
 import { Bundler, IBundler } from "@biconomy/bundler";
