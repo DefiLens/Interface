@@ -45,6 +45,7 @@ const TradeContainer: React.FC<any> = () => {
 
     const [isSessionKeyModuleEnabled, setIsSessionKeyModuleEnabled] = useState<boolean>(false);
     const [isSessionActive, setIsSessionActive] = useState<boolean>(false);
+    const [totalfees, setTotalFees] = useState<bg>(bg(0));
 
     const { mutateAsync: sendToBiconomy } = useBiconomyProvider();
     const { mutateAsync: sendToGasLessBiconomy } = useBiconomyGasLessProvider();
@@ -681,6 +682,8 @@ const TradeContainer: React.FC<any> = () => {
                     fromToken: "",
                     toToken: "",
                     amountIn: "",
+                    fees: "",
+                    extraValue: ""
                 },
                 simulation: {
                     isSuccess: false,
@@ -714,6 +717,7 @@ const TradeContainer: React.FC<any> = () => {
     const updateInputValues = (index: number, txArray: string[], batchesFlow: any, data: any, simulation: any) => {
         if (txArray.length < 1) return toast.error("Please complete the last input before adding a new one.");
         if (individualBatch.length == 0) {
+            setTotalFees(bg(0));
             setIndividualBatch([
                 ...individualBatch,
                 {
@@ -730,6 +734,8 @@ const TradeContainer: React.FC<any> = () => {
                         fromToken: "",
                         toToken: "",
                         amountIn: "",
+                        fees: "",
+                        extraValue: ""
                     },
                     simulation: {
                         isSuccess: false,
@@ -759,6 +765,8 @@ const TradeContainer: React.FC<any> = () => {
                     fromToken: "",
                     toToken: "",
                     amountIn: "",
+                    fees: "",
+                    extraValue: ""
                 },
                 simulation: {
                     isSuccess: false,
@@ -878,6 +886,24 @@ const TradeContainer: React.FC<any> = () => {
                 isError: false,
             };
 
+            const userOp = await smartAccount.buildUserOp(refinaceData.txArray);
+            const bundler: IBundler = new Bundler({
+                bundlerUrl: ChainIdDetails[selectedFromNetwork.chainId].bundlerURL,
+                chainId: BigNumber.from(selectedFromNetwork.chainId).toNumber(),
+                entryPointAddress: DEFAULT_ENTRYPOINT_ADDRESS,
+            });
+            const data = await bundler.estimateUserOpGas(userOp)
+            console.log('data: ', data, refinaceData)
+            const fees = bg(data.callGasLimit).plus(bg(data.verificationGasLimit)).multipliedBy(bg(data.maxFeePerGas)).dividedBy(1e18)
+            let _totalfees = totalfees
+
+            if (refinaceData.value) {
+                _totalfees = bg(_totalfees.toString()).plus(fees.toString()).plus(bg(refinaceData.value.toString()).dividedBy(1e18))
+            } else {
+                _totalfees = bg(_totalfees).plus(fees)
+            }
+            setTotalFees(bg(_totalfees))
+
             updateInputValues(
                 individualBatch.length - 1,
                 refinaceData.txArray.length > 0 && refinaceData.txArray,
@@ -892,10 +918,11 @@ const TradeContainer: React.FC<any> = () => {
                     fromToken: selectedFromToken,
                     toToken: selectedToToken,
                     amountIn: amountIn,
+                    fees: fees.toString(),
+                    extraValue: bg(refinaceData.value.toString()).dividedBy(1e18).toString()
                 },
                 simulation
             );
-
             setAddToBatchLoading(false);
             setShowBatchList(true);
         } catch (error: any) {
@@ -911,7 +938,7 @@ const TradeContainer: React.FC<any> = () => {
         }
     };
 
-    const ExecuteAllBatches = async (isSCW: any) => {
+    const ExecuteAllBatches = async (isSCW: any, whichProvider: string) => {
         try {
             if (!individualBatch[0].txArray.length) {
                 toast.error("No Batch found for Execution");
@@ -930,9 +957,14 @@ const TradeContainer: React.FC<any> = () => {
             console.log('mergeArray: ', mergeArray)
             let tempTxhash = "";
             if (isSCW) {
-                tempTxhash = await sendToBiconomy(mergeArray);
+                if (whichProvider == "isAA") {
+                    alert("isAA")
+                    tempTxhash = await sendToBiconomy(mergeArray);
+                } else if (whichProvider == "isERC20") {
+                    alert("isERC20")
+                    tempTxhash = await sendToERC20Biconomy(mergeArray);
+                }
                 // tempTxhash = await sendToGasLessBiconomy(mergeArray);
-                // tempTxhash = await sendToERC20Biconomy(mergeArray);
                 // tempTxhash = await sendToSessionKeyBiconomy(mergeArray);
             } else {
                 tempTxhash = await sendTxTrditionally(mergeArray);
@@ -941,6 +973,7 @@ const TradeContainer: React.FC<any> = () => {
                 setTxHash(tempTxhash);
             }
             setSendTxLoading(false);
+            setTotalFees(bg(0))
         } catch (error) {
             setSendTxLoading(false);
         }
@@ -967,6 +1000,7 @@ const TradeContainer: React.FC<any> = () => {
             closeToSelectionMenu={closeToSelectionMenu}
             createSession={createSession}
             erc20Transfer={erc20Transfer}
+            totalfees={totalfees}
         />
     );
 };

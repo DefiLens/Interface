@@ -40,6 +40,8 @@ export interface iIndividualBatch {
         fromToken: string;
         toToken: string;
         amountIn: string;
+        fees: string;
+        extraValue: string;
     };
     simulation: {
         isSuccess: boolean;
@@ -220,6 +222,8 @@ export const useTradingStore = create<iTrading>((set) => ({
                 fromToken: "",
                 toToken: "",
                 amountIn: "",
+                fees: "",
+                extraValue: ""
             },
             simulation: {
                 isSuccess: false,

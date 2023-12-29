@@ -1,3 +1,4 @@
+import {BigNumber as bg} from "bignumber.js";
 import { iSelectedNetwork } from "../../../store/TradingStore";
 
 export type tTrade = {
@@ -12,11 +13,12 @@ export type tTrade = {
     removeBatch: (index: number) => void;
     toggleShowBatchList: (id: number) => void;
     sendSingleBatchToList: (isSCW: any) => void;
-    ExecuteAllBatches: (isSCW: any) => void;
+    ExecuteAllBatches: (isSCW: any, whichProvider: string) => void;
     closeFromSelectionMenu: () => void;
     closeToSelectionMenu: () => void;
     createSession: () => void;
     erc20Transfer: () => void;
+    totalfees: bg
 };
 
 export type tTradeProtocol = {

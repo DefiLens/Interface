@@ -219,7 +219,7 @@ export function useRefinance() {
             // const gasCost: number | undefined = await calculategasCost(selectedFromNetwork.chainId)
             // alert(gasCost?.toString())
 
-            return { txArray: tempTxs, batchFlow: batchFlows };
+            return { txArray: tempTxs, batchFlow: batchFlows, value: 0 };
         } catch (error: any) {
             if (error.message) {
                 console.log("refinance: Error", error.message);

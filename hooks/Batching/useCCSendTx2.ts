@@ -42,7 +42,6 @@ export function useCCSendTx2() {
         tokenOutNum
     }) {
         try {
-            alert("sendTxToChain2")
             // if (isSCW) {
             //     setSendtxLoading(true);
             // } else {
@@ -228,9 +227,9 @@ export function useCCSendTx2() {
 
             const sendTx = { to: stargateTx.to, data: stargateTx.data, value: stargateTx.value };
             if (approveTx) {
-                return [approveTx, sendTx];
+                return {txArray: [approveTx, sendTx], value: stargateTx.value};
             } else {
-                return [sendTx];
+                return {txArray: [sendTx], value: stargateTx.value};
             }
         } catch (error: any) {
             if (error.message) {

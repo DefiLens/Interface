@@ -166,6 +166,7 @@ export function useCCRefinance() {
                 batchFlows.push(batchFlow);
             }
 
+            let extraValue: any;
             if (selectedFromNetwork.chainName != selectedToNetwork.chainName) {
                 const tokenOutNum = nativeTokenNum[selectedToNetwork.chainId][tokenOutName];
                 const nativeTokenOutTemp = nativeTokenFetcher[selectedToNetwork.chainId][tokenOutNum].symbol;
@@ -208,7 +209,8 @@ export function useCCRefinance() {
                 } else {
                     tokenOutContractAddress = abiFetcher[selectedToNetwork.chainId][abiNum]["contractAddress"];
                 }
-                let txs: any = await sendTxToChain2({
+
+                let data: any = await sendTxToChain2({
                     tokenIn: nativeTokenIn,
                     address,
                     isSCW: true,
@@ -225,9 +227,10 @@ export function useCCRefinance() {
                     tokenOutNum: tokenOutNum
                 });
 
-                if (!txs) return;
+                if (!data) return;
+                extraValue = data.value
 
-                tempTxs = [...tempTxs, ...txs];
+                tempTxs = [...tempTxs, ...data.txArray];
 
                 let batchFlow: iBatchFlowData = {
                     fromChainId: selectedFromNetwork.chainId,
@@ -250,7 +253,7 @@ export function useCCRefinance() {
                 };
                 batchFlows.push(batchFlow);
             }
-            return { txArray: tempTxs, batchFlow: batchFlows };
+            return { txArray: tempTxs, batchFlow: batchFlows, value: extraValue };
         } catch (error: any) {
             if (error.message) {
                 console.log("refinanceForCC: Error", error.message);

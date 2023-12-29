@@ -36,6 +36,7 @@ const Trade: React.FC<any> = ({
     closeToSelectionMenu,
     createSession,
     erc20Transfer,
+    totalfees,
 }: tTrade) => {
     const {
         maxBalance,
@@ -597,11 +598,20 @@ const Trade: React.FC<any> = ({
                                         customStyle=""
                                         innerText="Add Batch to List"
                                     />
+                                </div>
+
+                                <div className="w-full flex justify-center items-center gap-3">
                                     <Button
-                                        handleClick={() => ExecuteAllBatches(true)}
+                                        handleClick={() => ExecuteAllBatches(true, "isAA")}
                                         isLoading={sendTxLoading}
                                         customStyle=""
                                         innerText="Execute Batch"
+                                    />
+                                    <Button
+                                        handleClick={() => ExecuteAllBatches(true, "isERC20")}
+                                        isLoading={sendTxLoading}
+                                        customStyle=""
+                                        innerText="Execute Batch via ERC20"
                                     />
                                 </div>
 
@@ -628,12 +638,25 @@ const Trade: React.FC<any> = ({
 
                 {showExecuteBatchModel && <ExecuteBatchModel />}
 
-                {showBatchList && (
+                {selectedFromNetwork.chainId && showBatchList && (
                     <div className="w-full md:max-w-2xl max-h-full bg-backgound-300 border border-backgound-600 shadow shadow-backgound-500 flex flex-col justify-start items-center gap-1 rounded-2xl cursor-pointer">
                         <h1 className="w-full bg-backgound-300 text-font-100 text-lg md:text-xl lg:text-2xl text-center font-bold rounded-t-2xl p-5">
                             Batching List
                         </h1>
+
                         <div className="w-full max-h-full overflow-auto flex flex-col gap-5 px-5 py-7">
+                            {selectedFromNetwork.chainId && totalfees.gt(0) && (
+                                <div className="simulation-success flex flex-col justify-center items-start gap-6 bg-backgound-100 p-5 rounded-xl text-black font-medium transition duration-300">
+                                    <div className="flex justify-center items-center gap-3 text-font-200 font-semibold text-base">
+                                        <span>TotalGas: </span>
+                                        <Image src={gas} alt="" className="h-7 w-7" />
+                                        <span>
+                                            {totalfees.toString()}{" "}
+                                            {ChainIdDetails[selectedFromNetwork.chainId].gasFeesName}
+                                        </span>
+                                    </div>
+                                </div>
+                            )}
                             {selectedFromNetwork.chainId &&
                             individualBatch.length > 0 &&
                             individualBatch[0].txArray.length > 0 ? (
@@ -777,29 +800,49 @@ const Trade: React.FC<any> = ({
                                                         )}
                                                     </div>
                                                     <div className="w-full flex justify-between items-center gap-2">
-                                                        {/* <div className="flex justify-center items-center gap-3 text-font-200 font-semibold text-base">
+                                                        <div className="flex justify-center items-center gap-3 text-font-200 font-semibold text-base">
+                                                            <span>GasUsed: </span>
                                                             <Image src={gas} alt="" className="h-7 w-7" />
-                                                            <span>$0.70</span>
-                                                        </div> */}
-                                                        <div className="flex justify-center items-center gap-3">
+                                                            <span>
+                                                                {bar.data.fees}{" "}
+                                                                {
+                                                                    ChainIdDetails[selectedFromNetwork.chainId]
+                                                                        .gasFeesName
+                                                                }
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div className="w-full flex justify-between items-center gap-2">
+                                                        <div className="flex justify-center items-center gap-3 text-font-200 font-semibold text-base">
+                                                            <span>Extra Native value: </span>
+                                                            <Image src={gas} alt="" className="h-7 w-7" />
+                                                            <span>
+                                                                {bar.data.extraValue.toString()}{" "}
+                                                                {
+                                                                    ChainIdDetails[selectedFromNetwork.chainId]
+                                                                        .gasFeesName
+                                                                }
+                                                            </span>
+                                                        </div>
+
+                                                        {/* <div className="flex justify-center items-center gap-3">
                                                             {bar.simulation.isSuccess ? (
-                                                                <></>
-                                                            ) : // <h6 className="flex justify-center items-center gap-3 bg-font-100 text-font-1100 shadow-md font-medium text-sm rounded-full p-1 pr-5">
-                                                            //     <svg
-                                                            //         className="h-5 w-5 text-green-500"
-                                                            //         viewBox="0 0 24 24"
-                                                            //         fill="none"
-                                                            //         stroke="currentColor"
-                                                            //         stroke-width="2"
-                                                            //         stroke-linecap="round"
-                                                            //         stroke-linejoin="round"
-                                                            //     >
-                                                            //         <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                                                            //         <polyline points="22 4 12 14.01 9 11.01" />
-                                                            //     </svg>
-                                                            //     Simulation Success
-                                                            // </h6>
-                                                            bar.simulation.isError ? (
+                                                                <h6 className="flex justify-center items-center gap-3 bg-font-100 text-font-1100 shadow-md font-medium text-sm rounded-full p-1 pr-5">
+                                                                    <svg
+                                                                        className="h-5 w-5 text-green-500"
+                                                                        viewBox="0 0 24 24"
+                                                                        fill="none"
+                                                                        stroke="currentColor"
+                                                                        stroke-width="2"
+                                                                        stroke-linecap="round"
+                                                                        stroke-linejoin="round"
+                                                                    >
+                                                                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                                                                        <polyline points="22 4 12 14.01 9 11.01" />
+                                                                    </svg>
+                                                                    Simulation Success
+                                                                </h6>
+                                                            ) : bar.simulation.isError ? (
                                                                 <h6 className="flex justify-center items-center gap-3 bg-font-100 text-font-1100 shadow-md font-medium text-sm rounded-full p-1 pr-5">
                                                                     <svg
                                                                         className="h-5 w-5 text-red-500"
@@ -821,7 +864,7 @@ const Trade: React.FC<any> = ({
                                                                     Simulation
                                                                 </h6>
                                                             )}
-                                                        </div>
+                                                        </div> */}
                                                     </div>
                                                 </div>
                                             </div>
