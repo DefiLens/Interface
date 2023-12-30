@@ -34,8 +34,6 @@ const Trade: React.FC<any> = ({
     ExecuteAllBatches,
     closeFromSelectionMenu,
     closeToSelectionMenu,
-    createSession,
-    erc20Transfer,
     totalfees,
 }: tTrade) => {
     const {
@@ -614,22 +612,6 @@ const Trade: React.FC<any> = ({
                                         innerText="Execute Batch via ERC20"
                                     />
                                 </div>
-
-                                {/* <div className="w-full flex justify-center items-center gap-3">
-                                    <Button
-                                        handleClick={() => createSession(true)}
-                                        isLoading={addToBatchLoading}
-                                        customStyle=""
-                                        innerText="Create Session"
-                                    />
-                                    <Button
-                                        handleClick={() => erc20Transfer()}
-                                        isLoading={addToBatchLoading}
-                                        customStyle=""
-                                        innerText="Transfer via session"
-                                    />
-                                </div> */}
-
                                 {/* ---------- Add Batch o List Section END ---------- */}
                             </div>
                         </div>

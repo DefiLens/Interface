@@ -16,8 +16,6 @@ export type tTrade = {
     ExecuteAllBatches: (isSCW: any, whichProvider: string) => void;
     closeFromSelectionMenu: () => void;
     closeToSelectionMenu: () => void;
-    createSession: () => void;
-    erc20Transfer: () => void;
     totalfees: bg
 };
 
