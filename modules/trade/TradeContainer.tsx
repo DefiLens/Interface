@@ -56,6 +56,7 @@ const TradeContainer: React.FC<any> = () => {
     const { mutateAsync: refinance } = useRefinance();
     const { mutateAsync: refinanceForCC } = useCCRefinance();
     const { mutateAsync: switchOnSpecificChain } = useSwitchOnSpecificChain();
+
     const {
         smartAccount,
         smartAccountAddress,
@@ -220,7 +221,7 @@ const TradeContainer: React.FC<any> = () => {
         }
     };
 
-    const erc20Transfer = async () => {
+    const erc20Transfer2 = async () => {
         if (!address || !smartAccount || !address) {
             alert("Please connect wallet first");
             return;
@@ -276,6 +277,115 @@ const TradeContainer: React.FC<any> = () => {
             const { data } = await tokenContract.populateTransaction.transfer(
                 "0x8Acf3088E8922e9Ec462B1D592B5e6aa63B8d2D5", // receiver address
                 ethers.utils.parseUnits("0.001".toString(), decimals)
+            );
+
+            // generate tx data to erc20 transfer
+            const tx1 = {
+                to: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174", //erc20 token address
+                data: data,
+                value: "0",
+            };
+
+            // build user op
+            let userOp = await smartAccount2.buildUserOp([tx1], {
+                overrides: {
+                    // signature: "0x0000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000456b395c4e107e0302553b90d1ef4a32e9000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000db3d753a1da5a6074a9f74f39a0a779d3300000000000000000000000000000000000000000000000000000000000000c0000000000000000000000000000000000000000000000000000000000000016000000000000000000000000000000000000000000000000000000000000001800000000000000000000000000000000000000000000000000000000000000080000000000000000000000000bfe121a6dcf92c49f6c2ebd4f306ba0ba0ab6f1c000000000000000000000000da5289fcaaf71d52a80a254da614a192b693e97700000000000000000000000042138576848e839827585a3539305774d36b96020000000000000000000000000000000000000000000000000000000002faf08000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000041feefc797ef9e9d8a6a41266a85ddf5f85c8f2a3d2654b10b415d348b150dabe82d34002240162ed7f6b7ffbc40162b10e62c3e35175975e43659654697caebfe1c00000000000000000000000000000000000000000000000000000000000000"
+                    // callGasLimit: 2000000, // only if undeployed account
+                    // verificationGasLimit: 700000
+                },
+                skipBundlerGasEstimation: false,
+                params: {
+                    sessionSigner: sessionSigner,
+                    sessionValidationModule: erc20ModuleAddr,
+                },
+            });
+
+            // send user op
+            const userOpResponse = await smartAccount2.sendUserOp(userOp, {
+                sessionSigner: sessionSigner,
+                sessionValidationModule: erc20ModuleAddr,
+                simulationType: "validation_and_execution",
+            });
+
+            console.log("userOpHash", userOpResponse);
+            const { receipt } = await userOpResponse.wait(1);
+            console.log("txHash", receipt.transactionHash);
+            //   const polygonScanlink = `https://mumbai.polygonscan.com/tx/${receipt.transactionHash}`
+            //   toast.success(<a target="_blank" href={polygonScanlink}>Success Click to view transaction</a>, {
+            //     position: "top-right",
+            //     autoClose: 18000,
+            //     hideProgressBar: false,
+            //     closeOnClick: true,
+            //     pauseOnHover: true,
+            //     draggable: true,
+            //     progress: undefined,
+            //     theme: "dark",
+            //     });
+        } catch (err: any) {
+            console.error(err);
+        }
+    };
+
+    const erc20Transfer = async () => {
+        if (!address || !smartAccount || !address) {
+            alert("Please connect wallet first");
+            return;
+        }
+        try {
+            //   toast.info('Transferring 1 USDC to recipient...', {
+            //     position: "top-right",
+            //     autoClose: 15000,
+            //     hideProgressBar: false,
+            //     closeOnClick: true,
+            //     pauseOnHover: true,
+            //     draggable: true,
+            //     progress: undefined,
+            //     theme: "dark",
+            //   });
+            const erc20ModuleAddr = "0x000000D50C68705bd6897B2d17c7de32FB519fDA";
+            // get session key from local storage
+            const sessionKeyPrivKey = window.localStorage.getItem("sessionPKey");
+            console.log("sessionKeyPrivKey", sessionKeyPrivKey);
+            if (!sessionKeyPrivKey) {
+                alert("Session key not found please create session");
+                return;
+            }
+            const sessionSigner = new ethers.Wallet(sessionKeyPrivKey);
+            console.log("sessionSigner", sessionSigner);
+
+            // generate sessionModule
+            const sessionModule = await SessionKeyManagerModule.create({
+                moduleAddress: DEFAULT_SESSION_KEY_MANAGER_MODULE,
+                smartAccountAddress: smartAccountAddress,
+            });
+
+            // set active module to sessionModule
+            console.log("smartAccount2-1", smartAccount);
+            let smartAccount2: any = await smartAccount.setActiveValidationModule(sessionModule);
+            console.log("smartAccount2-2", smartAccount2);
+
+            const provider = await getProvider(selectedFromNetwork.chainId);
+            const tokenContract: any = await getContractInstance(
+                "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
+                IERC20,
+                provider
+            );
+
+            let decimals = 6;
+            try {
+                decimals = await tokenContract.decimals();
+            } catch (error) {
+                throw new Error("invalid token address supplied");
+            }
+
+            const { data } = await tokenContract.populateTransaction.transfer(
+                "0x8Acf3088E8922e9Ec462B1D592B5e6aa63B8d2D5", // receiver address
+                ethers.utils.parseUnits("0.001".toString(), decimals)
+            );
+
+            const { approveData } = await tokenContract.populateTransaction.approve(
+                "0x8Acf3088E8922e9Ec462B1D592B5e6aa63B8d2D5", // receiver address
+                ethers.utils.parseUnits("0.002".toString(), decimals)
             );
 
             // generate tx data to erc20 transfer
@@ -683,7 +793,7 @@ const TradeContainer: React.FC<any> = () => {
                     toToken: "",
                     amountIn: "",
                     fees: "",
-                    extraValue: ""
+                    extraValue: "",
                 },
                 simulation: {
                     isSuccess: false,
@@ -735,7 +845,7 @@ const TradeContainer: React.FC<any> = () => {
                         toToken: "",
                         amountIn: "",
                         fees: "",
-                        extraValue: ""
+                        extraValue: "",
                     },
                     simulation: {
                         isSuccess: false,
@@ -766,7 +876,7 @@ const TradeContainer: React.FC<any> = () => {
                     toToken: "",
                     amountIn: "",
                     fees: "",
-                    extraValue: ""
+                    extraValue: "",
                 },
                 simulation: {
                     isSuccess: false,
@@ -892,17 +1002,22 @@ const TradeContainer: React.FC<any> = () => {
                 chainId: BigNumber.from(selectedFromNetwork.chainId).toNumber(),
                 entryPointAddress: DEFAULT_ENTRYPOINT_ADDRESS,
             });
-            const data = await bundler.estimateUserOpGas(userOp)
-            console.log('data: ', data, refinaceData)
-            const fees = bg(data.callGasLimit).plus(bg(data.verificationGasLimit)).multipliedBy(bg(data.maxFeePerGas)).dividedBy(1e18)
-            let _totalfees = totalfees
+            const data = await bundler.estimateUserOpGas(userOp);
+            console.log("data: ", data, refinaceData);
+            const fees = bg(data.callGasLimit)
+                .plus(bg(data.verificationGasLimit))
+                .multipliedBy(bg(data.maxFeePerGas))
+                .dividedBy(1e18);
+            let _totalfees = totalfees;
 
             if (refinaceData.value) {
-                _totalfees = bg(_totalfees.toString()).plus(fees.toString()).plus(bg(refinaceData.value.toString()).dividedBy(1e18))
+                _totalfees = bg(_totalfees.toString())
+                    .plus(fees.toString())
+                    .plus(bg(refinaceData.value.toString()).dividedBy(1e18));
             } else {
-                _totalfees = bg(_totalfees).plus(fees)
+                _totalfees = bg(_totalfees).plus(fees);
             }
-            setTotalFees(bg(_totalfees))
+            setTotalFees(bg(_totalfees));
 
             updateInputValues(
                 individualBatch.length - 1,
@@ -919,7 +1034,7 @@ const TradeContainer: React.FC<any> = () => {
                     toToken: selectedToToken,
                     amountIn: amountIn,
                     fees: fees.toString(),
-                    extraValue: bg(refinaceData.value.toString()).dividedBy(1e18).toString()
+                    extraValue: bg(refinaceData.value.toString()).dividedBy(1e18).toString(),
                 },
                 simulation
             );
@@ -954,14 +1069,14 @@ const TradeContainer: React.FC<any> = () => {
             }
             const mergeArray: any = [];
             await individualBatch.map((bar) => bar.txArray.map((hash) => mergeArray.push(hash)));
-            console.log('mergeArray: ', mergeArray)
+            console.log("mergeArray: ", mergeArray);
             let tempTxhash = "";
             if (isSCW) {
                 if (whichProvider == "isAA") {
-                    alert("isAA")
+                    alert("isAA");
                     tempTxhash = await sendToBiconomy(mergeArray);
                 } else if (whichProvider == "isERC20") {
-                    alert("isERC20")
+                    alert("isERC20");
                     tempTxhash = await sendToERC20Biconomy(mergeArray);
                 }
                 // tempTxhash = await sendToGasLessBiconomy(mergeArray);
@@ -973,7 +1088,7 @@ const TradeContainer: React.FC<any> = () => {
                 setTxHash(tempTxhash);
             }
             setSendTxLoading(false);
-            setTotalFees(bg(0))
+            setTotalFees(bg(0));
         } catch (error) {
             setSendTxLoading(false);
         }
