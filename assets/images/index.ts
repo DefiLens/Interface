@@ -27,6 +27,7 @@ import github from "./github.png";
 import twitter from "./twitter.png";
 import telegram from "./telegram.png";
 import web from "./web.png";
+import logoDark from "./logoDark.png";
 
 export {
     closeNarrow,
@@ -58,4 +59,5 @@ export {
     twitter,
     telegram,
     web,
+    logoDark,
 };
