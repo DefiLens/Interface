@@ -625,20 +625,34 @@ const Trade: React.FC<any> = ({
                         <h1 className="w-full bg-backgound-300 text-font-100 text-lg md:text-xl lg:text-2xl text-center font-bold rounded-t-2xl p-5">
                             Batching List
                         </h1>
-
-                        <div className="w-full max-h-full overflow-auto flex flex-col gap-5 px-5 py-7">
                             {selectedFromNetwork.chainId && totalfees.gt(0) && (
-                                <div className="simulation-success flex flex-col justify-center items-start gap-6 bg-backgound-100 p-5 rounded-xl text-black font-medium transition duration-300">
-                                    <div className="flex justify-center items-center gap-3 text-font-200 font-semibold text-base">
-                                        <span>TotalGas: </span>
-                                        <Image src={gas} alt="" className="h-7 w-7" />
+                                <div className="w-auto flex justify-between items-center gap-10 sm:gap-40 border-2 border-gray-600 rounded-lg mb-3 px-4 py-2.5">
+                                    <h3 className="flex justify-start items-center gap-1 text-font-100 font-bold text-xs md:text-sm">
+                                        <Image
+                                            src={gas}
+                                            alt="gas"
+                                            className="h-6 w-6 mr-1 sm:mr-2"
+                                        />
                                         <span>
-                                            {totalfees.toString()}{" "}
-                                            {ChainIdDetails[selectedFromNetwork.chainId].gasFeesName}
+                                            Total Gas
                                         </span>
+                                        <span className="text-font-300 font-medium text-xs">
+                                            (estimated)
+                                        </span>
+                                    </h3>
+
+                                    <div className="flex justify-between items-center gap-1">
+                                        <h6 className="text-font-100 font-semibold text-sm">
+                                            {totalfees.toString()} :
+                                            <span className="px-1 text-font-300 font-medium text-xs">
+                                                {ChainIdDetails[selectedFromNetwork.chainId].gasFeesName}
+                                            </span>
+                                        </h6>
                                     </div>
                                 </div>
                             )}
+
+                        <div className="w-full max-h-full overflow-auto flex flex-col gap-5 px-5 py-7">
                             {selectedFromNetwork.chainId &&
                             individualBatch.length > 0 &&
                             individualBatch[0].txArray.length > 0 ? (
@@ -781,32 +795,44 @@ const Trade: React.FC<any> = ({
                                                             </div>
                                                         )}
                                                     </div>
-                                                    <div className="w-full flex justify-between items-center gap-2">
-                                                        <div className="flex justify-center items-center gap-3 text-font-200 font-semibold text-base">
-                                                            <span>GasUsed: </span>
-                                                            <Image src={gas} alt="" className="h-7 w-7" />
+                                                    <div className="w-full flex flex-col justify-center gap-1 border border-gray-600 rounded-lg my-3 p-4">
+                                                        <h3 className="flex justify-start items-center gap-1 text-font-100 font-bold text-sm md:text-base">
+                                                            <Image
+                                                                src={gas}
+                                                                alt="gas"
+                                                                className="h-5 w-5 mr-1"
+                                                            />
                                                             <span>
-                                                                {bar.data.fees}{" "}
-                                                                {
-                                                                    ChainIdDetails[selectedFromNetwork.chainId]
-                                                                        .gasFeesName
-                                                                }
+                                                                Gas Details
                                                             </span>
+                                                            <span className="text-font-300 font-medium text-xs">
+                                                                (estimated)
+                                                            </span>
+                                                        </h3>
+
+                                                        <div className="flex justify-between items-center gap-1 mt-3">
+                                                            <h3 className="text-green-400 font-bold text-xs">
+                                                                Gas Used
+                                                            </h3>
+                                                            <h6 className="text-font-100 font-semibold text-sm">
+                                                                {bar.data.fees} :
+                                                                <span className="px-1 text-font-300 font-medium text-xs">
+                                                                    {ChainIdDetails[selectedFromNetwork.chainId].gasFeesName}
+                                                                </span>
+                                                            </h6>
+                                                        </div>
+                                                        <div className="flex justify-between items-center gap-1">
+                                                            <h3 className="text-green-400 font-bold text-xs">
+                                                                Extra Native Gas
+                                                            </h3>
+                                                            <h6 className="text-font-100 font-semibold text-sm">
+                                                                {bar.data.extraValue.toString()} :
+                                                                <span className="px-1 text-font-300 font-medium text-xs">
+                                                                    {ChainIdDetails[selectedFromNetwork.chainId].gasFeesName}
+                                                                </span>
+                                                            </h6>
                                                         </div>
                                                     </div>
-                                                    <div className="w-full flex justify-between items-center gap-2">
-                                                        <div className="flex justify-center items-center gap-3 text-font-200 font-semibold text-base">
-                                                            <span>Extra Native value: </span>
-                                                            <Image src={gas} alt="" className="h-7 w-7" />
-                                                            <span>
-                                                                {bar.data.extraValue.toString()}{" "}
-                                                                {
-                                                                    ChainIdDetails[selectedFromNetwork.chainId]
-                                                                        .gasFeesName
-                                                                }
-                                                            </span>
-                                                        </div>
-
                                                         {/* <div className="flex justify-center items-center gap-3">
                                                             {bar.simulation.isSuccess ? (
                                                                 <h6 className="flex justify-center items-center gap-3 bg-font-100 text-font-1100 shadow-md font-medium text-sm rounded-full p-1 pr-5">
@@ -847,7 +873,6 @@ const Trade: React.FC<any> = ({
                                                                 </h6>
                                                             )}
                                                         </div> */}
-                                                    </div>
                                                 </div>
                                             </div>
                                         )}
