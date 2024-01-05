@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { BigNumber as bg } from "bignumber.js";
 
 export interface iSelectedNetwork {
     key: string;
@@ -89,6 +90,7 @@ export interface iFuncArray {
 }
 
 export interface iTrading {
+    totalfees: bg;
     maxBalance: string;
     ismaxBalanceLoading: boolean;
 
@@ -128,6 +130,7 @@ export interface iTrading {
     hasExecutionSuccess: string;
     hasExecutionError: string;
 
+    setTotalFees: (totalfees: bg) => void;
     setMaxBalance: (maxBalance: string) => void;
     setIsmaxBalanceLoading: (ismaxBalanceLoading: boolean) => void;
 
@@ -169,6 +172,7 @@ export interface iTrading {
 }
 
 export const useTradingStore = create<iTrading>((set) => ({
+    totalfees: bg(0),
     maxBalance: "",
     ismaxBalanceLoading: false,
 
@@ -240,6 +244,7 @@ export const useTradingStore = create<iTrading>((set) => ({
     hasExecutionSuccess: "",
     hasExecutionError: "",
 
+    setTotalFees: (totalfees) => set(() => ({ totalfees })),
     setMaxBalance: (maxBalance) => set(() => ({ maxBalance })),
     setIsmaxBalanceLoading: (ismaxBalanceLoading) => set(() => ({ ismaxBalanceLoading })),
 

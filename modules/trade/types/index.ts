@@ -1,4 +1,3 @@
-import {BigNumber as bg} from "bignumber.js";
 import { iSelectedNetwork } from "../../../store/TradingStore";
 
 export type tTrade = {
@@ -18,7 +17,6 @@ export type tTrade = {
     closeToSelectionMenu: () => void;
     createSession: () => void;
     erc20Transfer: () => void;
-    totalfees: bg
 };
 
 export type tTradeProtocol = {

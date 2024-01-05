@@ -45,7 +45,7 @@ const TradeContainer: React.FC<any> = () => {
 
     const [isSessionKeyModuleEnabled, setIsSessionKeyModuleEnabled] = useState<boolean>(false);
     const [isSessionActive, setIsSessionActive] = useState<boolean>(false);
-    const [totalfees, setTotalFees] = useState<bg>(bg(0));
+    // const [totalfees, setTotalFees] = useState<bg>(bg(0));
 
     const { mutateAsync: sendToBiconomy } = useBiconomyProvider();
     const { mutateAsync: sendToGasLessBiconomy } = useBiconomyGasLessProvider();
@@ -105,6 +105,7 @@ const TradeContainer: React.FC<any> = () => {
         setIndividualBatch,
         setShowExecuteBatchModel,
         setHasExecutionError,
+        totalfees, setTotalFees
     }: iTrading = useTradingStore((state) => state);
 
     useEffect(() => {
@@ -299,6 +300,7 @@ const TradeContainer: React.FC<any> = () => {
                     sessionValidationModule: erc20ModuleAddr,
                 },
             });
+            console.log("userOp", userOp);
 
             // send user op
             const userOpResponse = await smartAccount2.sendUserOp(userOp, {
@@ -358,6 +360,8 @@ const TradeContainer: React.FC<any> = () => {
                 moduleAddress: DEFAULT_SESSION_KEY_MANAGER_MODULE,
                 smartAccountAddress: smartAccountAddress,
             });
+            console.log("sessionModule-1", sessionModule);
+
 
             // set active module to sessionModule
             console.log("smartAccount2-1", smartAccount);
@@ -383,10 +387,10 @@ const TradeContainer: React.FC<any> = () => {
                 ethers.utils.parseUnits("0.001".toString(), decimals)
             );
 
-            const { approveData } = await tokenContract.populateTransaction.approve(
-                "0x8Acf3088E8922e9Ec462B1D592B5e6aa63B8d2D5", // receiver address
-                ethers.utils.parseUnits("0.002".toString(), decimals)
-            );
+            // const { approveData } = await tokenContract.populateTransaction.approve(
+            //     "0x8Acf3088E8922e9Ec462B1D592B5e6aa63B8d2D5", // receiver address
+            //     ethers.utils.parseUnits("0.002".toString(), decimals)
+            // );
 
             // generate tx data to erc20 transfer
             const tx1 = {
@@ -408,6 +412,7 @@ const TradeContainer: React.FC<any> = () => {
                     sessionValidationModule: erc20ModuleAddr,
                 },
             });
+            console.log("userOp", userOp);
 
             // send user op
             const userOpResponse = await smartAccount2.sendUserOp(userOp, {
