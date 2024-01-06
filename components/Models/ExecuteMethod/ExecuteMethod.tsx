@@ -48,7 +48,6 @@ const ExecuteMethod = ({
                             <div
                                 key={item.title}
                                 role="presentation"
-                                onClick={() => ExecuteAllBatches(true, item.providerName)}
                                 className="w-full flex flex-col justify-between items-center gap-3 p-4 border rounded-lg shadow cursor-pointer"
                             >
                                 <div className="w-full flex justify-center items-center">
