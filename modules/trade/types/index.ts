@@ -13,6 +13,7 @@ export type tTrade = {
     removeBatch: (index: number) => void;
     toggleShowBatchList: (id: number) => void;
     sendSingleBatchToList: (isSCW: any) => void;
+    handleExecuteMethod: () => void;
     ExecuteAllBatches: (isSCW: any, whichProvider: string) => void;
     closeFromSelectionMenu: () => void;
     closeToSelectionMenu: () => void;

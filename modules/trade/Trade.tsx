@@ -4,17 +4,18 @@ import { BigNumber as bg } from "bignumber.js";
 import Image from "next/image";
 import { BiLoaderAlt } from "react-icons/bi";
 import { AiOutlineSearch } from "react-icons/ai";
+import { CiCircleChevDown } from "react-icons/ci";
 import { MdDelete, MdOutlineArrowBack } from "react-icons/md";
 import { MdKeyboardArrowDown, MdKeyboardArrowUp } from "react-icons/md";
-import { CiCircleChevDown } from "react-icons/ci";
 
 import { tTrade, tTradeProtocol } from "./types";
 import Button from "../../components/Button/Button";
 import { protocolNames } from "../../utils/data/protocols";
 import SelectionBar from "../../components/SelectionBar/SelectionBar";
 import { ChainIdDetails, NETWORK_LIST } from "../../utils/data/network";
+import ExecuteBatch from "../../components/Models/ExecuteBatch/ExecuteBatch";
+import ExecuteMethod from "../../components/Models/ExecuteMethod/ExecuteMethod";
 import { iTokenData, iTrading, useTradingStore } from "../../store/TradingStore";
-import ExecuteBatchModel from "../../components/ExecuteBatchModel/ExecuteBatchModel";
 import { defaultBlue, downLine, gas, optimism, swap, warning } from "../../assets/images";
 
 bg.config({ DECIMAL_PLACES: 10 });
@@ -31,6 +32,7 @@ const Trade: React.FC<any> = ({
     removeBatch,
     toggleShowBatchList,
     sendSingleBatchToList,
+    handleExecuteMethod,
     ExecuteAllBatches,
     closeFromSelectionMenu,
     closeToSelectionMenu,
@@ -67,6 +69,7 @@ const Trade: React.FC<any> = ({
         sendTxLoading,
         individualBatch,
         showExecuteBatchModel,
+        showExecuteMethodModel,
     }: iTrading = useTradingStore((state) => state);
 
     return (
@@ -123,7 +126,7 @@ const Trade: React.FC<any> = ({
                                                 : (e) => setFilterToToken(e.target.value)
                                         }
                                         placeholder="Search by Protocol"
-                                        className="w-full text-sm md:text-base outline-none placeholder-font-500 text-1100"
+                                        className="w-full text-sm md:text-base outline-none placeholder-font-500 text-font-1100"
                                     />
                                     <AiOutlineSearch />
                                 </div>
@@ -173,7 +176,7 @@ const Trade: React.FC<any> = ({
                                                                                     setFilterFromAddress(e.target.value)
                                                                                 }
                                                                                 placeholder="Search by Token"
-                                                                                className="w-full text-sm md:text-base outline-none placeholder-font-500 text-1100"
+                                                                                className="w-full text-sm md:text-base outline-none placeholder-font-500 text-font-1100"
                                                                             />
                                                                             <AiOutlineSearch />
                                                                         </div>
@@ -222,7 +225,7 @@ const Trade: React.FC<any> = ({
                                                                                     setFilterFromAddress(e.target.value)
                                                                                 }
                                                                                 placeholder="Search by Token"
-                                                                                className="w-full text-sm md:text-base outline-none placeholder-font-500 text-1100"
+                                                                                className="w-full text-sm md:text-base outline-none placeholder-font-500 text-font-1100"
                                                                             />
                                                                             <AiOutlineSearch />
                                                                         </div>
@@ -318,7 +321,7 @@ const Trade: React.FC<any> = ({
                                                                                     setFilterToAddress(e.target.value)
                                                                                 }
                                                                                 placeholder="Search by Token"
-                                                                                className="w-full text-sm md:text-base outline-none placeholder-font-500 text-1100"
+                                                                                className="w-full text-sm md:text-base outline-none placeholder-font-500 text-font-1100"
                                                                             />
                                                                             <AiOutlineSearch />
                                                                         </div>
@@ -366,7 +369,7 @@ const Trade: React.FC<any> = ({
                                                                                     setFilterToAddress(e.target.value)
                                                                                 }
                                                                                 placeholder="Search by Token"
-                                                                                className="w-full text-sm md:text-base outline-none placeholder-font-500 text-1100"
+                                                                                className="w-full text-sm md:text-base outline-none placeholder-font-500 text-font-1100"
                                                                             />
                                                                             <AiOutlineSearch />
                                                                         </div>
@@ -600,17 +603,23 @@ const Trade: React.FC<any> = ({
 
                                 <div className="w-full flex justify-center items-center gap-3">
                                     <Button
-                                        handleClick={() => ExecuteAllBatches(true, "isAA")}
+                                        handleClick={() => handleExecuteMethod()}
                                         isLoading={sendTxLoading}
                                         customStyle=""
                                         innerText="Execute Batch"
                                     />
-                                    <Button
+                                    {/* <Button
+                                        handleClick={() => ExecuteAllBatches(true, "isAA")}
+                                        isLoading={sendTxLoading}
+                                        customStyle=""
+                                        innerText="Execute Batch"
+                                    /> */}
+                                    {/* <Button
                                         handleClick={() => ExecuteAllBatches(true, "isERC20")}
                                         isLoading={sendTxLoading}
                                         customStyle=""
                                         innerText="Execute Batch via ERC20"
-                                    />
+                                    /> */}
                                 </div>
                                 {/* ---------- Add Batch o List Section END ---------- */}
                             </div>
@@ -618,7 +627,13 @@ const Trade: React.FC<any> = ({
                     )}
                 </div>
 
-                {showExecuteBatchModel && <ExecuteBatchModel />}
+                {showExecuteMethodModel && (
+                    <ExecuteMethod
+                        ExecuteAllBatches={ExecuteAllBatches}
+                    />
+                )}
+
+                {showExecuteBatchModel && <ExecuteBatch />}
 
                 {selectedFromNetwork.chainId && showBatchList && (
                     <div className="w-full md:max-w-2xl max-h-full bg-backgound-300 border border-backgound-600 shadow shadow-backgound-500 flex flex-col justify-start items-center gap-1 rounded-2xl cursor-pointer">

@@ -1,22 +1,16 @@
 import { useEffect, useState } from "react";
 
+import { ethers } from "ethers";
 import { BigNumber } from "ethers";
 import { toast } from "react-hot-toast";
 import { BigNumber as bg } from "bignumber.js";
 
-import { ethers } from "ethers";
 import { defaultAbiCoder } from "ethers/lib/utils";
-
-import {
-    SessionKeyManagerModule,
-    DEFAULT_SESSION_KEY_MANAGER_MODULE,
-    ECDSAOwnershipValidationModule,
-    DEFAULT_ECDSA_OWNERSHIP_MODULE,
-} from "@biconomy/modules";
 import { Bundler, IBundler } from "@biconomy/bundler";
 import { useAddress, useSigner } from "@thirdweb-dev/react";
 import { BiconomyPaymaster, IPaymaster } from "@biconomy/paymaster";
-import { BiconomySmartAccountV2, BiconomySmartAccountConfig, DEFAULT_ENTRYPOINT_ADDRESS } from "@biconomy/account";
+import { BiconomySmartAccountConfig, BiconomySmartAccountV2, DEFAULT_ENTRYPOINT_ADDRESS } from "@biconomy/account";
+import { DEFAULT_ECDSA_OWNERSHIP_MODULE, DEFAULT_SESSION_KEY_MANAGER_MODULE, ECDSAOwnershipValidationModule, SessionKeyManagerModule } from "@biconomy/modules";
 
 import Trade from "./Trade";
 import IERC20 from "../../abis/IERC20.json";
@@ -30,10 +24,10 @@ import { useCCRefinance } from "../../hooks/Batching/useCCRefinance";
 import { useEoaProvider } from "../../hooks/aaProvider/useEoaProvider";
 import { useSwitchOnSpecificChain } from "../../hooks/useSwitchOnSpecificChain";
 import { useBiconomyProvider } from "../../hooks/aaProvider/useBiconomyProvider";
-import { useBiconomyGasLessProvider } from "../../hooks/aaProvider/useBiconomyGasLessProvider";
-import { useBiconomyERC20Provider } from "../../hooks/aaProvider/useBiconomyERC20Provider";
-import { useBiconomySessionKeyProvider } from "../../hooks/aaProvider/useBiconomySessionKeyProvider";
 import { iSelectedNetwork, iTrading, useTradingStore } from "../../store/TradingStore";
+import { useBiconomyERC20Provider } from "../../hooks/aaProvider/useBiconomyERC20Provider";
+import { useBiconomyGasLessProvider } from "../../hooks/aaProvider/useBiconomyGasLessProvider";
+import { useBiconomySessionKeyProvider } from "../../hooks/aaProvider/useBiconomySessionKeyProvider";
 import { decreasePowerByDecimals, getTokenListByChainId, incresePowerByDecimals } from "../../utils/helper";
 import { getContractInstance, getErc20Balanceof, getErc20Decimals, getProvider } from "../../utils/web3Libs/ethers";
 
@@ -104,8 +98,10 @@ const TradeContainer: React.FC<any> = () => {
         setIndividualBatch,
         setShowExecuteBatchModel,
         setHasExecutionError,
+        setShowExecuteMethodModel,
     }: iTrading = useTradingStore((state) => state);
-
+    
+    console.log("🚀 ~ file: TradeContainer.tsx:109 ~ individualBatch:", individualBatch)
     useEffect(() => {
         if (individualBatch.length === 1 && individualBatch[0].txArray.length === 0) {
             setShowBatchList(false);
@@ -724,12 +720,21 @@ const TradeContainer: React.FC<any> = () => {
         }
     };
 
+    const handleExecuteMethod = async () => {
+        if (!individualBatch[0].txArray.length) {
+            toast.error("No Batch found for Execution");
+            return;
+        }
+        setShowExecuteMethodModel(true);
+    };
+
     const ExecuteAllBatches = async (isSCW: any, whichProvider: string) => {
         try {
             if (!individualBatch[0].txArray.length) {
                 toast.error("No Batch found for Execution");
                 return;
             }
+            setShowExecuteMethodModel(false);
             setShowExecuteBatchModel(true);
             setHasExecutionError("");
 
@@ -740,14 +745,11 @@ const TradeContainer: React.FC<any> = () => {
             }
             const mergeArray: any = [];
             await individualBatch.map((bar) => bar.txArray.map((hash) => mergeArray.push(hash)));
-            console.log("mergeArray: ", mergeArray);
             let tempTxhash = "";
             if (isSCW) {
                 if (whichProvider == "isAA") {
-                    alert("isAA");
                     tempTxhash = await sendToBiconomy(mergeArray);
                 } else if (whichProvider == "isERC20") {
-                    alert("isERC20");
                     tempTxhash = await sendToERC20Biconomy(mergeArray);
                 }
                 // tempTxhash = await sendToGasLessBiconomy(mergeArray);
@@ -781,6 +783,7 @@ const TradeContainer: React.FC<any> = () => {
             updateInputValues={updateInputValues}
             toggleShowBatchList={toggleShowBatchList}
             sendSingleBatchToList={sendSingleBatchToList}
+            handleExecuteMethod={handleExecuteMethod}
             ExecuteAllBatches={ExecuteAllBatches}
             closeFromSelectionMenu={closeFromSelectionMenu}
             closeToSelectionMenu={closeToSelectionMenu}
