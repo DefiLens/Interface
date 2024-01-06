@@ -129,6 +129,7 @@ export interface iTrading {
     showExecuteBatchModel: boolean;
     hasExecutionSuccess: string;
     hasExecutionError: string;
+    showExecuteMethodModel: boolean;
 
     setTotalFees: (totalfees: bg) => void;
     setMaxBalance: (maxBalance: string) => void;
@@ -169,6 +170,7 @@ export interface iTrading {
     setShowExecuteBatchModel: (showExecuteBatchModel: boolean) => void;
     setHasExecutionSuccess: (hasExecutionSuccess: string) => void;
     setHasExecutionError: (hasExecutionError: string) => void;
+    setShowExecuteMethodModel: (showExecuteMethodModel: boolean) => void;
 }
 
 export const useTradingStore = create<iTrading>((set) => ({
@@ -243,6 +245,8 @@ export const useTradingStore = create<iTrading>((set) => ({
     showExecuteBatchModel: false,
     hasExecutionSuccess: "",
     hasExecutionError: "",
+    showExecuteMethodModel: false,
+
 
     setTotalFees: (totalfees) => set(() => ({ totalfees })),
     setMaxBalance: (maxBalance) => set(() => ({ maxBalance })),
@@ -283,4 +287,5 @@ export const useTradingStore = create<iTrading>((set) => ({
     setShowExecuteBatchModel: (showExecuteBatchModel) => set(() => ({ showExecuteBatchModel })),
     setHasExecutionSuccess: (hasExecutionSuccess) => set(() => ({ hasExecutionSuccess })),
     setHasExecutionError: (hasExecutionError) => set(() => ({ hasExecutionError })),
+    setShowExecuteMethodModel: (showExecuteMethodModel) => set(() => ({ showExecuteMethodModel })),
 }));

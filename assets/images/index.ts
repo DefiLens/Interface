@@ -27,6 +27,10 @@ import github from "./github.png";
 import twitter from "./twitter.png";
 import telegram from "./telegram.png";
 import web from "./web.png";
+import logoDark from "./logoDark.png";
+import dai from "./dai.png";
+import usdc from "./usdc.png";
+import usdt from "./usdt.png";
 
 export {
     closeNarrow,
@@ -58,4 +62,8 @@ export {
     twitter,
     telegram,
     web,
+    logoDark,
+    dai,
+    usdc,
+    usdt,
 };

@@ -4,17 +4,18 @@ import { BigNumber as bg } from "bignumber.js";
 import Image from "next/image";
 import { BiLoaderAlt } from "react-icons/bi";
 import { AiOutlineSearch } from "react-icons/ai";
+import { CiCircleChevDown } from "react-icons/ci";
 import { MdDelete, MdOutlineArrowBack } from "react-icons/md";
 import { MdKeyboardArrowDown, MdKeyboardArrowUp } from "react-icons/md";
-import { CiCircleChevDown } from "react-icons/ci";
 
 import { tTrade, tTradeProtocol } from "./types";
 import Button from "../../components/Button/Button";
 import { protocolNames } from "../../utils/data/protocols";
 import SelectionBar from "../../components/SelectionBar/SelectionBar";
 import { ChainIdDetails, NETWORK_LIST } from "../../utils/data/network";
+import ExecuteBatch from "../../components/Models/ExecuteBatch/ExecuteBatch";
+import ExecuteMethod from "../../components/Models/ExecuteMethod/ExecuteMethod";
 import { iTokenData, iTrading, useTradingStore } from "../../store/TradingStore";
-import ExecuteBatchModel from "../../components/ExecuteBatchModel/ExecuteBatchModel";
 import { defaultBlue, downLine, gas, optimism, swap, warning } from "../../assets/images";
 
 bg.config({ DECIMAL_PLACES: 10 });
@@ -31,6 +32,7 @@ const Trade: React.FC<any> = ({
     removeBatch,
     toggleShowBatchList,
     sendSingleBatchToList,
+    handleExecuteMethod,
     ExecuteAllBatches,
     closeFromSelectionMenu,
     closeToSelectionMenu,
@@ -68,7 +70,8 @@ const Trade: React.FC<any> = ({
         sendTxLoading,
         individualBatch,
         showExecuteBatchModel,
-        totalfees
+        totalfees,
+        showExecuteMethodModel,
     }: iTrading = useTradingStore((state) => state);
 
     return (
@@ -125,7 +128,7 @@ const Trade: React.FC<any> = ({
                                                 : (e) => setFilterToToken(e.target.value)
                                         }
                                         placeholder="Search by Protocol"
-                                        className="w-full text-sm md:text-base outline-none placeholder-font-500 text-1100"
+                                        className="w-full text-sm md:text-base outline-none placeholder-font-500 text-font-1100"
                                     />
                                     <AiOutlineSearch />
                                 </div>
@@ -175,7 +178,7 @@ const Trade: React.FC<any> = ({
                                                                                     setFilterFromAddress(e.target.value)
                                                                                 }
                                                                                 placeholder="Search by Token"
-                                                                                className="w-full text-sm md:text-base outline-none placeholder-font-500 text-1100"
+                                                                                className="w-full text-sm md:text-base outline-none placeholder-font-500 text-font-1100"
                                                                             />
                                                                             <AiOutlineSearch />
                                                                         </div>
@@ -224,7 +227,7 @@ const Trade: React.FC<any> = ({
                                                                                     setFilterFromAddress(e.target.value)
                                                                                 }
                                                                                 placeholder="Search by Token"
-                                                                                className="w-full text-sm md:text-base outline-none placeholder-font-500 text-1100"
+                                                                                className="w-full text-sm md:text-base outline-none placeholder-font-500 text-font-1100"
                                                                             />
                                                                             <AiOutlineSearch />
                                                                         </div>
@@ -320,7 +323,7 @@ const Trade: React.FC<any> = ({
                                                                                     setFilterToAddress(e.target.value)
                                                                                 }
                                                                                 placeholder="Search by Token"
-                                                                                className="w-full text-sm md:text-base outline-none placeholder-font-500 text-1100"
+                                                                                className="w-full text-sm md:text-base outline-none placeholder-font-500 text-font-1100"
                                                                             />
                                                                             <AiOutlineSearch />
                                                                         </div>
@@ -368,7 +371,7 @@ const Trade: React.FC<any> = ({
                                                                                     setFilterToAddress(e.target.value)
                                                                                 }
                                                                                 placeholder="Search by Token"
-                                                                                className="w-full text-sm md:text-base outline-none placeholder-font-500 text-1100"
+                                                                                className="w-full text-sm md:text-base outline-none placeholder-font-500 text-font-1100"
                                                                             />
                                                                             <AiOutlineSearch />
                                                                         </div>
@@ -602,17 +605,23 @@ const Trade: React.FC<any> = ({
 
                                 <div className="w-full flex justify-center items-center gap-3">
                                     <Button
-                                        handleClick={() => ExecuteAllBatches(true, "isAA")}
+                                        handleClick={() => handleExecuteMethod()}
                                         isLoading={sendTxLoading}
                                         customStyle=""
                                         innerText="Execute Batch"
                                     />
-                                    <Button
+                                    {/* <Button
+                                        handleClick={() => ExecuteAllBatches(true, "isAA")}
+                                        isLoading={sendTxLoading}
+                                        customStyle=""
+                                        innerText="Execute Batch"
+                                    /> */}
+                                    {/* <Button
                                         handleClick={() => ExecuteAllBatches(true, "isERC20")}
                                         isLoading={sendTxLoading}
                                         customStyle=""
                                         innerText="Execute Batch via ERC20"
-                                    />
+                                    /> */}
                                 </div>
 
                                 <div className="w-full flex justify-center items-center gap-3">
@@ -636,27 +645,47 @@ const Trade: React.FC<any> = ({
                     )}
                 </div>
 
-                {showExecuteBatchModel && <ExecuteBatchModel />}
+                {showExecuteMethodModel && (
+                    <ExecuteMethod
+                        ExecuteAllBatches={ExecuteAllBatches}
+                    />
+                )}
+
+                {showExecuteBatchModel && <ExecuteBatch />}
 
                 {selectedFromNetwork.chainId && showBatchList && (
                     <div className="w-full md:max-w-2xl max-h-full bg-backgound-300 border border-backgound-600 shadow shadow-backgound-500 flex flex-col justify-start items-center gap-1 rounded-2xl cursor-pointer">
                         <h1 className="w-full bg-backgound-300 text-font-100 text-lg md:text-xl lg:text-2xl text-center font-bold rounded-t-2xl p-5">
                             Batching List
                         </h1>
-
-                        <div className="w-full max-h-full overflow-auto flex flex-col gap-5 px-5 py-7">
                             {selectedFromNetwork.chainId && totalfees.gt(0) && (
-                                <div className="simulation-success flex flex-col justify-center items-start gap-6 bg-backgound-100 p-5 rounded-xl text-black font-medium transition duration-300">
-                                    <div className="flex justify-center items-center gap-3 text-font-200 font-semibold text-base">
-                                        <span>TotalGas: </span>
-                                        <Image src={gas} alt="" className="h-7 w-7" />
+                                <div className="w-auto flex justify-between items-center gap-10 sm:gap-40 border-2 border-gray-600 rounded-lg mb-3 px-4 py-2.5">
+                                    <h3 className="flex justify-start items-center gap-1 text-font-100 font-bold text-xs md:text-sm">
+                                        <Image
+                                            src={gas}
+                                            alt="gas"
+                                            className="h-6 w-6 mr-1 sm:mr-2"
+                                        />
                                         <span>
-                                            {totalfees.toString()}{" "}
-                                            {ChainIdDetails[selectedFromNetwork.chainId].gasFeesName}
+                                            Total Gas
                                         </span>
+                                        <span className="text-font-300 font-medium text-xs">
+                                            (estimated)
+                                        </span>
+                                    </h3>
+
+                                    <div className="flex justify-between items-center gap-1">
+                                        <h6 className="text-font-100 font-semibold text-sm">
+                                            {Number(totalfees).toPrecision(4).toString()} :
+                                            <span className="px-1 text-font-300 font-medium text-xs">
+                                                {ChainIdDetails[selectedFromNetwork.chainId].gasFeesName}
+                                            </span>
+                                        </h6>
                                     </div>
                                 </div>
                             )}
+
+                        <div className="w-full max-h-full overflow-auto flex flex-col gap-5 px-5 py-7">
                             {selectedFromNetwork.chainId &&
                             individualBatch.length > 0 &&
                             individualBatch[0].txArray.length > 0 ? (
@@ -664,7 +693,7 @@ const Trade: React.FC<any> = ({
                                     <>
                                         {bar.txArray.length > 0 && (
                                             <div key={bar.id} className="relative">
-                                                <div className="simulation-success flex flex-col justify-center items-start gap-6 bg-backgound-100 p-5 rounded-xl text-black font-medium transition duration-300">
+                                                <div className="simulation-success flex flex-col justify-center items-start gap-1 bg-backgound-100 p-5 rounded-xl text-black font-medium transition duration-300">
                                                     <div className="w-full flex justify-between items-center gap-2">
                                                         <h1 className="flex justify-center items-center gap-3 text-font-100 font-semibold text-base">
                                                             {inputBarIndex + 1}.
@@ -681,7 +710,7 @@ const Trade: React.FC<any> = ({
                                                         />
                                                     </div>
                                                     <div
-                                                        className="w-full flex flex-col justify-between items-start gap-2 p-3 rounded-xl bg-backgound-300 shadow-sm"
+                                                        className="w-full flex flex-col justify-between items-start gap-2 p-3 rounded-xl bg-backgound-300 shadow-sm mt-4"
                                                         onClick={() => toggleShowBatchList(bar.id)}
                                                     >
                                                         <div className="w-full flex justify-between items-center gap-2">
@@ -799,32 +828,46 @@ const Trade: React.FC<any> = ({
                                                             </div>
                                                         )}
                                                     </div>
-                                                    <div className="w-full flex justify-between items-center gap-2">
-                                                        <div className="flex justify-center items-center gap-3 text-font-200 font-semibold text-base">
-                                                            <span>GasUsed: </span>
-                                                            <Image src={gas} alt="" className="h-7 w-7" />
-                                                            <span>
-                                                                {bar.data.fees}{" "}
-                                                                {
-                                                                    ChainIdDetails[selectedFromNetwork.chainId]
-                                                                        .gasFeesName
-                                                                }
-                                                            </span>
+                                                    <div className="w-full flex flex-col justify-center gap-1 rounded-lg px-2 mt-3">
+                                                        <div className="w-full flex justify-between items-center gap-1">
+                                                            <h3 className="w-full text-green-400 font-bold text-xs">
+                                                                Gas Used
+                                                            </h3>
+                                                            <h6 className="w-full flex justify-end items-center gap-2 text-font-100 font-semibold text-sm">
+                                                                <Image
+                                                                    src={gas}
+                                                                    alt="gas"
+                                                                    className="h-4 w-4 mr-1"
+                                                                />
+                                                                <span>
+                                                                    {Number(bar.data.fees).toPrecision(3).toString()} :
+                                                                </span>
+                                                                <span className="text-font-300 font-medium text-xs">
+                                                                    {ChainIdDetails[selectedFromNetwork.chainId].gasFeesName}
+                                                                </span>
+                                                            </h6>
                                                         </div>
+                                                        {Number(bar.data.extraValue) ? (
+                                                            <div className="w-full flex justify-between items-center gap-1">
+                                                                <h3 className="w-full text-green-400 font-bold text-xs">
+                                                                    Extra Native Gas
+                                                                </h3>
+                                                                <h6 className="w-full flex justify-end items-center gap-2 text-font-100 font-semibold text-sm">
+                                                                    <Image
+                                                                        src={gas}
+                                                                        alt="gas"
+                                                                        className="h-4 w-4 mr-1"
+                                                                    />
+                                                                    <span>
+                                                                        {Number(bar.data.extraValue).toPrecision(3).toString()} :
+                                                                    </span>
+                                                                    <span className="text-font-300 font-medium text-xs">
+                                                                        {ChainIdDetails[selectedFromNetwork.chainId].gasFeesName}
+                                                                    </span>
+                                                                </h6>
+                                                            </div>
+                                                        ) : null}
                                                     </div>
-                                                    <div className="w-full flex justify-between items-center gap-2">
-                                                        <div className="flex justify-center items-center gap-3 text-font-200 font-semibold text-base">
-                                                            <span>Extra Native value: </span>
-                                                            <Image src={gas} alt="" className="h-7 w-7" />
-                                                            <span>
-                                                                {bar.data.extraValue.toString()}{" "}
-                                                                {
-                                                                    ChainIdDetails[selectedFromNetwork.chainId]
-                                                                        .gasFeesName
-                                                                }
-                                                            </span>
-                                                        </div>
-
                                                         {/* <div className="flex justify-center items-center gap-3">
                                                             {bar.simulation.isSuccess ? (
                                                                 <h6 className="flex justify-center items-center gap-3 bg-font-100 text-font-1100 shadow-md font-medium text-sm rounded-full p-1 pr-5">
@@ -865,7 +908,6 @@ const Trade: React.FC<any> = ({
                                                                 </h6>
                                                             )}
                                                         </div> */}
-                                                    </div>
                                                 </div>
                                             </div>
                                         )}

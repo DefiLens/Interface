@@ -3,15 +3,15 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { BsArrowRight } from "react-icons/bs";
 
-import { tExecuteBatchModel } from "./types";
-import { buildTxHash } from "../../utils/helper";
-import { closeNarrow } from "../../assets/images";
-import { ChainIdDetails } from "../../utils/data/network";
-import { protocolNames } from "../../utils/data/protocols";
-import { error, loading, success } from "../../assets/gifs";
-import { iIndividualBatch, iTrading, useTradingStore } from "../../store/TradingStore";
+import { tExecuteBatch } from "./types";
+import { buildTxHash } from "../../../utils/helper";
+import { closeNarrow } from "../../../assets/images";
+import { ChainIdDetails } from "../../../utils/data/network";
+import { protocolNames } from "../../../utils/data/protocols";
+import { error, loading, success } from "../../../assets/gifs";
+import { iIndividualBatch, iTrading, useTradingStore } from "../../../store/TradingStore";
 
-const ExecuteBatchModel = ({}: tExecuteBatchModel) => {
+const ExecuteBatch = ({}: tExecuteBatch) => {
     const {
         selectedFromNetwork,
         individualBatch,
@@ -196,4 +196,4 @@ const ExecuteBatchModel = ({}: tExecuteBatchModel) => {
         </div>
     );
 };
-export default ExecuteBatchModel;
+export default ExecuteBatch;
