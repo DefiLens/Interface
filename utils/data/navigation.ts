@@ -1,10 +1,10 @@
 export const NavigationList = [
     {
-        title: "Home",
+        title: "Trade",
         route: "/",
     },
     {
-        title: "Trade",
-        route: "/trade",
+        title: "Portfolio",
+        route: "/portfolio",
     },
 ];
