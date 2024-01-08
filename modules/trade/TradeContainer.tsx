@@ -283,7 +283,12 @@ const TradeContainer: React.FC<any> = () => {
             setAmountIn("");
             setFromTokenDecimal(0);
 
-            setSelectedFromToken(_fromToken);
+            if (selectedFromToken === _fromToken) {
+                closeFromSelectionMenu();
+            } else {
+                setSelectedFromToken(_fromToken);
+            }
+
             const provider = await getProvider(selectedFromNetwork.chainId);
 
             const erc20Address: any =
@@ -393,7 +398,11 @@ const TradeContainer: React.FC<any> = () => {
             toast.error("Batching is only supported on polygon and base as of now");
             return;
         }
-        setSelectedToToken(_toToken);
+        if (selectedToToken === _toToken) {
+            closeToSelectionMenu();
+        } else {
+            setSelectedToToken(_toToken);
+        }
     };
 
     // for e.g 0 -> 1000
