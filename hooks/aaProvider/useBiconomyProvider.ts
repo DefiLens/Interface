@@ -24,11 +24,18 @@ export function useBiconomyProvider() {
             const data = await bundler.estimateUserOpGas(userOp)
             console.log('data: ', data)
 
-            userOp.callGasLimit = BigNumber.from(data.callGasLimit).toNumber();
-            userOp.verificationGasLimit = data.verificationGasLimit;
-            userOp.maxFeePerGas = data.maxFeePerGas;
-            userOp.maxPriorityFeePerGas = data.maxPriorityFeePerGas;
-            userOp.preVerificationGas = data.preVerificationGas;
+            // userOp.callGasLimit = BigNumber.from(data.callGasLimit).toNumber();
+            // userOp.verificationGasLimit = data.verificationGasLimit;
+            // userOp.maxFeePerGas = data.maxFeePerGas;
+            // userOp.maxPriorityFeePerGas = data.maxPriorityFeePerGas;
+            // userOp.preVerificationGas = data.preVerificationGas;
+
+            userOp.callGasLimit = BigNumber.from(data.callGasLimit).gt(0) ? BigNumber.from(data.callGasLimit).toNumber() : BigNumber.from(userOp.callGasLimit);
+            userOp.verificationGasLimit = BigNumber.from(data.verificationGasLimit).gt(0) ? BigNumber.from(data.verificationGasLimit).toNumber() : BigNumber.from(userOp.verificationGasLimit);
+            userOp.maxFeePerGas = BigNumber.from(data.maxFeePerGas).gt(0) ? BigNumber.from(data.maxFeePerGas).toNumber() : BigNumber.from(userOp.maxFeePerGas);
+            userOp.maxPriorityFeePerGas = BigNumber.from(data.maxPriorityFeePerGas).gt(0) ? BigNumber.from(data.maxPriorityFeePerGas).toNumber() : BigNumber.from(userOp.maxPriorityFeePerGas);
+            userOp.preVerificationGas = BigNumber.from(data.preVerificationGas).gt(0) ? BigNumber.from(data.preVerificationGas).toNumber() : BigNumber.from(userOp.preVerificationGas);
+
             console.log('userOp-after: ', userOp)
 
             const userOpResponse = await smartAccount.sendUserOp(userOp);
