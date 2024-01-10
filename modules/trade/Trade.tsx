@@ -624,7 +624,7 @@ const Trade: React.FC<any> = ({
                                     /> */}
                                 </div>
 
-                                <div className="w-full flex justify-center items-center gap-3">
+                                {/* <div className="w-full flex justify-center items-center gap-3">
                                     <Button
                                         handleClick={() => createSession(true)}
                                         isLoading={addToBatchLoading}
@@ -637,7 +637,7 @@ const Trade: React.FC<any> = ({
                                         customStyle=""
                                         innerText="Transfer via session"
                                     />
-                                </div>
+                                </div> */}
 
                                 {/* ---------- Add Batch o List Section END ---------- */}
                             </div>

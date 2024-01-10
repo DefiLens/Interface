@@ -316,6 +316,58 @@ export const tokensByProtocol = {
                 icon: optimism,
             },
         ],
+        seamless: [
+            {
+                name: "sUSDbc",
+                icon: avalanche,
+            },
+            {
+                name: "sWETH",
+                icon: avalanche,
+            },
+            {
+                name: "scbETH",
+                icon: avalanche,
+            },
+            {
+                name: "sUSDC",
+                icon: avalanche,
+            },
+            {
+                name: "sDAI",
+                icon: avalanche,
+            }
+        ],
+        moonwell: [
+            {
+                name: "mDAI",
+                icon: avalanche,
+            },
+            {
+                name: "mUSDC",
+                icon: avalanche,
+            },
+            {
+                name: "mUSDbC",
+                icon: avalanche,
+            },
+            {
+                name: "mWETH",
+                icon: avalanche,
+            },
+            {
+                name: "mcbETH",
+                icon: avalanche,
+            },
+            {
+                name: "mwstETH",
+                icon: avalanche,
+            },
+            {
+                name: "mrETH",
+                icon: avalanche,
+            }
+        ]
     },
 };
 
@@ -423,5 +475,21 @@ export const tokenAddressByProtocol = {
         compoundV3: {
             cUSDbCv3: "0x9c4ec768c28520B50860ea7a15bd7213a9fF58bf",
         },
+        seamless: {
+            sUSDbC: "0x13A13869B814Be8F13B86e9875aB51bda882E391",
+            sWETH: "0x48bf8fCd44e2977c8a9A744658431A8e6C0d866c",
+            scbETH: "0x2c159A183d9056E29649Ce7E56E59cA833D32624",
+            sUSDC: "0x53E240C0F985175dA046A62F26D490d1E259036e",
+            sDAI: "0x37eF72fAC21904EDd7e69f7c7AC98172849efF8e"
+        },
+        moonwell: {
+            mDAI: "0x73b06D8d18De422E269645eaCe15400DE7462417",
+            mUSDC: "0xEdc817A28E8B93B03976FBd4a3dDBc9f7D176c22",
+            mUSDbC: "0x703843C3379b52F9FF486c9f5892218d2a065cC8",
+            mWETH: "0x628ff693426583D9a7FB391E54366292F509D457",
+            mcbETH: "0x3bf93770f2d4a794c3d9EBEfBAeBAE2a8f09A5E5",
+            mwstETH: "0x627Fe393Bc6EdDA28e99AE648fD6fF362514304b",
+            mrETH: "0xCB1DaCd30638ae38F2B94eA64F066045B7D45f44"
+        }
     },
 };

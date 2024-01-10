@@ -42,12 +42,12 @@ export const NETWORK_LIST = [
     //     chainId: "1",
     //     icon: ethereum,
     // },
-    // {
-    //     key: "Base",
-    //     chainName: "base",
-    //     chainId: "8453",
-    //     icon: base,
-    // },
+    {
+        key: "Base",
+        chainName: "base",
+        chainId: "8453",
+        icon: base,
+    },
 ];
 
 export const ChainIdDetails = {

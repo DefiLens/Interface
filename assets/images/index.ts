@@ -31,6 +31,8 @@ import logoDark from "./logoDark.png";
 import dai from "./dai.png";
 import usdc from "./usdc.png";
 import usdt from "./usdt.png";
+import moonwell from "./moonwell.svg";
+import seamless from "./seamless.svg";
 
 export {
     closeNarrow,
@@ -66,4 +68,6 @@ export {
     dai,
     usdc,
     usdt,
+    moonwell,
+    seamless
 };
