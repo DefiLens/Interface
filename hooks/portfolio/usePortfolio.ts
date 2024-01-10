@@ -77,7 +77,7 @@ async function fetchTokenPrice(chainId: number, tokenAddress: string): Promise<n
 export function usePortfolio() {
     async function fetchPortfolio({chainId, address}: any) {
         try {
-            const userTokensUrl = `https://api.enso.finance/api/v1/wallet/balances?chainId=${chainId}&eoaAddress=${address}&useEoa=false`;
+            const userTokensUrl = `https://api.enso.finance/api/v1/wallet/balances?chainId=${chainId}&eoaAddress=${address}&useEoa=true`;
             const baseTokensUrl = "https://enso-scrape.s3.us-east-2.amazonaws.com/output/backend/baseTokens.json";
             const defiTokensUrl = "https://enso-scrape.s3.us-east-2.amazonaws.com/output/backend/defiTokens.json";
             const userTokens = await fetchData<UserToken[]>(userTokensUrl);
@@ -85,7 +85,7 @@ export function usePortfolio() {
             const defiTokens = await fetchData<DefiToken[]>(defiTokensUrl);
             const aggregatedData: AggregatedTokenInfo[] = [];
             await userTokens.forEach(async (userToken, index) => {
-                const price = await fetchTokenPrice(chainId, userToken.token);
+                // const price = await fetchTokenPrice(chainId, userToken.token);
                 const defiTokenMatch = defiTokens.find(
                     (defiToken) => defiToken.tokenAddress.toLowerCase() == userToken.token.toLowerCase()
                 );
@@ -99,7 +99,7 @@ export function usePortfolio() {
                         apy: defiTokenMatch.apy,
                         protocol: defiTokenMatch.protocol, // Adding protocol info
                         underlyingTokens: defiTokenMatch.underlyingTokens,
-                        price,
+                        // price,
                         type: "defiToken",
                     };
                     aggregatedData.push(aggregatedInfo);
@@ -114,7 +114,7 @@ export function usePortfolio() {
                             symbol: erc20TokenMatch.symbol,
                             logoURI: erc20TokenMatch.logoURI,
                             chainId: erc20TokenMatch.chainId,
-                            price,
+                            // price,
                             type: "erc20Token",
                         };
                         aggregatedData.push(aggregatedInfo);

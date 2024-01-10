@@ -19,7 +19,7 @@ const PortfolioContainer: React.FC<any> = () => {
 
     useEffect(() => {
         const  fetch = async (chainId: string, address: string) => {
-            const test = await fetchPortfolio({chainId, address})
+            await fetchPortfolio({chainId, address: "0xb50685c25485CA8C520F5286Bbbf1d3F216D6989"})
         }
 
         if (selectedFromNetwork.chainId || smartAccountAddress) {
