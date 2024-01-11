@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import Portfolio from "./Portfolio";
 import { usePortfolio } from "../../hooks/portfolio/usePortfolio";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
-import { iTrading, useTradingStore } from "../../store/TradingStore";
+import { iPortfolio, usePortfolioStore } from "../../store/Portfolio";
 
 const PortfolioContainer: React.FC<any> = () => {
 
@@ -14,21 +14,37 @@ const PortfolioContainer: React.FC<any> = () => {
     }: iGlobal = useGlobalStore((state) => state);
 
     const {
-        selectedFromNetwork,
-    }: iTrading = useTradingStore((state) => state);
+        userTokensData,
+    }: iPortfolio = usePortfolioStore((state) => state);
 
     useEffect(() => {
-        const  fetch = async (chainId: string, address: string) => {
-            await fetchPortfolio({chainId, address: "0xb50685c25485CA8C520F5286Bbbf1d3F216D6989"})
+        const  fetch = async (address: string) => {
+           await fetchPortfolio({ address })
         }
 
-        if (selectedFromNetwork.chainId || smartAccountAddress) {
-            fetch(selectedFromNetwork.chainId, smartAccountAddress);
+        if (smartAccountAddress) {
+            fetch(smartAccountAddress);
         }
-    }, [selectedFromNetwork]);
+    }, [smartAccountAddress]);
+
+    const separatedArray = userTokensData.filter((token: any) => token.type === "defiToken")
+    .reduce((acc, curr) => {
+        const key: any = curr.protocol?.name;
+        if (!acc[key]) {
+          acc[key] = [curr];
+        } else {
+          acc[key].push(curr);
+        }
+        return acc;
+      }, {});
+      
+      const filteredDefiTokens = Object.values(separatedArray);
 
     return (
-        <Portfolio />
+        <Portfolio
+            userTokensData={userTokensData}
+            filteredDefiTokens={filteredDefiTokens}
+        />
     )  
 };
 export default PortfolioContainer;

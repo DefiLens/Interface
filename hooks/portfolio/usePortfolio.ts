@@ -1,6 +1,7 @@
+import axios from "axios";
 import { useMutation } from "@tanstack/react-query";
 import { fetchData } from "../../utils/helper";
-import axios from "axios";
+import { iPortfolio, usePortfolioStore } from "../../store/Portfolio";
 
 export type UserToken = {
     token: string;
@@ -75,16 +76,27 @@ async function fetchTokenPrice(chainId: number, tokenAddress: string): Promise<n
 }
 
 export function usePortfolio() {
-    async function fetchPortfolio({chainId, address}: any) {
+
+    const {
+        setUserTokensData,
+    }: iPortfolio = usePortfolioStore((state) => state);
+
+    const chainIds = [137, 10];
+    async function fetchPortfolio({address}: any) {
         try {
-            const userTokensUrl = `https://api.enso.finance/api/v1/wallet/balances?chainId=${chainId}&eoaAddress=${address}&useEoa=true`;
+            const userTokensUrlPolygon = `https://api.enso.finance/api/v1/wallet/balances?chainId=${chainIds[0]}&eoaAddress=${address}&useEoa=true`;
+            const userTokensUrlOptimism = `https://api.enso.finance/api/v1/wallet/balances?chainId=${chainIds[1]}&eoaAddress=${address}&useEoa=true`;
+            
             const baseTokensUrl = "https://enso-scrape.s3.us-east-2.amazonaws.com/output/backend/baseTokens.json";
             const defiTokensUrl = "https://enso-scrape.s3.us-east-2.amazonaws.com/output/backend/defiTokens.json";
-            const userTokens = await fetchData<UserToken[]>(userTokensUrl);
+
+            const userTokensPolygon = await fetchData<UserToken[]>(userTokensUrlPolygon);
+            const userTokensOptimism = await fetchData<UserToken[]>(userTokensUrlOptimism);
+
             const baseTokens = await fetchData<ERC20Token[]>(baseTokensUrl);
             const defiTokens = await fetchData<DefiToken[]>(defiTokensUrl);
             const aggregatedData: AggregatedTokenInfo[] = [];
-            await userTokens.forEach(async (userToken, index) => {
+            await  [...userTokensPolygon, ...userTokensOptimism].forEach(async (userToken, index) => {
                 // const price = await fetchTokenPrice(chainId, userToken.token);
                 const defiTokenMatch = defiTokens.find(
                     (defiToken) => defiToken.tokenAddress.toLowerCase() == userToken.token.toLowerCase()
@@ -121,7 +133,7 @@ export function usePortfolio() {
                     }
                 }
             });
-            console.log("aggregatedData: ", aggregatedData);
+            setUserTokensData(aggregatedData)
             return aggregatedData;
         } catch (error: any) {
             if (error.message) {
