@@ -55,13 +55,13 @@ export function useUniswap() {
                 type === "exactIn" ? TradeType.EXACT_INPUT : TradeType.EXACT_OUTPUT,
                 options
             );
-            let amountOutprice: any = route?.quote.toExact().toString();
-            amountOutprice = parseUnits(amountOutprice, tokenOutDecimals);
+            let amountOutpriceWithoutDecimal: any = route?.quote.toExact().toString();
+            let amountOutprice = parseUnits(amountOutpriceWithoutDecimal, tokenOutDecimals);
             const swapTx = {
                 to: uniswapSwapRouterByChainId[selectedNetwork.chainId],
                 data: route.methodParameters?.calldata,
             };
-            return { swapTx, tokenIn, tokenOut, amountOutprice, tokenInDecimals, tokenOutDecimals };
+            return { swapTx, tokenIn, tokenOut, amountOutprice, amountOutpriceWithoutDecimal, tokenInDecimals, tokenOutDecimals };
         } catch (error) {
             console.log("swapUniV3-error", error);
         }

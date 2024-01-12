@@ -1,4 +1,4 @@
-import { ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { toast } from "react-hot-toast";
 
 import { useAddress } from "@thirdweb-dev/react";
@@ -18,6 +18,7 @@ import {
     tokensByNetworkForCC,
     uniswapSwapRouterByChainId,
 } from "../../utils/data/protocols";
+import { incresePowerByDecimals } from "../../utils/helper";
 
 export function useCCRefinance() {
     const address = useAddress(); // Detect the connected address
@@ -101,7 +102,6 @@ export function useCCRefinance() {
 
                 const tokenInNum = nativeTokenNum[selectedFromNetwork.chainId][tokenInName];
                 nativeTokenIn = nativeTokenFetcher[selectedFromNetwork.chainId][tokenInNum].nativeToken;
-
                 nativeTokenInSymbol = nativeTokenFetcher[selectedFromNetwork.chainId][tokenInNum].symbol;
                 nativeTokenOutDecimal = nativeTokenFetcher[selectedFromNetwork.chainId][tokenInNum].decimals;
 
@@ -130,6 +130,7 @@ export function useCCRefinance() {
                 };
                 batchFlows.push(batchFlow);
             }
+
             isSwap = nativeTokenIn != tokensByNetworkForCC[selectedFromNetwork.chainId].usdc ? true : false;
             if (isSwap) {
                 const approveData = await approve({
@@ -202,8 +203,12 @@ export function useCCRefinance() {
                 } else {
                     tokenOutContractAddress = abiFetcher[selectedToNetwork.chainId][abiNum]["contractAddress"];
                 }
+
+                const _tempAmount = BigNumber.from(await incresePowerByDecimals(amountIn, 6).toString());
                 let txs: any = await sendTxToChain({
-                    tokenIn: nativeTokenIn,
+                    // tokenIn: nativeTokenIn,
+                    tokenIn: tokensByNetworkForCC[selectedFromNetwork.chainId].usdc,
+                    _amountIn: isSwap ? swapData.amountOutprice : _tempAmount,
                     address,
                     isSCW: true,
                     params,
@@ -228,11 +233,10 @@ export function useCCRefinance() {
                     protocol: "Stargate",
                     tokenIn: "USDC",
                     tokenOut: "USDC",
-                    amount: amountIn,
+                    amount: isSwap ? swapData.amountOutpriceWithoutDecimal : amountIn,
                     action: `Bridge from ${selectedFromNetwork.chainName} to ${selectedToNetwork.chainName}`,
                 };
                 batchFlows.push(batchFlow);
-                alert("tokenOutName+++---" + tokenOutName);
                 batchFlow = {
                     fromChainId: selectedToNetwork.chainId,
                     toChainId: selectedToNetwork.chainId,

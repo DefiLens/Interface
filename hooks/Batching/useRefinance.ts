@@ -69,8 +69,8 @@ export function useRefinance() {
 
             if (toProtocol == "erc20") {
                 nativeTokenOut = tokensData?.filter((token) => token.symbol === tokenOutName)[0].address;
-                nativeTokenOutSymbol = tokensData?.filter((token) => token.symbol === tokenInName)[0].symbol;
-                nativeTokenOutDecimal = tokensData?.filter((token) => token.symbol === tokenInName)[0].decimals;
+                nativeTokenOutSymbol = tokensData?.filter((token) => token.symbol === tokenOutName)[0].symbol;
+                nativeTokenOutDecimal = tokensData?.filter((token) => token.symbol === tokenOutName)[0].decimals;
             }
 
             if (toProtocol != "erc20") {

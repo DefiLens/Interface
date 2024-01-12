@@ -25,6 +25,7 @@ export function useCCSendTx() {
 
     async function sendTxToChain({
         tokenIn,
+        _amountIn,
         address,
         isSCW,
         params,
@@ -52,7 +53,9 @@ export function useCCSendTx() {
             // if (!isThisAmount) throw "Select amount field";
             // if (!allNetworkData) throw "a need to fetch";
 
-            const _tempAmount = BigNumber.from(await incresePowerByDecimals(amountIn, fromTokenDecimal).toString());
+
+            // const _tempAmount = BigNumber.from(await incresePowerByDecimals(amountIn, fromTokenDecimal).toString());
+            const _tempAmount = _amountIn;
             let _currentAddress;
             let _currentProvider;
             if (isSCW) {
@@ -74,17 +77,17 @@ export function useCCSendTx() {
             if (!erc20TokenInInstance) return;
             const balance = await getErc20Balanceof(erc20TokenInInstance, _currentAddress);
 
-            if (isSCW) {
-                if (BigNumber.from(balance).lt(BigNumber.from(_tempAmount))) {
-                    toast.error("You don't have enough balance in SmartAccount");
-                    return;
-                }
-            } else {
-                if (BigNumber.from(balance).lt(BigNumber.from(_tempAmount))) {
-                    toast.error("You don't have enough balance in EOA");
-                    return;
-                }
-            }
+            // if (isSCW) {
+            //     if (BigNumber.from(balance).lt(BigNumber.from(_tempAmount))) {
+            //         toast.error("You don't have enough balance in SmartAccount");
+            //         return;
+            //     }
+            // } else {
+            //     if (BigNumber.from(balance).lt(BigNumber.from(_tempAmount))) {
+            //         toast.error("You don't have enough balance in EOA");
+            //         return;
+            //     }
+            // }
 
             let approveTx;
             const allowance = await getErc20Allownace(erc20TokenInInstance, _currentAddress, fromStarGateRouter);
