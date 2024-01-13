@@ -9,7 +9,7 @@ import { DEFAULT_ENTRYPOINT_ADDRESS } from "@biconomy/account";
 
 export function useBiconomyProvider() {
     const { smartAccount, selectedNetwork }: iGlobal = useGlobalStore((state) => state);
-    const { setHasExecutionError }: iTrading = useTradingStore((state) => state);
+    const { setHasExecutionError, individualBatch }: iTrading = useTradingStore((state) => state);
     async function sendToBiconomy(txs) {
         try {
             const userOp = await smartAccount.buildUserOp(txs);
@@ -48,7 +48,7 @@ export function useBiconomyProvider() {
 
                 console.log("userOp-after: ", userOp);
             } else {
-                userOp.callGasLimit = BigNumber.from(userOp.callGasLimit).add(800000)
+                userOp.callGasLimit = BigNumber.from(userOp.callGasLimit).add(BigNumber.from(185000).mul(individualBatch.length))
             }
 
             const userOpResponse = await smartAccount.sendUserOp(userOp);
