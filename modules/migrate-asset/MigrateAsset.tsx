@@ -9,6 +9,7 @@ import { ChainIdDetails } from "../../utils/data/network";
 import { decreasePowerByDecimals } from "../../utils/helper";
 import { iPortfolio, usePortfolioStore } from "../../store/Portfolio";
 import { checkBox, defaultBlue, uncheckBox } from "../../assets/images";
+import Button from "../../components/Button/Button";
 
 const MigrateAsset: React.FC<any> = ({
     isUsersTokenLoading,
@@ -17,6 +18,7 @@ const MigrateAsset: React.FC<any> = ({
     scwTokenAddressesData,
     eoaTokenAddressesData,
     checkTokensData,
+    handleExecuteMgrateAsset,
 }: tMigrateAsset) => {
 
     const {
@@ -92,76 +94,86 @@ const MigrateAsset: React.FC<any> = ({
             )}
 
             {userTokensData?.length > 0 && (
-                <div className="w-full bg-backgound-500 flex flex-col justify-start items-start gap-3 text-primary-100 border border-backgound-600 shadow shadow-backgound-600 rounded-lg p-8">
-                    <div className="w-full text-lg md:text-xl font-extrabold text-primary-100">
-                        Wallet:
-                    </div>
-                    <div className="w-full flex justify-end items-center gap-2 text-lg md:text-xl font-extrabold text-primary-100 py-1 my-2 border-b border-b-backgound-900">
-                        <div className="w-14 text-start" />
-                        <div className="w-full text-start">
-                            Asset
+                <>
+                    <div className="w-full bg-backgound-500 flex flex-col justify-start items-start gap-3 text-primary-100 border border-backgound-600 shadow shadow-backgound-600 rounded-lg p-8">
+                        <div className="w-full text-lg md:text-xl font-extrabold text-primary-100">
+                            Wallet:
                         </div>
-                        <div className="w-[25%] text-end">
-                            Price
-                        </div>
-                        <div className="w-[25%] text-end">
-                            Balance
-                        </div>
-                    </div>
-                    {userTokensData.length > 0 && userTokensData.filter((token: any) => token.type === "erc20Token")
-                    .map((item: any) => (
-                        <div
-                            key={item.tokenAddress}
-                            className="w-full flex justify-end items-center gap-2 text-sm md:text-base font-medium text-primary-100 py-1"
-                        >
-                            <div className="w-14 text-start">
-                                {isSCW ? (
-                                    <Image
-                                        alt="checkbox"
-                                        src={scwTokenAddressesData.includes(`${item.tokenAddress}`) ? checkBox : uncheckBox}
-                                        onClick={() => checkTokensData(item)}
-                                        className="w-5 h-5 cursor-pointer"
-                                    />
-                                ) : (
-                                    <Image
-                                        alt="checkbox"
-                                        src={eoaTokenAddressesData.includes(`${item.tokenAddress}`) ? checkBox : uncheckBox}
-                                        onClick={() => checkTokensData(item)}
-                                        className="w-5 h-5 cursor-pointer"
-                                    />
-                            )}
+                        <div className="w-full flex justify-end items-center gap-2 text-lg md:text-xl font-extrabold text-primary-100 py-1 my-2 border-b border-b-backgound-900">
+                            <div className="w-14 text-start" />
+                            <div className="w-full text-start">
+                                Asset
                             </div>
-                            <div className="w-full flex justify-start items-center gap-3 text-start">
-                                <Image
-                                    height={100}
-                                    width={100}
-                                    src={item.logoURI ? item.logoURI : defaultBlue}
-                                    alt=""
-                                    className="h-10 w-10 rounded-full cursor-pointer"
-                                />
-                                <div className="flex flex-col justify-start items-start gap-1">
-                                    <div>
-                                        {item.name}
-                                    </div>
-                                    <div className="flex justify-start items-center gap-1 text-xs text-font-500">
+                            <div className="w-[25%] text-end">
+                                Price
+                            </div>
+                            <div className="w-[25%] text-end">
+                                Balance
+                            </div>
+                        </div>
+                        {userTokensData.length > 0 && userTokensData.filter((token: any) => token.type === "erc20Token")
+                        .map((item: any) => (
+                            <div
+                                key={item.tokenAddress}
+                                className="w-full flex justify-end items-center gap-2 text-sm md:text-base font-medium text-primary-100 py-1"
+                            >
+                                <div className="w-14 text-start">
+                                    {isSCW ? (
                                         <Image
-                                            src={ChainIdDetails[item?.chainId].networkLogo}
-                                            alt=""
-                                            className="h-4 w-4 rounded-full cursor-pointer"
+                                            alt="checkbox"
+                                            src={scwTokenAddressesData.includes(`${item.tokenAddress}`) ? checkBox : uncheckBox}
+                                            onClick={() => checkTokensData(item)}
+                                            className="w-5 h-5 cursor-pointer"
                                         />
-                                        {startCase(ChainIdDetails[item?.chainId].networkName)}
+                                    ) : (
+                                        <Image
+                                            alt="checkbox"
+                                            src={eoaTokenAddressesData.includes(`${item.tokenAddress}`) ? checkBox : uncheckBox}
+                                            onClick={() => checkTokensData(item)}
+                                            className="w-5 h-5 cursor-pointer"
+                                        />
+                                )}
+                                </div>
+                                <div className="w-full flex justify-start items-center gap-3 text-start">
+                                    <Image
+                                        height={100}
+                                        width={100}
+                                        src={item.logoURI ? item.logoURI : defaultBlue}
+                                        alt=""
+                                        className="h-10 w-10 rounded-full cursor-pointer"
+                                    />
+                                    <div className="flex flex-col justify-start items-start gap-1">
+                                        <div>
+                                            {item.name}
+                                        </div>
+                                        <div className="flex justify-start items-center gap-1 text-xs text-font-500">
+                                            <Image
+                                                src={ChainIdDetails[item?.chainId].networkLogo}
+                                                alt=""
+                                                className="h-4 w-4 rounded-full cursor-pointer"
+                                            />
+                                            {startCase(ChainIdDetails[item?.chainId].networkName)}
+                                        </div>
                                     </div>
                                 </div>
+                                <div className="w-[25%] text-end">
+                                    {decreasePowerByDecimals(item.amount.toString(), 18)}
+                                </div>
+                                <div className="w-[25%] text-end">
+                                    {decreasePowerByDecimals(item.amount.toString(), 18)}
+                                </div>
                             </div>
-                            <div className="w-[25%] text-end">
-                                {decreasePowerByDecimals(item.amount.toString(), 18)}
-                            </div>
-                            <div className="w-[25%] text-end">
-                                {decreasePowerByDecimals(item.amount.toString(), 18)}
-                            </div>
-                        </div>
-                    ))}
-                </div>
+                        ))}
+                    </div>
+
+                    <div className="w-full flex justify-center items-center gap-3">
+                        <Button
+                            handleClick={() => handleExecuteMgrateAsset()}
+                            customStyle="!w-auto"
+                            innerText="Execute Migrate Assets"
+                        />
+                    </div>
+                </>
             )}
         </div>
     )

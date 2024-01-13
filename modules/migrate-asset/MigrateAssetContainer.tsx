@@ -96,6 +96,14 @@ const MigrateAssetContainer: React.FC<any> = () => {
         }
     };
 
+    const handleExecuteMgrateAsset = () => {
+        if(isSCW) {
+            console.log("Execute: Scw Tokens", scwTokenAddressesData)
+        } else {
+            console.log("Execute: Eoa Tokens", eoaTokenAddressesData)
+        }
+    }
+
     const separatedArray = (userTokensData || []).filter((token: any) => token.type === "defiToken")
     .reduce((acc, curr) => {
         const key: any = curr.protocol?.name;
@@ -125,6 +133,7 @@ const MigrateAssetContainer: React.FC<any> = () => {
             scwTokenAddressesData={scwTokenAddressesData}
             eoaTokenAddressesData={eoaTokenAddressesData}
             checkTokensData={checkTokensData}
+            handleExecuteMgrateAsset={handleExecuteMgrateAsset}
         />
     )  
 };
