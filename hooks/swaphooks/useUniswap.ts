@@ -28,6 +28,8 @@ export function useUniswap() {
 
             const erc20In: any = await getContractInstance(tokenIn, IERC20, web3JsonProvider);
             const erc20Out: any = await getContractInstance(tokenOut, IERC20, web3JsonProvider);
+            console.log('tokenIn:', tokenIn)
+            console.log('tokenOut:', tokenOut)
 
             const tokenInDecimals: any = await getErc20Decimals(erc20In);
             const tokenOutDecimals: any = await getErc20Decimals(erc20Out);
@@ -60,13 +62,13 @@ export function useUniswap() {
                 options
             );
             console.log('route:', route)
-            let amountOutprice: any = route?.quote.toExact().toString();
-            amountOutprice = parseUnits(amountOutprice, tokenOutDecimals);
+            let amountOutpriceWithoutDecimal: any = route?.quote.toExact().toString();
+            let amountOutprice = parseUnits(amountOutpriceWithoutDecimal, tokenOutDecimals);
             const swapTx = {
-                to: uniswapSwapRouterByChainId[chainId],
+                to: uniswapSwapRouterByChainId[selectedNetwork.chainId],
                 data: route.methodParameters?.calldata,
             };
-            return { swapTx, tokenIn, tokenOut, amountOutprice, tokenInDecimals, tokenOutDecimals };
+            return { swapTx, tokenIn, tokenOut, amountOutprice, amountOutpriceWithoutDecimal, tokenInDecimals, tokenOutDecimals };
         } catch (error) {
             console.log("swapUniV3-error", error);
         }
