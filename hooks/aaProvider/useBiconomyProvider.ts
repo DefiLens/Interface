@@ -14,28 +14,40 @@ export function useBiconomyProvider() {
         try {
             const userOp = await smartAccount.buildUserOp(txs);
             userOp.paymasterAndData = "0x";
-            console.log('userOp: ', userOp)
+            console.log("userOp: ", userOp);
 
-            const bundler: IBundler = new Bundler({
-                bundlerUrl: ChainIdDetails[selectedNetwork.chainId].bundlerURL,
-                chainId: BigNumber.from(selectedNetwork.chainId).toNumber(),
-                entryPointAddress: DEFAULT_ENTRYPOINT_ADDRESS,
-            });
-            const data = await bundler.estimateUserOpGas(userOp)
-            console.log('data: ', data)
+            if (selectedNetwork.chainId == "137") {
+                const bundler: IBundler = new Bundler({
+                    bundlerUrl: ChainIdDetails[selectedNetwork.chainId].bundlerURL,
+                    chainId: BigNumber.from(selectedNetwork.chainId).toNumber(),
+                    entryPointAddress: DEFAULT_ENTRYPOINT_ADDRESS,
+                });
+                const data = await bundler.estimateUserOpGas(userOp);
+                console.log("data: ", data);
+                // userOp.callGasLimit = BigNumber.from(userOp.callGasLimit).add(0).toNumber();
+                // userOp.verificationGasLimit = userOp.verificationGasLimit;
+                // userOp.maxFeePerGas = userOp.maxFeePerGas;
+                // userOp.maxPriorityFeePerGas = userOp.maxPriorityFeePerGas;
+                // userOp.preVerificationGas = userOp.preVerificationGas;
 
-            // userOp.callGasLimit = BigNumber.from(data.callGasLimit).toNumber();
-            // userOp.verificationGasLimit = data.verificationGasLimit;
-            // userOp.maxFeePerGas = data.maxFeePerGas;
-            // userOp.maxPriorityFeePerGas = data.maxPriorityFeePerGas;
-            // userOp.preVerificationGas = data.preVerificationGas;
+                userOp.callGasLimit = BigNumber.from(data.callGasLimit).gt(0)
+                    ? BigNumber.from(data.callGasLimit).toNumber()
+                    : BigNumber.from(userOp.callGasLimit);
+                userOp.verificationGasLimit = BigNumber.from(data.verificationGasLimit).gt(0)
+                    ? BigNumber.from(data.verificationGasLimit).toNumber()
+                    : BigNumber.from(userOp.verificationGasLimit);
+                userOp.maxFeePerGas = BigNumber.from(data.maxFeePerGas).gt(0)
+                    ? BigNumber.from(data.maxFeePerGas).toNumber()
+                    : BigNumber.from(userOp.maxFeePerGas);
+                userOp.maxPriorityFeePerGas = BigNumber.from(data.maxPriorityFeePerGas).gt(0)
+                    ? BigNumber.from(data.maxPriorityFeePerGas).toNumber()
+                    : BigNumber.from(userOp.maxPriorityFeePerGas);
+                userOp.preVerificationGas = BigNumber.from(data.preVerificationGas).gt(0)
+                    ? BigNumber.from(data.preVerificationGas).toNumber()
+                    : BigNumber.from(userOp.preVerificationGas);
 
-            userOp.callGasLimit = BigNumber.from(data.callGasLimit).gt(0) ? BigNumber.from(data.callGasLimit).toNumber() : BigNumber.from(userOp.callGasLimit);
-            userOp.verificationGasLimit = BigNumber.from(data.verificationGasLimit).gt(0) ? BigNumber.from(data.verificationGasLimit).toNumber() : BigNumber.from(userOp.verificationGasLimit);
-            userOp.maxFeePerGas = BigNumber.from(data.maxFeePerGas).gt(0) ? BigNumber.from(data.maxFeePerGas).toNumber() : BigNumber.from(userOp.maxFeePerGas);
-            userOp.maxPriorityFeePerGas = BigNumber.from(data.maxPriorityFeePerGas).gt(0) ? BigNumber.from(data.maxPriorityFeePerGas).toNumber() : BigNumber.from(userOp.maxPriorityFeePerGas);
-            userOp.preVerificationGas = BigNumber.from(data.preVerificationGas).gt(0) ? BigNumber.from(data.preVerificationGas).toNumber() : BigNumber.from(userOp.preVerificationGas);
-            console.log('userOp-after: ', userOp)
+                console.log("userOp-after: ", userOp);
+            }
 
             const userOpResponse = await smartAccount.sendUserOp(userOp);
             const txReciept = await userOpResponse.wait();
