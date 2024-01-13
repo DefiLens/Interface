@@ -367,6 +367,28 @@ export const tokensByProtocol = {
                 name: "mrETH",
                 icon: avalanche,
             }
+        ],
+        sonne: [
+            {
+                name: "sobUSDbC",
+                icon: avalanche,
+            },
+            {
+                name: "sobUSDC",
+                icon: avalanche,
+            },
+            {
+                name: "sobDAI",
+                icon: avalanche,
+            },
+            {
+                name: "sobWETH",
+                icon: avalanche,
+            },
+            {
+                name: "sobcbETH",
+                icon: avalanche,
+            },
         ]
     },
 };
@@ -490,6 +512,13 @@ export const tokenAddressByProtocol = {
             mcbETH: "0x3bf93770f2d4a794c3d9EBEfBAeBAE2a8f09A5E5",
             mwstETH: "0x627Fe393Bc6EdDA28e99AE648fD6fF362514304b",
             mrETH: "0xCB1DaCd30638ae38F2B94eA64F066045B7D45f44"
+        },
+        sonne: {
+            sobUSDbC: "0x225886C9beb5eeE254F79d58bbD80cf9F200D4d0",
+            sobUSDC: "0xfd68F92B45b633bbe0f475294C1A86aecD62985A",
+            sobDAI: "0xb864BA2aab1f53BC3af7AE49a318202dD3fd54C2",
+            sobWETH: "0x5F5c479fe590cD4442A05aE4a941dd991A633B8E",
+            sobcbETH: "0x6C91bEECEEDda2089307fAb818E12757948BF489",
         }
     },
 };
