@@ -7,4 +7,8 @@ export const NavigationList = [
         title: "Portfolio",
         route: "/portfolio",
     },
+    {
+        title: "Migrate",
+        route: "/migrate-asset",
+    },
 ];

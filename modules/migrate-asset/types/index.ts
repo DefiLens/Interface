@@ -1,10 +1,10 @@
 import { iUserTokenInfo } from "../../../store/Portfolio";
 
-export type tPortfolio = {
+export type tMigrateAsset = {
     isUsersTokenLoading: boolean
     smartAccountAddress: string;
     userTokensData: iUserTokenInfo[];
-    filteredDefiTokens: iUserTokenInfo[][];
-    handleFetchPorfolioData: () => void;
-    totalNetWorth: number
+    scwTokenAddressesData: string[]
+    eoaTokenAddressesData: string[]
+    checkTokensData:(data: iUserTokenInfo) => void;
 };
