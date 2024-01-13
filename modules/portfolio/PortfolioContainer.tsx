@@ -20,7 +20,7 @@ const PortfolioContainer: React.FC<any> = () => {
 
     useEffect(() => {
         const  fetch = async (address: string) => {
-           await fetchPortfolio({ address })
+           await fetchPortfolio({ address: '0xb50685c25485CA8C520F5286Bbbf1d3F216D6989' })
         }
 
         if (smartAccountAddress) {
