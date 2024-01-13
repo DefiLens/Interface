@@ -88,8 +88,12 @@ const TradeContainer: React.FC<any> = () => {
         setSelectedToToken,
         setShowFromSelectionMenu,
         setShowToSelectionMenu,
-        tokensData,
-        setTokensData,
+
+        fromTokensData,
+        toTokensData,
+        setFromTokensData,
+        setToTokensData,
+
         amountIn,
         setAmountIn,
         fromTokenDecimal,
@@ -546,7 +550,7 @@ const TradeContainer: React.FC<any> = () => {
                     setSafeState(setFromTokenDecimal, fromTokendecimal, 0);
                 } else {
                     const filteredTokens = getTokenListByChainId(selectedFromNetwork.chainId, UNISWAP_TOKENS);
-                    setTokensData(filteredTokens);
+                    setFromTokensData(filteredTokens);
                 }
             }
         }
@@ -556,9 +560,9 @@ const TradeContainer: React.FC<any> = () => {
     useEffect(() => {
         async function onChangeselectedToProtocol() {
             if (selectedToProtocol) {
-                if (selectedToProtocol == "erc20" && tokensData.length < 1) {
+                if (selectedToProtocol == "erc20") {
                     const filteredTokens = getTokenListByChainId(selectedToNetwork.chainId, UNISWAP_TOKENS);
-                    setTokensData(filteredTokens);
+                    setToTokensData(filteredTokens);
                 }
             }
         }
@@ -594,7 +598,6 @@ const TradeContainer: React.FC<any> = () => {
     };
 
     const onChangeFromToken = async (_fromToken: string) => {
-        alert(_fromToken)
         if (addToBatchLoading) {
             toast.error("wait, tx loading");
             return;
@@ -629,7 +632,7 @@ const TradeContainer: React.FC<any> = () => {
 
             const provider = await getProvider(selectedFromNetwork.chainId);
             const erc20Address: any =
-                selectedFromProtocol == "erc20" ? tokensData.filter((token: any) => token.symbol === _fromToken) : "";
+                selectedFromProtocol == "erc20" ? fromTokensData.filter((token: any) => token.symbol === _fromToken) : "";
 
             const tokenAddress =
                 selectedFromProtocol != "erc20"
@@ -1035,26 +1038,26 @@ const TradeContainer: React.FC<any> = () => {
 
             const userOp = await smartAccount.buildUserOp(refinaceData.txArray);
 
-            const bundler: IBundler = new Bundler({
-                bundlerUrl: ChainIdDetails[selectedFromNetwork.chainId].bundlerURL,
-                chainId: BigNumber.from(selectedFromNetwork.chainId).toNumber(),
-                entryPointAddress: DEFAULT_ENTRYPOINT_ADDRESS,
-            });
+            // const bundler: IBundler = new Bundler({
+            //     bundlerUrl: ChainIdDetails[selectedFromNetwork.chainId].bundlerURL,
+            //     chainId: BigNumber.from(selectedFromNetwork.chainId).toNumber(),
+            //     entryPointAddress: DEFAULT_ENTRYPOINT_ADDRESS,
+            // });
 
-            const data = await bundler.estimateUserOpGas(userOp);
-            console.log("data: ", data, refinaceData);
+            // const data = await bundler.estimateUserOpGas(userOp);
+            // console.log("data: ", data, refinaceData);
 
-            const tempCallGasLimit = BigNumber.from(data.callGasLimit).gt(0) ? BigNumber.from(data.callGasLimit).toNumber() : BigNumber.from(userOp.callGasLimit);
-            const tempVerificationGasLimit = BigNumber.from(data.verificationGasLimit).gt(0) ? BigNumber.from(data.verificationGasLimit).toNumber() : BigNumber.from(userOp.verificationGasLimit);
-            const tempMaxFeePerGas = BigNumber.from(data.maxFeePerGas).gt(0) ? BigNumber.from(data.maxFeePerGas).toNumber() : BigNumber.from(userOp.maxFeePerGas);
-            const tempMaxPriorityFeePerGas = BigNumber.from(data.maxPriorityFeePerGas).gt(0) ? BigNumber.from(data.maxPriorityFeePerGas).toNumber() : BigNumber.from(userOp.maxPriorityFeePerGas);
-            const tempPreVerificationGas = BigNumber.from(data.preVerificationGas).gt(0) ? BigNumber.from(data.preVerificationGas).toNumber() : BigNumber.from(userOp.preVerificationGas);
+            // const tempCallGasLimit = BigNumber.from(data.callGasLimit).gt(0) ? BigNumber.from(data.callGasLimit).toNumber() : BigNumber.from(userOp.callGasLimit);
+            // const tempVerificationGasLimit = BigNumber.from(data.verificationGasLimit).gt(0) ? BigNumber.from(data.verificationGasLimit).toNumber() : BigNumber.from(userOp.verificationGasLimit);
+            // const tempMaxFeePerGas = BigNumber.from(data.maxFeePerGas).gt(0) ? BigNumber.from(data.maxFeePerGas).toNumber() : BigNumber.from(userOp.maxFeePerGas);
+            // const tempMaxPriorityFeePerGas = BigNumber.from(data.maxPriorityFeePerGas).gt(0) ? BigNumber.from(data.maxPriorityFeePerGas).toNumber() : BigNumber.from(userOp.maxPriorityFeePerGas);
+            // const tempPreVerificationGas = BigNumber.from(data.preVerificationGas).gt(0) ? BigNumber.from(data.preVerificationGas).toNumber() : BigNumber.from(userOp.preVerificationGas);
 
-            console.log('userOp-after: ', userOp)
+            // console.log('userOp-after: ', userOp)
 
-            const fees = bg(tempCallGasLimit.toString())
-                .plus(bg(tempVerificationGasLimit.toString()))
-                .multipliedBy(bg(tempMaxFeePerGas.toString()))
+            const fees = bg(userOp.callGasLimit.toString())
+                .plus(bg(userOp.verificationGasLimit.toString()))
+                .multipliedBy(bg(userOp.maxFeePerGas.toString()))
                 .dividedBy(1e18);
             let _totalfees = totalfees;
 
