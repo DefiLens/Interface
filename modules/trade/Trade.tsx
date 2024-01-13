@@ -516,7 +516,7 @@ const Trade: React.FC<any> = ({
                                                         src={
                                                             protocolNames[selectedFromNetwork.chainId].key.find(
                                                                 (entry: any) => entry.name == selectedFromProtocol
-                                                            ).icon || defaultBlue
+                                                            )?.icon || defaultBlue
                                                         }
                                                         alt=""
                                                         className="h-5 w-5 bg-backgound-300 rounded-full cursor-pointer"
@@ -734,7 +734,7 @@ const Trade: React.FC<any> = ({
                                                                                     (entry: any) =>
                                                                                         entry.name ==
                                                                                         bar.data.fromProtocol
-                                                                                ).icon || defaultBlue
+                                                                                )?.icon || defaultBlue
                                                                             }
                                                                             alt=""
                                                                             className="h-4 w-4 bg-font-200 rounded-full cursor-pointer"
