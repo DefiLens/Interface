@@ -105,7 +105,8 @@ export interface iTrading {
     showFromSelectionMenu: boolean;
     showToSelectionMenu: boolean;
 
-    tokensData: iTokenData[];
+    fromTokensData: iTokenData[];
+    toTokensData: iTokenData[];
     amountIn: string;
     fromTokenDecimal: number;
 
@@ -146,7 +147,8 @@ export interface iTrading {
     setShowFromSelectionMenu: (showFromSelectionMenu: boolean) => void;
     setShowToSelectionMenu: (showToSelectionMenu: boolean) => void;
 
-    setTokensData: (tokensData: iTokenData[]) => void;
+    setFromTokensData: (fromTokensData: iTokenData[]) => void;
+    setToTokensData: (toTokensData: iTokenData[]) => void;
     setAmountIn: (amountIn: string) => void;
     setFromTokenDecimal: (fromTokenDecimal: number) => void;
 
@@ -199,7 +201,8 @@ export const useTradingStore = create<iTrading>((set) => ({
     showFromSelectionMenu: false,
     showToSelectionMenu: false,
 
-    tokensData: [],
+    fromTokensData: [],
+    toTokensData: [],
     amountIn: "",
     fromTokenDecimal: 0,
 
@@ -263,7 +266,9 @@ export const useTradingStore = create<iTrading>((set) => ({
     setShowFromSelectionMenu: (showFromSelectionMenu) => set(() => ({ showFromSelectionMenu })),
     setShowToSelectionMenu: (showToSelectionMenu) => set(() => ({ showToSelectionMenu })),
 
-    setTokensData: (tokensData) => set(() => ({ tokensData })),
+    setFromTokensData: (fromTokensData) => set(() => ({ fromTokensData })),
+    setToTokensData: (toTokensData) => set(() => ({ toTokensData })),
+
     setAmountIn: (amountIn) => set(() => ({ amountIn })),
     setFromTokenDecimal: (fromTokenDecimal) => set(() => ({ fromTokenDecimal })),
 
