@@ -5,4 +5,5 @@ export type tPortfolio = {
     smartAccountAddress: string;
     userTokensData: iUserTokenInfo[];
     filteredDefiTokens: iUserTokenInfo[][];
+    handleFetchPorfolioData: () => void;
 };
