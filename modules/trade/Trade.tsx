@@ -52,7 +52,8 @@ const Trade: React.FC<any> = ({
         setShowFromSelectionMenu,
         showToSelectionMenu,
         setShowToSelectionMenu,
-        tokensData,
+        fromTokensData,
+        toTokensData,
         amountIn,
         fromTokenDecimal,
         filterFromToken,
@@ -217,7 +218,7 @@ const Trade: React.FC<any> = ({
 
                                                             {item.name === "erc20" &&
                                                                 selectedFromProtocol === "erc20" &&
-                                                                tokensData && (
+                                                                fromTokensData && (
                                                                     <div className="bg-backgound-100 text-font-200 rounded-lg p-3 my-1.5">
                                                                         <div className="w-full flex justify-start items-center gap-2 bg-font-100 rounded-md shadow py-1.5 px-5">
                                                                             <input
@@ -231,7 +232,7 @@ const Trade: React.FC<any> = ({
                                                                             />
                                                                             <AiOutlineSearch />
                                                                         </div>
-                                                                        {tokensData?.map(
+                                                                        {fromTokensData?.map(
                                                                             (token: iTokenData, tokenIndex: number) => {
                                                                                 return token.symbol
                                                                                     .toLowerCase()
@@ -361,7 +362,7 @@ const Trade: React.FC<any> = ({
                                                                 )}
                                                             {item.name === "erc20" &&
                                                                 selectedToProtocol === "erc20" &&
-                                                                tokensData && (
+                                                                toTokensData && (
                                                                     <div className="bg-backgound-100 text-font-200 rounded-lg p-3 my-1.5">
                                                                         <div className="w-full flex justify-start items-center gap-2 bg-font-100 rounded-md shadow py-1.5 px-5">
                                                                             <input
@@ -375,7 +376,7 @@ const Trade: React.FC<any> = ({
                                                                             />
                                                                             <AiOutlineSearch />
                                                                         </div>
-                                                                        {tokensData?.map(
+                                                                        {toTokensData?.map(
                                                                             (token: iTokenData, tokenIndex: number) => {
                                                                                 return token.symbol
                                                                                     .toLowerCase()
