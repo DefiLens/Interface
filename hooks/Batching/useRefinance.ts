@@ -23,7 +23,7 @@ export function useRefinance() {
     const { mutateAsync: calculategasCost } = useCalculateGasCost();
     const { selectedNetwork }: iGlobal = useGlobalStore((state) => state);
 
-    const { selectedFromNetwork, selectedFromProtocol, selectedToProtocol, amountIn, tokensData }: iTrading =
+    const { selectedFromNetwork, selectedFromProtocol, selectedToProtocol, amountIn, fromTokensData, toTokensData }: iTrading =
         useTradingStore((state) => state);
 
     async function refinance({
@@ -64,15 +64,15 @@ export function useRefinance() {
                 nativeTokenOutDecimal;
 
             if (fromProtocol == "erc20") {
-                nativeTokenIn = tokensData?.filter((token) => token.symbol === tokenInName)[0].address;
-                nativeTokenInSymbol = tokensData?.filter((token) => token.symbol === tokenInName)[0].symbol;
-                nativeTokenInDecimal = tokensData?.filter((token) => token.symbol === tokenInName)[0].decimals;
+                nativeTokenIn = fromTokensData?.filter((token) => token.symbol === tokenInName)[0].address;
+                nativeTokenInSymbol = fromTokensData?.filter((token) => token.symbol === tokenInName)[0].symbol;
+                nativeTokenInDecimal = fromTokensData?.filter((token) => token.symbol === tokenInName)[0].decimals;
             }
 
             if (toProtocol == "erc20") {
-                nativeTokenOut = tokensData?.filter((token) => token.symbol === tokenOutName)[0].address;
-                nativeTokenOutSymbol = tokensData?.filter((token) => token.symbol === tokenInName)[0].symbol;
-                nativeTokenOutDecimal = tokensData?.filter((token) => token.symbol === tokenInName)[0].decimals;
+                nativeTokenOut = toTokensData?.filter((token) => token.symbol === tokenOutName)[0].address;
+                nativeTokenOutSymbol = toTokensData?.filter((token) => token.symbol === tokenOutName)[0].symbol;
+                nativeTokenOutDecimal = toTokensData?.filter((token) => token.symbol === tokenOutName)[0].decimals;
             }
 
             if (toProtocol != "erc20") {
@@ -147,6 +147,7 @@ export function useRefinance() {
                     type: "exactIn",
                     chainId: selectedNetwork.chainId
                 });
+                console.log('swapData: ', swapData, swapData.amountOutprice.toString())
                 tempTxs.push(swapData.swapTx);
 
                 let batchFlow: iBatchFlowData = {
@@ -199,6 +200,7 @@ export function useRefinance() {
                     address,
                     paramDetailsMethod,
                 });
+                console.log('params', params)
                 txData = abiInterface.encodeFunctionData(methodName, params);
                 const tx2 = { to: tokenOutContractAddress, data: txData };
                 tempTxs.push(tx2);
