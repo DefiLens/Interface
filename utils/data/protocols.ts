@@ -6,7 +6,20 @@ import aave_v2_Abi from "../../abis/defi/aave_v2.json";
 import { getContractInstance } from "../web3Libs/ethers";
 import compound_Abi from "../../abis/defi/compound.json";
 import { tokenAddressByProtocol, tokensByProtocol } from "./tokensByProtocol";
-import { aavev2, aavev3, arbitrum, avalanche, base, benqi, compoundV3, dforce, moonwell, seamless, optimism, polygon } from "../../assets/images";
+import {
+    aavev2,
+    aavev3,
+    arbitrum,
+    avalanche,
+    base,
+    benqi,
+    compoundV3,
+    dforce,
+    moonwell,
+    seamless,
+    optimism,
+    polygon,
+} from "../../assets/images";
 
 export const protocolNames = {
     "137": {
@@ -65,7 +78,7 @@ export const protocolNames = {
                 tokenAddresses: "tokenAddresses",
             },
         ],
-        value: ["AAVE V3", "BENQI",  "ERC20"],
+        value: ["AAVE V3", "BENQI", "ERC20"],
     },
     "42161": {
         key: [
@@ -134,13 +147,19 @@ export const protocolNames = {
                 tokenAddresses: tokenAddressByProtocol.base.moonwell,
             },
             {
+                name: "sonne",
+                icon: base,
+                tokenList: tokensByProtocol.base.sonne,
+                tokenAddresses: "tokenAddresses",
+            },
+            {
                 name: "erc20",
                 icon: base,
                 tokenList: "tokenList",
                 tokenAddresses: "tokenAddresses",
             },
         ],
-        value: ["AAVE V3", "Compound V3", "Seamless", "Moonwell", "ERC20"],
+        value: ["AAVE V3", "Compound V3", "Seamless", "Moonwell", "Sonne", "ERC20"],
     },
 };
 
@@ -189,7 +208,6 @@ export const abiFetcherNum = {
         qiUSDTn: "2",
         qiUSDCn: "2",
         qiDAI: "2",
-
     },
     "42161": {
         aWETH: "1",
@@ -240,6 +258,12 @@ export const abiFetcherNum = {
         mcbETH: "4",
         mwstETH: "4",
         mrETH: "4",
+
+        sobUSDbC: "5",
+        sobUSDC: "5",
+        sobDAI: "5",
+        sobWETH: "5",
+        sobcbETH: "5",
     },
 };
 
@@ -434,9 +458,27 @@ export const abiFetcher = {
                 mWETH: "0x628ff693426583D9a7FB391E54366292F509D457",
                 mcbETH: "0x3bf93770f2d4a794c3d9EBEfBAeBAE2a8f09A5E5",
                 mwstETH: "0x627Fe393Bc6EdDA28e99AE648fD6fF362514304b",
-                mrETH: "0xCB1DaCd30638ae38F2B94eA64F066045B7D45f44"
+                mrETH: "0xCB1DaCd30638ae38F2B94eA64F066045B7D45f44",
             },
             apyFetch: "fetchApyForMoonWellBase",
+        },
+        "5": {
+            depositAbi: "function mint(uint256 mintAmount)",
+            withdrawAbi: "function redeem(uint256 redeemTokens)",
+            depositMethodName: "mint",
+            withdrawMethodName: "redeem",
+            depositParamDetailsMethod: "sonne_mint",
+            withdrawParamDetailsMethod: "sonne_redeem",
+            contractAddress: "",
+            isContractSet: true,
+            contractSet: {
+                sobUSDbC: "0x225886C9beb5eeE254F79d58bbD80cf9F200D4d0",
+                sobUSDC: "0xfd68F92B45b633bbe0f475294C1A86aecD62985A",
+                sobDAI: "0xb864BA2aab1f53BC3af7AE49a318202dD3fd54C2",
+                sobWETH: "0x5F5c479fe590cD4442A05aE4a941dd991A633B8E",
+                sobcbETH: "0x6C91bEECEEDda2089307fAb818E12757948BF489",
+            },
+            apyFetch: "fetchApyForSonneBase",
         },
     },
 };
@@ -539,6 +581,12 @@ export const nativeTokenNum = {
         mcbETH: "3",
         mwstETH: "6",
         mrETH: "7",
+
+        sobUSDbC: "1",
+        sobUSDC: "4",
+        sobDAI: "5",
+        sobWETH: "2",
+        sobcbETH: "3",
     },
 };
 
@@ -649,13 +697,13 @@ export const nativeTokenFetcher = {
         "13": {
             nativeToken: "0xc7198437980c041c805A1EDcbA50c1Ce5db95118",
             symbol: "usdt.e",
-            decimal: 6
+            decimal: 6,
         },
         "14": {
             nativeToken: "0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664",
             symbol: "usdc.e",
-            decimal: 6
-        }
+            decimal: 6,
+        },
     },
     "42161": {
         "1": {
@@ -839,9 +887,17 @@ export async function buildParams({
     address,
     paramDetailsMethod,
 }) {
-    if (paramDetailsMethod == "aave_deposit" || paramDetailsMethod == "aave_supply_v3" || paramDetailsMethod == "seamless_supply_v3") {
+    if (
+        paramDetailsMethod == "aave_deposit" ||
+        paramDetailsMethod == "aave_supply_v3" ||
+        paramDetailsMethod == "seamless_supply_v3"
+    ) {
         return [nativeTokenIn, amount, address, 0];
-    } else if (paramDetailsMethod == "aave_withdraw" || paramDetailsMethod == "aave_withdraw_v3" || paramDetailsMethod == "seamless_withdraw_v3") {
+    } else if (
+        paramDetailsMethod == "aave_withdraw" ||
+        paramDetailsMethod == "aave_withdraw_v3" ||
+        paramDetailsMethod == "seamless_withdraw_v3"
+    ) {
         return [nativeTokenIn, amount, address];
     } else if (paramDetailsMethod == "compound_supply") {
         return [nativeTokenIn, amount];
@@ -851,9 +907,17 @@ export async function buildParams({
         return [address, amount];
     } else if (paramDetailsMethod == "dForce_withdraw") {
         return [address, amount];
-    } else if (paramDetailsMethod == "benqi_mint" || paramDetailsMethod == "moonwell_mint") {
+    } else if (
+        paramDetailsMethod == "benqi_mint" ||
+        paramDetailsMethod == "moonwell_mint" ||
+        paramDetailsMethod == "sonne_mint"
+    ) {
         return [amount];
-    } else if (paramDetailsMethod == "benqi_redeemUnderlying" || paramDetailsMethod == "moonwell_redeem") {
+    } else if (
+        paramDetailsMethod == "benqi_redeemUnderlying" ||
+        paramDetailsMethod == "moonwell_redeem" ||
+        paramDetailsMethod == "sonne_redeem"
+    ) {
         return [amount];
     }
 }
