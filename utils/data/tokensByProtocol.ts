@@ -318,7 +318,7 @@ export const tokensByProtocol = {
         ],
         seamless: [
             {
-                name: "sUSDbc",
+                name: "sUSDbC",
                 icon: avalanche,
             },
             {
