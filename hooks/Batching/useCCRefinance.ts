@@ -1,4 +1,4 @@
-import { ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { toast } from "react-hot-toast";
 
 import { useAddress } from "@thirdweb-dev/react";
@@ -20,6 +20,7 @@ import {
 } from "../../utils/data/protocols";
 import { useCCSendTx2 } from "./useCCSendTx2";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
+import { incresePowerByDecimals } from "../../utils/helper";
 
 export function useCCRefinance() {
     const address = useAddress(); // Detect the connected address
@@ -35,7 +36,8 @@ export function useCCRefinance() {
         selectedFromProtocol,
         selectedToProtocol,
         amountIn,
-        tokensData,
+        fromTokensData,
+        toTokensData,
     }: iTrading = useTradingStore((state) => state);
 
     async function refinanceForCC({
@@ -76,13 +78,14 @@ export function useCCRefinance() {
                 nativeTokenOutDecimal;
 
             if (fromProtocol == "erc20") {
-                nativeTokenIn = tokensData?.filter((token) => token.symbol === tokenInName)[0].address;
-                nativeTokenInSymbol = tokensData?.filter((token) => token.symbol === tokenInName)[0].symbol;
-                nativeTokenInDecimal = tokensData?.filter((token) => token.symbol === tokenInName)[0].decimals;
+                nativeTokenIn = fromTokensData?.filter((token) => token.symbol === tokenInName)[0].address;
+                nativeTokenInSymbol = fromTokensData?.filter((token) => token.symbol === tokenInName)[0].symbol;
+                nativeTokenInDecimal = fromTokensData?.filter((token) => token.symbol === tokenInName)[0].decimals;
             }
-            // if (toProtocol == "erc20") {
-            //     nativeTokenOut = tokensData?.filter((token) => token.symbol === tokenOutName)[0].address;
-            // }
+
+            if (toProtocol == "erc20") {
+                nativeTokenOut = toTokensData?.filter((token) => token.symbol === tokenOutName)[0].address;
+            }
 
             if (toProtocol != "erc20") {
                 const tokenOutNum = nativeTokenNum[selectedToNetwork.chainId][tokenOutName];
@@ -90,6 +93,7 @@ export function useCCRefinance() {
                 nativeTokenOutSymbol = nativeTokenFetcher[selectedToNetwork.chainId][tokenOutNum].symbol;
                 nativeTokenOutDecimal = nativeTokenFetcher[selectedToNetwork.chainId][tokenOutNum].decimals;
             }
+
             if (fromProtocol != "erc20") {
                 abiNum = abiFetcherNum[selectedFromNetwork.chainId][tokenInName];
                 abi = abiFetcher[selectedFromNetwork.chainId][abiNum]["withdrawAbi"];
@@ -98,7 +102,8 @@ export function useCCRefinance() {
                 // tokenInContractAddress = abiFetcher[selectedFromNetwork.chainId][abiNum]["contractAddress"];
                 isContractSet = abiFetcher[selectedFromNetwork.chainId][abiNum]["isContractSet"];
                 if (isContractSet) {
-                    tokenInContractAddress = abiFetcher[selectedFromNetwork.chainId][abiNum]["contractSet"][tokenInName];
+                    tokenInContractAddress =
+                        abiFetcher[selectedFromNetwork.chainId][abiNum]["contractSet"][tokenInName];
                 } else {
                     tokenInContractAddress = abiFetcher[selectedFromNetwork.chainId][abiNum]["contractAddress"];
                 }
@@ -134,6 +139,7 @@ export function useCCRefinance() {
                 };
                 batchFlows.push(batchFlow);
             }
+
             isSwap = nativeTokenIn != tokensByNetworkForCC[selectedFromNetwork.chainId].usdc ? true : false;
             if (isSwap) {
                 const approveData = await approve({
@@ -150,7 +156,7 @@ export function useCCRefinance() {
                     amountIn: amount, //: BigNumber.from('1000000'),
                     address,
                     type: "exactIn",
-                    chainId: selectedNetwork.chainId
+                    chainId: selectedNetwork.chainId,
                 });
                 tempTxs.push(swapData.swapTx);
 
@@ -168,90 +174,162 @@ export function useCCRefinance() {
 
             let extraValue: any;
             if (selectedFromNetwork.chainName != selectedToNetwork.chainName) {
-                const tokenOutNum = nativeTokenNum[selectedToNetwork.chainId][tokenOutName];
-                const nativeTokenOutTemp = nativeTokenFetcher[selectedToNetwork.chainId][tokenOutNum].symbol;
-                const nativeTokenOutAddress = nativeTokenFetcher[selectedToNetwork.chainId][tokenOutNum].nativeToken;
-                // if (nativeTokenOutTemp != "usdc") {
-                //     toast(
-                //         `Cross-chain Error: Select Usdc Based ToToken on ToNetwork Side like aUSDC, cUSDC.
-                //     As of now only Usdc Based trade is possible for cross-chain.
-                //     Will update soon...`,
-                //         {
-                //             duration: 20000,
-                //         }
-                //     );
-                //     return;
-                // }
+                if (toProtocol == "erc20") {
+                    // const tokenOutNum = nativeTokenNum[selectedToNetwork.chainId][tokenOutName];
+                    // const nativeTokenOutAddress = toTokensData?.filter((token) => token.symbol === tokenOutName)[0]
+                    //     .address;
+                    // const nativeTokenOutTemp = toTokensData?.filter((token) => token.symbol === tokenOutName)[0].symbol;
+                    // nativeTokenOutDecimal = toTokensData?.filter((token) => token.symbol === tokenOutName)[0].decimals;
 
-                abiNum = abiFetcherNum[selectedToNetwork.chainId][tokenOutName];
-                // const newTokenIn = isSwap ? tokensByNetworkForCC[selectedToNetwork.chainId].usdc : nativeTokenIn;
-                const newTokenIn = tokensByNetworkForCC[selectedToNetwork.chainId].usdc;
-                paramDetailsMethod = abiFetcher[selectedToNetwork.chainId][abiNum]["depositParamDetailsMethod"];
+                    // abiNum = abiFetcherNum[selectedToNetwork.chainId][tokenOutName];
+                    // const newTokenIn = tokensByNetworkForCC[selectedToNetwork.chainId].usdc;
+                    // paramDetailsMethod = abiFetcher[selectedToNetwork.chainId][abiNum]["depositParamDetailsMethod"];
 
-                params = await buildParams({
-                    tokenIn,
-                    tokenOut,
-                    nativeTokenIn: nativeTokenOutTemp != "usdc" ? nativeTokenOutAddress : newTokenIn, // if bothe network different
-                    nativeTokenOut,
-                    amount,
-                    address,
-                    paramDetailsMethod,
-                });
-                abiNum = abiFetcherNum[selectedToNetwork.chainId][tokenOutName];
-                abi = abiFetcher[selectedToNetwork.chainId][abiNum]["depositAbi"];
-                methodName = abiFetcher[selectedToNetwork.chainId][abiNum]["depositMethodName"];
-                paramDetailsMethod = abiFetcher[selectedToNetwork.chainId][abiNum]["depositParamDetailsMethod"];
-                // const tokenOutContractAddress = abiFetcher[selectedToNetwork.chainId][abiNum]["contractAddress"];
-                let tokenOutContractAddress
-                isContractSet = abiFetcher[selectedToNetwork.chainId][abiNum]["isContractSet"];
-                if (isContractSet) {
-                    tokenOutContractAddress = abiFetcher[selectedToNetwork.chainId][abiNum]["contractSet"][tokenOutName];
+                    // params = await buildParams({
+                    //     tokenIn,
+                    //     tokenOut,
+                    //     nativeTokenIn: nativeTokenOutTemp != "usdc" ? nativeTokenOutAddress : newTokenIn, // if bothe network different
+                    //     nativeTokenOut,
+                    //     amount,
+                    //     address,
+                    //     paramDetailsMethod,
+                    // });
+                    // abiNum = abiFetcherNum[selectedToNetwork.chainId][tokenOutName];
+                    // abi = abiFetcher[selectedToNetwork.chainId][abiNum]["depositAbi"];
+                    // methodName = abiFetcher[selectedToNetwork.chainId][abiNum]["depositMethodName"];
+                    // paramDetailsMethod = abiFetcher[selectedToNetwork.chainId][abiNum]["depositParamDetailsMethod"];
+                    // const tokenOutContractAddress = abiFetcher[selectedToNetwork.chainId][abiNum]["contractAddress"];
+                    // let tokenOutContractAddress;
+                    // isContractSet = abiFetcher[selectedToNetwork.chainId][abiNum]["isContractSet"];
+                    // if (isContractSet) {
+                    //     tokenOutContractAddress =
+                    //         abiFetcher[selectedToNetwork.chainId][abiNum]["contractSet"][tokenOutName];
+                    // } else {
+                    //     tokenOutContractAddress = abiFetcher[selectedToNetwork.chainId][abiNum]["contractAddress"];
+                    // }
+
+                    const _tempAmount = BigNumber.from(await incresePowerByDecimals(amountIn, 6).toString());
+                    let data: any = await sendTxToChain2({
+                        tokenIn: tokensByNetworkForCC[selectedFromNetwork.chainId].usdc,
+                        _amountIn: isSwap ? swapData.amountOutprice : _tempAmount,
+                        address,
+                        isSCW: true,
+                        params,
+                        isThisAmount: "1",
+                        srcPoolId: "1",
+                        destPoolId: "1",
+                        fromChainId: ChainIdDetails[selectedFromNetwork.chainId].stargateChainId,
+                        toChainId: ChainIdDetails[selectedToNetwork.chainId].stargateChainId,
+                        currentFunc: "",
+                        currentAbi: [],
+                        contractAddress: "",
+                        extraOrShareToken: "0x0000000000000000000000000000000000000000",
+                        tokenOutNum: "",
+                    });
+
+                    if (!data) return;
+                    extraValue = data.value;
+
+                    tempTxs = [...tempTxs, ...data.txArray];
+
+                    let batchFlow: iBatchFlowData = {
+                        fromChainId: selectedFromNetwork.chainId,
+                        toChainId: selectedToNetwork.chainId,
+                        protocol: "Stargate",
+                        tokenIn: "USDC",
+                        tokenOut: "USDC",
+                        amount: amountIn,
+                        action: `Bridge from ${selectedFromNetwork.chainName} to ${selectedToNetwork.chainName}`,
+                    };
+                    batchFlows.push(batchFlow);
+                    batchFlow = {
+                        fromChainId: selectedToNetwork.chainId,
+                        toChainId: selectedToNetwork.chainId,
+                        protocol: tokenOutName == "USDC" ? "erc20" : "Uniswap",
+                        tokenIn: "USDC",
+                        tokenOut: tokenOutName == "USDC" ? "" : tokenOutName,
+                        amount: amountIn,
+                        action: tokenOutName == "USDC" ? "Send USDC": "Swap",
+                    };
+                    batchFlows.push(batchFlow);
                 } else {
-                    tokenOutContractAddress = abiFetcher[selectedToNetwork.chainId][abiNum]["contractAddress"];
+                    const tokenOutNum = nativeTokenNum[selectedToNetwork.chainId][tokenOutName];
+                    const nativeTokenOutTemp = nativeTokenFetcher[selectedToNetwork.chainId][tokenOutNum].symbol;
+                    const nativeTokenOutAddress =
+                        nativeTokenFetcher[selectedToNetwork.chainId][tokenOutNum].nativeToken;
+
+                    abiNum = abiFetcherNum[selectedToNetwork.chainId][tokenOutName];
+                    const newTokenIn = tokensByNetworkForCC[selectedToNetwork.chainId].usdc;
+                    paramDetailsMethod = abiFetcher[selectedToNetwork.chainId][abiNum]["depositParamDetailsMethod"];
+
+                    params = await buildParams({
+                        tokenIn,
+                        tokenOut,
+                        nativeTokenIn: nativeTokenOutTemp != "usdc" ? nativeTokenOutAddress : newTokenIn, // if bothe network different
+                        nativeTokenOut,
+                        amount,
+                        address,
+                        paramDetailsMethod,
+                    });
+                    abiNum = abiFetcherNum[selectedToNetwork.chainId][tokenOutName];
+                    abi = abiFetcher[selectedToNetwork.chainId][abiNum]["depositAbi"];
+                    methodName = abiFetcher[selectedToNetwork.chainId][abiNum]["depositMethodName"];
+                    paramDetailsMethod = abiFetcher[selectedToNetwork.chainId][abiNum]["depositParamDetailsMethod"];
+                    // const tokenOutContractAddress = abiFetcher[selectedToNetwork.chainId][abiNum]["contractAddress"];
+                    let tokenOutContractAddress;
+                    isContractSet = abiFetcher[selectedToNetwork.chainId][abiNum]["isContractSet"];
+                    if (isContractSet) {
+                        tokenOutContractAddress =
+                            abiFetcher[selectedToNetwork.chainId][abiNum]["contractSet"][tokenOutName];
+                    } else {
+                        tokenOutContractAddress = abiFetcher[selectedToNetwork.chainId][abiNum]["contractAddress"];
+                    }
+
+                    const _tempAmount = BigNumber.from(await incresePowerByDecimals(amountIn, 6).toString());
+                    let data: any = await sendTxToChain2({
+                        tokenIn: tokensByNetworkForCC[selectedFromNetwork.chainId].usdc,
+                        _amountIn: isSwap ? swapData.amountOutprice : _tempAmount,
+                        address,
+                        isSCW: true,
+                        params,
+                        isThisAmount: "1",
+                        srcPoolId: "1",
+                        destPoolId: "1",
+                        fromChainId: ChainIdDetails[selectedFromNetwork.chainId].stargateChainId,
+                        toChainId: ChainIdDetails[selectedToNetwork.chainId].stargateChainId,
+                        currentFunc: methodName,
+                        currentAbi: [abi],
+                        contractAddress: tokenOutContractAddress,
+                        extraOrShareToken: "0x0000000000000000000000000000000000000000",
+                        tokenOutNum: tokenOutNum,
+                    });
+
+                    if (!data) return;
+                    extraValue = data.value;
+
+                    tempTxs = [...tempTxs, ...data.txArray];
+
+                    let batchFlow: iBatchFlowData = {
+                        fromChainId: selectedFromNetwork.chainId,
+                        toChainId: selectedToNetwork.chainId,
+                        protocol: "Stargate",
+                        tokenIn: "USDC",
+                        tokenOut: "USDC",
+                        amount: amountIn,
+                        action: `Bridge from ${selectedFromNetwork.chainName} to ${selectedToNetwork.chainName}`,
+                    };
+                    batchFlows.push(batchFlow);
+                    batchFlow = {
+                        fromChainId: selectedToNetwork.chainId,
+                        toChainId: selectedToNetwork.chainId,
+                        protocol: selectedToProtocol,
+                        tokenIn: "USDC",
+                        tokenOut: tokenOutName,
+                        amount: amountIn,
+                        action: "Deposit",
+                    };
+                    batchFlows.push(batchFlow);
                 }
-
-                let data: any = await sendTxToChain2({
-                    tokenIn: nativeTokenIn,
-                    address,
-                    isSCW: true,
-                    params,
-                    isThisAmount: "1",
-                    srcPoolId: "1",
-                    destPoolId: "1",
-                    fromChainId: ChainIdDetails[selectedFromNetwork.chainId].stargateChainId,
-                    toChainId: ChainIdDetails[selectedToNetwork.chainId].stargateChainId,
-                    currentFunc: methodName,
-                    currentAbi: [abi],
-                    contractAddress: tokenOutContractAddress,
-                    extraOrShareToken: "0x0000000000000000000000000000000000000000",
-                    tokenOutNum: tokenOutNum
-                });
-
-                if (!data) return;
-                extraValue = data.value
-
-                tempTxs = [...tempTxs, ...data.txArray];
-
-                let batchFlow: iBatchFlowData = {
-                    fromChainId: selectedFromNetwork.chainId,
-                    toChainId: selectedToNetwork.chainId,
-                    protocol: "Stargate",
-                    tokenIn: "USDC",
-                    tokenOut: "USDC",
-                    amount: amountIn,
-                    action: `Bridge from ${selectedFromNetwork.chainName} to ${selectedToNetwork.chainName}`,
-                };
-                batchFlows.push(batchFlow);
-                batchFlow = {
-                    fromChainId: selectedToNetwork.chainId,
-                    toChainId: selectedToNetwork.chainId,
-                    protocol: selectedToProtocol,
-                    tokenIn: "USDC",
-                    tokenOut: tokenOutName,
-                    amount: amountIn,
-                    action: "Deposit",
-                };
-                batchFlows.push(batchFlow);
             }
             return { txArray: tempTxs, batchFlow: batchFlows, value: extraValue };
         } catch (error: any) {
