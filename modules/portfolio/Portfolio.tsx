@@ -4,13 +4,54 @@ import { ChainIdDetails } from "../../utils/data/network";
 import { defaultBlue } from "../../assets/images";
 import { startCase } from "lodash";
 import { decreasePowerByDecimals } from "../../utils/helper";
+import { BiLoaderAlt } from "react-icons/bi";
+import Link from "next/link";
+
 
 const Portfolio: React.FC<any> = ({
+    isUsersTokenLoading,
+    smartAccountAddress,
     userTokensData,
     filteredDefiTokens,
-}: any) => (
+}: tPortfolio) => (
     <div className="w-full flex flex-col justify-center items-center gap-10 p-5 sm:p-10 md:p-14 lg:p-20">
-        {userTokensData.length > 0 && (
+        
+        {isUsersTokenLoading ? (
+            <div className="w-full h-full flex flex-col justify-center items-center gap-5 rounded-xl px-5 py-10 bg-backgound-500 text-font-100 border-backgound-600 shadow shadow-backgound-600">
+                <h1 className="w-full text-xl md:text-2xl font-extrabold text-center">
+                    Feching User Tokens
+                </h1>
+                <h6 className="w-full flex justify-center items-center gap-2 text-base md:text-lg font-semibold text-center">
+                    Please Wait... <BiLoaderAlt className="animate-spin h-5 w-5" />
+                </h6>
+             </div>
+        ) : !userTokensData?.length && smartAccountAddress ? (
+            <div className="w-full h-full flex flex-col justify-center items-center gap-5 rounded-xl px-5 py-10 bg-backgound-500 text-font-100 border-backgound-600 shadow shadow-backgound-600">
+                <h1 className="w-full text-xl md:text-2xl font-extrabold text-center">
+                    No Data Found!
+                </h1>
+                <h6 className="w-full text-xl md:text-2xl font-extrabold text-center">
+                    <Link
+                        href="/"
+                        key="trade"
+                        className="cursor-pointer px-8 py-1.5 text-sm md:text-base text-center rounded-full bg-backgound-600 hover:bg-backgound-700 transition duration-300"
+                    >
+                        Let&apos;s  Trade
+                    </Link> 
+                </h6>
+             </div>
+        ) : !userTokensData?.length && (
+            <div className="w-full h-full flex flex-col justify-center items-center gap-5 rounded-xl px-5 py-10 bg-backgound-500 text-font-100 border-backgound-600 shadow shadow-backgound-600">
+                <h1 className="w-full text-xl md:text-2xl font-extrabold text-center">
+                    Please Conect Your Wallet
+                </h1>
+                <h6 className="w-full flex justify-center items-center gap-2 text-base md:text-lg font-semibold text-center">
+                    For Track Your Portfolio
+                </h6>
+             </div>
+        )}
+
+        {userTokensData?.length > 0 && (
             <div className="w-full bg-backgound-500 flex flex-col justify-start items-start gap-3 text-primary-100 border border-backgound-600 shadow shadow-backgound-600 rounded-lg p-8">
                 <div className="w-full text-lg md:text-xl font-extrabold text-primary-100">
                     Wallet:

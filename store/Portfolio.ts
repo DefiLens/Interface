@@ -28,13 +28,17 @@ export interface iUserTokenInfo {
 }
 
 export interface iPortfolio {
-    userTokensData: iUserTokenInfo[] | [];
+    userTokensData: iUserTokenInfo[] | [] | null;
+    isUsersTokenLoading: boolean;
 
     setUserTokensData: (userTokensData: iUserTokenInfo[] | any) => void;
+    setIsUsersTokenLoading: (isUsersTokenLoading: boolean) => void;
 }
 
 export const usePortfolioStore = create<iPortfolio>((set) => ({
-    userTokensData: [],
+    userTokensData: null,
+    isUsersTokenLoading: false,
 
     setUserTokensData: (userTokensData) => set(() => ({ userTokensData })),
+    setIsUsersTokenLoading: (isUsersTokenLoading) => set(() => ({ isUsersTokenLoading })),
 }));

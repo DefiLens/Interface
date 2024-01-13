@@ -15,6 +15,7 @@ const PortfolioContainer: React.FC<any> = () => {
 
     const {
         userTokensData,
+        isUsersTokenLoading,
     }: iPortfolio = usePortfolioStore((state) => state);
 
     useEffect(() => {
@@ -27,7 +28,7 @@ const PortfolioContainer: React.FC<any> = () => {
         }
     }, [smartAccountAddress]);
 
-    const separatedArray = userTokensData.filter((token: any) => token.type === "defiToken")
+    const separatedArray = (userTokensData || []).filter((token: any) => token.type === "defiToken")
     .reduce((acc, curr) => {
         const key: any = curr.protocol?.name;
         if (!acc[key]) {
@@ -42,6 +43,8 @@ const PortfolioContainer: React.FC<any> = () => {
 
     return (
         <Portfolio
+            isUsersTokenLoading={isUsersTokenLoading}
+            smartAccountAddress={smartAccountAddress}
             userTokensData={userTokensData}
             filteredDefiTokens={filteredDefiTokens}
         />

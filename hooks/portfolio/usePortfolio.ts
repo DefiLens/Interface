@@ -79,11 +79,14 @@ export function usePortfolio() {
 
     const {
         setUserTokensData,
+        setIsUsersTokenLoading,
     }: iPortfolio = usePortfolioStore((state) => state);
 
     const chainIds = [137, 10];
     async function fetchPortfolio({address}: any) {
         try {
+            setIsUsersTokenLoading(true)
+
             const userTokensUrlPolygon = `https://api.enso.finance/api/v1/wallet/balances?chainId=${chainIds[0]}&eoaAddress=${address}&useEoa=true`;
             const userTokensUrlOptimism = `https://api.enso.finance/api/v1/wallet/balances?chainId=${chainIds[1]}&eoaAddress=${address}&useEoa=true`;
             
@@ -134,6 +137,7 @@ export function usePortfolio() {
                 }
             });
             setUserTokensData(aggregatedData)
+            setIsUsersTokenLoading(false)
             return aggregatedData;
         } catch (error: any) {
             if (error.message) {
@@ -141,6 +145,7 @@ export function usePortfolio() {
             } else {
                 console.log("refinance: Error", error);
             }
+            setIsUsersTokenLoading(false)
             return;
         }
     }
