@@ -60,7 +60,6 @@ const TradeContainer: React.FC<any> = () => {
 
     const { mutateAsync: fetchPortfolio } = usePortfolio();
 
-
     const {
         smartAccount,
         smartAccountAddress,
@@ -73,6 +72,8 @@ const TradeContainer: React.FC<any> = () => {
     const {
         maxBalance,
         setMaxBalance,
+        allBatchFee,
+        setAllBatchFee,
         setIsmaxBalanceLoading,
         selectedFromNetwork,
         setSelectedFromNetwork,
@@ -112,6 +113,7 @@ const TradeContainer: React.FC<any> = () => {
         totalfees, setTotalFees,
         setShowExecuteMethodModel
     }: iTrading = useTradingStore((state) => state);
+    
 
     // useEffect(() => {
     //     let checkSessionModuleEnabled = async () => {
@@ -458,11 +460,101 @@ const TradeContainer: React.FC<any> = () => {
     //     }
     // }, [selectedFromNetwork]);
 
+    const FetchTotalFeeOfAllBatches = () => {
+        const totalBatchFee = individualBatch.reduce((acc, batch) => {
+            acc.amount += (parseFloat(batch.data.amountIn ) || 0) + (parseFloat(batch.data.fees) || 0 );
+            return acc;
+        }, { amount: 0});
+        setAllBatchFee(totalBatchFee.amount)
+    }
+
+    const FetchMaximumBalanceAvailable = async (_fromToken: string) => {
+        try {
+            setIsmaxBalanceLoading(true);
+            setAmountIn("");
+            setFromTokenDecimal(0);
+
+            if (selectedFromToken === _fromToken) {
+                closeFromSelectionMenu();
+            } else {
+                setSelectedFromToken(_fromToken);
+            }
+
+            const provider = await getProvider(selectedFromNetwork.chainId);
+            const erc20Address: any =
+                selectedFromProtocol == "erc20" ? tokensData.filter((token: any) => token.symbol === _fromToken) : "";
+
+            const tokenAddress =
+                selectedFromProtocol != "erc20"
+                    ? protocolNames[selectedFromNetwork.chainId].key.find((entry) => entry.name == selectedFromProtocol)
+                          .tokenAddresses[_fromToken]
+                    : erc20Address[0].address;
+
+            console.log(_fromToken, tokenAddress)
+
+            const erc20 = await getContractInstance(tokenAddress, IERC20, provider);
+            const fromTokendecimal: any = await getErc20Decimals(erc20);
+            setSafeState(setFromTokenDecimal, fromTokendecimal, 0);
+
+            let scwAddress: any;
+            if (!smartAccountAddress) {
+                const createAccount = async (chainId: any) => {
+                    const bundler: IBundler = new Bundler({
+                        bundlerUrl: ChainIdDetails[chainId].bundlerURL,
+                        chainId: chainId,
+                        entryPointAddress: DEFAULT_ENTRYPOINT_ADDRESS,
+                    });
+                    const paymaster: IPaymaster = new BiconomyPaymaster({
+                        paymasterUrl: ChainIdDetails[chainId].paymasterUrl,
+                    });
+
+                    // const biconomySmartAccountConfig: BiconomySmartAccountConfig = {
+                    //     signer: signer,
+                    //     chainId: chainId,
+                    //     bundler: bundler,
+                    //     paymaster: paymaster,
+                    // };
+                    // let biconomySmartAccount = new BiconomySmartAccount(biconomySmartAccountConfig);
+                    // biconomySmartAccount = await biconomySmartAccount.init();
+
+                    const ownerShipModule: any = await ECDSAOwnershipValidationModule.create({
+                        signer: signer,
+                        moduleAddress: DEFAULT_ECDSA_OWNERSHIP_MODULE,
+                    });
+                    //   setProvider(provider)
+                    let biconomySmartAccount = await BiconomySmartAccountV2.create({
+                        chainId: chainId,
+                        bundler: bundler,
+                        paymaster: paymaster,
+                        entryPointAddress: DEFAULT_ENTRYPOINT_ADDRESS,
+                        defaultValidationModule: ownerShipModule,
+                        activeValidationModule: ownerShipModule,
+                    });
+                    console.log("biconomySmartAccount-1", biconomySmartAccount);
+                    return biconomySmartAccount;
+                };
+                scwAddress = await createAccount(selectedFromNetwork.chainId);
+            }
+            
+            const maxBal: any = await getErc20Balanceof(
+                erc20,
+                smartAccountAddress ? smartAccountAddress : scwAddress.address
+            );
+            const MaxBalance = await decreasePowerByDecimals(maxBal?.toString(), fromTokendecimal);
+            setMaxBalance((Number(MaxBalance) - allBatchFee).toString());
+            setIsmaxBalanceLoading(false);
+        } catch (error: any) {
+            setIsmaxBalanceLoading(false);
+            console.log("FetchMaximumBalanceAvailable:-  Error:", error);
+        }
+    }
 
     useEffect(() => {
         if (individualBatch.length === 1 && individualBatch[0].txArray.length === 0) {
             setShowBatchList(false);
         }
+
+        FetchTotalFeeOfAllBatches()
     }, [individualBatch]);
 
     const handleSelectFromNetwork = async (_fromNetwork: iSelectedNetwork) => {
@@ -594,7 +686,6 @@ const TradeContainer: React.FC<any> = () => {
     };
 
     const onChangeFromToken = async (_fromToken: string) => {
-        alert(_fromToken)
         if (addToBatchLoading) {
             toast.error("wait, tx loading");
             return;
@@ -616,84 +707,7 @@ const TradeContainer: React.FC<any> = () => {
             return;
         }
 
-        try {
-            setIsmaxBalanceLoading(true);
-            setAmountIn("");
-            setFromTokenDecimal(0);
-
-            if (selectedFromToken === _fromToken) {
-                closeFromSelectionMenu();
-            } else {
-                setSelectedFromToken(_fromToken);
-            }
-
-            const provider = await getProvider(selectedFromNetwork.chainId);
-            const erc20Address: any =
-                selectedFromProtocol == "erc20" ? tokensData.filter((token: any) => token.symbol === _fromToken) : "";
-
-            const tokenAddress =
-                selectedFromProtocol != "erc20"
-                    ? protocolNames[selectedFromNetwork.chainId].key.find((entry) => entry.name == selectedFromProtocol)
-                          .tokenAddresses[_fromToken]
-                    : erc20Address[0].address;
-
-            console.log(_fromToken, tokenAddress)
-
-            const erc20 = await getContractInstance(tokenAddress, IERC20, provider);
-            const fromTokendecimal: any = await getErc20Decimals(erc20);
-            setSafeState(setFromTokenDecimal, fromTokendecimal, 0);
-
-            let scwAddress: any;
-            if (!smartAccountAddress) {
-                const createAccount = async (chainId: any) => {
-                    const bundler: IBundler = new Bundler({
-                        bundlerUrl: ChainIdDetails[chainId].bundlerURL,
-                        chainId: chainId,
-                        entryPointAddress: DEFAULT_ENTRYPOINT_ADDRESS,
-                    });
-                    const paymaster: IPaymaster = new BiconomyPaymaster({
-                        paymasterUrl: ChainIdDetails[chainId].paymasterUrl,
-                    });
-
-                    // const biconomySmartAccountConfig: BiconomySmartAccountConfig = {
-                    //     signer: signer,
-                    //     chainId: chainId,
-                    //     bundler: bundler,
-                    //     paymaster: paymaster,
-                    // };
-                    // let biconomySmartAccount = new BiconomySmartAccount(biconomySmartAccountConfig);
-                    // biconomySmartAccount = await biconomySmartAccount.init();
-
-                    const ownerShipModule: any = await ECDSAOwnershipValidationModule.create({
-                        signer: signer,
-                        moduleAddress: DEFAULT_ECDSA_OWNERSHIP_MODULE,
-                    });
-                    //   setProvider(provider)
-                    let biconomySmartAccount = await BiconomySmartAccountV2.create({
-                        chainId: chainId,
-                        bundler: bundler,
-                        paymaster: paymaster,
-                        entryPointAddress: DEFAULT_ENTRYPOINT_ADDRESS,
-                        defaultValidationModule: ownerShipModule,
-                        activeValidationModule: ownerShipModule,
-                    });
-                    console.log("biconomySmartAccount-1", biconomySmartAccount);
-                    return biconomySmartAccount;
-                };
-                scwAddress = await createAccount(selectedFromNetwork.chainId);
-            }
-
-            const maxBal: any = await getErc20Balanceof(
-                erc20,
-                smartAccountAddress ? smartAccountAddress : scwAddress.address
-            );
-            const MaxBalance = await decreasePowerByDecimals(maxBal?.toString(), fromTokendecimal);
-            setMaxBalance(MaxBalance);
-            setIsmaxBalanceLoading(false);
-        } catch (error: any) {
-            setIsmaxBalanceLoading(false);
-            console.log("onChangeFromToken ~ error:", error);
-        }
+        FetchMaximumBalanceAvailable(_fromToken)
     };
 
     const onChangeToProtocol = async (_toProtocol: string) => {

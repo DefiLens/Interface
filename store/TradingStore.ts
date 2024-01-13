@@ -92,6 +92,7 @@ export interface iFuncArray {
 export interface iTrading {
     totalfees: bg;
     maxBalance: string;
+    allBatchFee: number;
     ismaxBalanceLoading: boolean;
 
     selectedFromNetwork: iSelectedNetwork;
@@ -133,6 +134,7 @@ export interface iTrading {
 
     setTotalFees: (totalfees: bg) => void;
     setMaxBalance: (maxBalance: string) => void;
+    setAllBatchFee: (allBatchFee: number) => void;
     setIsmaxBalanceLoading: (ismaxBalanceLoading: boolean) => void;
 
     setSelectedFromNetwork: (selectedFromNetwork: iSelectedNetwork) => void;
@@ -176,6 +178,7 @@ export interface iTrading {
 export const useTradingStore = create<iTrading>((set) => ({
     totalfees: bg(0),
     maxBalance: "",
+    allBatchFee: 0,
     ismaxBalanceLoading: false,
 
     selectedFromNetwork: {
@@ -250,6 +253,7 @@ export const useTradingStore = create<iTrading>((set) => ({
 
     setTotalFees: (totalfees) => set(() => ({ totalfees })),
     setMaxBalance: (maxBalance) => set(() => ({ maxBalance })),
+    setAllBatchFee: (allBatchFee) => set(() => ({ allBatchFee })),
     setIsmaxBalanceLoading: (ismaxBalanceLoading) => set(() => ({ ismaxBalanceLoading })),
 
     setSelectedFromNetwork: (selectedFromNetwork) => set(() => ({ selectedFromNetwork })),
