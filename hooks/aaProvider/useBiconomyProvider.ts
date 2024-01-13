@@ -47,6 +47,8 @@ export function useBiconomyProvider() {
                     : BigNumber.from(userOp.preVerificationGas);
 
                 console.log("userOp-after: ", userOp);
+            } else {
+                userOp.callGasLimit = BigNumber.from(userOp.callGasLimit).add(800000)
             }
 
             const userOpResponse = await smartAccount.sendUserOp(userOp);
