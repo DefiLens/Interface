@@ -26,13 +26,14 @@ const PortfolioContainer: React.FC<any> = () => {
         const  fetch = async (address: string) => {
             await fetchPortfolio({ address })
          }
- 
+
          if (smartAccountAddress) {
             setUserTokensData(null)
             fetch(isSCW ? smartAccountAddress : address);
          }
     }
 
+    
     useEffect(() => {
         handleFetchPorfolioData()
     }, [smartAccountAddress, isSCW]);
@@ -47,7 +48,7 @@ const PortfolioContainer: React.FC<any> = () => {
         }
         return acc;
       }, {});
-      
+
       const filteredDefiTokens = Object.values(separatedArray);
 
       const TotalNetWorth = (userTokensData || []).reduce((acc, curr) => {
@@ -64,6 +65,6 @@ const PortfolioContainer: React.FC<any> = () => {
             handleFetchPorfolioData={handleFetchPorfolioData}
             totalNetWorth={TotalNetWorth.netWorth}
         />
-    )  
+    )
 };
 export default PortfolioContainer;
