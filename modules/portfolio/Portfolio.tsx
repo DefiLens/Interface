@@ -9,6 +9,9 @@ import Link from "next/link";
 import { iPortfolio, usePortfolioStore } from "../../store/Portfolio";
 import { IoIosRefresh } from "react-icons/io";
 
+import { BigNumber as bg } from "bignumber.js";
+import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
+bg.config({ DECIMAL_PLACES: 5 });
 
 const Portfolio: React.FC<any> = ({
     isUsersTokenLoading,
@@ -23,10 +26,13 @@ const Portfolio: React.FC<any> = ({
         isSCW,
         setIsSCW,
     }: iPortfolio = usePortfolioStore((state) => state);
+    const {
+        selectedNetwork
+    }: iGlobal = useGlobalStore((state) => state);
 
     return (
         <div className="w-full flex flex-col justify-center items-center gap-10 p-5 sm:p-10 md:p-14 lg:p-20">
-            
+
             {smartAccountAddress && !isUsersTokenLoading && (
                 <div className="w-full flex flex-col justify-center items-center gap-3">
                     <div className="flex justify-center items-center gap-5">
@@ -35,7 +41,7 @@ const Portfolio: React.FC<any> = ({
                             onClick={() => setIsSCW(true)}
                             className="text-white font-bold text-lg md:text-xl cursor-pointer"
                         >
-                            SCW
+                            Smart Account
                         </div>
                         <label className="relative inline-flex items-center cursor-pointer">
                             <input
@@ -55,11 +61,14 @@ const Portfolio: React.FC<any> = ({
                         </div>
                     </div>
                     <div className="w-full bg-backgound-500 flex justify-between items-center gap-3 text-primary-100 border border-backgound-600 shadow shadow-backgound-600 rounded-lg px-8 py-2">
-                        <div className="w-full flex justify-start items-center gap-3 text-lg md:text-xl font-extrabold text-primary-100">
-                            Net Worth : 
+                        {/* <div className="w-full flex justify-start items-center gap-3 text-lg md:text-xl font-extrabold text-primary-100">
+                            Net Worth :
                             <span>
                                 {decreasePowerByDecimals(totalNetWorth.toString(), 18)}
                             </span>
+                        </div> */}
+                        <div className="w-full flex justify-start items-center gap-3 text-lg md:text-xl font-extrabold text-primary-100">
+                            Portfolio of {selectedNetwork.chainName}
                         </div>
                         <IoIosRefresh
                             onClick={() => handleFetchPorfolioData()}
@@ -80,6 +89,7 @@ const Portfolio: React.FC<any> = ({
                 </div>
             ) : !userTokensData?.length && smartAccountAddress ? (
                 <div className="w-full h-full flex flex-col justify-center items-center gap-5 rounded-xl px-5 py-10 bg-backgound-500 text-font-100 border-backgound-600 shadow shadow-backgound-600">
+                    <h1 className="w-full text-xl md:text-2xl font-extrabold text-center">{selectedNetwork.chainId == "8453" ? "Base is not integrated for Portfolio." : "" }</h1>
                     <h1 className="w-full text-xl md:text-2xl font-extrabold text-center">
                         No Data Found!
                     </h1>
@@ -90,7 +100,7 @@ const Portfolio: React.FC<any> = ({
                             className="cursor-pointer px-8 py-1.5 text-sm md:text-base text-center rounded-full bg-backgound-600 hover:bg-backgound-700 transition duration-300"
                         >
                             Let&apos;s  Trade
-                        </Link> 
+                        </Link>
                     </h6>
                 </div>
             ) : !userTokensData?.length && (
@@ -113,15 +123,15 @@ const Portfolio: React.FC<any> = ({
                         <div className="w-full text-start">
                             Asset
                         </div>
-                        <div className="w-[25%] text-end">
+                        {/* <div className="w-[25%] text-end">
                             Price
-                        </div>
+                        </div> */}
                         <div className="w-[25%] text-end">
                             Balance
                         </div>
                     </div>
                     {userTokensData.length > 0 && userTokensData.filter((token: any) => token.type === "erc20Token")
-                    .map((item: any) => (
+                    .map((item: any, i: any) => (
                         <div
                             key={item.tokenAddress}
                             className="w-full flex justify-end items-center gap-2 text-sm md:text-base font-medium text-primary-100 py-1"
@@ -148,11 +158,11 @@ const Portfolio: React.FC<any> = ({
                                     </div>
                                 </div>
                             </div>
+                            {/* <div className="w-[25%] text-end">
+                                {decreasePowerByDecimals(bg(item.amount).toString(), 18)}
+                            </div> */}
                             <div className="w-[25%] text-end">
-                                {decreasePowerByDecimals(item.amount.toString(), 18)}
-                            </div>
-                            <div className="w-[25%] text-end">
-                                {decreasePowerByDecimals(item.amount.toString(), 18)}
+                                {decreasePowerByDecimals(bg(item.amount).toString(), item.decimals)} {item.symbol}
                             </div>
                         </div>
                     ))}
@@ -160,7 +170,7 @@ const Portfolio: React.FC<any> = ({
             )}
 
             {filteredDefiTokens.length > 0 &&  filteredDefiTokens.map((subArray: any) => (
-                <div 
+                <div
                     key={subArray[0]?.protocol?.name}
                     className="w-full bg-backgound-500 flex flex-col justify-start items-start gap-3 text-primary-100 border border-backgound-600 shadow shadow-backgound-600 rounded-lg p-8"
                 >
@@ -177,9 +187,9 @@ const Portfolio: React.FC<any> = ({
                     <div className="w-[30%] text-end">
                         Category
                     </div>
-                    <div className="w-[25%] text-end">
+                    {/* <div className="w-[25%] text-end">
                         Price
-                    </div>
+                    </div> */}
                     <div className="w-[25%] text-end">
                         Balance
                     </div>
@@ -217,11 +227,11 @@ const Portfolio: React.FC<any> = ({
                         <div className="w-[30%] text-end">
                             {item?.protocol?.category}
                         </div>
+                        {/* <div className="w-[25%] text-end">
+                            {decreasePowerByDecimals(bg(item.amount).toString(), item.decimals)}{" "}
+                        </div> */}
                         <div className="w-[25%] text-end">
-                            {decreasePowerByDecimals(item.amount.toString(), 18)}
-                        </div>
-                        <div className="w-[25%] text-end">
-                            {decreasePowerByDecimals(item.amount.toString(), 18)}
+                        {decreasePowerByDecimals(bg(item.amount).toString(), item.decimals)}{" "}{item.name}
                         </div>
                     </div>
                 ))}
