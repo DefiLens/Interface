@@ -44,7 +44,7 @@ export const usePortfolioStore = create<iPortfolio>((set) => ({
     userTokensData: null,
     isUsersTokenLoading: false,
 
-    isSCW: true,
+    isSCW: false,
 
     setUserTokensData: (userTokensData) => set(() => ({ userTokensData })),
     setIsUsersTokenLoading: (isUsersTokenLoading) => set(() => ({ isUsersTokenLoading })),
