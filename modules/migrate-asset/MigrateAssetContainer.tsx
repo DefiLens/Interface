@@ -6,17 +6,24 @@ import MigrateAsset from "./MigrateAsset";
 import { usePortfolio } from "../../hooks/portfolio/usePortfolio";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import { iPortfolio, iUserTokenInfo, usePortfolioStore } from "../../store/Portfolio";
+import { BigNumber, ethers } from "ethers";
+import web3 from "web3";
+import IERC20 from "../../abis/IERC20.json";
+import toast from "react-hot-toast";
+import { getProvider } from "../../utils/web3Libs/ethers";
+import { useBiconomyProvider } from "../../hooks/aaProvider/useBiconomyProvider";
 
 const MigrateAssetContainer: React.FC<any> = () => {
 
+    const { mutateAsync: sendToBiconomy } = useBiconomyProvider();
     const { mutateAsync: fetchPortfolio } = usePortfolio();
     const address = useAddress();
 
-    const [scwTokenAddressesData, setScwTokenAddressesData] = useState([]);
-    const [eoaTokenAddressesData, setEoaTokenAddressesData] = useState([]);
+    const [scwTokenAddressesData, setScwTokenAddressesData] = useState<any>([]);
+    const [eoaTokenAddressesData, setEoaTokenAddressesData] = useState<any>([]);
 
     const {
-        smartAccountAddress,
+        smartAccountAddress, smartAccount, selectedNetwork
     }: iGlobal = useGlobalStore((state) => state);
 
     const {
@@ -30,7 +37,7 @@ const MigrateAssetContainer: React.FC<any> = () => {
         const  fetch = async (address: string) => {
             await fetchPortfolio({ address })
          }
- 
+
          if (smartAccountAddress) {
             setUserTokensData(null)
             fetch(isSCW ? smartAccountAddress : address);
@@ -40,7 +47,7 @@ const MigrateAssetContainer: React.FC<any> = () => {
     useEffect(() => {
         handleFetchPorfolioData()
         isTokenAddresses()
-    }, [smartAccountAddress, isSCW]);
+    }, [selectedNetwork, isSCW]);
 
     const isTokenAddresses = async () => {
         if(isSCW) {
@@ -56,50 +63,154 @@ const MigrateAssetContainer: React.FC<any> = () => {
         }
       };
 
-    const checkTokensData = (data: iUserTokenInfo) => {
-        if(isSCW) {
-            let getScwTokens: any = [];
+      useEffect(() => {
+          // Load checked tokens from local storage on component mount
+          const storedTokens1 = JSON.parse(localStorage.getItem('scwTokenAddressesData') || '[]');
+          const storedTokens2 = JSON.parse(localStorage.getItem('eoaTokenAddressesData') || '[]');
+          setScwTokenAddressesData(storedTokens1);
+          setEoaTokenAddressesData(storedTokens2);
+      }, []);
 
-            if (localStorage.getItem('0xScw')?.toString() === undefined) {
-                localStorage.setItem('0xScw', JSON.stringify([]));
-            } else {
-                getScwTokens = JSON.parse(localStorage.getItem('0xScw')?.toString() ?? '');
-            }
-            if (!getScwTokens.includes(`${data.tokenAddress}`)) {
-                getScwTokens.push(`${data.tokenAddress}`);
+      const checkTokensData = (tokenAddress: any) => {
+          if (isSCW) {
+              let updatedCheckedTokens: any = [...scwTokenAddressesData];
 
-                localStorage.setItem('0xScw', JSON.stringify(getScwTokens));
-                setScwTokenAddressesData(getScwTokens);
-            } else {
-                getScwTokens = getScwTokens.filter((token: any) => token !== data.tokenAddress);
-                localStorage.setItem('0xEoa', JSON.stringify(getScwTokens));
-                setScwTokenAddressesData(getScwTokens);
-            }
-        } else {
-            let getEoaTokens: any = [];
+              if (updatedCheckedTokens.includes(tokenAddress)) {
+                  updatedCheckedTokens = updatedCheckedTokens.filter(t => t !== tokenAddress);
+              } else {
+                  updatedCheckedTokens.push(tokenAddress);
+              }
 
-            if (localStorage.getItem('0xEoa')?.toString() === undefined) {
-                localStorage.setItem('0xEoa', JSON.stringify([]));
-            } else {
-                getEoaTokens = JSON.parse(localStorage.getItem('0xEoa')?.toString() ?? '');
-            }
-            if (!getEoaTokens.includes(`${data.tokenAddress}`)) {
-                getEoaTokens.push(`${data.tokenAddress}`);
+              setScwTokenAddressesData(updatedCheckedTokens);
+              localStorage.setItem('scwTokenAddressesData', JSON.stringify(updatedCheckedTokens));
+          } else {
+              let updatedCheckedTokens: any = [...eoaTokenAddressesData];
 
-                localStorage.setItem('0xEoa', JSON.stringify(getEoaTokens));
-                setEoaTokenAddressesData(getEoaTokens);
-            } else {
-                getEoaTokens = getEoaTokens.filter((token: any) => token !== data.tokenAddress);
-                localStorage.setItem('0xEoa', JSON.stringify(getEoaTokens));
-                setEoaTokenAddressesData(getEoaTokens);
+              if (updatedCheckedTokens.includes(tokenAddress)) {
+                  updatedCheckedTokens = updatedCheckedTokens.filter(t => t !== tokenAddress);
+              } else {
+                  updatedCheckedTokens.push(tokenAddress);
+              }
+
+              setEoaTokenAddressesData(updatedCheckedTokens);
+              localStorage.setItem('eoaTokenAddressesData', JSON.stringify(updatedCheckedTokens));
+          }
+      };
+
+    // const checkTokensData = (data: iUserTokenInfo) => {
+    //     // localStorage.setItem('0xScw', JSON.stringify([]));
+    //     // localStorage.setItem('0xEoa', JSON.stringify([]));
+
+    //     if(isSCW) {
+    //         let getScwTokens: any = [];
+
+    //         if (localStorage.getItem('0xScw')?.toString() === undefined) {
+    //             // alert('1')
+    //             localStorage.setItem('0xScw', JSON.stringify([]));
+    //         } else {
+    //             // alert('2')
+
+    //             getScwTokens = JSON.parse(localStorage.getItem('0xScw')?.toString() ?? '');
+    //         }
+    //         if (!getScwTokens.includes(`${data.tokenAddress}`)) {
+    //             // alert('3')
+
+    //             getScwTokens.push(`${data.tokenAddress}`);
+
+    //             localStorage.setItem('0xScw', JSON.stringify(getScwTokens));
+    //             setScwTokenAddressesData(getScwTokens);
+    //         } else {
+    //             // alert('4')
+    //             getScwTokens = getScwTokens.filter((token: any) => token !== data.tokenAddress);
+    //             localStorage.setItem('0xEoa', JSON.stringify(getScwTokens));
+    //             setScwTokenAddressesData(getScwTokens);
+    //         }
+    //     } else {
+    //         let getEoaTokens: any = [];
+
+    //         if (localStorage.getItem('0xEoa')?.toString() === undefined) {
+    //             // alert('1')
+    //             localStorage.setItem('0xEoa', JSON.stringify([]));
+    //         } else {
+    //             // alert('2')
+
+    //             getEoaTokens = JSON.parse(localStorage.getItem('0xEoa')?.toString() ?? '');
+    //             console.log('getEoaTokens:', getEoaTokens)
+    //         }
+    //         if (!getEoaTokens.includes(`${data.tokenAddress}`)) {
+    //             // alert('3')
+
+    //             getEoaTokens.push(`${data.tokenAddress}`);
+    //             console.log('getEoaTokens2:', getEoaTokens)
+
+    //             localStorage.setItem('0xEoa', JSON.stringify(getEoaTokens));
+    //             setEoaTokenAddressesData(getEoaTokens);
+    //         } else {
+    //             // alert('4')
+
+    //             getEoaTokens = getEoaTokens.filter((token: any) => token !== data.tokenAddress);
+    //             localStorage.setItem('0xEoa', JSON.stringify(getEoaTokens));
+    //             setEoaTokenAddressesData(getEoaTokens);
+    //         }
+    //     }
+    // };
+
+    const sendAllTokens = async (isSCW, _tokenAddresses) => {
+        try {
+            const from = isSCW ? smartAccountAddress : address
+            const to = isSCW ? address : smartAccountAddress
+            let provider = await new ethers.providers.Web3Provider(web3.givenProvider);
+            if (!provider) return;
+            const signer = await provider.getSigner();
+            if (!signer) return;
+            const txArray: any = []
+            for (let i = 0; i < _tokenAddresses.length; i++) {
+                if (isSCW) {
+                    const contract = await new ethers.Contract(_tokenAddresses[i], IERC20, signer);
+                    if (!signer) {
+                        toast.error("Please connect wallet or refresh it!");
+                        return;
+                    }
+                    const balance = await contract.balanceOf(from);
+
+                    if (BigNumber.from(balance).gte(0)) {
+                        const data = await contract.populateTransaction.transfer(to, balance);
+                        const tx = { to: _tokenAddresses[i], data: data.data };
+                        txArray.push(tx)
+                    }
+                } else {
+                    const contract = await new ethers.Contract(_tokenAddresses[i], IERC20, signer);
+                    if (!signer) {
+                        toast.error("Please connect wallet or refresh it!");
+                        return;
+                    }
+                    const balance = await contract.balanceOf(from);
+
+                    if (BigNumber.from(balance).gte(0)) {
+                        const data = await contract.populateTransaction.transfer(to, balance);
+                        const tx = { to: _tokenAddresses[i], data: data.data };
+                        const txReciept = await signer.sendTransaction(tx);
+                        await txReciept?.wait();
+                    }
+                }
             }
+            if (isSCW) {
+                console.log('txArray:', txArray)
+                const tempTxhash = await sendToBiconomy(txArray);
+                toast.success(`Tx Succefully done: ${tempTxhash}`);
+            }
+            toast.success(`All Tx Succefully done:`);
+        } catch (error) {
+            console.log("getContract-error", error);
         }
     };
 
     const handleExecuteMgrateAsset = () => {
         if(isSCW) {
+            sendAllTokens(true, scwTokenAddressesData)
             console.log("Execute: Scw Tokens", scwTokenAddressesData)
         } else {
+            sendAllTokens(false, eoaTokenAddressesData)
             console.log("Execute: Eoa Tokens", eoaTokenAddressesData)
         }
     }
@@ -114,7 +225,7 @@ const MigrateAssetContainer: React.FC<any> = () => {
         }
         return acc;
     }, {});
-      
+
       const filteredDefiTokens = Object.values(separatedArray);
 
     const TotalNetWorth = (userTokensData || []).reduce((acc, curr) => {
@@ -135,6 +246,6 @@ const MigrateAssetContainer: React.FC<any> = () => {
             checkTokensData={checkTokensData}
             handleExecuteMgrateAsset={handleExecuteMgrateAsset}
         />
-    )  
+    )
 };
 export default MigrateAssetContainer;
