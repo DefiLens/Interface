@@ -145,7 +145,7 @@ const MigrateAsset: React.FC<any> = ({
                                                             ? checkBox
                                                             : uncheckBox
                                                     }
-                                                    onClick={() => handleCheckToken(item.tokenAddress)}
+                                                    onClick={() => checkTokensData(item.tokenAddress)}
                                                     className="w-5 h-5 cursor-pointer"
                                                 />
                                             ) : (
@@ -156,7 +156,7 @@ const MigrateAsset: React.FC<any> = ({
                                                             ? checkBox
                                                             : uncheckBox
                                                     }
-                                                    onClick={() => handleCheckToken(item.tokenAddress)}
+                                                    onClick={() => checkTokensData(item.tokenAddress)}
                                                     className="w-5 h-5 cursor-pointer"
                                                 />
                                             )}
