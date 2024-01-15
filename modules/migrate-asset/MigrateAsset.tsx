@@ -13,6 +13,7 @@ import Button from "../../components/Button/Button";
 import { BigNumber as bg } from "bignumber.js";
 import { useEffect, useState } from "react";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
+import { useAddress } from "@thirdweb-dev/react";
 bg.config({ DECIMAL_PLACES: 5 });
 
 const MigrateAsset: React.FC<any> = ({
@@ -24,6 +25,7 @@ const MigrateAsset: React.FC<any> = ({
     eoaTokenAddressesData,
     checkTokensData,
 }: tMigrateAsset) => {
+    const address = useAddress();
     const { isSCW, setIsSCW }: iPortfolio = usePortfolioStore((state) => state);
     const { selectedNetwork }: iGlobal = useGlobalStore((state) => state);
 
@@ -97,7 +99,11 @@ const MigrateAsset: React.FC<any> = ({
             {userTokensData?.length > 0 && (
                 <>
                     <div className="w-full bg-backgound-500 flex flex-col justify-start items-start gap-3 text-primary-100 border border-backgound-600 shadow shadow-backgound-600 rounded-lg p-8">
-                        <div className="w-full text-lg md:text-xl font-extrabold text-primary-100">Wallet:</div>
+                        <div className="w-full text-lg md:text-xl font-extrabold text-primary-100">
+                            <u>
+                                {isSCW ? "Smart Account" : "EOA"} Wallet: {isSCW ? smartAccountAddress : address}
+                            </u>
+                        </div>
                         <div className="w-full flex justify-end items-center gap-2 text-lg md:text-xl font-extrabold text-primary-100 py-1 my-2 border-b border-b-backgound-900">
                             <div className="w-14 text-start" />
                             <div className="w-full text-start">Asset</div>
