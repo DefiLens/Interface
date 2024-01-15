@@ -158,7 +158,7 @@ const Header: React.FC<any> = ({ switchOnSpecificChain }: tHeader) => {
                                                         " " +
                                                         `${
                                                             ChainIdDetails[selectedNetwork.chainId.toString()]
-                                                                .gasFeesName
+                                                                ?.gasFeesName
                                                         }` +
                                                         ")"}
                                             </span>
@@ -186,7 +186,7 @@ const Header: React.FC<any> = ({ switchOnSpecificChain }: tHeader) => {
                                                         " " +
                                                         `${
                                                             ChainIdDetails[selectedNetwork.chainId.toString()]
-                                                                .gasFeesName
+                                                                ?.gasFeesName
                                                         }` +
                                                         ")"}
                                             </span>
