@@ -8,7 +8,7 @@ export const NavigationList = [
         route: "/portfolio",
     },
     {
-        title: "Migrate",
+        title: "Migrate Assets(EOA<>SCW)",
         route: "/migrate-asset",
     },
 ];
