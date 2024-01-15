@@ -24,6 +24,9 @@ const MigrateAsset: React.FC<any> = ({
     scwTokenAddressesData,
     eoaTokenAddressesData,
     checkTokensData,
+    isSelecteAll,
+    selectAllTokens,
+    deselectAllTokens,
 }: tMigrateAsset) => {
     const address = useAddress();
     const { isSCW, setIsSCW }: iPortfolio = usePortfolioStore((state) => state);
@@ -112,6 +115,28 @@ const MigrateAsset: React.FC<any> = ({
                             </div> */}
                             <div className="w-[25%] text-end">Balance</div>
                         </div>
+                        <div className="w-full flex justify-between items-center gap-3">
+                            <div className="flex items-center gap-2">
+                                <Image
+                                    alt="checkbox"
+                                    src={isSelecteAll ? checkBox : uncheckBox}
+                                    onClick={() =>
+                                        selectAllTokens(
+                                            userTokensData.filter((token: any) => token.type === "erc20Token")
+                                        )
+                                    }
+                                    className="w-5 h-5 cursor-pointer"
+                                />
+                                <p className="text-start">Select All</p>
+                            </div>
+                            <Button
+                                handleClick={() => handleExecuteMgrateAsset()}
+                                customStyle="!w-auto"
+                                innerText="Execute Migrate Assets"
+                                class="top-0 right-0"
+                            />
+                        </div>
+
                         {userTokensData.length > 0 &&
                             userTokensData
                                 .filter((token: any) => token.type === "erc20Token")
@@ -147,6 +172,7 @@ const MigrateAsset: React.FC<any> = ({
                                                 <Image
                                                     alt="checkbox"
                                                     src={
+                                                        scwTokenAddressesData &&
                                                         scwTokenAddressesData.includes(item.tokenAddress)
                                                             ? checkBox
                                                             : uncheckBox
@@ -158,6 +184,7 @@ const MigrateAsset: React.FC<any> = ({
                                                 <Image
                                                     alt="checkbox"
                                                     src={
+                                                        eoaTokenAddressesData &&
                                                         eoaTokenAddressesData.includes(item.tokenAddress)
                                                             ? checkBox
                                                             : uncheckBox

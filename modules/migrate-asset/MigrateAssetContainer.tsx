@@ -19,6 +19,7 @@ const MigrateAssetContainer: React.FC<any> = () => {
 
     const [scwTokenAddressesData, setScwTokenAddressesData] = useState<any>([]);
     const [eoaTokenAddressesData, setEoaTokenAddressesData] = useState<any>([]);
+    const [isSelecteAll, setSelectAll] = useState<any>(false);
 
     const { smartAccountAddress, selectedNetwork }: iGlobal = useGlobalStore((state) => state);
 
@@ -28,6 +29,7 @@ const MigrateAssetContainer: React.FC<any> = () => {
 
     const handleFetchPorfolioData = () => {
         const fetch = async (address: string) => {
+            setSelectAll(false)
             await fetchPortfolio({ address });
         };
 
@@ -58,14 +60,17 @@ const MigrateAssetContainer: React.FC<any> = () => {
 
     useEffect(() => {
         // Load checked tokens from local storage on component mount
-        const storedTokens1 = JSON.parse(localStorage.getItem("scwTokenAddressesData") || "[]");
-        const storedTokens2 = JSON.parse(localStorage.getItem("eoaTokenAddressesData") || "[]");
+        const storedTokens1 = localStorage.setItem("scwTokenAddressesData", JSON.stringify([]));
+        const storedTokens2 = localStorage.setItem("eoaTokenAddressesData", JSON.stringify([]));
+        // const storedTokens1 = JSON.parse(localStorage.getItem("scwTokenAddressesData") || "[]");
+        // const storedTokens2 = JSON.parse(localStorage.getItem("eoaTokenAddressesData") || "[]");
         setScwTokenAddressesData(storedTokens1);
         setEoaTokenAddressesData(storedTokens2);
     }, []);
 
     const checkTokensData = (tokenAddress: any) => {
         if (isSCW) {
+            setSelectAll(false);
             let updatedCheckedTokens: any = [...scwTokenAddressesData];
 
             if (updatedCheckedTokens.includes(tokenAddress)) {
@@ -77,6 +82,7 @@ const MigrateAssetContainer: React.FC<any> = () => {
             setScwTokenAddressesData(updatedCheckedTokens);
             localStorage.setItem("scwTokenAddressesData", JSON.stringify(updatedCheckedTokens));
         } else {
+            setSelectAll(false);
             let updatedCheckedTokens: any = [...eoaTokenAddressesData];
 
             if (updatedCheckedTokens.includes(tokenAddress)) {
@@ -87,6 +93,45 @@ const MigrateAssetContainer: React.FC<any> = () => {
 
             setEoaTokenAddressesData(updatedCheckedTokens);
             localStorage.setItem("eoaTokenAddressesData", JSON.stringify(updatedCheckedTokens));
+        }
+    };
+
+    const selectAllTokens = (userTokensData: any) => {
+        if (!isSelecteAll) {
+            console.log("userTokensData: ", userTokensData)
+            const allTokenAddresses = userTokensData.map(token => token.tokenAddress);
+            if (isSCW) {
+                setScwTokenAddressesData(allTokenAddresses);
+                localStorage.setItem("scwTokenAddressesData", JSON.stringify(allTokenAddresses));
+                setSelectAll(true);
+            } else {
+                setEoaTokenAddressesData(allTokenAddresses);
+                localStorage.setItem("eoaTokenAddressesData", JSON.stringify(allTokenAddresses));
+                setSelectAll(true);
+            }
+        } else {
+            if (isSCW) {
+                setScwTokenAddressesData([]);
+                localStorage.setItem("scwTokenAddressesData", JSON.stringify([]));
+                setSelectAll(false);
+            } else {
+                setEoaTokenAddressesData([]);
+                localStorage.setItem("eoaTokenAddressesData", JSON.stringify([]));
+                setSelectAll(false);
+            }
+        }
+
+    };
+
+    const deselectAllTokens = () => {
+        if (isSCW) {
+            setScwTokenAddressesData([]);
+            localStorage.setItem("scwTokenAddressesData", JSON.stringify([]));
+            setSelectAll(false);
+        } else {
+            setEoaTokenAddressesData([]);
+            localStorage.setItem("eoaTokenAddressesData", JSON.stringify([]));
+            setSelectAll(false);
         }
     };
 
@@ -184,6 +229,9 @@ const MigrateAssetContainer: React.FC<any> = () => {
             eoaTokenAddressesData={eoaTokenAddressesData}
             checkTokensData={checkTokensData}
             handleExecuteMgrateAsset={handleExecuteMgrateAsset}
+            selectAllTokens={selectAllTokens}
+            deselectAllTokens={deselectAllTokens}
+            isSelecteAll={isSelecteAll}
         />
     );
 };

@@ -8,4 +8,8 @@ export type tMigrateAsset = {
     eoaTokenAddressesData: string[];
     checkTokensData: (tokenAddress: string) => void;
     handleExecuteMgrateAsset: () => void;
+    isSelecteAll: boolean;
+    selectAllTokens: (userTokensData: any) => void;
+    deselectAllTokens: (tokenAddress: string) => void;
+
 };

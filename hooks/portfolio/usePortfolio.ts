@@ -92,6 +92,7 @@ export function usePortfolio() {
 
             const baseTokensUrl = "https://enso-scrape.s3.us-east-2.amazonaws.com/output/backend/baseTokens.json";
             const defiTokensUrl = "https://enso-scrape.s3.us-east-2.amazonaws.com/output/backend/defiTokens.json";
+            console.log("userTokensUrl: ", userTokensUrl);
 
             const userTokens = await fetchData<UserToken[]>(userTokensUrl);
             // const userTokensOptimism = await fetchData<UserToken[]>(userTokensUrlOptimism);
