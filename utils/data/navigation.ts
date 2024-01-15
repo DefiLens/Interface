@@ -1,10 +1,14 @@
 export const NavigationList = [
     {
-        title: "Home",
+        title: "Trade",
         route: "/",
     },
     {
-        title: "Trade",
-        route: "/trade",
+        title: "Portfolio",
+        route: "/portfolio",
+    },
+    {
+        title: "Migrate Assets(EOA<>SCW)",
+        route: "/migrate-asset",
     },
 ];

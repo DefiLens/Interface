@@ -35,8 +35,6 @@ import { useBiconomyGasLessProvider } from "../../hooks/aaProvider/useBiconomyGa
 import { useBiconomySessionKeyProvider } from "../../hooks/aaProvider/useBiconomySessionKeyProvider";
 import { decreasePowerByDecimals, getTokenListByChainId, incresePowerByDecimals } from "../../utils/helper";
 import { getContractInstance, getErc20Balanceof, getErc20Decimals, getProvider } from "../../utils/web3Libs/ethers";
-import axios from "axios";
-import { usePortfolio } from "../../hooks/portfolio/usePortfolio";
 
 bg.config({ DECIMAL_PLACES: 10 });
 
@@ -57,9 +55,6 @@ const TradeContainer: React.FC<any> = () => {
     const { mutateAsync: refinance } = useRefinance();
     const { mutateAsync: refinanceForCC } = useCCRefinance();
     const { mutateAsync: switchOnSpecificChain } = useSwitchOnSpecificChain();
-
-    const { mutateAsync: fetchPortfolio } = usePortfolio();
-
 
     const {
         smartAccount,

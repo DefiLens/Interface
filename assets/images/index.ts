@@ -33,6 +33,8 @@ import usdc from "./usdc.png";
 import usdt from "./usdt.png";
 import moonwell from "./moonwell.svg";
 import seamless from "./seamless.svg";
+import checkBox from "./checkBox.png";
+import uncheckBox from "./uncheckBox.png";
 
 export {
     closeNarrow,
@@ -69,5 +71,7 @@ export {
     usdc,
     usdt,
     moonwell,
-    seamless
+    seamless,
+    checkBox,
+    uncheckBox,
 };

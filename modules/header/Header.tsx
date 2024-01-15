@@ -62,8 +62,8 @@ const Header: React.FC<any> = ({ switchOnSpecificChain }: tHeader) => {
                         />
                     </Link>
                 </li>
-                <li className="hidden xl:flex justify-center items-center gap-3 text-lg bg-backgound-300 rounded-full p-1">
-                    {/* {NavigationList.length > 0 &&
+                <li className="hidden md:flex justify-center items-center gap-3 text-lg bg-backgound-300 rounded-full p-1">
+                    {NavigationList.length > 0 &&
                         NavigationList?.map((item) => (
                             <Link
                                 href={item.route}
@@ -75,7 +75,7 @@ const Header: React.FC<any> = ({ switchOnSpecificChain }: tHeader) => {
                                 {item.title}
                             </Link>
                         ))
-                    } */}
+                    }
                 </li>
                 <li className="w-full xl:w-1/3 flex flex-wrap justify-end items-center gap-3">
                     {connected && !smartAccount && !loading && (
@@ -158,7 +158,7 @@ const Header: React.FC<any> = ({ switchOnSpecificChain }: tHeader) => {
                                                         " " +
                                                         `${
                                                             ChainIdDetails[selectedNetwork.chainId.toString()]
-                                                                .gasFeesName
+                                                                ?.gasFeesName
                                                         }` +
                                                         ")"}
                                             </span>
@@ -186,7 +186,7 @@ const Header: React.FC<any> = ({ switchOnSpecificChain }: tHeader) => {
                                                         " " +
                                                         `${
                                                             ChainIdDetails[selectedNetwork.chainId.toString()]
-                                                                .gasFeesName
+                                                                ?.gasFeesName
                                                         }` +
                                                         ")"}
                                             </span>
