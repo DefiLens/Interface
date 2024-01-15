@@ -22,7 +22,7 @@ const MigrateAsset: React.FC<any> = ({
     handleExecuteMgrateAsset,
     scwTokenAddressesData,
     eoaTokenAddressesData,
-    checkTokensData
+    checkTokensData,
 }: tMigrateAsset) => {
     const { isSCW, setIsSCW }: iPortfolio = usePortfolioStore((state) => state);
     const { selectedNetwork }: iGlobal = useGlobalStore((state) => state);
@@ -67,7 +67,9 @@ const MigrateAsset: React.FC<any> = ({
                 </div>
             ) : !userTokensData?.length && smartAccountAddress ? (
                 <div className="w-full h-full flex flex-col justify-center items-center gap-5 rounded-xl px-5 py-10 bg-backgound-500 text-font-100 border-backgound-600 shadow shadow-backgound-600">
-                    <h1 className="w-full text-xl md:text-2xl font-extrabold text-center">{selectedNetwork.chainId == "8453" ? "Base is not integrated for Migarte assets." : "" }</h1>
+                    <h1 className="w-full text-xl md:text-2xl font-extrabold text-center">
+                        {selectedNetwork.chainId == "8453" ? "Base is not integrated for Migarte assets." : ""}
+                    </h1>
                     <h1 className="w-full text-xl md:text-2xl font-extrabold text-center">No Data Found!</h1>
                     <h6 className="w-full text-xl md:text-2xl font-extrabold text-center">
                         <Link
@@ -114,27 +116,27 @@ const MigrateAsset: React.FC<any> = ({
                                     >
                                         <div className="w-14 text-start" key={i}>
                                             {isSCW ? (
-                                            //     <Image
-                                            //         alt="checkbox"
-                                            //         src={
-                                            //             scwTokenAddressesData.includes(`${item.tokenAddress}`)
-                                            //                 ? checkBox
-                                            //                 : uncheckBox
-                                            //         }
-                                            //         onClick={() => checkTokensData(item)}
-                                            //         className="w-5 h-5 cursor-pointer"
-                                            //     />
-                                            // ) : (
-                                            //     <Image
-                                            //         alt="checkbox"
-                                            //         src={
-                                            //             eoaTokenAddressesData.includes(`${item.tokenAddress}`)
-                                            //                 ? checkBox
-                                            //                 : uncheckBox
-                                            //         }
-                                            //         onClick={() => checkTokensData(item)}
-                                            //         className="w-5 h-5 cursor-pointer"
-                                            //     />
+                                                //     <Image
+                                                //         alt="checkbox"
+                                                //         src={
+                                                //             scwTokenAddressesData.includes(`${item.tokenAddress}`)
+                                                //                 ? checkBox
+                                                //                 : uncheckBox
+                                                //         }
+                                                //         onClick={() => checkTokensData(item)}
+                                                //         className="w-5 h-5 cursor-pointer"
+                                                //     />
+                                                // ) : (
+                                                //     <Image
+                                                //         alt="checkbox"
+                                                //         src={
+                                                //             eoaTokenAddressesData.includes(`${item.tokenAddress}`)
+                                                //                 ? checkBox
+                                                //                 : uncheckBox
+                                                //         }
+                                                //         onClick={() => checkTokensData(item)}
+                                                //         className="w-5 h-5 cursor-pointer"
+                                                //     />
 
                                                 <Image
                                                     alt="checkbox"
@@ -158,8 +160,6 @@ const MigrateAsset: React.FC<any> = ({
                                                     className="w-5 h-5 cursor-pointer"
                                                 />
                                             )}
-
-
                                         </div>
                                         <div className="w-full flex justify-start items-center gap-3 text-start">
                                             <Image

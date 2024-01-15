@@ -21,7 +21,6 @@ export interface iUserTokenInfo {
         twitter: string;
         category: string;
         chainIds: number[];
-
     };
 
     underlyingTokens: string[];
@@ -37,7 +36,6 @@ export interface iPortfolio {
     setIsUsersTokenLoading: (isUsersTokenLoading: boolean) => void;
 
     setIsSCW: (isSCW: boolean) => void;
-
 }
 
 export const usePortfolioStore = create<iPortfolio>((set) => ({

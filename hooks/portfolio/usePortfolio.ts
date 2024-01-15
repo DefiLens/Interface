@@ -100,7 +100,7 @@ export function usePortfolio() {
             const baseTokens = await fetchData<ERC20Token[]>(baseTokensUrl);
             const defiTokens = await fetchData<DefiToken[]>(defiTokensUrl);
 
-            console.log('userTokens: ', userTokens)
+            console.log("userTokens: ", userTokens);
             // console.log('userTokensUrlOptimism: ', userTokensOptimism)
             // console.log('userTokensUrlBase: ', userTokensBase)
             // console.log('defiTokensUrl: ', baseTokens)
