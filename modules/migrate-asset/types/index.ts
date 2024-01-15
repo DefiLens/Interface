@@ -6,6 +6,6 @@ export type tMigrateAsset = {
     userTokensData: iUserTokenInfo[];
     scwTokenAddressesData: string[]
     eoaTokenAddressesData: string[]
-    checkTokensData: (data: iUserTokenInfo) => void;
+    checkTokensData: (tokenAddress: string) => void;
     handleExecuteMgrateAsset: () => void;
 };
