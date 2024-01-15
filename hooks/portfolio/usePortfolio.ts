@@ -2,6 +2,7 @@ import axios from "axios";
 import { useMutation } from "@tanstack/react-query";
 import { fetchData } from "../../utils/helper";
 import { iPortfolio, usePortfolioStore } from "../../store/Portfolio";
+import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 
 export type UserToken = {
     token: string;
@@ -53,7 +54,7 @@ export type AggregatedTokenInfo = {
     protocol?: Protocol;
     underlyingTokens?: string[];
     price?: number; // New field for price
-    type?: 'erc20Token' | 'defiToken';
+    type?: "erc20Token" | "defiToken";
 };
 
 type TokenPrice = {
@@ -76,32 +77,38 @@ async function fetchTokenPrice(chainId: number, tokenAddress: string): Promise<n
 }
 
 export function usePortfolio() {
+    const { setUserTokensData, setIsUsersTokenLoading }: iPortfolio = usePortfolioStore((state) => state);
 
-    const {
-        setUserTokensData,
-        setIsUsersTokenLoading,
-    }: iPortfolio = usePortfolioStore((state) => state);
+    const { selectedNetwork }: iGlobal = useGlobalStore((state) => state);
 
     const chainIds = [137, 10, 8453];
-    async function fetchPortfolio({address}: any) {
+    async function fetchPortfolio({ address }: any) {
         try {
-            setIsUsersTokenLoading(true)
+            setIsUsersTokenLoading(true);
 
-            const userTokensUrlPolygon = `https://api.enso.finance/api/v1/wallet/balances?chainId=${chainIds[0]}&eoaAddress=${address}&useEoa=true`;
-            const userTokensUrlOptimism = `https://api.enso.finance/api/v1/wallet/balances?chainId=${chainIds[1]}&eoaAddress=${address}&useEoa=true`;
-            const userTokensUrlBase = `https://api.enso.finance/api/v1/wallet/balances?chainId=${chainIds[2]}&eoaAddress=${address}&useEoa=true`;
-            
+            const userTokensUrl = `https://api.enso.finance/api/v1/wallet/balances?chainId=${selectedNetwork.chainId}&eoaAddress=${address}&useEoa=true`;
+            // const userTokensUrlOptimism = `https://api.enso.finance/api/v1/wallet/balances?chainId=${chainIds[1]}&eoaAddress=${address}&useEoa=true`;
+            // const userTokensUrlBase = `https://api.enso.finance/api/v1/wallet/balances?chainId=${chainIds[2]}&eoaAddress=${address}&useEoa=true`;
+
             const baseTokensUrl = "https://enso-scrape.s3.us-east-2.amazonaws.com/output/backend/baseTokens.json";
             const defiTokensUrl = "https://enso-scrape.s3.us-east-2.amazonaws.com/output/backend/defiTokens.json";
 
-            const userTokensPolygon = await fetchData<UserToken[]>(userTokensUrlPolygon);
-            const userTokensOptimism = await fetchData<UserToken[]>(userTokensUrlOptimism);
-            const userTokensBase = await fetchData<UserToken[]>(userTokensUrlBase);
+            const userTokens = await fetchData<UserToken[]>(userTokensUrl);
+            // const userTokensOptimism = await fetchData<UserToken[]>(userTokensUrlOptimism);
+            // const userTokensBase = await fetchData<UserToken[]>(userTokensUrlBase);
 
             const baseTokens = await fetchData<ERC20Token[]>(baseTokensUrl);
             const defiTokens = await fetchData<DefiToken[]>(defiTokensUrl);
+
+            console.log('userTokens: ', userTokens)
+            // console.log('userTokensUrlOptimism: ', userTokensOptimism)
+            // console.log('userTokensUrlBase: ', userTokensBase)
+            // console.log('defiTokensUrl: ', baseTokens)
+            // console.log('defiTokensUrl: ', defiTokens)
+
             const aggregatedData: AggregatedTokenInfo[] = [];
-            await  [...userTokensPolygon, ...userTokensOptimism, ...userTokensBase].forEach(async (userToken, index) => {
+            // await  [...userTokensPolygon, ...userTokensOptimism, ...userTokensBase].forEach(async (userToken, index) => {
+            await [...userTokens].forEach(async (userToken, index) => {
                 // const price = await fetchTokenPrice(chainId, userToken.token);
                 const defiTokenMatch = defiTokens.find(
                     (defiToken) => defiToken.tokenAddress.toLowerCase() == userToken.token.toLowerCase()
@@ -123,7 +130,7 @@ export function usePortfolio() {
                 } else {
                     const erc20TokenMatch = baseTokens.find((baseToken) => baseToken.address === userToken.token);
                     if (erc20TokenMatch) {
-                        const aggregatedInfo: AggregatedTokenInfo = {
+                        let aggregatedInfo: AggregatedTokenInfo = {
                             tokenAddress: userToken.token,
                             amount: userToken.amount,
                             decimals: userToken.decimals,
@@ -134,12 +141,14 @@ export function usePortfolio() {
                             // price,
                             type: "erc20Token",
                         };
+
                         aggregatedData.push(aggregatedInfo);
                     }
                 }
             });
-            setUserTokensData(aggregatedData)
-            setIsUsersTokenLoading(false)
+            console.log("aggregatedData", aggregatedData);
+            setUserTokensData(aggregatedData);
+            setIsUsersTokenLoading(false);
             return aggregatedData;
         } catch (error: any) {
             if (error.message) {
@@ -147,7 +156,7 @@ export function usePortfolio() {
             } else {
                 console.log("refinance: Error", error);
             }
-            setIsUsersTokenLoading(false)
+            setIsUsersTokenLoading(false);
             return;
         }
     }
