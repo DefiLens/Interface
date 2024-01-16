@@ -104,7 +104,7 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
                                                                         ].key.find(
                                                                             (entry: any) =>
                                                                                 entry.name == bar.data.fromProtocol
-                                                                        ).icon
+                                                                        )?.icon
                                                                     }
                                                                     alt=""
                                                                     className="h-3 w-3 bg-slate-200 rounded-full cursor-pointer"
@@ -139,7 +139,7 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
                                                                         protocolNames[bar.data.toChainId].key.find(
                                                                             (entry: any) =>
                                                                                 entry.name == bar.data.toProtocol
-                                                                        ).icon
+                                                                        )?.icon
                                                                     }
                                                                     alt=""
                                                                     className="h-3 w-3 bg-slate-200 rounded-full cursor-pointer"
