@@ -1,9 +1,10 @@
 import axios from "axios";
 import { useMutation } from "@tanstack/react-query";
-import { fetchData } from "../../utils/helper";
+import { decreasePowerByDecimals, fetchData } from "../../utils/helper";
 import { iPortfolio, usePortfolioStore } from "../../store/Portfolio";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
-
+import { BigNumber as bg } from "bignumber.js";
+bg.config({ DECIMAL_PLACES: 5 });
 export type UserToken = {
     token: string;
     amount: string;
@@ -65,11 +66,15 @@ type TokenPrice = {
     confidence: number;
 };
 
-async function fetchTokenPrice(chainId: number, tokenAddress: string): Promise<number> {
+async function fetchTokenPrice(chainId: number, tokenAddress: string): Promise<number | undefined> {
     try {
         const url = `https://api.enso.finance/api/v1/prices/${chainId}/${tokenAddress}`;
         const response = await axios.get<TokenPrice>(url);
-        return response.data.price;
+        // console.log('price: ', response.data.price)
+        if (response.data.price) {
+            return response.data.price;
+        }
+        return undefined;
     } catch (error) {
         console.error(`Error fetching price for token ${tokenAddress}: ${error}`);
         return 0; // Return a default value or handle this case as needed
@@ -77,13 +82,14 @@ async function fetchTokenPrice(chainId: number, tokenAddress: string): Promise<n
 }
 
 export function usePortfolio() {
-    const { setUserTokensData, setIsUsersTokenLoading }: iPortfolio = usePortfolioStore((state) => state);
+    const { setUserTokensData, setIsUsersTokenLoading, setTotalNetworth }: iPortfolio = usePortfolioStore((state) => state);
 
     const { selectedNetwork }: iGlobal = useGlobalStore((state) => state);
 
     const chainIds = [137, 10, 8453];
     async function fetchPortfolio({ address }: any) {
         try {
+            let networth: any = bg(0)
             setIsUsersTokenLoading(true);
 
             const userTokensUrl = `https://api.enso.finance/api/v1/wallet/balances?chainId=${selectedNetwork.chainId}&eoaAddress=${address}&useEoa=true`;
@@ -115,6 +121,8 @@ export function usePortfolio() {
                     (defiToken) => defiToken.tokenAddress.toLowerCase() == userToken.token.toLowerCase()
                 );
                 if (defiTokenMatch) {
+                    const price = await fetchTokenPrice(Number(selectedNetwork.chainId), userToken.token)
+                    console.log('userToken: ', defiTokenMatch.name, price?.toString())
                     const aggregatedInfo: AggregatedTokenInfo = {
                         tokenAddress: userToken.token,
                         amount: userToken.amount,
@@ -124,13 +132,19 @@ export function usePortfolio() {
                         apy: defiTokenMatch.apy,
                         protocol: defiTokenMatch.protocol, // Adding protocol info
                         underlyingTokens: defiTokenMatch.underlyingTokens,
-                        // price,
+                        price : price != undefined ? price : 0,
                         type: "defiToken",
                     };
                     aggregatedData.push(aggregatedInfo);
+                    if (price) {
+                        // console.log('price---', bg(networth).toString(), bg(decreasePowerByDecimals(bg(userToken.amount), userToken.decimals)).multipliedBy(bg(price?.toString())).toString())
+                        networth = bg(networth).plus(bg(decreasePowerByDecimals(bg(userToken.amount), userToken.decimals)).multipliedBy(bg(price?.toString())))
+                    }
                 } else {
                     const erc20TokenMatch = baseTokens.find((baseToken) => baseToken.address === userToken.token);
                     if (erc20TokenMatch) {
+                        const price = await fetchTokenPrice(Number(selectedNetwork.chainId), userToken.token)
+                        console.log('userToken: ', erc20TokenMatch.name, price?.toString())
                         let aggregatedInfo: AggregatedTokenInfo = {
                             tokenAddress: userToken.token,
                             amount: userToken.amount,
@@ -139,23 +153,31 @@ export function usePortfolio() {
                             symbol: erc20TokenMatch.symbol,
                             logoURI: erc20TokenMatch.logoURI,
                             chainId: erc20TokenMatch.chainId,
-                            // price,
+                            price : price != undefined ? price : 0,
                             type: "erc20Token",
                         };
-
                         aggregatedData.push(aggregatedInfo);
+                        if (price) {
+                            // console.log('price---2', bg(networth).toString(), bg(decreasePowerByDecimals(bg(userToken.amount), userToken.decimals)).multipliedBy(bg(price?.toString())).toString())
+                            networth = bg(networth).plus(bg(decreasePowerByDecimals(bg(userToken.amount), userToken.decimals)).multipliedBy(bg(price?.toString())))
+                        }
                     }
                 }
+                setTotalNetworth(networth.toString())
             });
-            console.log("aggregatedData", aggregatedData);
+            console.log("aggregatedData", aggregatedData, networth.toString());
+            // for (let i=0; i<aggregatedData.length; i++) {
+            //     console.log("aggregatedData-i: ", i)
+            //     await fetchTokenPrice(137, aggregatedData[i].tokenAddress)
+            // }
             setUserTokensData(aggregatedData);
             setIsUsersTokenLoading(false);
             return aggregatedData;
         } catch (error: any) {
             if (error.message) {
-                console.log("refinance: Error", error.message);
+                console.log("portfolio: Error", error.message);
             } else {
-                console.log("refinance: Error", error);
+                console.log("portfolio: Error", error);
             }
             setIsUsersTokenLoading(false);
             return;

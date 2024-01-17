@@ -29,8 +29,11 @@ export interface iUserTokenInfo {
 export interface iPortfolio {
     userTokensData: iUserTokenInfo[] | [] | null;
     isUsersTokenLoading: boolean;
+    totalNetworth: string;
 
     isSCW: boolean;
+
+    setTotalNetworth: (totalNetworth: string) => void;
 
     setUserTokensData: (userTokensData: iUserTokenInfo[] | any) => void;
     setIsUsersTokenLoading: (isUsersTokenLoading: boolean) => void;
@@ -43,7 +46,9 @@ export const usePortfolioStore = create<iPortfolio>((set) => ({
     isUsersTokenLoading: false,
 
     isSCW: false,
+    totalNetworth: "0",
 
+    setTotalNetworth: (totalNetworth) => set(() => ({ totalNetworth })),
     setUserTokensData: (userTokensData) => set(() => ({ userTokensData })),
     setIsUsersTokenLoading: (isUsersTokenLoading) => set(() => ({ isUsersTokenLoading })),
 

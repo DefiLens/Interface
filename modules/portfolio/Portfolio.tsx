@@ -20,10 +20,10 @@ const Portfolio: React.FC<any> = ({
     userTokensData,
     filteredDefiTokens,
     handleFetchPorfolioData,
-    totalNetWorth,
+    // totalNetWorth,
 }: tPortfolio) => {
     const address = useAddress();
-    const { isSCW, setIsSCW }: iPortfolio = usePortfolioStore((state) => state);
+    const { isSCW, setIsSCW, totalNetworth}: iPortfolio = usePortfolioStore((state) => state);
     const { selectedNetwork }: iGlobal = useGlobalStore((state) => state);
 
     return (
@@ -56,19 +56,19 @@ const Portfolio: React.FC<any> = ({
                         </div>
                     </div>
                     <div className="w-full bg-backgound-500 flex justify-between items-center gap-3 text-primary-100 border border-backgound-600 shadow shadow-backgound-600 rounded-lg px-8 py-2">
-                        {/* <div className="w-full flex justify-start items-center gap-3 text-lg md:text-xl font-extrabold text-primary-100">
-                            Net Worth :
-                            <span>
-                                {decreasePowerByDecimals(totalNetWorth.toString(), 18)}
-                            </span>
-                        </div> */}
                         <div className="w-full flex justify-start items-center gap-3 text-lg md:text-xl font-extrabold text-primary-100">
-                            Portfolio of {selectedNetwork.chainName}
+                            Net Worth of {selectedNetwork.chainName} :
+                            <span>
+                                $ {totalNetworth.toString()}
+                            </span>
                         </div>
-                        <IoIosRefresh
+                        {/* <div className="w-full flex justify-start items-center gap-3 text-lg md:text-xl font-extrabold text-primary-100">
+                            Portfolio of {selectedNetwork.chainName}
+                        </div> */}
+                        {/* <IoIosRefresh
                             onClick={() => handleFetchPorfolioData()}
                             className="h-10 w-10 px-2 cursor-pointer"
-                        />
+                        /> */}
                     </div>
                 </div>
             )}
@@ -118,9 +118,7 @@ const Portfolio: React.FC<any> = ({
                     </div>
                     <div className="w-full flex justify-end items-center gap-2 text-lg md:text-xl font-extrabold text-primary-100 py-1 my-2 border-b border-b-backgound-900">
                         <div className="w-full text-start">Asset</div>
-                        {/* <div className="w-[25%] text-end">
-                            Price
-                        </div> */}
+                        <div className="w-[25%] text-end">Price</div>
                         <div className="w-[25%] text-end">Balance</div>
                     </div>
                     {userTokensData.length > 0 &&
@@ -151,9 +149,7 @@ const Portfolio: React.FC<any> = ({
                                             </div>
                                         </div>
                                     </div>
-                                    {/* <div className="w-[25%] text-end">
-                                {decreasePowerByDecimals(bg(item.amount).toString(), 18)}
-                            </div> */}
+                                    <div className="w-[25%] text-end">{item.price}</div>
                                     <div className="w-[25%] text-end">
                                         {decreasePowerByDecimals(bg(item.amount).toString(), item.decimals)}{" "}
                                         {item.symbol}
@@ -176,9 +172,7 @@ const Portfolio: React.FC<any> = ({
                             <div className="w-full text-start">Asset</div>
                             <div className="w-[25%] text-end">APY</div>
                             <div className="w-[30%] text-end">Category</div>
-                            {/* <div className="w-[25%] text-end">
-                        Price
-                    </div> */}
+                            <div className="w-[25%] text-end">Price</div>
                             <div className="w-[25%] text-end">Balance</div>
                         </div>
                         {subArray.length > 0 &&
@@ -209,9 +203,7 @@ const Portfolio: React.FC<any> = ({
                                     </div>
                                     <div className="w-[25%] text-end">{item?.apy !== 0 ? item?.apy : "-"}</div>
                                     <div className="w-[30%] text-end">{item?.protocol?.category}</div>
-                                    {/* <div className="w-[25%] text-end">
-                            {decreasePowerByDecimals(bg(item.amount).toString(), item.decimals)}{" "}
-                        </div> */}
+                                    <div className="w-[25%] text-end">{item.price} </div>
                                     <div className="w-[25%] text-end">
                                         {decreasePowerByDecimals(bg(item.amount).toString(), item.decimals)} {item.name}
                                     </div>
