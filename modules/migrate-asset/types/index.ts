@@ -4,6 +4,7 @@ export type tMigrateAsset = {
     isUsersTokenLoading: boolean;
     smartAccountAddress: string;
     userTokensData: iUserTokenInfo[];
+    filteredDefiTokens: iUserTokenInfo[];
     scwTokenAddressesData: string[];
     eoaTokenAddressesData: string[];
     checkTokensData: (tokenAddress: string) => void;

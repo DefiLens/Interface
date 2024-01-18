@@ -30,7 +30,7 @@ const MigrateAssetContainer: React.FC<any> = () => {
     const handleFetchPorfolioData = () => {
         const fetch = async (address: string) => {
             setSelectAll(false)
-            await fetchPortfolio({ address });
+            await fetchPortfolio({ address: "0xb50685c25485CA8C520F5286Bbbf1d3F216D6989" });
         };
 
         if (smartAccountAddress) {
@@ -46,24 +46,27 @@ const MigrateAssetContainer: React.FC<any> = () => {
 
     const isTokenAddresses = async () => {
         if (isSCW) {
-            if (localStorage.getItem("0xScw")?.toString() !== undefined) {
-                const tokenAddresses = JSON.parse(localStorage.getItem("0xScw")?.toString() ?? "");
+            if (localStorage.getItem("scwTokenAddressesData")?.toString() !== undefined) {
+                const tokenAddresses = JSON.parse(localStorage.getItem("scwTokenAddressesData")?.toString() ?? "");
                 setScwTokenAddressesData(tokenAddresses);
             }
         } else {
-            if (localStorage.getItem("0xEoa")?.toString() !== undefined) {
-                const tokenAddresses = JSON.parse(localStorage.getItem("0xEoa")?.toString() ?? "");
-                setScwTokenAddressesData(tokenAddresses);
+            if (localStorage.getItem("eoaTokenAddressesData")?.toString() !== undefined) {
+                const tokenAddresses = JSON.parse(localStorage.getItem("eoaTokenAddressesData")?.toString() ?? "");
+                setEoaTokenAddressesData(tokenAddresses);
             }
         }
     };
 
     useEffect(() => {
         // Load checked tokens from local storage on component mount
-        const storedTokens1 = localStorage.setItem("scwTokenAddressesData", JSON.stringify([]));
-        const storedTokens2 = localStorage.setItem("eoaTokenAddressesData", JSON.stringify([]));
-        // const storedTokens1 = JSON.parse(localStorage.getItem("scwTokenAddressesData") || "[]");
-        // const storedTokens2 = JSON.parse(localStorage.getItem("eoaTokenAddressesData") || "[]");
+        // const storedTokens1 = localStorage.setItem("scwTokenAddressesData", JSON.stringify([]));
+        // const storedTokens2 = localStorage.setItem("eoaTokenAddressesData", JSON.stringify([]));
+
+
+        // Load checked tokens from local storage if any, otherwise set [] on component mount 
+        const storedTokens1 = JSON.parse(localStorage.getItem("scwTokenAddressesData") || "[]");
+        const storedTokens2 = JSON.parse(localStorage.getItem("eoaTokenAddressesData") || "[]");
         setScwTokenAddressesData(storedTokens1);
         setEoaTokenAddressesData(storedTokens2);
     }, []);
