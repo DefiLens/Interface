@@ -9,8 +9,7 @@ export type tMigrateAsset = {
     eoaTokenAddressesData: string[];
     checkTokensData: (tokenAddress: string) => void;
     handleExecuteMgrateAsset: () => void;
-    isSelecteAll: boolean;
-    selectAllTokens: (userTokensData: any) => void;
-    deselectAllTokens: (tokenAddress: string) => void;
-
+    isAllErc20Selected: boolean;
+    isAllDefiSelected: boolean;
+    selectAllTokens: (type: string, userTokensData: any) => void;
 };

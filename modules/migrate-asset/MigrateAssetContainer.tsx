@@ -19,7 +19,8 @@ const MigrateAssetContainer: React.FC<any> = () => {
 
     const [scwTokenAddressesData, setScwTokenAddressesData] = useState<any>([]);
     const [eoaTokenAddressesData, setEoaTokenAddressesData] = useState<any>([]);
-    const [isSelecteAll, setSelectAll] = useState<any>(false);
+    const [isAllErc20Selected, setIsAllErc20Selected] = useState<any>(false);
+    const [isAllDefiSelected, setIsAllDefiSelected] = useState<any>(false);
 
     const {
         smartAccountAddress,
@@ -32,8 +33,9 @@ const MigrateAssetContainer: React.FC<any> = () => {
 
     const handleFetchPorfolioData = () => {
         const fetch = async (address: string, chainId: string) => {
-            setSelectAll(false)
-            await fetchPortfolio({ address, chainId });
+            setIsAllErc20Selected(false)
+            setIsAllDefiSelected(false)
+            await fetchPortfolio({ address: '0xb50685c25485CA8C520F5286Bbbf1d3F216D6989', chainId });
         };
 
         if (isSCW && smartAccountAddress) {
@@ -70,11 +72,6 @@ const MigrateAssetContainer: React.FC<any> = () => {
     };
 
     useEffect(() => {
-        // Load checked tokens from local storage on component mount
-        // const storedTokens1 = localStorage.setItem("scwTokenAddressesData", JSON.stringify([]));
-        // const storedTokens2 = localStorage.setItem("eoaTokenAddressesData", JSON.stringify([]));
-
-
         // Load checked tokens from local storage if any, otherwise set [] on component mount 
         const storedTokens1 = JSON.parse(localStorage.getItem("scwTokenAddressesData") || "[]");
         const storedTokens2 = JSON.parse(localStorage.getItem("eoaTokenAddressesData") || "[]");
@@ -84,7 +81,8 @@ const MigrateAssetContainer: React.FC<any> = () => {
 
     const checkTokensData = (tokenAddress: any) => {
         if (isSCW) {
-            setSelectAll(false);
+            setIsAllErc20Selected(false);
+            setIsAllDefiSelected(false);
             let updatedCheckedTokens: any = [...scwTokenAddressesData];
 
             if (updatedCheckedTokens.includes(tokenAddress)) {
@@ -96,7 +94,8 @@ const MigrateAssetContainer: React.FC<any> = () => {
             setScwTokenAddressesData(updatedCheckedTokens);
             localStorage.setItem("scwTokenAddressesData", JSON.stringify(updatedCheckedTokens));
         } else {
-            setSelectAll(false);
+            setIsAllErc20Selected(false);
+            setIsAllDefiSelected(false);
             let updatedCheckedTokens: any = [...eoaTokenAddressesData];
 
             if (updatedCheckedTokens.includes(tokenAddress)) {
@@ -110,43 +109,57 @@ const MigrateAssetContainer: React.FC<any> = () => {
         }
     };
 
-    const selectAllTokens = (userTokensData: any) => {
-        if (!isSelecteAll) {
-            console.log("userTokensData: ", userTokensData)
+    const selectAllTokens = (tokenType: string, userTokensData: any) => {
+        if (tokenType === 'erc20Token' && !isAllErc20Selected) {
             const allTokenAddresses = userTokensData.map(token => token.tokenAddress);
             if (isSCW) {
                 setScwTokenAddressesData(allTokenAddresses);
                 localStorage.setItem("scwTokenAddressesData", JSON.stringify(allTokenAddresses));
-                setSelectAll(true);
+                setIsAllErc20Selected(true);
             } else {
                 setEoaTokenAddressesData(allTokenAddresses);
                 localStorage.setItem("eoaTokenAddressesData", JSON.stringify(allTokenAddresses));
-                setSelectAll(true);
+                setIsAllErc20Selected(true);
             }
-        } else {
+        }
+        if (tokenType === 'erc20Token' && isAllErc20Selected) {
             if (isSCW) {
                 setScwTokenAddressesData([]);
                 localStorage.setItem("scwTokenAddressesData", JSON.stringify([]));
-                setSelectAll(false);
+                setIsAllErc20Selected(false);
+
             } else {
                 setEoaTokenAddressesData([]);
                 localStorage.setItem("eoaTokenAddressesData", JSON.stringify([]));
-                setSelectAll(false);
+                setIsAllErc20Selected(false);
             }
         }
 
-    };
-
-    const deselectAllTokens = () => {
-        if (isSCW) {
-            setScwTokenAddressesData([]);
-            localStorage.setItem("scwTokenAddressesData", JSON.stringify([]));
-            setSelectAll(false);
-        } else {
-            setEoaTokenAddressesData([]);
-            localStorage.setItem("eoaTokenAddressesData", JSON.stringify([]));
-            setSelectAll(false);
+        if (tokenType === 'defiToken' && !isAllDefiSelected) {
+            const allTokenAddresses = userTokensData.map(token => token.tokenAddress);
+            if (isSCW) {
+                setScwTokenAddressesData(allTokenAddresses);
+                localStorage.setItem("scwTokenAddressesData", JSON.stringify(allTokenAddresses));
+                setIsAllDefiSelected(true)
+            } else {
+                setEoaTokenAddressesData(allTokenAddresses);
+                localStorage.setItem("eoaTokenAddressesData", JSON.stringify(allTokenAddresses));
+                setIsAllDefiSelected(true)
+            }
         }
+        if (tokenType === 'defiToken' && isAllDefiSelected) {
+            if (isSCW) {
+                setScwTokenAddressesData([]);
+                localStorage.setItem("scwTokenAddressesData", JSON.stringify([]));
+                setIsAllDefiSelected(false)
+
+            } else {
+                setEoaTokenAddressesData([]);
+                localStorage.setItem("eoaTokenAddressesData", JSON.stringify([]));
+                setIsAllDefiSelected(false)
+            }
+        }
+
     };
 
     const sendAllTokens = async (isSCW, _tokenAddresses) => {
@@ -244,8 +257,8 @@ const MigrateAssetContainer: React.FC<any> = () => {
             checkTokensData={checkTokensData}
             handleExecuteMgrateAsset={handleExecuteMgrateAsset}
             selectAllTokens={selectAllTokens}
-            deselectAllTokens={deselectAllTokens}
-            isSelecteAll={isSelecteAll}
+            isAllErc20Selected={isAllErc20Selected}
+            isAllDefiSelected={isAllDefiSelected}
         />
     );
 };
