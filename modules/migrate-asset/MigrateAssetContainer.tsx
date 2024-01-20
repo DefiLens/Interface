@@ -35,7 +35,7 @@ const MigrateAssetContainer: React.FC<any> = () => {
         const fetch = async (address: string, chainId: string) => {
             setIsAllErc20Selected(false)
             setIsAllDefiSelected(false)
-            await fetchPortfolio({ address: '0xb50685c25485CA8C520F5286Bbbf1d3F216D6989', chainId });
+            await fetchPortfolio({ address, chainId });
         };
 
         if (isSCW && smartAccountAddress) {
