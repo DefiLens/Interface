@@ -226,6 +226,14 @@ const MigrateAsset: React.FC<any> = ({
                                     </div>
                                 ))}
                     </div>
+
+                    <div className="w-full flex justify-center items-center gap-3">
+                        <Button
+                            handleClick={() => handleExecuteMgrateAsset()}
+                            customStyle="!w-auto"
+                            innerText="Execute Migrate Assets"
+                        />
+                    </div>
                 </>
             )}
 
@@ -327,14 +335,6 @@ const MigrateAsset: React.FC<any> = ({
                             ))}
                     </div>
                 ))}
-
-            <div className="w-full flex justify-center items-center gap-3">
-                <Button
-                    handleClick={() => handleExecuteMgrateAsset()}
-                    customStyle="!w-auto"
-                    innerText="Execute Migrate Assets"
-                />
-            </div>
         </div>
     );
 };
