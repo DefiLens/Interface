@@ -87,12 +87,12 @@ export function usePortfolio() {
     const { selectedNetwork }: iGlobal = useGlobalStore((state) => state);
 
     const chainIds = [137, 10, 8453];
-    async function fetchPortfolio({ address }: any) {
+    async function fetchPortfolio({ address, chainId }: any) {
         try {
             let networth: any = bg(0)
             setIsUsersTokenLoading(true);
-
-            const userTokensUrl = `https://api.enso.finance/api/v1/wallet/balances?chainId=${selectedNetwork.chainId}&eoaAddress=${address}&useEoa=true`;
+            
+            const userTokensUrl = `https://api.enso.finance/api/v1/wallet/balances?chainId=${chainId}&eoaAddress=${address}&useEoa=true`;
             // const userTokensUrlOptimism = `https://api.enso.finance/api/v1/wallet/balances?chainId=${chainIds[1]}&eoaAddress=${address}&useEoa=true`;
             // const userTokensUrlBase = `https://api.enso.finance/api/v1/wallet/balances?chainId=${chainIds[2]}&eoaAddress=${address}&useEoa=true`;
 

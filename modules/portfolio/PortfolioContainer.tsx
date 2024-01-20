@@ -10,26 +10,35 @@ const PortfolioContainer: React.FC<any> = () => {
     const { mutateAsync: fetchPortfolio } = usePortfolio();
     const address = useAddress();
 
-    const { smartAccountAddress }: iGlobal = useGlobalStore((state) => state);
+    const { 
+        smartAccountAddress,
+        selectedNetwork
+    }: iGlobal = useGlobalStore((state) => state);
 
     const { userTokensData, setUserTokensData, isUsersTokenLoading, isSCW }: iPortfolio = usePortfolioStore(
         (state) => state
     );
 
     const handleFetchPorfolioData = () => {
-        const fetch = async (address: string) => {
-            await fetchPortfolio({ address : "0xb50685c25485CA8C520F5286Bbbf1d3F216D6989" });
+        const fetch = async (address: string, chainId: string) => {
+            await fetchPortfolio({ address, chainId });
         };
 
-        if (smartAccountAddress) {
+        if (isSCW && smartAccountAddress) {
             setUserTokensData(null);
-            fetch(isSCW ? smartAccountAddress : address);
+            // Fetch SCW Portfolio Data
+            fetch(smartAccountAddress, selectedNetwork.chainId);
+        }
+        if (!isSCW && address) {
+            setUserTokensData(null);
+            // Fetch EOA Portfolio Data
+            fetch(address, selectedNetwork.chainId);
         }
     };
 
     useEffect(() => {
-        handleFetchPorfolioData();
-    }, [smartAccountAddress, isSCW]);
+        if (selectedNetwork.chainId) handleFetchPorfolioData();
+    }, [selectedNetwork, isSCW]);
 
     const separatedArray = (userTokensData || [])
         .filter((token: any) => token.type === "defiToken")

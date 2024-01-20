@@ -21,27 +21,38 @@ const MigrateAssetContainer: React.FC<any> = () => {
     const [eoaTokenAddressesData, setEoaTokenAddressesData] = useState<any>([]);
     const [isSelecteAll, setSelectAll] = useState<any>(false);
 
-    const { smartAccountAddress, selectedNetwork }: iGlobal = useGlobalStore((state) => state);
+    const {
+        smartAccountAddress,
+        selectedNetwork
+    }: iGlobal = useGlobalStore((state) => state);
 
     const { userTokensData, setUserTokensData, isUsersTokenLoading, isSCW }: iPortfolio = usePortfolioStore(
         (state) => state
     );
 
     const handleFetchPorfolioData = () => {
-        const fetch = async (address: string) => {
+        const fetch = async (address: string, chainId: string) => {
             setSelectAll(false)
-            await fetchPortfolio({ address: "0xb50685c25485CA8C520F5286Bbbf1d3F216D6989" });
+            await fetchPortfolio({ address, chainId });
         };
 
-        if (smartAccountAddress) {
+        if (isSCW && smartAccountAddress) {
             setUserTokensData(null);
-            fetch(isSCW ? smartAccountAddress : address);
+            // Fetch SCW Portfolio Data
+            fetch(smartAccountAddress, selectedNetwork.chainId);
+        }
+        if (!isSCW && address) {
+            setUserTokensData(null);
+            // Fetch EOA Portfolio Data
+            fetch(address, selectedNetwork.chainId);
         }
     };
 
     useEffect(() => {
-        handleFetchPorfolioData();
-        isTokenAddresses();
+        if (selectedNetwork.chainId) {
+            handleFetchPorfolioData();
+            isTokenAddresses();
+        }
     }, [selectedNetwork, isSCW]);
 
     const isTokenAddresses = async () => {
