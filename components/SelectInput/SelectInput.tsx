@@ -18,7 +18,7 @@ const SelectInput = ({
     setSelectedOption,
 }: tSelectInput) => {
     return (
-        <div className="w-full !bg-backgound-100 text-font-200 rounded-lg">
+        <div className="w-full lg:w-[50%] !bg-backgound-100 text-font-200 rounded-lg">
             <div className="w-full flex justify-start items-center gap-2 !bg-backgound-300 text-font-200 py-3 px-5 border-2 border-backgound-600 rounded-lg shadow">
                 <input
                     type="text"

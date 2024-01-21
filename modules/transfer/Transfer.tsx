@@ -51,9 +51,9 @@ const Transfer: React.FC<any> = ({
     const chain = useChain();
 
     return (
-        <div className="w-full h-full overflow-scroll bg-backgound-100 flex flex-col gap-5 shadow-xl shadow-backgound-800 cursor-pointer px-8 py-2">
+        <div className="w-full h-full overflow-scroll bg-backgound-100 flex flex-col items-center gap-5 cursor-pointer px-8 py-2">
             {!smartAccount && (
-                <div className="flex justify-center items-center border-2 border-backgound-800 rounded-lg cursor-pointer">
+                <div className="w-full lg:w-[50%] flex justify-center items-center border-2 border-backgound-800 rounded-lg cursor-pointer my-10">
                     <h3 className="font-semibold text-lg md:text-2xl text-font-200 py-4 bg-transparent">
                         Login First!
                     </h3>
@@ -61,8 +61,8 @@ const Transfer: React.FC<any> = ({
             )}
             {smartAccount && (
                 <div className="w-full flex flex-col justify-center items-center gap-3">
-                    <h3 className="font-semibold text-lg md:text-2xl text-font-100 pb-5">Transfer Fund</h3>
-                    <div className="w-full flex flex-col sm:flex-row justify-center items-center gap-5 md:gap-10 bg-backgound-200 text-font-100 p-5 rounded-md">
+                    <h3 className="font-semibold text-lg md:text-2xl text-font-100 p-5 pt-10">Transfer Fund</h3>
+                    <div className="w-full lg:w-[50%] flex flex-col sm:flex-row justify-center items-center gap-5 md:gap-10 bg-backgound-200 text-font-100 p-5 rounded-md">
                         <div className="w-auto md:w-40 flex justify-center items-baseline gap-3">
                             <span className="font-bold text-xs text-font-300">From</span>
                             <span className="font-bold text-xl text-font-100">{isSCW ? "SCW" : "EOA"}</span>
@@ -169,7 +169,7 @@ const Transfer: React.FC<any> = ({
                         setSelectedOption={setSelectedToken}
                     />
 
-                    <div className="w-full flex flex-col justify-center items-center gap-3 my-1">
+                    <div className="w-full lg:w-[50%] flex flex-col justify-center items-center gap-3 my-1">
                         <div className="w-full">
                             <div className="flex justify-end items-center gap-2 text-font-100 font-semibold text-xs md:text-sm p-1">
                                 {isSCW ? (
