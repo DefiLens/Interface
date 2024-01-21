@@ -108,7 +108,8 @@ const TradeContainer: React.FC<any> = () => {
         setIndividualBatch,
         setShowExecuteBatchModel,
         setHasExecutionError,
-        totalfees, setTotalFees,
+        totalfees,
+        setTotalFees,
         setShowExecuteMethodModel
     }: iTrading = useTradingStore((state) => state);
 

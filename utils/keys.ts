@@ -30,3 +30,20 @@ export const STACKUP_POLYGON_MAINNET_RPC_NODE_URL: any = process.env.NEXT_PUBLIC
 export const BICONOMY_GAS_PRICE_URL = "https://sdk-relayer.prod.biconomy.io/api/v1/relay/feeOptions?chainId=";
 
 export const IPFS_FIX_URL = "https://cloudflare-ipfs.com/ipfs/";
+
+const getBaseURL = (NODE_ENV: string | undefined) => {
+    switch (NODE_ENV) {
+      case 'production':
+        return 'https://api.defilens.tech/';
+  
+      case 'staging':
+        return 'https://api.defilens.tech/';
+  
+      case 'dev':
+        return 'http://localhost:8080/';
+  
+      default: return 'http://localhost:8080/';
+    }
+  };
+  
+export const BASE_URL = getBaseURL(process.env.NEXT_PUBLIC_NODE_ENV);

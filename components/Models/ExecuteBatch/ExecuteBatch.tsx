@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-
 import Image from "next/image";
 import { BsArrowRight } from "react-icons/bs";
 
+import axiosInstance from "../../../axiosInstance/axiosInstance";
 import { tExecuteBatch } from "./types";
 import { buildTxHash } from "../../../utils/helper";
 import { closeNarrow } from "../../../assets/images";
@@ -44,6 +44,39 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
     useEffect(() => {
         handleIsCrossChainTxs();
     }, [individualBatch]);
+
+    const handleTxnHistory = async (arg: any) => {
+        try {
+          await axiosInstance
+            .post('txn-history', arg)
+            .then(async (res) => {
+              console.log("Thanks for Working with us")
+
+            })
+            .catch((err) => {
+                console.log("Error! While storing history", err)
+            });
+        } catch (error: any) {
+          console.log("handleTxnHistory: error:", error)
+        }
+    };
+
+    useEffect(() => {
+        if (individualBatch.length > 0 && txhash) {
+            const txHistory = individualBatch.slice(0, -1).map((item : any) => ({
+                amountIn: item.data.amountIn,
+                fromNetwork: item.data.fromNetwork,
+                toNetwork: item.data.toNetwork,
+                fromProtocol: item.data.fromProtocol,
+                toProtocol: item.data.toProtocol,
+                fromToken: item.data.fromToken,
+                toToken: item.data.toToken,
+                txHash: txhash,
+            }));
+
+            handleTxnHistory(txHistory);
+        }
+    }, [txhash]);
 
     return (
         <div className="fixed w-full h-full flex justify-center items-center top-0 right-0 left-0 bottom-0 z-50 text-black backdrop-brightness-50 p-5 md:p-10">
