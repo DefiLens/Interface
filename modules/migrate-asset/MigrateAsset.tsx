@@ -11,7 +11,6 @@ import { iPortfolio, usePortfolioStore } from "../../store/Portfolio";
 import { checkBox, defaultBlue, uncheckBox } from "../../assets/images";
 import Button from "../../components/Button/Button";
 import { BigNumber as bg } from "bignumber.js";
-import { useEffect, useState } from "react";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import { useAddress } from "@thirdweb-dev/react";
 bg.config({ DECIMAL_PLACES: 5 });
@@ -20,13 +19,14 @@ const MigrateAsset: React.FC<any> = ({
     isUsersTokenLoading,
     smartAccountAddress,
     userTokensData,
+    filteredDefiTokens,
     handleExecuteMgrateAsset,
     scwTokenAddressesData,
     eoaTokenAddressesData,
     checkTokensData,
-    isSelecteAll,
+    isAllErc20Selected,
+    isAllDefiSelected,
     selectAllTokens,
-    deselectAllTokens,
 }: tMigrateAsset) => {
     const address = useAddress();
     const { isSCW, setIsSCW }: iPortfolio = usePortfolioStore((state) => state);
@@ -102,10 +102,15 @@ const MigrateAsset: React.FC<any> = ({
             {userTokensData?.length > 0 && (
                 <>
                     <div className="w-full bg-backgound-500 flex flex-col justify-start items-start gap-3 text-primary-100 border border-backgound-600 shadow shadow-backgound-600 rounded-lg p-8">
-                        <div className="w-full text-lg md:text-xl font-extrabold text-primary-100">
+                        <div className="w-full flex justify-between items-center gap-3 text-lg md:text-xl font-extrabold text-primary-100">
                             <u>
                                 {isSCW ? "Smart Account" : "EOA"} Wallet: {isSCW ? smartAccountAddress : address}
                             </u>
+                            <Button
+                                handleClick={() => handleExecuteMgrateAsset()}
+                                customStyle="!w-64 !py-1.5"
+                                innerText="Execute Migrate Assets"
+                            />
                         </div>
                         <div className="w-full flex justify-end items-center gap-2 text-lg md:text-xl font-extrabold text-primary-100 py-1 my-2 border-b border-b-backgound-900">
                             <div className="w-14 text-start" />
@@ -116,25 +121,22 @@ const MigrateAsset: React.FC<any> = ({
                             <div className="w-[25%] text-end">Balance</div>
                         </div>
                         <div className="w-full flex justify-between items-center gap-3">
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-5">
                                 <Image
                                     alt="checkbox"
-                                    src={isSelecteAll ? checkBox : uncheckBox}
+                                    src={isAllErc20Selected ? checkBox : uncheckBox}
                                     onClick={() =>
                                         selectAllTokens(
+                                            "erc20Token",
                                             userTokensData.filter((token: any) => token.type === "erc20Token")
                                         )
                                     }
                                     className="w-5 h-5 cursor-pointer"
                                 />
-                                <p className="text-start">Select All</p>
+                                <p className="text-start text-md font-semibold">
+                                    Select All ERC20 Tokens
+                                </p>
                             </div>
-                            <Button
-                                handleClick={() => handleExecuteMgrateAsset()}
-                                customStyle="!w-auto"
-                                innerText="Execute Migrate Assets"
-                                class="top-0 right-0"
-                            />
                         </div>
 
                         {userTokensData.length > 0 &&
@@ -234,6 +236,105 @@ const MigrateAsset: React.FC<any> = ({
                     </div>
                 </>
             )}
+
+            {filteredDefiTokens.length > 0 &&
+                filteredDefiTokens.map((subArray: any) => (
+                    <div
+                        key={subArray[0]?.protocol?.name}
+                        className="w-full bg-backgound-500 flex flex-col justify-start items-start gap-3 text-primary-100 border border-backgound-600 shadow shadow-backgound-600 rounded-lg p-8"
+                    >
+                        <div className="w-full text-lg md:text-xl font-extrabold text-primary-100">
+                            {startCase(subArray[0]?.protocol?.name)}
+                        </div>
+                        <div className="w-full flex justify-end items-center gap-2 text-lg md:text-xl font-extrabold text-primary-100 py-1 my-2 border-b border-b-backgound-900">
+                            <div className="w-14 text-start" />
+                            <div className="w-full text-start">Asset</div>
+                            <div className="w-[25%] text-end">APY</div>
+                            <div className="w-[30%] text-end">Category</div>
+                            <div className="w-[25%] text-end">Price</div>
+                            <div className="w-[25%] text-end">Balance</div>
+                        </div>
+                        <div className="w-full flex justify-between items-center gap-3">
+                            <div className="flex items-center gap-5">
+                                <Image
+                                    alt="checkbox"
+                                    src={isAllDefiSelected ? checkBox : uncheckBox}
+                                    onClick={() =>
+                                        selectAllTokens(
+                                            "defiToken",
+                                            userTokensData.filter((token: any) => token.type === "defiToken")
+                                        )
+                                    }
+                                    className="w-5 h-5 cursor-pointer"
+                                />
+                                <p className="text-start text-md font-semibold">
+                                    Select All Defi Tokens
+                                </p>
+                            </div>
+                        </div>
+                        {subArray.length > 0 &&
+                            subArray.map((item: any) => (
+                                <div
+                                    key={item.name}
+                                    className="w-full flex justify-end items-center gap-2 text-sm md:text-base font-medium text-primary-100 py-1"
+                                >
+                                    <div className="w-14 text-start">
+                                            {isSCW ? (
+                                                <Image
+                                                    alt="checkbox"
+                                                    src={
+                                                        scwTokenAddressesData &&
+                                                        scwTokenAddressesData.includes(item.tokenAddress)
+                                                            ? checkBox
+                                                            : uncheckBox
+                                                    }
+                                                    onClick={() => checkTokensData(item.tokenAddress)}
+                                                    className="w-5 h-5 cursor-pointer"
+                                                />
+                                            ) : (
+                                                <Image
+                                                    alt="checkbox"
+                                                    src={
+                                                        eoaTokenAddressesData &&
+                                                        eoaTokenAddressesData.includes(item.tokenAddress)
+                                                            ? checkBox
+                                                            : uncheckBox
+                                                    }
+                                                    onClick={() => checkTokensData(item.tokenAddress)}
+                                                    className="w-5 h-5 cursor-pointer"
+                                                />
+                                            )}
+                                        </div>
+                                    <div className="w-full flex justify-start items-center gap-3 text-start">
+                                        <Image
+                                            height={100}
+                                            width={100}
+                                            src={item?.protocol?.logo ? item?.protocol?.logo : defaultBlue}
+                                            alt=""
+                                            className="h-10 w-10 rounded-full cursor-pointer"
+                                        />
+                                        <div className="flex flex-col justify-start items-start gap-1">
+                                            <div>{item.name}</div>
+                                            <div className="flex justify-start items-center gap-1 text-xs text-font-500">
+                                                <Image
+                                                    src={ChainIdDetails[item?.protocol?.chainIds?.[0]].networkLogo}
+                                                    alt=""
+                                                    className="h-4 w-4 rounded-full cursor-pointer"
+                                                />
+                                                {startCase(ChainIdDetails[item?.protocol?.chainIds?.[0]].networkName)}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="w-[25%] text-end">{item?.apy !== 0 ? item?.apy : "-"}</div>
+                                    <div className="w-[30%] text-end">{item?.protocol?.category}</div>
+                                    <div className="w-[25%] text-end">{item.price} </div>
+                                    <div className="w-[25%] text-end">
+                                        {decreasePowerByDecimals(bg(item.amount).toString(), item.decimals)} {item.name}
+                                    </div>
+                                </div>
+                            ))}
+                    </div>
+                ))}
         </div>
     );
 };

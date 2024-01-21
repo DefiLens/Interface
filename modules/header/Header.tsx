@@ -1,4 +1,4 @@
-import { useContext, useRef } from "react";
+import { useRef } from "react";
 
 import Link from "next/link";
 import Image from "next/image";
@@ -77,7 +77,46 @@ const Header: React.FC<any> = ({ switchOnSpecificChain }: tHeader) => {
                         ))
                     }
                 </li>
-                <li className="w-full xl:w-1/3 flex flex-wrap justify-end items-center gap-3">
+                <li className="w-full h-full xl:w-1/3 flex flex-wrap justify-end items-center gap-3 overflow-auto">
+                    <div className="flex flex-wrap justify-start items-center gap-3 text-base">
+                        <div className="relative flex justify-center items-center gap-1 bg-backgound-600 rounded-full font-medium transition duration-300 overflow-hidden">
+                            <span className="flex justify-center items-center gap-2">
+                                <input
+                                    type="checkbox"
+                                    id="transfer-fund-toggle"
+                                    checked={showTransferFundToggle}
+                                    className="absolute hidden"
+                                    onChange={(e: any) => setShowTransferFundToggle(e.target.checked)}
+                                />
+                                <label
+                                    htmlFor="transfer-fund-toggle"
+                                    className="transfer-fund-icon flex justify-center items-center gap-1 bg-backgound-600 hover:bg-backgound-700 active:bg-backgound-600 px-3 cursor-pointer"
+                                >
+                                    <span className="font-bold text-font-100 pl-2">
+                                        Transfer Fund
+                                    </span>
+                                    <Image
+                                        src={wallet}
+                                        alt="close"
+                                        className="h-10 w-10 p-1.5 rounded-lg"
+                                    />
+                                </label>
+                            </span>
+                        </div>
+
+                        <div
+                           
+                            ref={transferModuleRef}
+                            className={`absolute w-full h-[calc(100%-69px)] top-[69px] z-40 ${
+                                showTransferFundToggle
+                                    ? "!right-0 !transition !duration-1000 !ease-out"
+                                    : "!hidden !transition !duration-700 !ease-out"
+                            } `}
+                        >
+                            <TransferContainer />
+                        </div>
+                    </div>
+
                     {connected && !smartAccount && !loading && (
                         <button
                             className="bg-button-100 py-2 px-5 rounded-lg text-font-100 font-medium border-b-4 transition duration-300 border-button-300 hover:border-button-400 flex justify-center items-center gap-2"
@@ -204,37 +243,6 @@ const Header: React.FC<any> = ({ switchOnSpecificChain }: tHeader) => {
                     )}
 
                     <SelectNetwork switchOnSpecificChain={switchOnSpecificChain} />
-
-                    <div className="flex flex-wrap justify-start items-center gap-3 text-base">
-                        <div className="relative flex justify-center items-center gap-5 bg-font-100 rounded-full font-medium  transition duration-300 overflow-hidden">
-                            <span className="flex justify-center items-center gap-2">
-                                <input
-                                    type="checkbox"
-                                    id="transfer-fund-toggle"
-                                    checked={showTransferFundToggle}
-                                    className="absolute hidden"
-                                    onChange={(e: any) => setShowTransferFundToggle(e.target.checked)}
-                                />
-                                <label htmlFor="transfer-fund-toggle" className="transfer-fund-icon">
-                                    <Image
-                                        src={wallet}
-                                        alt="close"
-                                        className="h-10 w-10 p-2 bg-font-100 hover:bg-font-200 active:font-400 rounded-lg cursor-pointer"
-                                    />
-                                </label>
-                            </span>
-                        </div>
-                        <div
-                            ref={transferModuleRef}
-                            className={`absolute w-full lg:w-[50%] h-[calc(100%-69px)] top-[69px] z-40 shadow-xl shadow-gray-900 ${
-                                showTransferFundToggle
-                                    ? "!right-0 !translate-x-0 !transition !duration-1000 !ease-out"
-                                    : "!-right-full lg:!-right-[50%] !translate-x-96 !transition !duration-700 !ease-out"
-                            } `}
-                        >
-                            <TransferContainer />
-                        </div>
-                    </div>
                 </li>
             </ul>
         </div>
