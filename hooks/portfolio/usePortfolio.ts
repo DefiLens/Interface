@@ -100,18 +100,18 @@ export function usePortfolio() {
             const defiTokensUrl = "https://enso-scrape.s3.us-east-2.amazonaws.com/output/backend/defiTokens.json";
             console.log("userTokensUrl: ", userTokensUrl);
 
-            const userTokens = await fetchData<UserToken[]>(userTokensUrl);
-            // const userTokensOptimism = await fetchData<UserToken[]>(userTokensUrlOptimism);
-            // const userTokensBase = await fetchData<UserToken[]>(userTokensUrlBase);
+            // const userTokens = await fetchData<UserToken[]>(userTokensUrl);
+            // // const userTokensOptimism = await fetchData<UserToken[]>(userTokensUrlOptimism);
+            // // const userTokensBase = await fetchData<UserToken[]>(userTokensUrlBase);
 
-            const baseTokens = await fetchData<ERC20Token[]>(baseTokensUrl);
-            const defiTokens = await fetchData<DefiToken[]>(defiTokensUrl);
+            // const baseTokens = await fetchData<ERC20Token[]>(baseTokensUrl);
+            // const defiTokens = await fetchData<DefiToken[]>(defiTokensUrl);
 
-            // const [userTokens, baseTokens, defiTokens] = await Promise.all([
-            //     fetchData<UserToken[]>(userTokensUrl),
-            //     fetchData<ERC20Token[]>(baseTokensUrl),
-            //     fetchData<DefiToken[]>(defiTokensUrl)
-            // ]);
+            const [userTokens, baseTokens, defiTokens] = await Promise.all([
+                fetchData<UserToken[]>(userTokensUrl),
+                fetchData<ERC20Token[]>(baseTokensUrl),
+                fetchData<DefiToken[]>(defiTokensUrl)
+            ]);
 
             console.log("userTokens: ", userTokens);
             // console.log('userTokensUrlOptimism: ', userTokensOptimism)
