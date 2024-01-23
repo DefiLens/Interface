@@ -91,7 +91,7 @@ export function usePortfolio() {
         try {
             let networth: any = bg(0)
             setIsUsersTokenLoading(true);
-            
+
             const userTokensUrl = `https://api.enso.finance/api/v1/wallet/balances?chainId=${chainId}&eoaAddress=${address}&useEoa=true`;
             // const userTokensUrlOptimism = `https://api.enso.finance/api/v1/wallet/balances?chainId=${chainIds[1]}&eoaAddress=${address}&useEoa=true`;
             // const userTokensUrlBase = `https://api.enso.finance/api/v1/wallet/balances?chainId=${chainIds[2]}&eoaAddress=${address}&useEoa=true`;
@@ -106,6 +106,12 @@ export function usePortfolio() {
 
             const baseTokens = await fetchData<ERC20Token[]>(baseTokensUrl);
             const defiTokens = await fetchData<DefiToken[]>(defiTokensUrl);
+
+            // const [userTokens, baseTokens, defiTokens] = await Promise.all([
+            //     fetchData<UserToken[]>(userTokensUrl),
+            //     fetchData<ERC20Token[]>(baseTokensUrl),
+            //     fetchData<DefiToken[]>(defiTokensUrl)
+            // ]);
 
             console.log("userTokens: ", userTokens);
             // console.log('userTokensUrlOptimism: ', userTokensOptimism)
