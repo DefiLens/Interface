@@ -410,6 +410,7 @@ export const abiFetcher = {
         "1": {
             depositAbi: "function supply(address asset, uint256 amount)",
             withdrawAbi: "function withdraw(address asset,uint256 amount)",
+            borrowAbi: "function borrow(address asset,uint256 amount,uint256 interestRateMode,uint16 referralCode,address onBehalfOf)",
             depositMethodName: "supply",
             withdrawMethodName: "withdraw",
             depositParamDetailsMethod: "compound_supply",
@@ -587,6 +588,12 @@ export const nativeTokenNum = {
         sobDAI: "5",
         sobWETH: "2",
         sobcbETH: "3",
+
+        // borrow
+        cbETH: "3",
+        USDbC: "1",
+        USDC: "4",
+        wstETH: "6"
     },
 };
 

@@ -198,7 +198,7 @@ const Trade: React.FC<any> = ({
                                                                                             key={tokenIndex}
                                                                                             onClick={() =>
                                                                                                 onChangeFromToken(
-                                                                                                    token.name
+                                                                                                    token.name, token?.type != undefined ? token.type : ""
                                                                                                 )
                                                                                             }
                                                                                             className="w-full flex justify-start items-center gap-3 hover:bg-backgound-200 active:bg-backgound-100 py-2 px-3 rounded-lg cursor-pointer my-2"
@@ -208,11 +208,12 @@ const Trade: React.FC<any> = ({
                                                                                                 alt=""
                                                                                                 className="h-7 w-7 bg-font-200 rounded-full cursor-pointer"
                                                                                             /> */}
-                                                                                            {token.name}
+                                                                                            {token.name} ({token?.type != undefined ? token.type : "Lending"})
                                                                                         </div>
                                                                                     ) : null;
                                                                                 }
                                                                             )}
+
                                                                     </div>
                                                                 )}
 
@@ -243,7 +244,7 @@ const Trade: React.FC<any> = ({
                                                                                         key={tokenIndex}
                                                                                         onClick={() =>
                                                                                             onChangeFromToken(
-                                                                                                token.symbol
+                                                                                                token.symbol, token?.type != undefined ? token.type : ""
                                                                                             )
                                                                                         }
                                                                                         className="w-full flex justify-start items-center gap-3 text-font-300 hover:text-font-100 hover:bg-backgound-200 active:bg-backgound-100 py-2 px-3 rounded-lg cursor-pointer my-2"
@@ -343,7 +344,7 @@ const Trade: React.FC<any> = ({
                                                                                             key={tokenIndex}
                                                                                             onClick={() =>
                                                                                                 onChangeToToken(
-                                                                                                    token.name
+                                                                                                    token.name, token?.type != undefined ? token.type : ""
                                                                                                 )
                                                                                             }
                                                                                             className="w-full flex justify-start items-center gap-3 hover:bg-backgound-200 active:bg-backgound-100 py-2 px-3 rounded-lg cursor-pointer my-2"

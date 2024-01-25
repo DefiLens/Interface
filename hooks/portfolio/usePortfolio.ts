@@ -4,6 +4,10 @@ import { decreasePowerByDecimals, fetchData } from "../../utils/helper";
 import { iPortfolio, usePortfolioStore } from "../../store/Portfolio";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import { BigNumber as bg } from "bignumber.js";
+import Moralis from 'moralis';
+import { MORALIS_KEY } from "../../utils/keys";
+import { BigNumber } from "ethers";
+
 bg.config({ DECIMAL_PLACES: 5 });
 export type UserToken = {
     token: string;
@@ -91,6 +95,20 @@ export function usePortfolio() {
         try {
             let networth: any = bg(0)
             setIsUsersTokenLoading(true);
+            // alert("Hello")
+
+
+            // await Moralis.start({
+            //     apiKey: MORALIS_KEY
+            // });
+
+            // const response = await Moralis.EvmApi.token.getWalletTokenBalances({
+            //     "chain": "0x1",
+            //     "address": address
+            // });
+
+            // console.log("response- ", response);
+
 
             const userTokensUrl = `https://api.enso.finance/api/v1/wallet/balances?chainId=${chainId}&eoaAddress=${address}&useEoa=true`;
             // const userTokensUrlOptimism = `https://api.enso.finance/api/v1/wallet/balances?chainId=${chainIds[1]}&eoaAddress=${address}&useEoa=true`;

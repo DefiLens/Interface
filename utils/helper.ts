@@ -11,6 +11,7 @@ import { implementation_slot } from "./data/constants";
 import IStarGateRouter from "../abis/IStarGateRouter.json";
 import IStarGateFactory from "../abis/IStarGateFactory.json";
 import IStarGateFeeLibrary from "../abis/IStarGateFeeLibrary.json";
+import Ichainlink from "../abis/chainlink.json";
 import { getContractInstance, getProvider } from "./web3Libs/ethers";
 import {
     ARBITRUM_ETHERSCAN_API_KEY,
@@ -341,6 +342,47 @@ export async function fetchData<T>(url: string): Promise<T> {
     try {
         const response = await axios.get<T>(url);
         return response.data;
+    } catch (error) {
+        throw new Error(`Error fetching data: ${error}`);
+    }
+}
+
+export async function fetchPrice(token: string, provider: any) {
+    try {
+        const priceFeeds = {
+            "cbETH" : {
+                feed: "0xd7818272B9e248357d13057AAb0B417aF31E817d",
+                decimal: 8
+            },
+            "WETH": {
+                feed: "0x71041dddad3595F9CEd3DcCFBe3D1F4b0a16Bb70",
+                decimal: 8
+            },
+            "USDC": {
+                feed: "0x7e860098F58bBFC8648a4311b374B1D669a2bc6B",
+                decimal: 8
+            },
+            "USDbC": {
+                feed: "0x7e860098F58bBFC8648a4311b374B1D669a2bc6B",
+                decimal: 8
+            },
+            "wstETH" : {
+                feed: "0xa669E5272E60f78299F4824495cE01a3923f4380",
+                decimal: 8
+            }
+        }
+
+        const priceFeed = await getContractInstance(priceFeeds[token].feed, Ichainlink, provider)
+        let roundData = await priceFeed?.latestRoundData()
+        console.log('roundData: ', roundData)
+
+        if (token == "wstETH") {
+            const priceFeed = await getContractInstance(priceFeeds["WETH"].feed, Ichainlink, provider)
+            const roundData = await priceFeed?.latestRoundData()
+            console.log('roundData-new: ', roundData)
+        }
+
+        return roundData;
     } catch (error) {
         throw new Error(`Error fetching data: ${error}`);
     }

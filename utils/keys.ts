@@ -31,19 +31,21 @@ export const BICONOMY_GAS_PRICE_URL = "https://sdk-relayer.prod.biconomy.io/api/
 
 export const IPFS_FIX_URL = "https://cloudflare-ipfs.com/ipfs/";
 
+export const MORALIS_KEY = process.env.NEXT_PUBLIC_MORALIS_KEY
+
 const getBaseURL = (NODE_ENV: string | undefined) => {
     switch (NODE_ENV) {
       case 'production':
         return 'https://defilens-data.onrender.com/';
-  
+
       case 'staging':
         return 'https://defilens-data.onrender.com/';
-  
+
       case 'dev':
         return 'http://localhost:8080/';
-  
+
       default: return 'http://localhost:8080/';
     }
   };
-  
+
 export const BASE_URL = getBaseURL(process.env.NEXT_PUBLIC_NODE_ENV);

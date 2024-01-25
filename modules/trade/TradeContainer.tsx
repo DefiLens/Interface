@@ -21,7 +21,7 @@ import Trade from "./Trade";
 import IERC20 from "../../abis/IERC20.json";
 import { setSafeState } from "../../utils/helper";
 import { ChainIdDetails } from "../../utils/data/network";
-import { protocolNames } from "../../utils/data/protocols";
+import { nativeTokenFetcher, nativeTokenNum, protocolNames } from "../../utils/data/protocols";
 import UNISWAP_TOKENS from "../../abis/tokens/Uniswap.json";
 import { useRefinance } from "../../hooks/Batching/useRefinance";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
@@ -35,6 +35,7 @@ import { useBiconomyGasLessProvider } from "../../hooks/aaProvider/useBiconomyGa
 import { useBiconomySessionKeyProvider } from "../../hooks/aaProvider/useBiconomySessionKeyProvider";
 import { decreasePowerByDecimals, getTokenListByChainId, incresePowerByDecimals } from "../../utils/helper";
 import { getContractInstance, getErc20Balanceof, getErc20Decimals, getProvider } from "../../utils/web3Libs/ethers";
+import { useBorrow } from "../../hooks/Batching/useBorrow";
 
 bg.config({ DECIMAL_PLACES: 10 });
 
@@ -55,6 +56,7 @@ const TradeContainer: React.FC<any> = () => {
     const { mutateAsync: refinance } = useRefinance();
     const { mutateAsync: refinanceForCC } = useCCRefinance();
     const { mutateAsync: switchOnSpecificChain } = useSwitchOnSpecificChain();
+    const { mutateAsync: borrow } = useBorrow();
 
     const {
         smartAccount,
@@ -84,6 +86,11 @@ const TradeContainer: React.FC<any> = () => {
         setShowFromSelectionMenu,
         setShowToSelectionMenu,
 
+        setSelectedFromActionType,
+        setSelectedToActionType,
+        selectedFromActionType,
+        selectedToActionType,
+
         fromTokensData,
         toTokensData,
         setFromTokensData,
@@ -110,7 +117,7 @@ const TradeContainer: React.FC<any> = () => {
         setHasExecutionError,
         totalfees,
         setTotalFees,
-        setShowExecuteMethodModel
+        setShowExecuteMethodModel,
     }: iTrading = useTradingStore((state) => state);
 
     // useEffect(() => {
@@ -371,7 +378,6 @@ const TradeContainer: React.FC<any> = () => {
     //         });
     //         console.log("sessionModule-1", sessionModule);
 
-
     //         // set active module to sessionModule
     //         console.log("smartAccount2-1", smartAccount);
     //         let smartAccount2: any = await smartAccount.setActiveValidationModule(sessionModule);
@@ -457,7 +463,6 @@ const TradeContainer: React.FC<any> = () => {
     //         fetch(selectedFromNetwork.chainId, smartAccountAddress);
     //     }
     // }, [selectedFromNetwork]);
-
 
     useEffect(() => {
         if (individualBatch.length === 1 && individualBatch[0].txArray.length === 0) {
@@ -583,6 +588,7 @@ const TradeContainer: React.FC<any> = () => {
             return;
         }
         setSelectedFromToken("");
+        setSelectedFromActionType("");
         setFilterFromAddress("");
         setFilterToAddress("");
 
@@ -593,7 +599,7 @@ const TradeContainer: React.FC<any> = () => {
         }
     };
 
-    const onChangeFromToken = async (_fromToken: string) => {
+    const onChangeFromToken = async (_fromToken: string, type: string) => {
         if (addToBatchLoading) {
             toast.error("wait, tx loading");
             return;
@@ -616,79 +622,96 @@ const TradeContainer: React.FC<any> = () => {
         }
 
         try {
-            setIsmaxBalanceLoading(true);
             setAmountIn("");
             setFromTokenDecimal(0);
-
             if (selectedFromToken === _fromToken) {
                 closeFromSelectionMenu();
             } else {
                 setSelectedFromToken(_fromToken);
+                setSelectedFromActionType(type);
             }
 
-            const provider = await getProvider(selectedFromNetwork.chainId);
-            const erc20Address: any =
-                selectedFromProtocol == "erc20" ? fromTokensData.filter((token: any) => token.symbol === _fromToken) : "";
+            if (type == "Borrow") {
+                const tokenInNum = nativeTokenNum[selectedFromNetwork.chainId][_fromToken];
+                // alert('tokenInNum- ' + tokenInNum)
+                const decimal = nativeTokenFetcher[selectedToNetwork.chainId][tokenInNum].symbol;
+                // alert('decimal- ' + decimal)
 
-            const tokenAddress =
-                selectedFromProtocol != "erc20"
-                    ? protocolNames[selectedFromNetwork.chainId].key.find((entry) => entry.name == selectedFromProtocol)
-                          .tokenAddresses[_fromToken]
-                    : erc20Address[0].address;
+                setSafeState(setFromTokenDecimal, 6, 6);
+                setSelectedToNetwork(selectedFromNetwork);
+                setSelectedToProtocol(selectedFromProtocol);
+                setSelectedToToken(_fromToken);
+                setSelectedToActionType(type);
+            } else {
+                setIsmaxBalanceLoading(true);
 
-            console.log(_fromToken, tokenAddress)
+                const provider = await getProvider(selectedFromNetwork.chainId);
+                const erc20Address: any =
+                    selectedFromProtocol == "erc20"
+                        ? fromTokensData.filter((token: any) => token.symbol === _fromToken)
+                        : "";
 
-            const erc20 = await getContractInstance(tokenAddress, IERC20, provider);
-            const fromTokendecimal: any = await getErc20Decimals(erc20);
-            setSafeState(setFromTokenDecimal, fromTokendecimal, 0);
+                const tokenAddress =
+                    selectedFromProtocol != "erc20"
+                        ? protocolNames[selectedFromNetwork.chainId].key.find(
+                              (entry) => entry.name == selectedFromProtocol
+                          ).tokenAddresses[_fromToken]
+                        : erc20Address[0].address;
 
-            let scwAddress: any;
-            if (!smartAccountAddress) {
-                const createAccount = async (chainId: any) => {
-                    const bundler: IBundler = new Bundler({
-                        bundlerUrl: ChainIdDetails[chainId].bundlerURL,
-                        chainId: chainId,
-                        entryPointAddress: DEFAULT_ENTRYPOINT_ADDRESS,
-                    });
-                    const paymaster: IPaymaster = new BiconomyPaymaster({
-                        paymasterUrl: ChainIdDetails[chainId].paymasterUrl,
-                    });
+                console.log(_fromToken, tokenAddress);
 
-                    // const biconomySmartAccountConfig: BiconomySmartAccountConfig = {
-                    //     signer: signer,
-                    //     chainId: chainId,
-                    //     bundler: bundler,
-                    //     paymaster: paymaster,
-                    // };
-                    // let biconomySmartAccount = new BiconomySmartAccount(biconomySmartAccountConfig);
-                    // biconomySmartAccount = await biconomySmartAccount.init();
+                const erc20 = await getContractInstance(tokenAddress, IERC20, provider);
+                const fromTokendecimal: any = await getErc20Decimals(erc20);
+                setSafeState(setFromTokenDecimal, fromTokendecimal, 0);
 
-                    const ownerShipModule: any = await ECDSAOwnershipValidationModule.create({
-                        signer: signer,
-                        moduleAddress: DEFAULT_ECDSA_OWNERSHIP_MODULE,
-                    });
-                    //   setProvider(provider)
-                    let biconomySmartAccount = await BiconomySmartAccountV2.create({
-                        chainId: chainId,
-                        bundler: bundler,
-                        paymaster: paymaster,
-                        entryPointAddress: DEFAULT_ENTRYPOINT_ADDRESS,
-                        defaultValidationModule: ownerShipModule,
-                        activeValidationModule: ownerShipModule,
-                    });
-                    console.log("biconomySmartAccount-1", biconomySmartAccount);
-                    return biconomySmartAccount;
-                };
-                scwAddress = await createAccount(selectedFromNetwork.chainId);
+                let scwAddress: any;
+                if (!smartAccountAddress) {
+                    const createAccount = async (chainId: any) => {
+                        const bundler: IBundler = new Bundler({
+                            bundlerUrl: ChainIdDetails[chainId].bundlerURL,
+                            chainId: chainId,
+                            entryPointAddress: DEFAULT_ENTRYPOINT_ADDRESS,
+                        });
+                        const paymaster: IPaymaster = new BiconomyPaymaster({
+                            paymasterUrl: ChainIdDetails[chainId].paymasterUrl,
+                        });
+
+                        // const biconomySmartAccountConfig: BiconomySmartAccountConfig = {
+                        //     signer: signer,
+                        //     chainId: chainId,
+                        //     bundler: bundler,
+                        //     paymaster: paymaster,
+                        // };
+                        // let biconomySmartAccount = new BiconomySmartAccount(biconomySmartAccountConfig);
+                        // biconomySmartAccount = await biconomySmartAccount.init();
+
+                        const ownerShipModule: any = await ECDSAOwnershipValidationModule.create({
+                            signer: signer,
+                            moduleAddress: DEFAULT_ECDSA_OWNERSHIP_MODULE,
+                        });
+                        //   setProvider(provider)
+                        let biconomySmartAccount = await BiconomySmartAccountV2.create({
+                            chainId: chainId,
+                            bundler: bundler,
+                            paymaster: paymaster,
+                            entryPointAddress: DEFAULT_ENTRYPOINT_ADDRESS,
+                            defaultValidationModule: ownerShipModule,
+                            activeValidationModule: ownerShipModule,
+                        });
+                        console.log("biconomySmartAccount-1", biconomySmartAccount);
+                        return biconomySmartAccount;
+                    };
+                    scwAddress = await createAccount(selectedFromNetwork.chainId);
+                }
+
+                const maxBal: any = await getErc20Balanceof(
+                    erc20,
+                    smartAccountAddress ? smartAccountAddress : scwAddress.address
+                );
+                const MaxBalance = await decreasePowerByDecimals(maxBal?.toString(), fromTokendecimal);
+                setMaxBalance(MaxBalance);
+                setIsmaxBalanceLoading(false);
             }
-
-            const maxBal: any = await getErc20Balanceof(
-                erc20,
-                smartAccountAddress ? smartAccountAddress : scwAddress.address
-            );
-            const MaxBalance = await decreasePowerByDecimals(maxBal?.toString(), fromTokendecimal);
-            setMaxBalance(MaxBalance);
-            setIsmaxBalanceLoading(false);
         } catch (error: any) {
             setIsmaxBalanceLoading(false);
             console.log("onChangeFromToken ~ error:", error);
@@ -715,13 +738,15 @@ const TradeContainer: React.FC<any> = () => {
         if (selectedToProtocol === _toProtocol) {
             setSelectedToProtocol("");
             setSelectedToToken("");
+            setSelectedToActionType("");
         } else {
             setSelectedToToken("");
+            setSelectedToActionType("");
             setSelectedToProtocol(_toProtocol);
         }
     };
 
-    const onChangeToToken = async (_toToken: string) => {
+    const onChangeToToken = async (_toToken: string, type: string) => {
         if (addToBatchLoading) {
             toast.error("wait, tx loading");
             return;
@@ -742,6 +767,7 @@ const TradeContainer: React.FC<any> = () => {
             closeToSelectionMenu();
         } else {
             setSelectedToToken(_toToken);
+            setSelectedToActionType(type);
         }
     };
 
@@ -764,6 +790,7 @@ const TradeContainer: React.FC<any> = () => {
             return;
         }
         if (_amountIn) {
+            console.log("_amountIn: ", _amountIn);
             setAmountIn(_amountIn);
         } else {
             setAmountIn("");
@@ -774,10 +801,12 @@ const TradeContainer: React.FC<any> = () => {
         let tempFromNetwork = selectedFromNetwork;
         let tempFromProtocol = selectedFromProtocol;
         let tempFromToken = selectedFromToken;
+        let tempFromActionType = selectedFromActionType;
 
         let tempToNetwork = selectedToNetwork;
         let tempToProtocol = selectedToProtocol;
         let tempToToken = selectedToToken;
+        let tempToActionType = selectedToActionType;
 
         try {
             await handleSelectFromNetwork(tempToNetwork);
@@ -802,12 +831,12 @@ const TradeContainer: React.FC<any> = () => {
         }
 
         try {
-            await onChangeFromToken(tempToToken);
+            await onChangeFromToken(tempToToken, tempToActionType);
         } catch (err) {
             console.log("Swap: onChangeFromToken: Error:", err);
         }
         try {
-            await onChangeToToken(tempFromToken);
+            await onChangeToToken(tempFromToken, tempFromActionType);
         } catch (err) {
             console.log("Swap: onChangeToToken: Error:", err);
         }
@@ -854,8 +883,10 @@ const TradeContainer: React.FC<any> = () => {
         });
         setSelectedFromProtocol("");
         setSelectedFromToken("");
+        setSelectedFromActionType("");
         setSelectedToProtocol("");
         setSelectedToToken("");
+        setSelectedToActionType("");
         setAmountIn("");
         setFromTokenDecimal(0);
     };
@@ -936,7 +967,11 @@ const TradeContainer: React.FC<any> = () => {
             if (isSCW) {
                 setAddToBatchLoading(true);
             }
-            if (selectedFromToken == selectedToToken && selectedFromNetwork.chainName === selectedToNetwork.chainName) {
+            if (
+                selectedFromToken == selectedToToken &&
+                selectedFromNetwork.chainName === selectedToNetwork.chainName &&
+                selectedFromActionType != "Borrow"
+            ) {
                 toast.error("fromToken and toToken should not same");
                 setAddToBatchLoading(false);
                 return;
@@ -960,26 +995,31 @@ const TradeContainer: React.FC<any> = () => {
                 return;
             }
             if (addToBatchLoading) {
+
                 toast.error("wait, tx loading");
                 setAddToBatchLoading(false);
                 return;
             }
             if (!selectedFromProtocol) {
+
                 toast.error("select from protocol");
                 setAddToBatchLoading(false);
                 return;
             }
             if (!selectedFromToken) {
+
                 toast.error("select fromToken");
                 setAddToBatchLoading(false);
                 return;
             }
             if (!selectedToProtocol) {
+
                 toast.error("select to protocol");
                 setAddToBatchLoading(false);
                 return;
             }
             if (!selectedToToken) {
+
                 toast.error("select toToken");
                 setAddToBatchLoading(false);
                 return;
@@ -993,12 +1033,15 @@ const TradeContainer: React.FC<any> = () => {
             const _tempAmount = BigNumber.from(await incresePowerByDecimals(amountIn, fromTokenDecimal).toString());
             let refinaceData: any;
             let txArray;
-            if (selectedFromNetwork.chainName == selectedToNetwork.chainName) {
-                refinaceData = await refinance({
+
+            if (selectedFromActionType == "Borrow") {
+                const tokenInNum = nativeTokenNum[selectedFromNetwork.chainId][selectedFromToken];
+                const nativeTokenIn = nativeTokenFetcher[selectedToNetwork.chainId][tokenInNum].nativeToken;
+                refinaceData = await borrow({
                     isSCW: isSCW,
                     fromProtocol: selectedFromProtocol,
                     toProtocol: selectedToProtocol,
-                    tokenIn: "",
+                    tokenIn: nativeTokenIn,
                     tokenInName: selectedFromToken,
                     tokenOut: "",
                     tokenOutName: selectedToToken,
@@ -1007,18 +1050,33 @@ const TradeContainer: React.FC<any> = () => {
                     provider,
                 });
             } else {
-                refinaceData = await refinanceForCC({
-                    isSCW: isSCW,
-                    fromProtocol: selectedFromProtocol,
-                    toProtocol: selectedToProtocol,
-                    tokenIn: "",
-                    tokenInName: selectedFromToken,
-                    tokenOut: "",
-                    tokenOutName: selectedToToken,
-                    amount: _tempAmount,
-                    address: isSCW ? smartAccountAddress : address,
-                    provider,
-                });
+                if (selectedFromNetwork.chainName == selectedToNetwork.chainName) {
+                    refinaceData = await refinance({
+                        isSCW: isSCW,
+                        fromProtocol: selectedFromProtocol,
+                        toProtocol: selectedToProtocol,
+                        tokenIn: "",
+                        tokenInName: selectedFromToken,
+                        tokenOut: "",
+                        tokenOutName: selectedToToken,
+                        amount: _tempAmount,
+                        address: isSCW ? smartAccountAddress : address,
+                        provider,
+                    });
+                } else {
+                    refinaceData = await refinanceForCC({
+                        isSCW: isSCW,
+                        fromProtocol: selectedFromProtocol,
+                        toProtocol: selectedToProtocol,
+                        tokenIn: "",
+                        tokenInName: selectedFromToken,
+                        tokenOut: "",
+                        tokenOutName: selectedToToken,
+                        amount: _tempAmount,
+                        address: isSCW ? smartAccountAddress : address,
+                        provider,
+                    });
+                }
             }
 
             if (!refinaceData) {

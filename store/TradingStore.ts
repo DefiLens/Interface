@@ -97,10 +97,12 @@ export interface iTrading {
     selectedFromNetwork: iSelectedNetwork;
     selectedFromProtocol: string;
     selectedFromToken: string;
+    selectedFromActionType: string;
 
     selectedToNetwork: iSelectedNetwork;
     selectedToProtocol: string;
     selectedToToken: string;
+    selectedToActionType: string;
 
     showFromSelectionMenu: boolean;
     showToSelectionMenu: boolean;
@@ -139,10 +141,12 @@ export interface iTrading {
     setSelectedFromNetwork: (selectedFromNetwork: iSelectedNetwork) => void;
     setSelectedFromProtocol: (selectedFromProtocol: string) => void;
     setSelectedFromToken: (selectedFromToken: string) => void;
+    setSelectedFromActionType: (selectedFromActionType: string) => void;
 
     setSelectedToNetwork: (selectedToNetwork: iSelectedNetwork) => void;
     setSelectedToProtocol: (selectedToProtocol: string) => void;
     setSelectedToToken: (selectedToToken: string) => void;
+    setSelectedToActionType: (selectedToActionType: string) => void;
 
     setShowFromSelectionMenu: (showFromSelectionMenu: boolean) => void;
     setShowToSelectionMenu: (showToSelectionMenu: boolean) => void;
@@ -188,6 +192,8 @@ export const useTradingStore = create<iTrading>((set) => ({
     },
     selectedFromProtocol: "",
     selectedFromToken: "",
+    selectedFromActionType: "",
+    selectedToActionType: "",
 
     selectedToNetwork: {
         key: "",
@@ -258,10 +264,12 @@ export const useTradingStore = create<iTrading>((set) => ({
     setSelectedFromNetwork: (selectedFromNetwork) => set(() => ({ selectedFromNetwork })),
     setSelectedFromProtocol: (selectedFromProtocol) => set(() => ({ selectedFromProtocol })),
     setSelectedFromToken: (selectedFromToken) => set(() => ({ selectedFromToken })),
+    setSelectedFromActionType: (selectedFromActionType) => set(() => ({ selectedFromActionType })),
 
     setSelectedToNetwork: (selectedToNetwork) => set(() => ({ selectedToNetwork })),
     setSelectedToProtocol: (selectedToProtocol) => set(() => ({ selectedToProtocol })),
     setSelectedToToken: (selectedToToken) => set(() => ({ selectedToToken })),
+    setSelectedToActionType: (selectedToActionType) => set(() => ({ selectedToActionType })),
 
     setShowFromSelectionMenu: (showFromSelectionMenu) => set(() => ({ showFromSelectionMenu })),
     setShowToSelectionMenu: (showToSelectionMenu) => set(() => ({ showToSelectionMenu })),

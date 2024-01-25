@@ -175,7 +175,7 @@ export const tokensByProtocol = {
                 name: "qiDAI",
                 icon: avalanche,
             },
-        ]
+        ],
     },
     arbitrum: {
         aaveV3: [
@@ -304,92 +304,137 @@ export const tokensByProtocol = {
             {
                 name: "aBasUSDbC",
                 icon: avalanche,
+                type: "Lending",
             },
             {
                 name: "aBasWETH",
                 icon: ethereum,
+                type: "Lending",
+            },
+            {
+                name: "USDC",
+                icon: ethereum,
+                type: "Borrow",
+            },
+            {
+                name: "USDbC",
+                icon: ethereum,
+                type: "Borrow",
+            },
+            {
+                name: "cbETH",
+                icon: ethereum,
+                type: "Borrow",
+            },
+            {
+                name: "wstETH",
+                icon: ethereum,
+                type: "Borrow",
             },
         ],
         compoundV3: [
             {
                 name: "cUSDbCv3",
                 icon: optimism,
+                type: "Lending",
+            },
+            {
+                name: "USDbC",
+                icon: optimism,
+                type: "Borrow",
             },
         ],
         seamless: [
             {
                 name: "sUSDbC",
                 icon: avalanche,
+                type: "Lending",
             },
             {
                 name: "sWETH",
                 icon: avalanche,
+                type: "Lending",
             },
             {
                 name: "scbETH",
                 icon: avalanche,
+                type: "Lending",
             },
             {
                 name: "sUSDC",
                 icon: avalanche,
+                type: "Lending",
             },
             {
                 name: "sDAI",
                 icon: avalanche,
-            }
+                type: "Lending",
+            },
         ],
         moonwell: [
             {
                 name: "mDAI",
                 icon: avalanche,
+                type: "Lending",
             },
             {
                 name: "mUSDC",
                 icon: avalanche,
+                type: "Lending",
             },
             {
                 name: "mUSDbC",
                 icon: avalanche,
+                type: "Lending",
             },
             {
                 name: "mWETH",
                 icon: avalanche,
+                type: "Lending",
             },
             {
                 name: "mcbETH",
                 icon: avalanche,
+                type: "Lending",
             },
             {
                 name: "mwstETH",
                 icon: avalanche,
+                type: "Lending",
             },
             {
                 name: "mrETH",
                 icon: avalanche,
-            }
+                type: "Lending",
+            },
         ],
         sonne: [
             {
                 name: "sobUSDbC",
                 icon: avalanche,
+                type: "Lending",
             },
             {
                 name: "sobUSDC",
                 icon: avalanche,
+                type: "Lending",
             },
             {
                 name: "sobDAI",
                 icon: avalanche,
+                type: "Lending",
             },
             {
                 name: "sobWETH",
                 icon: avalanche,
+                type: "Lending",
             },
             {
                 name: "sobcbETH",
                 icon: avalanche,
+                type: "Lending",
             },
-        ]
+        ],
     },
 };
 
@@ -502,7 +547,7 @@ export const tokenAddressByProtocol = {
             sWETH: "0x48bf8fCd44e2977c8a9A744658431A8e6C0d866c",
             scbETH: "0x2c159A183d9056E29649Ce7E56E59cA833D32624",
             sUSDC: "0x53E240C0F985175dA046A62F26D490d1E259036e",
-            sDAI: "0x37eF72fAC21904EDd7e69f7c7AC98172849efF8e"
+            sDAI: "0x37eF72fAC21904EDd7e69f7c7AC98172849efF8e",
         },
         moonwell: {
             mDAI: "0x73b06D8d18De422E269645eaCe15400DE7462417",
@@ -511,7 +556,7 @@ export const tokenAddressByProtocol = {
             mWETH: "0x628ff693426583D9a7FB391E54366292F509D457",
             mcbETH: "0x3bf93770f2d4a794c3d9EBEfBAeBAE2a8f09A5E5",
             mwstETH: "0x627Fe393Bc6EdDA28e99AE648fD6fF362514304b",
-            mrETH: "0xCB1DaCd30638ae38F2B94eA64F066045B7D45f44"
+            mrETH: "0xCB1DaCd30638ae38F2B94eA64F066045B7D45f44",
         },
         sonne: {
             sobUSDbC: "0x225886C9beb5eeE254F79d58bbD80cf9F200D4d0",
@@ -519,6 +564,6 @@ export const tokenAddressByProtocol = {
             sobDAI: "0xb864BA2aab1f53BC3af7AE49a318202dD3fd54C2",
             sobWETH: "0x5F5c479fe590cD4442A05aE4a941dd991A633B8E",
             sobcbETH: "0x6C91bEECEEDda2089307fAb818E12757948BF489",
-        }
+        },
     },
 };
