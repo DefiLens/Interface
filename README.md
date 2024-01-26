@@ -1,6 +1,6 @@
-# ChainPing
+# DefiLens Interface
 
-setup .env from .env.example
+- Simplify Defi trading process by building batching protocol.
 
-yarn  
+yarn
 yarn dev
