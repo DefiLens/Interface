@@ -20,7 +20,7 @@ import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import { getContractInstance } from "../../utils/web3Libs/ethers";
 import poolv3 from "../../abis/aave/poolv3.json";
 
-export function useBorrow() {
+export function useLendingRoutes() {
     const { mutateAsync: swap } = useUniswap();
     const { mutateAsync: approve } = useApprove();
     const { mutateAsync: calculategasCost } = useCalculateGasCost();
@@ -36,14 +36,14 @@ export function useBorrow() {
         fromTokenDecimal,
     }: iTrading = useTradingStore((state) => state);
 
-    async function borrow({
-        isSCW,
-        fromProtocol,
-        toProtocol,
+    async function routes({
+        tokenObject,
+        // fromProtocol,
+        // toProtocol,
         tokenIn,
         tokenInName,
-        tokenOut,
-        tokenOutName,
+        // tokenOut,
+        // tokenOutName,
         amount,
         address,
         provider,
@@ -57,26 +57,31 @@ export function useBorrow() {
             let txData;
             let to;
 
-            if (fromProtocol == "aaveV3") {
-                let abiInterface = new ethers.utils.Interface(poolv3);
-                to = "0xA238Dd80C259a72e81d7e4664a9801593F98d1c5";
-                const contract = await getContractInstance(to, abiInterface, smartAccount.provider);
-                const data = await contract?.getUserAccountData(address);
-                console.log("data: ", data);
-                abiInterface = new ethers.utils.Interface([
-                    "function borrow(address asset,uint256 amount,uint256 interestRateMode,uint16 referralCode,address onBehalfOf)",
-                ]);
+            if (tokenObject.type == "Lending") {
+                to = tokenObject.abiDetails.contractAddress;
+                let abiInterface = new ethers.utils.Interface([tokenObject.abiDetails.depositAbi]);
+                txData = abiInterface.encodeFunctionData("supply", [tokenIn, amount, address, 0]);
+                const tx = { to: to, data: txData };
+                tempTxs.push(tx);
+            } else if (tokenObject.type == "Withdraw") {
+                to = tokenObject.abiDetails.contractAddress;
+                let abiInterface = new ethers.utils.Interface([tokenObject.abiDetails.withdrawAbi]);
+                txData = abiInterface.encodeFunctionData("withdraw", [tokenIn, amount, address]);
+                const tx = { to: to, data: txData };
+                tempTxs.push(tx);
+            } else if (tokenObject.type == "Borrow") {
+                to = tokenObject.abiDetails.contractAddress;
+                let abiInterface = new ethers.utils.Interface(tokenObject.abiDetails.borrowAbi);
                 txData = abiInterface.encodeFunctionData("borrow", [tokenIn, amount, 2, 0, address]);
-            } else if (fromProtocol == "compoundV3") {
-                const abiInterface = new ethers.utils.Interface([
-                    "function withdraw(address withdrawalWallet, uint256 amount)",
-                ]);
-                to = "0x9c4ec768c28520B50860ea7a15bd7213a9fF58bf";
-                txData = abiInterface.encodeFunctionData("withdraw", [tokenIn, amount]);
+                const tx = { to: to, data: txData };
+                tempTxs.push(tx);
+            } else if (tokenObject.type == "Repay") {
+                to = tokenObject.abiDetails.contractAddress;
+                let abiInterface = new ethers.utils.Interface([tokenObject.abiDetails.repayAbi]);
+                txData = abiInterface.encodeFunctionData("repay", [tokenIn, amount, 2, address]);
+                const tx = { to: to, data: txData };
+                tempTxs.push(tx);
             }
-
-            const tx2 = { to: to, data: txData };
-            tempTxs.push(tx2);
 
             let batchFlow: iBatchFlowData = {
                 fromChainId: selectedFromNetwork.chainId,
@@ -85,7 +90,7 @@ export function useBorrow() {
                 tokenIn: tokenInName,
                 tokenOut: tokenInName,
                 amount: await decreasePowerByDecimals(amount.toString(), fromTokenDecimal),
-                action: "Borrow",
+                action: tokenObject.type,
             };
             batchFlows.push(batchFlow);
 
@@ -99,5 +104,5 @@ export function useBorrow() {
             return;
         }
     }
-    return useMutation(borrow);
+    return useMutation(routes);
 }

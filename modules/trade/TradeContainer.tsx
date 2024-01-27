@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { ethers } from "ethers";
+import { BigNumberish, ethers } from "ethers";
 import { BigNumber } from "ethers";
 import { toast } from "react-hot-toast";
 import { BigNumber as bg } from "bignumber.js";
@@ -36,8 +36,10 @@ import { useBiconomySessionKeyProvider } from "../../hooks/aaProvider/useBiconom
 import { decreasePowerByDecimals, getTokenListByChainId, incresePowerByDecimals } from "../../utils/helper";
 import { getContractInstance, getErc20Balanceof, getErc20Decimals, getProvider } from "../../utils/web3Libs/ethers";
 import { useBorrow } from "../../hooks/Batching/useBorrow";
+import { fetchPrice, getAllTokenInfoByAction } from "../../utils/LendingHelper";
 
 bg.config({ DECIMAL_PLACES: 10 });
+// bg.config({ EXPONENTIAL_AT: 999999, DECIMAL_PLACES: 40 })
 
 const TradeContainer: React.FC<any> = () => {
     const address = useAddress(); // Detect the connected address
@@ -470,6 +472,27 @@ const TradeContainer: React.FC<any> = () => {
         }
     }, [individualBatch]);
 
+    useEffect(() => {
+        async function name() {
+            if (smartAccount.accountAddress){
+                // const fetchPrice1 = await fetchPrice("wstETH", smartAccount.provider)
+                // console.log('fetchPrice: --- ', fetchPrice1.toString())
+                // let data = await getAllTokenInfoByAction("base", "aaveV3", "8453", smartAccount, "Lending")
+                // console.log('data-Lending: --- ', data)
+
+                // let data = await getAllTokenInfoByAction("base", "aaveV3", "8453", smartAccount, "Borrow")
+                // console.log('data--Borrow: --- ', data)
+
+                // let data = await getAllTokenInfoByAction("base", "aaveV3", "8453", smartAccount, "Repay")
+                // console.log('data-Repay: --- ', data)
+
+                let data = await getAllTokenInfoByAction("base", "aaveV3", "8453", smartAccount, "Withdraw")
+                console.log('data-Withdraw: --- ', data)
+            }
+        }
+        name()
+    }, [smartAccount])
+
     const handleSelectFromNetwork = async (_fromNetwork: iSelectedNetwork) => {
         clearSelectedBatchData();
         setLoading(true);
@@ -633,11 +656,9 @@ const TradeContainer: React.FC<any> = () => {
 
             if (type == "Borrow") {
                 const tokenInNum = nativeTokenNum[selectedFromNetwork.chainId][_fromToken];
-                // alert('tokenInNum- ' + tokenInNum)
-                const decimal = nativeTokenFetcher[selectedToNetwork.chainId][tokenInNum].symbol;
-                // alert('decimal- ' + decimal)
+                const decimal = nativeTokenFetcher[selectedToNetwork.chainId][tokenInNum].decimals;
 
-                setSafeState(setFromTokenDecimal, 6, 6);
+                setSafeState(setFromTokenDecimal, decimal, 0);
                 setSelectedToNetwork(selectedFromNetwork);
                 setSelectedToProtocol(selectedFromProtocol);
                 setSelectedToToken(_fromToken);
@@ -1012,14 +1033,12 @@ const TradeContainer: React.FC<any> = () => {
                 setAddToBatchLoading(false);
                 return;
             }
-            if (!selectedToProtocol) {
-
+            if (!selectedToProtocol && selectedFromActionType != "Borrow") {
                 toast.error("select to protocol");
                 setAddToBatchLoading(false);
                 return;
             }
-            if (!selectedToToken) {
-
+            if (!selectedToToken && selectedFromActionType != "Borrow") {
                 toast.error("select toToken");
                 setAddToBatchLoading(false);
                 return;
