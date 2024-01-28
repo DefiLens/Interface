@@ -159,6 +159,8 @@ export async function getAllTokenInfoByAction(
             shareTokenAddress,
             debtTokenAddress,
             balance,
+            apy: 3.2,
+            HF: 1.2,
             type: action,
             protocol: protocol,
         };

@@ -173,10 +173,22 @@ const Trade: React.FC<any> = ({
                                                                         }
                                                                     </div>
                                                                 </div>
-                                                                <CiCircleChevDown
-                                                                    size="30px"
-                                                                    className="text-font-500 h-7 w-7"
-                                                                />
+                                                                <div className="w-auto flex justify-end items-center gap-2">
+                                                                    {tokensSupported?.[selectedFromNetwork.chainName]?.[item.name] && (
+                                                                        <div className="w-16 text-sm">
+                                                                            HP:
+                                                                            {(Object.values(selectedActionTokenList) as any[]).length > 0 && (
+                                                                                <span className={`${(Object.values(selectedActionTokenList) as any[])[0].HF > 2 ? 'text-green-500' : 'text-red-500'} pl-1`}>
+                                                                                    {`${(Object.values(selectedActionTokenList) as any[])[0].HF}%`}
+                                                                                </span>
+                                                                            )}
+                                                                        </div>
+                                                                    )}
+                                                                    <CiCircleChevDown
+                                                                        size="30px"
+                                                                        className="text-font-500 h-7 w-7"
+                                                                    />
+                                                                </div>
                                                             </div>
 
                                                             {selectedFromProtocol === item.name &&
@@ -244,16 +256,16 @@ const Trade: React.FC<any> = ({
                                                                                             key={item.shareTokenAddress}
                                                                                             onClick={() =>
                                                                                                 onChangeFromToken(
-                                                                                                    item.shareTokenSymbol, item?.type != undefined ? item.type : ""
+                                                                                                    item.nativeTokenDetails.symbol, item?.type != undefined ? item.type : ""
                                                                                                 )
                                                                                             }
                                                                                             className="w-full flex justify-between items-center gap-3 hover:bg-backgound-200 active:bg-backgound-100 py-2 px-3 rounded-lg cursor-pointer my-2"
                                                                                         >
                                                                                             <span>
-                                                                                                {item.shareTokenSymbol}
+                                                                                                {item.nativeTokenDetails.symbol} {item.apy && `(${item.apy}%)`}
                                                                                             </span>
                                                                                             <span>
-                                                                                                {item?.balance ?bg(item.balance.toString()).dividedBy(1e18).toString() : '0'} {item.nativeTokenDetails.symbol}
+                                                                                                {item?.balance ?bg(item.balance.toString()).dividedBy(1e18).toString() : '0'}
                                                                                             </span>
                                                                                         </div>
                                                                                     ))}
@@ -380,10 +392,22 @@ const Trade: React.FC<any> = ({
                                                                         }
                                                                     </div>
                                                                 </div>
-                                                                <CiCircleChevDown
-                                                                    size="30px"
-                                                                    className="text-font-500 h-7 w-7"
-                                                                />
+                                                                <div className="w-auto flex justify-end items-center gap-2">
+                                                                    {tokensSupported?.[selectedFromNetwork.chainName]?.[item.name] && (
+                                                                        <div className="w-16 text-sm">
+                                                                            HP:
+                                                                            {(Object.values(selectedActionTokenList) as any[]).length > 0 && (
+                                                                                <span className={`${(Object.values(selectedActionTokenList) as any[])[0].HF > 2 ? 'text-green-500' : 'text-red-500'} pl-1`}>
+                                                                                    {`${(Object.values(selectedActionTokenList) as any[])[0].HF}%`}
+                                                                                </span>
+                                                                            )}
+                                                                        </div>
+                                                                    )}
+                                                                    <CiCircleChevDown
+                                                                        size="30px"
+                                                                        className="text-font-500 h-7 w-7"
+                                                                    />
+                                                                </div>
                                                             </div>
                                                             {selectedToProtocol === item.name &&
                                                                 selectedToProtocol !== "erc20" && (
@@ -450,16 +474,16 @@ const Trade: React.FC<any> = ({
                                                                                             key={item.shareTokenAddress}
                                                                                             onClick={() =>
                                                                                                 onChangeToToken(
-                                                                                                    item.shareTokenSymbol, item?.type != undefined ? item.type : ""
+                                                                                                    item.nativeTokenDetails.symbol, item?.type != undefined ? item.type : ""
                                                                                                 )
                                                                                             }
                                                                                             className="w-full flex justify-between items-center gap-3 hover:bg-backgound-200 active:bg-backgound-100 py-2 px-3 rounded-lg cursor-pointer my-2"
                                                                                         >
                                                                                             <span>
-                                                                                                {item.shareTokenSymbol}
+                                                                                                {item.nativeTokenDetails.symbol} {item.apy && `(${item.apy}%)`}
                                                                                             </span>
                                                                                             <span>
-                                                                                                {item?.balance ?bg(item.balance.toString()).dividedBy(1e18).toString() : '0'} {item.nativeTokenDetails.symbol}
+                                                                                                {item?.balance ?bg(item.balance.toString()).dividedBy(1e18).toString() : '0'} 
                                                                                             </span>
                                                                                         </div>
                                                                                     ))}

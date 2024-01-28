@@ -21,7 +21,7 @@ export const nativeTokens = {
     "8453": {
         "1": {
             nativeToken: "0xd9aAEc86B65D86f6A7B5B1b0c42FFA531710b6CA", // USDC
-            symbol: "usdc", // USDbC
+            symbol: "usdbc", // USDbC
             decimals: 6,
         },
         "2": {
