@@ -64,7 +64,7 @@ export const tokensSupported = {
             Borrow: ["USDC", "USDbC", "WETH", "wstETH", "cbETH"],
             Withdraw: ["aBasUSDC", "aBasUSDbC", "aBasWETH", "aBaswstETH", "aBascbETH"],
             Repay: ["USDC", "USDbC", "WETH", "wstETH", "cbETH"],
-        }
+        },
     }
 }
 

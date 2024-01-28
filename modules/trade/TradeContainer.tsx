@@ -483,11 +483,11 @@ const TradeContainer: React.FC<any> = () => {
                 // let data = await getAllTokenInfoByAction("base", "aaveV3", "8453", smartAccount, "Borrow")
                 // console.log('data--Borrow: --- ', data)
 
-                // let data = await getAllTokenInfoByAction("base", "aaveV3", "8453", smartAccount, "Repay")
-                // console.log('data-Repay: --- ', data)
+                let data = await getAllTokenInfoByAction("base", "aaveV3", "8453", smartAccount, "Repay")
+                console.log('data-Repay: --- ', data)
 
-                let data = await getAllTokenInfoByAction("base", "aaveV3", "8453", smartAccount, "Withdraw")
-                console.log('data-Withdraw: --- ', data)
+                let data2 = await getAllTokenInfoByAction("base", "aaveV3", "8453", smartAccount, "Withdraw")
+                console.log('data-Withdraw: --- ', data2)
             }
         }
         name()
