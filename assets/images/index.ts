@@ -35,6 +35,7 @@ import moonwell from "./moonwell.svg";
 import seamless from "./seamless.svg";
 import checkBox from "./checkBox.png";
 import uncheckBox from "./uncheckBox.png";
+import loader from "./loader.svg";
 
 export {
     closeNarrow,
@@ -74,4 +75,5 @@ export {
     seamless,
     checkBox,
     uncheckBox,
+    loader,
 };

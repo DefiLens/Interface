@@ -48,3 +48,10 @@ export const ExecutionMethodsList = [
         ],
     },
 ]
+
+export const ACTION_TYPE = {
+    LENDING: 'Lending',
+    BORROW: 'Borrow',
+    REPAY: 'Repay',
+    WITHDRAW: 'Withdraw',
+}

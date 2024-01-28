@@ -37,6 +37,7 @@ import { decreasePowerByDecimals, getTokenListByChainId, incresePowerByDecimals 
 import { getContractInstance, getErc20Balanceof, getErc20Decimals, getProvider } from "../../utils/web3Libs/ethers";
 import { useBorrow } from "../../hooks/Batching/useBorrow";
 import { fetchPrice, getAllTokenInfoByAction } from "../../utils/LendingHelper";
+import { ACTION_TYPE } from "../../utils/data/constants";
 
 bg.config({ DECIMAL_PLACES: 10 });
 // bg.config({ EXPONENTIAL_AT: 999999, DECIMAL_PLACES: 40 })
@@ -59,6 +60,15 @@ const TradeContainer: React.FC<any> = () => {
     const { mutateAsync: refinanceForCC } = useCCRefinance();
     const { mutateAsync: switchOnSpecificChain } = useSwitchOnSpecificChain();
     const { mutateAsync: borrow } = useBorrow();
+
+    const [isLoadingTokenList, setIsLoadingTokenList] = useState(false);
+    const [selectedFromAction, setSelectedFromAction] = useState(ACTION_TYPE.LENDING);
+    const [selectedToAction, setSelectedToAction] = useState(ACTION_TYPE.LENDING);
+    const [selectedActionTokenList, setSelectedActionTokenList] = useState({});
+
+    console.log("👻👻👻  ~ selectedFromAction:", selectedFromAction)
+    console.log("👻👻👻  ~ selectedActionTokenList:", selectedActionTokenList)
+
 
     const {
         smartAccount,
@@ -474,24 +484,72 @@ const TradeContainer: React.FC<any> = () => {
 
     useEffect(() => {
         async function name() {
-            if (smartAccount?.accountAddress){
+            if (smartAccount?.accountAddress && selectedFromProtocol === 'aaveV3' && selectedFromAction == ACTION_TYPE.LENDING) {
                 // const fetchPrice1 = await fetchPrice("wstETH", smartAccount.provider)
                 // console.log('fetchPrice: --- ', fetchPrice1.toString())
-                // let data = await getAllTokenInfoByAction("base", "aaveV3", "8453", smartAccount, "Lending")
-                // console.log('data-Lending: --- ', data)
 
-                // let data = await getAllTokenInfoByAction("base", "aaveV3", "8453", smartAccount, "Borrow")
-                // console.log('data--Borrow: --- ', data)
+                setIsLoadingTokenList(true);
 
-                let data = await getAllTokenInfoByAction("base", "aaveV3", "8453", smartAccount, "Repay")
-                console.log('data-Repay: --- ', data)
+                let data = await getAllTokenInfoByAction("base", "aaveV3", "8453", smartAccount, ACTION_TYPE.LENDING)
+                setSelectedActionTokenList(data)
 
-                let data2 = await getAllTokenInfoByAction("base", "aaveV3", "8453", smartAccount, "Withdraw")
-                console.log('data-Withdraw: --- ', data2)
+                setIsLoadingTokenList(false);
+
+                // let dataBorrow = await getAllTokenInfoByAction("base", "aaveV3", "8453", smartAccount, ACTION_TYPE.BORROW)
+                // console.log('data--Borrow: --- ', dataBorrow)
+
+                // let dataRepay = await getAllTokenInfoByAction("base", "aaveV3", "8453", smartAccount, ACTION_TYPE.REPAY)
+                // console.log('data-Repay: --- ', dataRepay)
+
+                // let dataWithdraw = await getAllTokenInfoByAction("base", "aaveV3", "8453", smartAccount, ACTION_TYPE.WITHDRAW)
+                // console.log('data-Withdraw: --- ', dataWithdraw)
             }
         }
         name()
-    }, [smartAccount])
+    }, [selectedFromProtocol])
+
+    useEffect(() => {
+        async function name() {
+            if (smartAccount?.accountAddress && selectedToProtocol === 'aaveV3' && selectedToAction == ACTION_TYPE.LENDING) {
+
+                setIsLoadingTokenList(true);
+
+                let data = await getAllTokenInfoByAction("base", "aaveV3", "8453", smartAccount, ACTION_TYPE.LENDING)
+                setSelectedActionTokenList(data)
+
+                setIsLoadingTokenList(false);
+            }
+        }
+        name()
+    }, [selectedToProtocol])
+
+    useEffect(() => {
+        if (selectedFromAction == ACTION_TYPE.LENDING || selectedFromAction == ACTION_TYPE.REPAY) {
+            setSelectedToNetwork({
+                key: "",
+                chainName: "",
+                chainId: "",
+                icon: "",
+            });
+            setSelectedToProtocol("");
+            setSelectedToToken("");
+            setSelectedToActionType("");
+            setAmountIn("");
+            setFromTokenDecimal(0);
+        }
+    }, [selectedFromAction])
+
+    const handleActionChange = async (action: string, sendType: string) => {
+        setIsLoadingTokenList(true);
+        try {
+            let data = await getAllTokenInfoByAction("base", "aaveV3", "8453", smartAccount, action)
+            setSelectedActionTokenList(data)
+            sendType === 'From' ? setSelectedFromAction(action) : setSelectedToAction(action)
+        } catch (err) {
+            console.log("handleActionChange ~ err:", err)
+        }
+        setIsLoadingTokenList(false);
+    }
 
     const handleSelectFromNetwork = async (_fromNetwork: iSelectedNetwork) => {
         clearSelectedBatchData();
@@ -1247,6 +1305,14 @@ const TradeContainer: React.FC<any> = () => {
             totalfees={totalfees}
             // createSession={createSession}
             // erc20Transfer={erc20Transfer}
+            selectedFromAction={selectedFromAction}
+            setSelectedFromAction={setSelectedFromAction}
+            selectedToAction={selectedToAction}
+            setSelectedToAction={setSelectedToAction}
+            isLoadingTokenList={isLoadingTokenList}
+            selectedActionTokenList={selectedActionTokenList}
+            setSelectedActionTokenList={setSelectedActionTokenList}
+            handleActionChange={handleActionChange}
         />
     );
 };

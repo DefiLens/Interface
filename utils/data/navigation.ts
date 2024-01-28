@@ -4,6 +4,10 @@ export const NavigationList = [
         route: "/",
     },
     {
+        title: "New Trade",
+        route: "/new-trade",
+    },
+    {
         title: "Portfolio",
         route: "/portfolio",
     },
