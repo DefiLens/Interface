@@ -124,7 +124,7 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
                                                                 src={
                                                                     ChainIdDetails[
                                                                         selectedFromNetwork.chainId.toString()
-                                                                    ].networkLogo
+                                                                    ]?.networkLogo
                                                                 }
                                                                 alt=""
                                                                 className="h-8 w-8 bg-slate-200 rounded-full cursor-pointer"
@@ -134,7 +134,7 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
                                                                     src={
                                                                         protocolNames[
                                                                             selectedFromNetwork.chainId
-                                                                        ].key.find(
+                                                                        ]?.key.find(
                                                                             (entry: any) =>
                                                                                 entry.name == bar.data.fromProtocol
                                                                         )?.icon
@@ -161,7 +161,7 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
                                                             <Image
                                                                 src={
                                                                     ChainIdDetails[bar.data.toChainId.toString()]
-                                                                        .networkLogo
+                                                                        ?.networkLogo
                                                                 }
                                                                 alt=""
                                                                 className="h-8 w-8 bg-slate-200 rounded-full cursor-pointer"
@@ -169,7 +169,7 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
                                                             <div className="absolute -bottom-1 -right-1 bg-white h-4 w-4 flex justify-center items-center rounded-full">
                                                                 <Image
                                                                     src={
-                                                                        protocolNames[bar.data.toChainId].key.find(
+                                                                        protocolNames[bar.data.toChainId]?.key.find(
                                                                             (entry: any) =>
                                                                                 entry.name == bar.data.toProtocol
                                                                         )?.icon
