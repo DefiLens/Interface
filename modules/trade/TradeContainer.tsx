@@ -474,7 +474,7 @@ const TradeContainer: React.FC<any> = () => {
 
     useEffect(() => {
         async function name() {
-            if (smartAccount?.accountAddress){
+            if (smartAccount && smartAccount.accountAddress) {
                 // const fetchPrice1 = await fetchPrice("wstETH", smartAccount.provider)
                 // console.log('fetchPrice: --- ', fetchPrice1.toString())
                 // let data = await getAllTokenInfoByAction("base", "aaveV3", "8453", smartAccount, "Lending")
