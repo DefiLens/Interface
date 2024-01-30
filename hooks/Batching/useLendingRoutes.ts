@@ -67,7 +67,7 @@ async function withdraw(tokenObject, amount, address) {
 async function borrow(tokenObject, amount, address) {
     try {
         const to = tokenObject.abiDetails.contractAddress;
-        let abiInterface = new ethers.utils.Interface(tokenObject.abiDetails.borrowAbi);
+        let abiInterface = new ethers.utils.Interface([tokenObject.abiDetails.borrowAbi]);
         const txData = abiInterface.encodeFunctionData("borrow", [
             tokenObject.nativeTokenDetails.nativeToken,
             amount,
@@ -119,6 +119,7 @@ export function useLendingRoutes() {
         provider,
     }: any) {
         try {
+            // alert("Hello")
             if (!selectedFromNetwork.chainName) {
                 toast.error("Chain is not selected!!");
             }
@@ -126,6 +127,79 @@ export function useLendingRoutes() {
             const batchFlows: iBatchFlowData[] = [];
             let to, swapData, approveData;
 
+
+            if (!tokenInObject) {
+                if (tokenInObject.nativeTokenDetails.nativeToken != tokenIn) {
+                    approveData = await approve({
+                        tokenIn: tokenIn,
+                        spender: uniswapSwapRouterByChainId[selectedFromNetwork.chainId],
+                        amountIn: amount,
+                        address,
+                        web3JsonProvider: provider,
+                    });
+                    if (approveData) tempTxs.push(approveData);
+                    swapData = await swap({
+                        tokenIn: tokenIn,
+                        tokenOut: tokenOutObject != "" ? tokenOutObject.nativeTokenDetails.nativeToken : tokenOut,
+                        amountIn: amount,
+                        address,
+                        type: "exactIn",
+                        chainId: selectedNetwork.chainId,
+                    });
+                    if (!swapData) {
+                        throw "This lending route is not possible";
+                    }
+                    let batchFlow: iBatchFlowData = await addToBatchFlow(
+                        selectedFromNetwork.chainId,
+                        selectedFromNetwork.chainId,
+                        "Uniswap",
+                        tokenInName,
+                        tokenOutObject != "" ? tokenOutObject.nativeTokenDetails.symbol : tokenOutName,
+                        amount,
+                        fromTokenDecimal,
+                        "Swap"
+                    );
+                    batchFlows.push(batchFlow);
+                    tempTxs.push(swapData?.swapTx);
+                    amount = swapData.amountOutprice; // change amount after swap
+                }
+
+                if (tokenOutObject) {
+                    // if migrate or repay position after withdraw and swap
+                    to = tokenOutObject.abiDetails.contractAddress;
+                    approveData = await approve({
+                        tokenIn: tokenOutObject.nativeTokenDetails.nativeToken,
+                        spender: to,
+                        amountIn: amount,
+                        address,
+                        web3JsonProvider: provider,
+                    });
+                    if (approveData) tempTxs.push(approveData);
+                    if (tokenOutObject.type == "Lending") {
+                        const tx = await lending(tokenOutObject, amount, address);
+                        tempTxs.push(tx);
+                    } else if (tokenOutObject.type == "Repay") {
+                        const tx = await repay(tokenOutObject, amount, address);
+                        tempTxs.push(tx);
+                    }
+                    let batchFlow: iBatchFlowData = await addToBatchFlow(
+                        selectedFromNetwork.chainId,
+                        selectedFromNetwork.chainId,
+                        tokenOutObject.protocol,
+                        tokenOutObject.nativeTokenDetails.symbol,
+                        tokenOutObject.type == "Lending"
+                            ? tokenOutObject.shareTokenSymbol
+                            : `You Repay ${tokenOutObject.nativeTokenDetails.symbol}`,
+                        amount,
+                        swapData.tokenOutDecimals,
+                        tokenOutObject.type
+                    );
+                    batchFlows.push(batchFlow);
+                }
+                return { txArray: tempTxs, batchFlow: batchFlows, value: 0 };
+            }
+
+            console.log("tokenInObject", tokenInObject, tokenIn, selectedFromNetwork.chainId, amount)
             if (tokenInObject.type == "Lending") {
                 if (tokenInObject.nativeTokenDetails.nativeToken != tokenIn) {
                     approveData = await approve({
@@ -135,6 +209,7 @@ export function useLendingRoutes() {
                         address,
                         web3JsonProvider: provider,
                     });
+                    console.log("approveData", approveData)
                     if (approveData) tempTxs.push(approveData);
                     swapData = await swap({
                         tokenIn: tokenIn,
@@ -147,9 +222,6 @@ export function useLendingRoutes() {
                     if (!swapData) {
                         throw "This lending route is not possible";
                     }
-                    tempTxs.push(swapData?.swapTx);
-                    amount = swapData.amountOutprice; // change amount after swap
-
                     let batchFlow: iBatchFlowData = await addToBatchFlow(
                         selectedFromNetwork.chainId,
                         selectedFromNetwork.chainId,
@@ -161,10 +233,14 @@ export function useLendingRoutes() {
                         "Swap"
                     );
                     batchFlows.push(batchFlow);
+                    tempTxs.push(swapData?.swapTx);
+                    amount = swapData.amountOutprice; // change amount after swap
                 }
+                console.log("Hello2", tokenInObject.abiDetails.contractAddress)
+
                 approveData = await approve({
                     tokenIn: tokenInObject.nativeTokenDetails.nativeToken,
-                    spender: to,
+                    spender: tokenInObject.abiDetails.contractAddress,
                     amountIn: amount,
                     address,
                     web3JsonProvider: provider,
@@ -172,15 +248,16 @@ export function useLendingRoutes() {
                 if (approveData) tempTxs.push(approveData);
                 const tx = await lending(tokenInObject, amount, address);
                 tempTxs.push(tx);
+                console.log("tx", tx)
 
                 let batchFlow: iBatchFlowData = await addToBatchFlow(
                     selectedFromNetwork.chainId,
                     selectedFromNetwork.chainId,
                     tokenInObject.protocol,
-                    tokenInObject.nativeTokenDetails.nativeToken,
+                    tokenInObject.nativeTokenDetails.symbol,
                     tokenInObject.shareTokenSymbol,
                     amount,
-                    swapData.tokenOutDecimals,
+                    tokenInObject.nativeTokenDetails.decimals,
                     "Lending"
                 );
                 batchFlows.push(batchFlow);
@@ -192,7 +269,7 @@ export function useLendingRoutes() {
                     selectedFromNetwork.chainId,
                     tokenInObject.protocol,
                     tokenInObject.shareTokenSymbol,
-                    tokenInObject.nativeTokenDetails.nativeToken,
+                    tokenInObject.nativeTokenDetails.symbol,
                     amount,
                     fromTokenDecimal,
                     "Withdraw"
@@ -220,8 +297,6 @@ export function useLendingRoutes() {
                     if (!swapData) {
                         throw "This lending route is not possible";
                     }
-                    amount = swapData.amountOutprice;
-                    tempTxs.push(swapData?.swapTx);
                     let batchFlow: iBatchFlowData = await addToBatchFlow(
                         selectedFromNetwork.chainId,
                         selectedFromNetwork.chainId,
@@ -233,6 +308,8 @@ export function useLendingRoutes() {
                         "Swap"
                     );
                     batchFlows.push(batchFlow);
+                    amount = swapData.amountOutprice;
+                    tempTxs.push(swapData?.swapTx);
 
                     if (tokenOutObject) {
                         // if migrate or repay position after withdraw and swap
@@ -268,8 +345,11 @@ export function useLendingRoutes() {
                     }
                 }
             } else if (tokenInObject.type == "Borrow") {
+                // alert("Borrow")
                 const tx = await borrow(tokenInObject, amount, address);
                 tempTxs.push(tx);
+                // alert("Borrow2")
+                console.log("borrow-tx", tx)
                 let batchFlow: iBatchFlowData = await addToBatchFlow(
                     selectedFromNetwork.chainId,
                     selectedFromNetwork.chainId,
@@ -281,8 +361,10 @@ export function useLendingRoutes() {
                     tokenInObject.type
                 );
                 batchFlows.push(batchFlow);
+                console.log("batchFlow-tx", batchFlow)
 
                 if (tokenInObject.nativeTokenDetails.nativeToken != tokenOut) {
+                    // alert("Borro3")
                     approveData = await approve({
                         tokenIn: tokenInObject.nativeTokenDetails.nativeToken,
                         spender: uniswapSwapRouterByChainId[selectedFromNetwork.chainId],
@@ -292,6 +374,9 @@ export function useLendingRoutes() {
                     });
                     if (approveData) tempTxs.push(approveData);
 
+                    console.log('tokenInObject.nativeTokenDetails.nativeToken', tokenInObject.nativeTokenDetails.nativeToken)
+                    console.log('tokenOut--', tokenOut, amount)
+
                     const swapData = await swap({
                         tokenIn: tokenInObject.nativeTokenDetails.nativeToken,
                         tokenOut: tokenOut,
@@ -300,11 +385,10 @@ export function useLendingRoutes() {
                         type: "exactIn",
                         chainId: selectedNetwork.chainId,
                     });
+
                     if (!swapData) {
                         throw "This lending route is not possible";
                     }
-                    amount = swapData.amountOutprice;
-                    tempTxs.push(swapData?.swapTx);
                     let batchFlow: iBatchFlowData = await addToBatchFlow(
                         selectedFromNetwork.chainId,
                         selectedFromNetwork.chainId,
@@ -316,9 +400,12 @@ export function useLendingRoutes() {
                         "Swap"
                     );
                     batchFlows.push(batchFlow);
+                    amount = swapData.amountOutprice;
+                    tempTxs.push(swapData?.swapTx);
 
                     if (tokenOutObject) {
                         // if migrate or repay position after Borrow and swap
+                        // alert(tokenOutObject.abiDetails.contractAddress)
                         to = tokenOutObject.abiDetails.contractAddress;
                         approveData = await approve({
                             tokenIn: tokenOutObject.nativeTokenDetails.nativeToken,
@@ -347,6 +434,7 @@ export function useLendingRoutes() {
                             swapData.tokenOutDecimals,
                             tokenOutObject.type
                         );
+                        console.log('batchFlow--', batchFlow)
                         batchFlows.push(batchFlow);
                     }
                 }
@@ -377,17 +465,6 @@ export function useLendingRoutes() {
                 // TODO
                 // After Repay there will be possibility of Withdraw and Borrow of other assets
             }
-
-            // let batchFlow: iBatchFlowData = {
-            //     fromChainId: selectedFromNetwork.chainId,
-            //     toChainId: selectedFromNetwork.chainId,
-            //     protocol: selectedToProtocol,
-            //     tokenIn: tokenInName,
-            //     tokenOut: tokenInName,
-            //     amount: await decreasePowerByDecimals(amount.toString(), fromTokenDecimal),
-            //     action: tokenInObject.type,
-            // };
-            // batchFlows.push(batchFlow);
 
             return { txArray: tempTxs, batchFlow: batchFlows, value: 0 };
         } catch (error: any) {
