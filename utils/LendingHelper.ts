@@ -102,7 +102,6 @@ export async function getAllTokenInfoByAction(
     if (!actionTokens) {
         return `${action} tokens not found for the specified network and protocol`;
     }
-
     const tokenInfoObject: Record<string, object> = {};
     for (let tokenSymbol of actionTokens) {
         const tokenIndex =
@@ -123,34 +122,26 @@ export async function getAllTokenInfoByAction(
                 shareTokenSymbol = tokenToShare[network][protocol][tokenSymbol];
                 shareTokenAddress = tokenAddressByProtocol[network][protocol].lendAssets[shareTokenSymbol];
                 debtTokenAddress = tokenAddressByProtocol[network][protocol].borrowAssets[shareTokenSymbol];
-                balance = await getBalanceForLendingRepayingWithdrawing(nativeTokenDetails, smartAccount);
+                // balance = await getBalanceForLendingRepayingWithdrawing(nativeTokenDetails, smartAccount);
                 break;
             case "Borrow":
                 shareTokenSymbol = tokenToShare[network][protocol][tokenSymbol];
                 shareTokenAddress = tokenAddressByProtocol[network][protocol].lendAssets[shareTokenSymbol];
                 debtTokenAddress = tokenAddressByProtocol[network][protocol].borrowAssets[shareTokenSymbol];
-                balance = await getBorrowBalance(nativeTokenDetails, tokenSymbol, smartAccount);
+                // balance = await getBorrowBalance(nativeTokenDetails, tokenSymbol, smartAccount);
                 break;
             case "Repay":
             case "Withdraw":
-                tokenSymbol = Object.keys(tokenToShare[network][protocol]).find(
-                    (key) => tokenToShare[network][protocol][key] === tokenSymbol
-                );
+                // const tempTokenSymbol = Object.keys(tokenToShare[network][protocol]).find(
+                //     (key) => tokenToShare[network][protocol][key] === tokenSymbol
+                // );
                 shareTokenSymbol = tokenToShare[network][protocol][tokenSymbol];
                 shareTokenAddress = tokenAddressByProtocol[network][protocol].lendAssets[shareTokenSymbol];
-                // action == "Repay"
-                //     ? tokenAddressByProtocol[network][protocol].borrowAssets[shareTokenSymbol]
-                //     : tokenAddressByProtocol[network][protocol].lendAssets[shareTokenSymbol];
                 debtTokenAddress = tokenAddressByProtocol[network][protocol].borrowAssets[shareTokenSymbol];
-
-                balance = await getBalanceForLendingRepayingWithdrawing(
-                    { nativeToken: shareTokenAddress },
-                    smartAccount
-                );
                 break;
         }
 
-        tokenInfoObject[tokenSymbol] = {
+        tokenInfoObject[tokenSymbol.toLowerCase()] = {
             network,
             chainId,
             nativeTokenDetails,
@@ -158,14 +149,13 @@ export async function getAllTokenInfoByAction(
             shareTokenSymbol,
             shareTokenAddress,
             debtTokenAddress,
-            balance,
+            balance: "0",
             apy: 3.2,
             HF: 1.2,
             type: action,
             protocol: protocol,
         };
-        console.log("action: ", action)
-        console.log("tokenInfoObject: ", tokenInfoObject);
     }
+    console.log("tokenInfoObject: ", tokenInfoObject);
     return tokenInfoObject;
 }
