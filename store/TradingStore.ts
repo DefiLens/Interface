@@ -97,11 +97,13 @@ export interface iTrading {
     selectedFromNetwork: iSelectedNetwork;
     selectedFromProtocol: string;
     selectedFromToken: string;
+    selectedFromTokenAddress: string;
     selectedFromActionType: string;
 
     selectedToNetwork: iSelectedNetwork;
     selectedToProtocol: string;
     selectedToToken: string;
+    selectedToTokenAddress: string;
     selectedToActionType: string;
 
     showFromSelectionMenu: boolean;
@@ -141,11 +143,13 @@ export interface iTrading {
     setSelectedFromNetwork: (selectedFromNetwork: iSelectedNetwork) => void;
     setSelectedFromProtocol: (selectedFromProtocol: string) => void;
     setSelectedFromToken: (selectedFromToken: string) => void;
+    setSelectedFromTokenAddress: (selectedFromTokenAddress: string) => void;
     setSelectedFromActionType: (selectedFromActionType: string) => void;
 
     setSelectedToNetwork: (selectedToNetwork: iSelectedNetwork) => void;
     setSelectedToProtocol: (selectedToProtocol: string) => void;
     setSelectedToToken: (selectedToToken: string) => void;
+    setSelectedToTokenAddress: (selectedToTokenAddress: string) => void;
     setSelectedToActionType: (selectedToActionType: string) => void;
 
     setShowFromSelectionMenu: (showFromSelectionMenu: boolean) => void;
@@ -192,6 +196,8 @@ export const useTradingStore = create<iTrading>((set) => ({
     },
     selectedFromProtocol: "",
     selectedFromToken: "",
+    selectedFromTokenAddress: "",
+
     selectedFromActionType: "",
     selectedToActionType: "",
 
@@ -203,6 +209,7 @@ export const useTradingStore = create<iTrading>((set) => ({
     },
     selectedToProtocol: "",
     selectedToToken: "",
+    selectedToTokenAddress: "",
 
     showFromSelectionMenu: false,
     showToSelectionMenu: false,
@@ -264,11 +271,13 @@ export const useTradingStore = create<iTrading>((set) => ({
     setSelectedFromNetwork: (selectedFromNetwork) => set(() => ({ selectedFromNetwork })),
     setSelectedFromProtocol: (selectedFromProtocol) => set(() => ({ selectedFromProtocol })),
     setSelectedFromToken: (selectedFromToken) => set(() => ({ selectedFromToken })),
+    setSelectedFromTokenAddress: (selectedFromTokenAddress) => set(() => ({ selectedFromTokenAddress })),
     setSelectedFromActionType: (selectedFromActionType) => set(() => ({ selectedFromActionType })),
 
     setSelectedToNetwork: (selectedToNetwork) => set(() => ({ selectedToNetwork })),
     setSelectedToProtocol: (selectedToProtocol) => set(() => ({ selectedToProtocol })),
     setSelectedToToken: (selectedToToken) => set(() => ({ selectedToToken })),
+    setSelectedToTokenAddress: (selectedToTokenAddress) => set(() => ({ selectedToTokenAddress })),
     setSelectedToActionType: (selectedToActionType) => set(() => ({ selectedToActionType })),
 
     setShowFromSelectionMenu: (showFromSelectionMenu) => set(() => ({ showFromSelectionMenu })),
