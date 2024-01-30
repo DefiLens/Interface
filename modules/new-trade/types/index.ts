@@ -4,9 +4,9 @@ export type tTrade = {
     handleSelectFromNetwork: (_fromNetwork: iSelectedNetwork) => void;
     handleSelectToNetwork: (_toNetwork: iSelectedNetwork) => void;
     onChangeFromProtocol: (_fromProtocol: string) => void;
-    onChangeFromToken: (_fromToken: string, _type: string) => void;
+    onChangeFromToken: (_fromTokenAddress: string, _fromToken: string, _type: string) => void;
     onChangeToProtocol: (_toProtocol: string) => void;
-    onChangeToToken: (_toToken: string, _type: string) => void;
+    onChangeToToken: (_toTokenAddress: string, _toToken: string, _type: string) => void;
     onChangeAmountIn: (_amountIn: string) => void;
     handleSwap: () => void;
     removeBatch: (index: number) => void;
@@ -23,8 +23,10 @@ export type tTrade = {
     selectedToAction: string;
     setSelectedToAction: (selectedToAction: string) => void;
     isLoadingTokenList: boolean;
-    selectedActionTokenList: any;
-    setSelectedActionTokenList: (selectedActionTokenList: any) => void;
+    fromSelectedActionTokenList: any;
+    toSelectedActionTokenList: any;
+    setFromSelectedActionTokenList: (fromSelectedActionTokenList: any) => void;
+    setToSelectedActionTokenList: (toSelectedActionTokenList: any) => void;
     handleActionChange: (action: string, sendType: string) => void;
 };
 
