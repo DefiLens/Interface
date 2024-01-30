@@ -4,14 +4,7 @@ import poolv3 from "../abis/aave/poolv3.json";
 import { ethers } from "ethers";
 import { BigNumber as bg } from "bignumber.js";
 import Ichainlink from "../abis/chainlink.json";
-import {
-    abiFetcher,
-    nativeTokens,
-    supportedTokenDetails,
-    tokenAddressByProtocol,
-    tokenToShare,
-    tokensSupported,
-} from "./data/LendingSingleTon";
+import { abiFetcher, nativeTokens, supportedTokenDetails, tokenAddressByProtocol, tokenToShare, tokensSupported } from "./data/LendingSingleTon";
 bg.config({ DECIMAL_PLACES: 10 });
 
 export async function fetchPrice(token: string, provider: any) {
@@ -88,30 +81,18 @@ async function getBorrowBalance(nativeTokenDetails, tokenSymbol, smartAccount) {
     const price = await fetchPrice(tokenSymbol, smartAccount.provider);
     const newPrice = bg(price.toString()).multipliedBy(1e18).div(1e8);
 
-    return bg(balance).dividedBy(newPrice);
+    return bg(balance).dividedBy(newPrice).multipliedBy(bg(10).pow(nativeTokenDetails.decimals));
 }
 
-export async function getAllTokenInfoByAction(
-    network: string,
-    protocol: string,
-    chainId: string,
-    smartAccount: any,
-    action: string
-): Promise<Record<string, object> | string> {
+export async function getAllTokenInfoByAction(network: string, protocol: string, chainId: string, smartAccount: any, action: string): Promise<Record<string, object> | string> {
     const actionTokens = tokensSupported[network][protocol][action];
     if (!actionTokens) {
         return `${action} tokens not found for the specified network and protocol`;
     }
     const tokenInfoObject: Record<string, object> = {};
     for (let tokenSymbol of actionTokens) {
-        const tokenIndex =
-            supportedTokenDetails[network] &&
-            supportedTokenDetails[network][protocol] &&
-            supportedTokenDetails[network][protocol][tokenSymbol]
-                ? supportedTokenDetails[network][protocol][tokenSymbol]
-                : "";
-        const nativeTokenDetails =
-            nativeTokens[chainId] && nativeTokens[chainId][tokenIndex] ? nativeTokens[chainId][tokenIndex] : null;
+        const tokenIndex = supportedTokenDetails[network] && supportedTokenDetails[network][protocol] && supportedTokenDetails[network][protocol][tokenSymbol] ? supportedTokenDetails[network][protocol][tokenSymbol] : "";
+        const nativeTokenDetails = nativeTokens[chainId] && nativeTokens[chainId][tokenIndex] ? nativeTokens[chainId][tokenIndex] : null;
         if (!nativeTokenDetails) continue;
 
         const abiDetails = abiFetcher[chainId] && abiFetcher[chainId][protocol] ? abiFetcher[chainId][protocol] : null;
@@ -131,11 +112,21 @@ export async function getAllTokenInfoByAction(
                 // balance = await getBorrowBalance(nativeTokenDetails, tokenSymbol, smartAccount);
                 break;
             case "Repay":
-            case "Withdraw":
                 // const tempTokenSymbol = Object.keys(tokenToShare[network][protocol]).find(
                 //     (key) => tokenToShare[network][protocol][key] === tokenSymbol
                 // );
+                // console.log('tempTokenSymbol: ', tempTokenSymbol, tokenSymbol)
                 shareTokenSymbol = tokenToShare[network][protocol][tokenSymbol];
+                shareTokenAddress = tokenAddressByProtocol[network][protocol].lendAssets[shareTokenSymbol];
+                debtTokenAddress = tokenAddressByProtocol[network][protocol].borrowAssets[shareTokenSymbol];
+                break;
+            case "Withdraw":
+                const tempTokenSymbol = Object.keys(tokenToShare[network][protocol]).find(
+                    (key) => tokenToShare[network][protocol][key] === tokenSymbol
+                );
+                tokenSymbol = tempTokenSymbol
+                shareTokenSymbol = tokenToShare[network][protocol][tokenSymbol];
+                console.log('shareTokenSymbol: ', shareTokenSymbol)
                 shareTokenAddress = tokenAddressByProtocol[network][protocol].lendAssets[shareTokenSymbol];
                 debtTokenAddress = tokenAddressByProtocol[network][protocol].borrowAssets[shareTokenSymbol];
                 break;
@@ -154,8 +145,36 @@ export async function getAllTokenInfoByAction(
             HF: 1.2,
             type: action,
             protocol: protocol,
+            tokenSymbol
         };
     }
     console.log("tokenInfoObject: ", tokenInfoObject);
     return tokenInfoObject;
+}
+
+export async function getActionBalance(actionObject, action, smartAccount) {
+    try {
+        const provider = smartAccount.provider;
+        const nativeToken = actionObject.nativeTokenDetails.nativeToken;
+        const shareToken = actionObject.shareTokenAddress;
+        const debtToken = actionObject.debtTokenAddress;
+        if (action == "Lending") {
+            const erc20 = await getContractInstance(nativeToken, IERC20, provider);
+            const balance = await getErc20Balanceof(erc20, smartAccount.accountAddress);
+            return balance;
+        } else if (action == "Withdraw") {
+            const erc20 = await getContractInstance(shareToken, IERC20, provider);
+            const balance = await getErc20Balanceof(erc20, smartAccount.accountAddress);
+            return balance;
+        } else if (action == "Borrow") {
+            const balance = await getBorrowBalance(actionObject.nativeTokenDetails, actionObject.tokenSymbol, smartAccount)
+            return balance;
+        } else if (action == "Repay") {
+            const erc20 = await getContractInstance(debtToken, IERC20, provider);
+            const balance = await getErc20Balanceof(erc20, smartAccount.accountAddress);
+            return balance;
+        }
+    } catch (error) {
+        console.log("getActionBalance:error: ", error);
+    }
 }

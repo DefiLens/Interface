@@ -148,7 +148,7 @@ const Trade: React.FC<any> = ({
                                                             <div className="w-auto flex justify-end items-center gap-2">
                                                                 {tokensSupported?.[selectedFromNetwork.chainName]?.[item.name] && (
                                                                     <div className="w-16 text-sm">
-                                                                        HP:
+                                                                        HF:
                                                                         {(Object.values(fromSelectedActionTokenList) as any[]).length > 0 && (
                                                                             <span className={`${(Object.values(fromSelectedActionTokenList) as any[])[0].HF > 2 ? "text-green-500" : "text-red-500"} pl-1`}>
                                                                                 {`${(Object.values(fromSelectedActionTokenList) as any[])[0].HF}%`}
@@ -329,7 +329,7 @@ const Trade: React.FC<any> = ({
                                                             <div className="w-auto flex justify-end items-center gap-2">
                                                                 {tokensSupported?.[selectedToNetwork.chainName]?.[item.name] && (
                                                                     <div className="w-16 text-sm">
-                                                                        HP:
+                                                                        HF:
                                                                         {(Object.values(toSelectedActionTokenList) as any[]).length > 0 && (
                                                                             <span className={`${(Object.values(toSelectedActionTokenList) as any[])[0].HF > 2 ? "text-green-500" : "text-red-500"} pl-1`}>
                                                                                 {`${(Object.values(toSelectedActionTokenList) as any[])[0].HF}%`}
@@ -374,7 +374,7 @@ const Trade: React.FC<any> = ({
                                                                             {ACTION_TYPE.LENDING}
                                                                         </button>
 
-                                                                        <button
+                                                                        {/* <button
                                                                             type="button"
                                                                             onClick={() => handleActionChange(ACTION_TYPE.REPAY, "To")}
                                                                             className={`text-sm text-font-100 bg-transparent hover:bg-font-800 active:bg-font-1000 border font-medium px-3 py-1 rounded-md ${
@@ -382,7 +382,7 @@ const Trade: React.FC<any> = ({
                                                                             }`}
                                                                         >
                                                                             {ACTION_TYPE.REPAY}
-                                                                        </button>
+                                                                        </button> */}
                                                                         {/* </>
                                                                                 ) : (
                                                                                     <>

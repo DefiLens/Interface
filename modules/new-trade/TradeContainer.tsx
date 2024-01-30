@@ -35,7 +35,7 @@ import { useBiconomySessionKeyProvider } from "../../hooks/aaProvider/useBiconom
 import { decreasePowerByDecimals, getTokenListByChainId, incresePowerByDecimals } from "../../utils/helper";
 import { getContractInstance, getErc20Balanceof, getErc20Decimals, getProvider } from "../../utils/web3Libs/ethers";
 import { useBorrow } from "../../hooks/Batching/useBorrow";
-import { fetchPrice, getAllTokenInfoByAction } from "../../utils/LendingHelper";
+import { fetchPrice, getActionBalance, getAllTokenInfoByAction } from "../../utils/LendingHelper";
 import { ACTION_TYPE } from "../../utils/data/constants";
 import { useLendingRoutes } from "../../hooks/Batching/useLendingRoutes";
 import { nativeTokens } from "../../utils/data/LendingSingleTon";
@@ -60,6 +60,8 @@ const TradeContainer: React.FC<any> = () => {
     const [toSelectedActionTokenList, setToSelectedActionTokenList] = useState({});
     const [selectedFromActionToken, setSelectedFromActionToken] = useState({});
     const [selectedToActionToken, setSelectedToActionToken] = useState({});
+
+    const [balances, setBalances] = useState([]);
 
     const {
         smartAccount,
@@ -143,9 +145,19 @@ const TradeContainer: React.FC<any> = () => {
 
         totalfees,
         setTotalFees,
-        
+
         setShowExecuteMethodModel,
     }: iTrading = useTradingStore((state) => state);
+
+    useEffect(()=> {
+
+        async function fetchBalance() {
+            
+        }
+        if (fromSelectedActionTokenList) {
+            fetchBalance()
+        }
+    },[fromSelectedActionTokenList])
 
     useEffect(() => {
         if (individualBatch.length === 1 && individualBatch[0].txArray.length === 0) {
@@ -164,12 +176,6 @@ const TradeContainer: React.FC<any> = () => {
                 let data = await getAllTokenInfoByAction("base", "aaveV3", "8453", smartAccount, ACTION_TYPE.LENDING);
                 setFromSelectedActionTokenList(data);
                 setIsLoadingTokenList(false);
-                // let dataBorrow = await getAllTokenInfoByAction("base", "aaveV3", "8453", smartAccount, ACTION_TYPE.BORROW)
-                // console.log('data--Borrow: --- ', dataBorrow)
-                // let dataRepay = await getAllTokenInfoByAction("base", "aaveV3", "8453", smartAccount, ACTION_TYPE.REPAY)
-                // console.log('data-Repay: --- ', dataRepay)
-                // let dataWithdraw = await getAllTokenInfoByAction("base", "aaveV3", "8453", smartAccount, ACTION_TYPE.WITHDRAW)
-                // console.log('data-Withdraw: --- ', dataWithdraw)
             }
         }
         name();
@@ -437,17 +443,21 @@ const TradeContainer: React.FC<any> = () => {
                         defaultValidationModule: ownerShipModule,
                         activeValidationModule: ownerShipModule,
                     });
-                    console.log("biconomySmartAccount-1", biconomySmartAccount);
                     return biconomySmartAccount;
                 };
                 scwAddress = await createAccount(selectedFromNetwork.chainId);
             }
 
-            const maxBal: any = await getErc20Balanceof(
-                erc20,
-                smartAccountAddress ? smartAccountAddress : scwAddress.address
-            );
+            console.log("_fromToken: ", fromSelectedActionTokenList, fromSelectedActionTokenList[_fromToken], _fromToken)
+            const maxBal = await getActionBalance(fromSelectedActionTokenList[_fromToken], type, smartAccount)
+            console.log('maxBal: ', maxBal, maxBal?.toString())
+
+            // const maxBal: any = await getErc20Balanceof(
+            //     erc20,
+            //     smartAccountAddress ? smartAccountAddress : scwAddress.address
+            // );
             const MaxBalance = await decreasePowerByDecimals(maxBal?.toString(), fromTokendecimal);
+            console.log('MaxBalance: ', MaxBalance, MaxBalance?.toString())
             setMaxBalance(MaxBalance);
             setIsmaxBalanceLoading(false);
             // }
