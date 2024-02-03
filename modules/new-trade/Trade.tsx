@@ -10,7 +10,6 @@ import { MdKeyboardArrowDown, MdKeyboardArrowUp } from "react-icons/md";
 
 import { tTrade, tTradeProtocol } from "./types";
 import Button from "../../components/Button/Button";
-import { protocolNames } from "../../utils/data/protocols";
 import SelectionBar from "../../components/SelectionBar/SelectionBar";
 import { ChainIdDetails, NETWORK_LIST } from "../../utils/data/network";
 import ExecuteBatch from "../../components/Models/ExecuteBatch/ExecuteBatch";
@@ -18,8 +17,7 @@ import ExecuteMethod from "../../components/Models/ExecuteMethod/ExecuteMethod";
 import { iTokenData, iTrading, useTradingStore } from "../../store/TradingStore";
 import { defaultBlue, downLine, gas, loader, optimism, swap, warning } from "../../assets/images";
 import { ACTION_TYPE } from "../../utils/data/constants";
-import { tokensSupported } from "../../utils/data/LendingSingleTon";
-import { BigNumber } from "ethers";
+import { protocolList, protocolNames, tokensSupported } from "../../utils/data/LendingSingleTon";
 
 bg.config({ DECIMAL_PLACES: 10 });
 
@@ -50,6 +48,8 @@ const Trade: React.FC<any> = ({
     toSelectedActionTokenList,
     setFromSelectedActionTokenList,
     handleActionChange,
+    balances,
+    hf
 }: tTrade) => {
     const {
         maxBalance,
@@ -88,7 +88,7 @@ const Trade: React.FC<any> = ({
         setSelectedFromActionType,
         selectedFromActionType,
         setSelectedToActionType,
-        selectedToActionType,
+        selectedToActionType
     }: iTrading = useTradingStore((state) => state);
 
     return (
@@ -149,11 +149,16 @@ const Trade: React.FC<any> = ({
                                                                 {tokensSupported?.[selectedFromNetwork.chainName]?.[item.name] && (
                                                                     <div className="w-16 text-sm">
                                                                         HF:
-                                                                        {(Object.values(fromSelectedActionTokenList) as any[]).length > 0 && (
+                                                                        {/* {(Object.values(fromSelectedActionTokenList) as any[]).length > 0 && (
                                                                             <span className={`${(Object.values(fromSelectedActionTokenList) as any[])[0].HF > 2 ? "text-green-500" : "text-red-500"} pl-1`}>
                                                                                 {`${(Object.values(fromSelectedActionTokenList) as any[])[0].HF}%`}
                                                                             </span>
-                                                                        )}
+                                                                        )} */}
+                                                                         {hf && hf.length >= protocolList[selectedFromNetwork.chainId].length && hf[protocolIndex] ? (
+                                                                            <span className={`${hf[protocolIndex] > 2 ? "text-green-500" : "text-red-500"} pl-1`}>
+                                                                                {`${hf[protocolIndex]}%`}
+                                                                            </span>
+                                                                        ): ""}
                                                                     </div>
                                                                 )}
                                                                 <CiCircleChevDown size="30px" className="text-font-500 h-7 w-7" />
@@ -166,7 +171,7 @@ const Trade: React.FC<any> = ({
                                                                     <div className="flex justify-center items-center gap-3 pb-3">
                                                                         <button
                                                                             type="button"
-                                                                            onClick={() => handleActionChange(ACTION_TYPE.LENDING, "From")}
+                                                                            onClick={() => handleActionChange(item.name, ACTION_TYPE.LENDING, "From")}
                                                                             className={`text-sm text-font-100 bg-transparent hover:bg-font-800 active:bg-font-1000 border font-medium px-3 py-1 rounded-md ${
                                                                                 selectedFromActionType === ACTION_TYPE.LENDING && "!bg-font-900"
                                                                             }`}
@@ -175,7 +180,7 @@ const Trade: React.FC<any> = ({
                                                                         </button>
                                                                         <button
                                                                             type="button"
-                                                                            onClick={() => handleActionChange(ACTION_TYPE.BORROW, "From")}
+                                                                            onClick={() => handleActionChange(item.name, ACTION_TYPE.BORROW, "From")}
                                                                             className={`text-sm text-font-100 bg-transparent hover:bg-font-800 active:bg-font-1000 border font-medium px-3 py-1 rounded-md ${
                                                                                 selectedFromActionType === ACTION_TYPE.BORROW && "!bg-font-900"
                                                                             }`}
@@ -184,7 +189,7 @@ const Trade: React.FC<any> = ({
                                                                         </button>
                                                                         <button
                                                                             type="button"
-                                                                            onClick={() => handleActionChange(ACTION_TYPE.REPAY, "From")}
+                                                                            onClick={() => handleActionChange(item.name, ACTION_TYPE.REPAY, "From")}
                                                                             className={`text-sm text-font-100 bg-transparent hover:bg-font-800 active:bg-font-1000 border font-medium px-3 py-1 rounded-md ${
                                                                                 selectedFromActionType === ACTION_TYPE.REPAY && "!bg-font-900"
                                                                             }`}
@@ -193,7 +198,7 @@ const Trade: React.FC<any> = ({
                                                                         </button>
                                                                         <button
                                                                             type="button"
-                                                                            onClick={() => handleActionChange(ACTION_TYPE.WITHDRAW, "From")}
+                                                                            onClick={() => handleActionChange(item.name, ACTION_TYPE.WITHDRAW, "From")}
                                                                             className={`text-sm text-font-100 bg-transparent hover:bg-font-800 active:bg-font-1000 border font-medium px-3 py-1 rounded-md ${
                                                                                 selectedFromActionType === ACTION_TYPE.WITHDRAW && "!bg-font-900"
                                                                             }`}
@@ -223,16 +228,18 @@ const Trade: React.FC<any> = ({
                                                                 ) : tokensSupported?.[selectedFromNetwork.chainName]?.[item.name] ? (
                                                                     <div className="w-full flex flex-col justify-center items-center gap-0">
                                                                         {Object.values(fromSelectedActionTokenList).length > 0 &&
-                                                                            Object.values(fromSelectedActionTokenList).map((item: any) => (
+                                                                            Object.values(fromSelectedActionTokenList).map((item: any, index: any) => (
                                                                                 <div
                                                                                     key={item.shareTokenAddress}
                                                                                     onClick={() => onChangeFromToken(item.nativeTokenDetails.nativeToken, item.nativeTokenDetails.symbol, item?.type != undefined ? item.type : "")}
                                                                                     className="w-full flex justify-between items-center gap-3 hover:bg-backgound-200 active:bg-backgound-100 py-2 px-3 rounded-lg cursor-pointer my-2"
                                                                                 >
                                                                                     <span>
-                                                                                        {item.nativeTokenDetails.symbol} {item.apy && `(${item.apy}%)`}
+                                                                                        {item.nativeTokenDetails.symbol}
+                                                                                         {/* {item.apy && `(${item.apy}%)`} */}
                                                                                     </span>
-                                                                                    <span>{item?.balance ? bg(item.balance.toString()).dividedBy(1e18).toString() : "0"}</span>
+                                                                                    <span>{balances && bg(balances[index]).gt(0) ? balances[index] : "0"}</span>
+                                                                                    {/* <span>{item?.balance ? bg(item.balance.toString()).dividedBy(1e18).toString() : "0"}</span> */}
                                                                                 </div>
                                                                             ))}
                                                                     </div>
@@ -349,6 +356,7 @@ const Trade: React.FC<any> = ({
                                                                                         type="button"
                                                                                         onClick={() =>
                                                                                             handleActionChange(
+                                                                                                item.name,
                                                                                                 ACTION_TYPE.LENDING,
                                                                                                 "To"
                                                                                             )
@@ -366,7 +374,7 @@ const Trade: React.FC<any> = ({
                                                                                     <> */}
                                                                         <button
                                                                             type="button"
-                                                                            onClick={() => handleActionChange(ACTION_TYPE.LENDING, "To")}
+                                                                            onClick={() => handleActionChange(item.name, ACTION_TYPE.LENDING, "To")}
                                                                             className={`text-sm text-font-100 bg-transparent hover:bg-font-800 active:bg-font-1000 border font-medium px-3 py-1 rounded-md ${
                                                                                 selectedToActionType === ACTION_TYPE.LENDING && "!bg-font-900"
                                                                             }`}
@@ -376,7 +384,7 @@ const Trade: React.FC<any> = ({
 
                                                                         {/* <button
                                                                             type="button"
-                                                                            onClick={() => handleActionChange(ACTION_TYPE.REPAY, "To")}
+                                                                            onClick={() => handleActionChange(item.name, ACTION_TYPE.REPAY, "To")}
                                                                             className={`text-sm text-font-100 bg-transparent hover:bg-font-800 active:bg-font-1000 border font-medium px-3 py-1 rounded-md ${
                                                                                 selectedToActionType === ACTION_TYPE.REPAY && "!bg-font-900"
                                                                             }`}
@@ -391,6 +399,7 @@ const Trade: React.FC<any> = ({
                                                                                             type="button"
                                                                                             onClick={() =>
                                                                                                 handleActionChange(
+                                                                                                    item.name,
                                                                                                     ACTION_TYPE.LENDING,
                                                                                                     "To"
                                                                                                 )
@@ -407,6 +416,7 @@ const Trade: React.FC<any> = ({
                                                                                             type="button"
                                                                                             onClick={() =>
                                                                                                 handleActionChange(
+                                                                                                    item.name, 
                                                                                                     ACTION_TYPE.REPAY,
                                                                                                     "To"
                                                                                                 )

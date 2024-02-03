@@ -27,7 +27,8 @@ export type tTrade = {
     toSelectedActionTokenList: any;
     setFromSelectedActionTokenList: (fromSelectedActionTokenList: any) => void;
     setToSelectedActionTokenList: (toSelectedActionTokenList: any) => void;
-    handleActionChange: (action: string, sendType: string) => void;
+    handleActionChange: (protocol: string, action: string, sendType: string) => void;
+    balances: any;
 };
 
 export type tTradeProtocol = {

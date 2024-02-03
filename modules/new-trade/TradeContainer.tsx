@@ -35,10 +35,10 @@ import { useBiconomySessionKeyProvider } from "../../hooks/aaProvider/useBiconom
 import { decreasePowerByDecimals, getTokenListByChainId, incresePowerByDecimals } from "../../utils/helper";
 import { getContractInstance, getErc20Balanceof, getErc20Decimals, getProvider } from "../../utils/web3Libs/ethers";
 import { useBorrow } from "../../hooks/Batching/useBorrow";
-import { fetchPrice, getActionBalance, getAllTokenInfoByAction } from "../../utils/LendingHelper";
+import { fetchPrice, getActionBalance, getAllTokenInfoByAction, getHF } from "../../utils/LendingHelper";
 import { ACTION_TYPE } from "../../utils/data/constants";
 import { useLendingRoutes } from "../../hooks/Batching/useLendingRoutes";
-import { nativeTokens } from "../../utils/data/LendingSingleTon";
+import { nativeTokens, protocolList } from "../../utils/data/LendingSingleTon";
 
 bg.config({ DECIMAL_PLACES: 10 });
 // bg.config({ EXPONENTIAL_AT: 999999, DECIMAL_PLACES: 40 })
@@ -62,6 +62,7 @@ const TradeContainer: React.FC<any> = () => {
     const [selectedToActionToken, setSelectedToActionToken] = useState({});
 
     const [balances, setBalances] = useState([]);
+    const [hf, setHF] = useState([]);
 
     const {
         smartAccount,
@@ -70,6 +71,7 @@ const TradeContainer: React.FC<any> = () => {
         setSmartAccount,
         setSmartAccountAddress,
         setConnected,
+        selectedNetwork
     }: iGlobal = useGlobalStore((state) => state);
 
     const {
@@ -149,12 +151,38 @@ const TradeContainer: React.FC<any> = () => {
         setShowExecuteMethodModel,
     }: iTrading = useTradingStore((state) => state);
 
-    useEffect(()=> {
 
-        async function fetchBalance() {
-            
+    useEffect(()=> {
+        async function fetchHf() {
+            const hfs: any = [];
+            for (const protocol of protocolList[selectedNetwork.chainId]) {
+                const hf = await getHF(protocol, smartAccount, selectedNetwork.chainId)
+                if(hf) hfs.push(hf.decimalPlaces(2).toString());
+            }
+            setHF(hfs)
         }
-        if (fromSelectedActionTokenList) {
+        if (selectedNetwork && selectedNetwork.chainId && smartAccount && smartAccount.accountAddress) {
+            fetchHf()
+        }
+    },[selectedNetwork, smartAccount])
+
+    useEffect(()=> {
+        async function fetchBalance() {
+            const newBalances: any = [];
+            for (const key in fromSelectedActionTokenList) {
+                if (fromSelectedActionTokenList.hasOwnProperty(key)) {
+                    const tokenDetails = fromSelectedActionTokenList[key];
+                    const balance = await getActionBalance(tokenDetails, tokenDetails.type, smartAccount)
+                    if (balance) {
+                        const MaxBalance = await decreasePowerByDecimals(balance?.toString(), tokenDetails.nativeTokenDetails.decimals);
+                        // console.log('Balance: : ', tokenDetails.type, tokenDetails.nativeTokenDetails.symbol, tokenDetails.nativeTokenDetails.decimals, MaxBalance?.toString());
+                        newBalances.push(MaxBalance)
+                    }
+                }
+            }
+            if (newBalances.length > 0) setBalances(newBalances)
+        }
+        if (fromSelectedActionTokenList && smartAccount && smartAccount.accountAddress) {
             fetchBalance()
         }
     },[fromSelectedActionTokenList])
@@ -169,11 +197,11 @@ const TradeContainer: React.FC<any> = () => {
         async function name() {
             if (
                 smartAccount?.accountAddress &&
-                selectedFromProtocol === "aaveV3" &&
+                // selectedFromProtocol === "aaveV3" &&
                 selectedFromActionType == ACTION_TYPE.LENDING
             ) {
                 setIsLoadingTokenList(true);
-                let data = await getAllTokenInfoByAction("base", "aaveV3", "8453", smartAccount, ACTION_TYPE.LENDING);
+                let data = await getAllTokenInfoByAction(selectedNetwork.chainName, selectedFromProtocol, selectedNetwork.chainId, smartAccount, ACTION_TYPE.LENDING);
                 setFromSelectedActionTokenList(data);
                 setIsLoadingTokenList(false);
             }
@@ -185,11 +213,11 @@ const TradeContainer: React.FC<any> = () => {
         async function name() {
             if (
                 smartAccount?.accountAddress &&
-                selectedToProtocol === "aaveV3" &&
+                // selectedToProtocol === "aaveV3" &&
                 selectedToActionType == ACTION_TYPE.LENDING
             ) {
                 setIsLoadingTokenList(true);
-                let data = await getAllTokenInfoByAction("base", "aaveV3", "8453", smartAccount, ACTION_TYPE.LENDING);
+                let data = await getAllTokenInfoByAction(selectedNetwork.chainName, selectedToProtocol, selectedNetwork.chainId, smartAccount, ACTION_TYPE.LENDING);
                 setToSelectedActionTokenList(data);
                 setIsLoadingTokenList(false);
             }
@@ -214,10 +242,11 @@ const TradeContainer: React.FC<any> = () => {
         }
     }, [selectedFromActionType]);
 
-    const handleActionChange = async (action: string, sendType: string) => {
+    const handleActionChange = async (protocol: string, action: string, sendType: string) => {
         setIsLoadingTokenList(true);
         try {
-            let data = await getAllTokenInfoByAction("base", "aaveV3", "8453", smartAccount, action);
+            let data = await getAllTokenInfoByAction(selectedNetwork.chainName, protocol, selectedNetwork.chainId.toString(), smartAccount, action);
+            console.log("data", data, selectedNetwork)
             if (sendType != "To") {
                 setFromSelectedActionTokenList(data);
             } else {
@@ -293,10 +322,11 @@ const TradeContainer: React.FC<any> = () => {
 
     useEffect(() => {
         async function onChangeselectedFromProtocol() {
-            if (selectedFromProtocol) {
+            if (selectedFromNetwork && selectedFromNetwork.chainId && selectedFromProtocol) {
                 if (selectedFromProtocol !== "erc20") {
                     setAmountIn("");
                     setFromTokenDecimal(0);
+                    // alert(selectedFromNetwork.chainId)
 
                     const firstFromToken = protocolNames[selectedFromNetwork.chainId].key.find(
                         (entry) => entry.name == selectedFromProtocol
@@ -320,7 +350,7 @@ const TradeContainer: React.FC<any> = () => {
 
     useEffect(() => {
         async function onChangeselectedToProtocol() {
-            if (selectedToProtocol) {
+            if (selectedToNetwork && selectedToNetwork.chainId && selectedToProtocol) {
                 if (selectedToProtocol == "erc20") {
                     const filteredTokens = getTokenListByChainId(selectedToNetwork.chainId, UNISWAP_TOKENS);
                     setToTokensData(filteredTokens);
@@ -960,6 +990,8 @@ const TradeContainer: React.FC<any> = () => {
             setFromSelectedActionTokenList={setFromSelectedActionTokenList}
             setToSelectedActionTokenList={setToSelectedActionTokenList}
             handleActionChange={handleActionChange}
+            balances={balances}
+            hf={hf}
         />
     );
 };

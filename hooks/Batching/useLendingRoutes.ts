@@ -364,7 +364,7 @@ export function useLendingRoutes() {
                 console.log("batchFlow-tx", batchFlow)
 
                 if (tokenInObject.nativeTokenDetails.nativeToken != tokenOut) {
-                    // alert("Borro3")
+                    alert("Borro3")
                     approveData = await approve({
                         tokenIn: tokenInObject.nativeTokenDetails.nativeToken,
                         spender: uniswapSwapRouterByChainId[selectedFromNetwork.chainId],
