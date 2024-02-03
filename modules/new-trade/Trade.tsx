@@ -49,7 +49,7 @@ const Trade: React.FC<any> = ({
     setFromSelectedActionTokenList,
     handleActionChange,
     balances,
-    hf
+    hf,
 }: tTrade) => {
     const {
         maxBalance,
@@ -147,7 +147,7 @@ const Trade: React.FC<any> = ({
                                                             </div>
                                                             <div className="w-auto flex justify-end items-center gap-2">
                                                                 {tokensSupported?.[selectedFromNetwork.chainName]?.[item.name] && (
-                                                                    <div className="w-16 text-sm">
+                                                                    <div className="w-16 flex justify-end items-center gap-1.5 text-sm">
                                                                         HF:
                                                                         {/* {(Object.values(fromSelectedActionTokenList) as any[]).length > 0 && (
                                                                             <span className={`${(Object.values(fromSelectedActionTokenList) as any[])[0].HF > 2 ? "text-green-500" : "text-red-500"} pl-1`}>
@@ -155,10 +155,14 @@ const Trade: React.FC<any> = ({
                                                                             </span>
                                                                         )} */}
                                                                          {hf && hf.length >= protocolList[selectedFromNetwork.chainId].length && hf[protocolIndex] ? (
-                                                                            <span className={`${hf[protocolIndex] > 2 ? "text-green-500" : "text-red-500"} pl-1`}>
-                                                                                {`${hf[protocolIndex]}%`}
+                                                                            <span className={`${hf[protocolIndex] > 2 ? "text-green-500" : "text-red-500"}`}>
+                                                                                {`${hf[protocolIndex].substring(0,5)}%`}
                                                                             </span>
-                                                                        ): ""}
+                                                                        ) : (
+                                                                            <BiLoaderAlt
+                                                                                className="animate-spin"
+                                                                            />
+                                                                        )}
                                                                     </div>
                                                                 )}
                                                                 <CiCircleChevDown size="30px" className="text-font-500 h-7 w-7" />
@@ -172,8 +176,8 @@ const Trade: React.FC<any> = ({
                                                                         <button
                                                                             type="button"
                                                                             onClick={() => handleActionChange(item.name, ACTION_TYPE.LENDING, "From")}
-                                                                            className={`text-sm text-font-100 bg-transparent hover:bg-font-800 active:bg-font-1000 border font-medium px-3 py-1 rounded-md ${
-                                                                                selectedFromActionType === ACTION_TYPE.LENDING && "!bg-font-900"
+                                                                            className={`text-sm text-font-100 bg-transparent hover:bg-font-900 active:bg-font-1000 border font-semibold px-3 py-1 rounded-md ${
+                                                                                selectedFromActionType === ACTION_TYPE.LENDING && "!bg-primary-100 !text-primary-950"
                                                                             }`}
                                                                         >
                                                                             {ACTION_TYPE.LENDING}
@@ -181,8 +185,8 @@ const Trade: React.FC<any> = ({
                                                                         <button
                                                                             type="button"
                                                                             onClick={() => handleActionChange(item.name, ACTION_TYPE.BORROW, "From")}
-                                                                            className={`text-sm text-font-100 bg-transparent hover:bg-font-800 active:bg-font-1000 border font-medium px-3 py-1 rounded-md ${
-                                                                                selectedFromActionType === ACTION_TYPE.BORROW && "!bg-font-900"
+                                                                            className={`text-sm text-font-100 bg-transparent hover:bg-font-900 active:bg-font-1000 border font-medium px-3 py-1 rounded-md ${
+                                                                                selectedFromActionType === ACTION_TYPE.BORROW && "!bg-primary-100 !text-primary-950"
                                                                             }`}
                                                                         >
                                                                             {ACTION_TYPE.BORROW}
@@ -190,8 +194,8 @@ const Trade: React.FC<any> = ({
                                                                         <button
                                                                             type="button"
                                                                             onClick={() => handleActionChange(item.name, ACTION_TYPE.REPAY, "From")}
-                                                                            className={`text-sm text-font-100 bg-transparent hover:bg-font-800 active:bg-font-1000 border font-medium px-3 py-1 rounded-md ${
-                                                                                selectedFromActionType === ACTION_TYPE.REPAY && "!bg-font-900"
+                                                                            className={`text-sm text-font-100 bg-transparent hover:bg-font-900 active:bg-font-1000 border font-medium px-3 py-1 rounded-md ${
+                                                                                selectedFromActionType === ACTION_TYPE.REPAY && "!bg-primary-100 !text-primary-950"
                                                                             }`}
                                                                         >
                                                                             {ACTION_TYPE.REPAY}
@@ -199,8 +203,8 @@ const Trade: React.FC<any> = ({
                                                                         <button
                                                                             type="button"
                                                                             onClick={() => handleActionChange(item.name, ACTION_TYPE.WITHDRAW, "From")}
-                                                                            className={`text-sm text-font-100 bg-transparent hover:bg-font-800 active:bg-font-1000 border font-medium px-3 py-1 rounded-md ${
-                                                                                selectedFromActionType === ACTION_TYPE.WITHDRAW && "!bg-font-900"
+                                                                            className={`text-sm text-font-100 bg-transparent hover:bg-font-900 active:bg-font-1000 border font-medium px-3 py-1 rounded-md ${
+                                                                                selectedFromActionType === ACTION_TYPE.WITHDRAW && "!bg-primary-100 !text-primary-950"
                                                                             }`}
                                                                         >
                                                                             {ACTION_TYPE.WITHDRAW}
@@ -335,12 +339,16 @@ const Trade: React.FC<any> = ({
                                                             </div>
                                                             <div className="w-auto flex justify-end items-center gap-2">
                                                                 {tokensSupported?.[selectedToNetwork.chainName]?.[item.name] && (
-                                                                    <div className="w-16 text-sm">
+                                                                    <div className="w-16 flex justify-end items-center gap-1.5 text-sm">
                                                                         HF:
-                                                                        {(Object.values(toSelectedActionTokenList) as any[]).length > 0 && (
-                                                                            <span className={`${(Object.values(toSelectedActionTokenList) as any[])[0].HF > 2 ? "text-green-500" : "text-red-500"} pl-1`}>
+                                                                        {(Object.values(toSelectedActionTokenList) as any[]).length > 0 ? (
+                                                                            <span className={`${(Object.values(toSelectedActionTokenList) as any[])[0].HF > 2 ? "text-green-500" : "text-red-500"}`}>
                                                                                 {`${(Object.values(toSelectedActionTokenList) as any[])[0].HF}%`}
                                                                             </span>
+                                                                        ) : (
+                                                                            <BiLoaderAlt
+                                                                                className="animate-spin"
+                                                                            />
                                                                         )}
                                                                     </div>
                                                                 )}
@@ -361,10 +369,10 @@ const Trade: React.FC<any> = ({
                                                                                                 "To"
                                                                                             )
                                                                                         }
-                                                                                        className={`text-sm text-font-100 bg-transparent hover:bg-font-800 active:bg-font-1000 border font-medium px-3 py-1 rounded-md ${
+                                                                                        className={`text-sm text-font-100 bg-transparent hover:bg-font-900 active:bg-font-1000 border font-medium px-3 py-1 rounded-md ${
                                                                                             selectedToActionType ===
                                                                                                 ACTION_TYPE.LENDING &&
-                                                                                            "!bg-font-900"
+                                                                                            "!bg-primary-100 !text-primary-950"
                                                                                         }`}
                                                                                     >
                                                                                         {ACTION_TYPE.LENDING}
@@ -375,8 +383,8 @@ const Trade: React.FC<any> = ({
                                                                         <button
                                                                             type="button"
                                                                             onClick={() => handleActionChange(item.name, ACTION_TYPE.LENDING, "To")}
-                                                                            className={`text-sm text-font-100 bg-transparent hover:bg-font-800 active:bg-font-1000 border font-medium px-3 py-1 rounded-md ${
-                                                                                selectedToActionType === ACTION_TYPE.LENDING && "!bg-font-900"
+                                                                            className={`text-sm text-font-100 bg-transparent hover:bg-font-900 active:bg-font-1000 border font-medium px-3 py-1 rounded-md ${
+                                                                                selectedToActionType === ACTION_TYPE.LENDING && "!bg-primary-100 !text-primary-950"
                                                                             }`}
                                                                         >
                                                                             {ACTION_TYPE.LENDING}
@@ -385,8 +393,8 @@ const Trade: React.FC<any> = ({
                                                                         {/* <button
                                                                             type="button"
                                                                             onClick={() => handleActionChange(item.name, ACTION_TYPE.REPAY, "To")}
-                                                                            className={`text-sm text-font-100 bg-transparent hover:bg-font-800 active:bg-font-1000 border font-medium px-3 py-1 rounded-md ${
-                                                                                selectedToActionType === ACTION_TYPE.REPAY && "!bg-font-900"
+                                                                            className={`text-sm text-font-100 bg-transparent hover:bg-font-900 active:bg-font-1000 border font-medium px-3 py-1 rounded-md ${
+                                                                                selectedToActionType === ACTION_TYPE.REPAY && "!bg-primary-100 !text-primary-950"
                                                                             }`}
                                                                         >
                                                                             {ACTION_TYPE.REPAY}
@@ -404,10 +412,10 @@ const Trade: React.FC<any> = ({
                                                                                                     "To"
                                                                                                 )
                                                                                             }
-                                                                                            className={`text-sm text-font-100 bg-transparent hover:bg-font-800 active:bg-font-1000 border font-medium px-3 py-1 rounded-md ${
+                                                                                            className={`text-sm text-font-100 bg-transparent hover:bg-font-900 active:bg-font-1000 border font-medium px-3 py-1 rounded-md ${
                                                                                                 selectedToActionType ===
                                                                                                     ACTION_TYPE.LENDING &&
-                                                                                                "!bg-font-900"
+                                                                                                "!bg-primary-100 !text-primary-950"
                                                                                             }`}
                                                                                         >
                                                                                             {ACTION_TYPE.LENDING}
@@ -421,10 +429,10 @@ const Trade: React.FC<any> = ({
                                                                                                     "To"
                                                                                                 )
                                                                                             }
-                                                                                            className={`text-sm text-font-100 bg-transparent hover:bg-font-800 active:bg-font-1000 border font-medium px-3 py-1 rounded-md ${
+                                                                                            className={`text-sm text-font-100 bg-transparent hover:bg-font-900 active:bg-font-1000 border font-medium px-3 py-1 rounded-md ${
                                                                                                 selectedToActionType ===
                                                                                                     ACTION_TYPE.REPAY &&
-                                                                                                "!bg-font-900"
+                                                                                                "!bg-primary-100 !text-primary-950"
                                                                                             }`}
                                                                                         >
                                                                                             {ACTION_TYPE.REPAY}
@@ -563,6 +571,7 @@ const Trade: React.FC<any> = ({
                                         mainValue={selectedFromNetwork.key}
                                         firstSubValue={selectedFromProtocol}
                                         secondSubValue={selectedFromToken}
+                                        actionType={selectedFromActionType}
                                     />
                                     {/* ---------- FROM Section END ---------- */}
 
@@ -599,6 +608,7 @@ const Trade: React.FC<any> = ({
                                             mainValue={selectedToNetwork.key}
                                             firstSubValue={selectedToProtocol}
                                             secondSubValue={selectedToToken}
+                                            actionType={selectedToActionType}
                                         />
                                     )}
                                     {/* ---------- To Section END ---------- */}

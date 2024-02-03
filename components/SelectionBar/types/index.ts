@@ -8,5 +8,6 @@ export type tSelectionBar = {
     valuePlaceholder: string;
     mainValue: string;
     firstSubValue: string;
+    actionType: string;
     secondSubValue: string;
 };

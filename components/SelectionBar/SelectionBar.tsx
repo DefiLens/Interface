@@ -16,6 +16,7 @@ const SelectionBar = ({
     mainValue,
     firstSubValue,
     secondSubValue,
+    actionType,
 }: tSelectionBar) => (
     <div
         onClick={handleSelectionMenu}
@@ -51,6 +52,9 @@ const SelectionBar = ({
                     <div className="text-xs text-font-300 font-medium">
                         {firstSubValue && <span>on {firstSubValue}</span>}
                         {secondSubValue && <span> ({secondSubValue})</span>}
+                    </div>
+                    <div className="text-xs text-font-300 font-medium">
+                        {actionType && <span> by {actionType}</span>}
                     </div>
                 </div>
             ) : (
