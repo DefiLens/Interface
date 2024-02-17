@@ -216,11 +216,15 @@ export async function getActionBalance(actionObject, action, smartAccount) {
 
 export async function getHF(protocol, smartAccount, chainId) {
     try {
-        if (protocol == "aaveV3") {
+        if (protocol == "aaveV3" || protocol == "aaveV2") {
             let abiInterface = new ethers.utils.Interface(poolv3);
             let to
             if (chainId == "137") {
-                to = "0x794a61358D6845594F94dc1DB02A252b5b4814aD";
+                if (protocol == "aaveV2") {
+                    to = "0x8dFf5E27EA6b7AC08EbFdf9eB090F32ee9a30fcf";
+                }  else {
+                    to = "0x794a61358D6845594F94dc1DB02A252b5b4814aD";
+                }
             } else if(chainId == "8453") {
                 to = "0xA238Dd80C259a72e81d7e4664a9801593F98d1c5";
             } else if(chainId == "10") {
@@ -228,6 +232,7 @@ export async function getHF(protocol, smartAccount, chainId) {
             }
             const contract = await getContractInstance(to, abiInterface, smartAccount.provider);
             let userData = await contract?.getUserAccountData(smartAccount.accountAddress);
+            // console.log('userData: ', protocol, userData)
             let hf = bg(userData.healthFactor.toString()).div(1e18);
             // console.log('userData: ', userData)
             return hf
