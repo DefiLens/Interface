@@ -5,7 +5,15 @@ import { toast, ToastBar, Toaster } from "react-hot-toast";
 
 import Image from "next/image";
 import { AppProps } from "next/app";
-import { metamaskWallet, ThirdwebProvider } from "@thirdweb-dev/react";
+import {
+    ThirdwebProvider,
+    ConnectWallet,
+    metamaskWallet,
+    coinbaseWallet,
+    walletConnect,
+    embeddedWallet,
+    trustWallet,
+} from "@thirdweb-dev/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Arbitrum, Avalanche, Base, Ethereum, Optimism, Polygon } from "@thirdweb-dev/chains";
 
@@ -35,13 +43,34 @@ export default function App({ Component, pageProps }: AppProps) {
         <>
             {/* @ts-ignore */}
             {/* <ChainContext.Provider value={{ selectedChain, setSelectedChain, selectedChainId, setSelectedChainId }}> */}
-            <ThirdwebProvider
-                supportedWallets={[metamaskConfig]}
+            {/* <ThirdwebProvider
                 supportedChains={[Polygon, Arbitrum, Avalanche, Ethereum, Base, Optimism]}
                 clientId={process.env.NEXT_PUBLIC_TEMPLATE_CLIENT_ID}
-                // activeChain={selectedChain}
                 activeChain={selectedNetwork.chainName}
+                // locale={en()}
+                supportedWallets={[
+                    metamaskWallet(),
+                    coinbaseWallet({ recommended: true }),
+                    walletConnect(),
+                    trustWallet({ recommended: true })
+                ]}
+                
+            > */}
+            <ThirdwebProvider
+                supportedChains={[Polygon, Base, Optimism]}
+                clientId={process.env.NEXT_PUBLIC_TEMPLATE_CLIENT_ID}
+                activeChain={selectedNetwork.chainName}
+                // locale={en()}
+                supportedWallets={[
+                    // embeddedWallet(),
+                    metamaskWallet({ recommended: true }),
+                    // coinbaseWallet(),
+                    // walletConnect(),
+                    // trustWallet(),
+                ]}
             >
+
+
                 <QueryClientProvider client={queryClient}>
                     <Toaster
                         toastOptions={{

@@ -82,111 +82,42 @@ async function fetchTokenPrice(chainId: number, tokenAddress: string): Promise<n
 }
 
 export function usePortfolio() {
-    const { setUserTokensData, setIsUsersTokenLoading, setTotalNetworth }: iPortfolio = usePortfolioStore((state) => state);
+    const { setChainData, setIsLoading, setError }: iPortfolio = usePortfolioStore((state) => state);
 
-    const { selectedNetwork }: iGlobal = useGlobalStore((state) => state);
-
-    const chainIds = [137, 10, 8453];
-    async function fetchPortfolio({ address, chainId }: any) {
+    async function fetchPortfolio(address: any) {
         try {
-            let networth: any = bg(0)
-            setIsUsersTokenLoading(true);
+            const authToken = process.env.NEXT_PUBLIC_COVALENT_API_KEY;
 
-            const userTokensUrl = `https://api.enso.finance/api/v1/wallet/balances?chainId=${chainId}&eoaAddress=${address}&useEoa=true`;
-            // const userTokensUrlOptimism = `https://api.enso.finance/api/v1/wallet/balances?chainId=${chainIds[1]}&eoaAddress=${address}&useEoa=true`;
-            // const userTokensUrlBase = `https://api.enso.finance/api/v1/wallet/balances?chainId=${chainIds[2]}&eoaAddress=${address}&useEoa=true`;
+            const chains = [
+                { chainId: 137 }, // Polygon
+                { chainId: 1 }, // Ethereum
+                { chainId: 8453 }, // Binance Smart Chain
+                { chainId: 10 }, // Optimism
+                { chainId: 43114 }, // Avalanche
+                { chainId: 42161 }, // Arbitrum
+            ];
 
-            const baseTokensUrl = "https://enso-scrape.s3.us-east-2.amazonaws.com/output/backend/baseTokens.json";
-            const defiTokensUrl = "https://enso-scrape.s3.us-east-2.amazonaws.com/output/backend/defiTokens.json";
-            console.log("userTokensUrl: ", userTokensUrl);
-
-            // const userTokens = await fetchData<UserToken[]>(userTokensUrl);
-            // // const userTokensOptimism = await fetchData<UserToken[]>(userTokensUrlOptimism);
-            // // const userTokensBase = await fetchData<UserToken[]>(userTokensUrlBase);
-
-            // const baseTokens = await fetchData<ERC20Token[]>(baseTokensUrl);
-            // const defiTokens = await fetchData<DefiToken[]>(defiTokensUrl);
-
-            const [userTokens, baseTokens, defiTokens] = await Promise.all([
-                fetchData<UserToken[]>(userTokensUrl),
-                fetchData<ERC20Token[]>(baseTokensUrl),
-                fetchData<DefiToken[]>(defiTokensUrl)
-            ]);
-
-            console.log("userTokens: ", userTokens);
-            // console.log('userTokensUrlOptimism: ', userTokensOptimism)
-            // console.log('userTokensUrlBase: ', userTokensBase)
-            // console.log('defiTokensUrl: ', baseTokens)
-            // console.log('defiTokensUrl: ', defiTokens)
-
-            const aggregatedData: AggregatedTokenInfo[] = [];
-            // await  [...userTokensPolygon, ...userTokensOptimism, ...userTokensBase].forEach(async (userToken, index) => {
-            await [...userTokens].forEach(async (userToken, index) => {
-                // const price = await fetchTokenPrice(chainId, userToken.token);
-                const defiTokenMatch = defiTokens.find(
-                    (defiToken) => defiToken.tokenAddress.toLowerCase() == userToken.token.toLowerCase()
+            const requests = chains.map(async ({ chainId }) => {
+                const response = await axios.get(
+                    `https://api.covalenthq.com/v1/${chainId}/address/${address}/balances_v2/`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${authToken}`,
+                        },
+                    }
                 );
-                if (defiTokenMatch) {
-                    const price = await fetchTokenPrice(Number(selectedNetwork.chainId), userToken.token)
-                    console.log('userToken: ', defiTokenMatch.name, price?.toString())
-                    const aggregatedInfo: AggregatedTokenInfo = {
-                        tokenAddress: userToken.token,
-                        amount: userToken.amount,
-                        decimals: userToken.decimals,
-                        name: defiTokenMatch.name,
-                        subtitle: defiTokenMatch.subtitle,
-                        apy: defiTokenMatch.apy,
-                        protocol: defiTokenMatch.protocol, // Adding protocol info
-                        underlyingTokens: defiTokenMatch.underlyingTokens,
-                        price : price != undefined ? price : 0,
-                        type: "defiToken",
-                    };
-                    aggregatedData.push(aggregatedInfo);
-                    if (price) {
-                        // console.log('price---', bg(networth).toString(), bg(decreasePowerByDecimals(bg(userToken.amount), userToken.decimals)).multipliedBy(bg(price?.toString())).toString())
-                        networth = bg(networth).plus(bg(decreasePowerByDecimals(bg(userToken.amount), userToken.decimals)).multipliedBy(bg(price?.toString())))
-                    }
-                } else {
-                    const erc20TokenMatch = baseTokens.find((baseToken) => baseToken.address === userToken.token);
-                    if (erc20TokenMatch) {
-                        const price = await fetchTokenPrice(Number(selectedNetwork.chainId), userToken.token)
-                        console.log('userToken: ', erc20TokenMatch.name, price?.toString())
-                        let aggregatedInfo: AggregatedTokenInfo = {
-                            tokenAddress: userToken.token,
-                            amount: userToken.amount,
-                            decimals: userToken.decimals,
-                            name: erc20TokenMatch.name,
-                            symbol: erc20TokenMatch.symbol,
-                            logoURI: erc20TokenMatch.logoURI,
-                            chainId: erc20TokenMatch.chainId,
-                            price : price != undefined ? price : 0,
-                            type: "erc20Token",
-                        };
-                        aggregatedData.push(aggregatedInfo);
-                        if (price) {
-                            // console.log('price---2', bg(networth).toString(), bg(decreasePowerByDecimals(bg(userToken.amount), userToken.decimals)).multipliedBy(bg(price?.toString())).toString())
-                            networth = bg(networth).plus(bg(decreasePowerByDecimals(bg(userToken.amount), userToken.decimals)).multipliedBy(bg(price?.toString())))
-                        }
-                    }
-                }
-                setTotalNetworth(networth.toString())
+
+                return { chainId, data: response.data.data };
             });
-            console.log("aggregatedData", aggregatedData, networth.toString());
-            // for (let i=0; i<aggregatedData.length; i++) {
-            //     console.log("aggregatedData-i: ", i)
-            //     await fetchTokenPrice(137, aggregatedData[i].tokenAddress)
-            // }
-            setUserTokensData(aggregatedData);
-            setIsUsersTokenLoading(false);
-            return aggregatedData;
-        } catch (error: any) {
-            if (error.message) {
-                console.log("portfolio: Error", error.message);
-            } else {
-                console.log("portfolio: Error", error);
-            }
-            setIsUsersTokenLoading(false);
-            return;
+
+            const responseData = await Promise.all(requests);
+            console.log("responseData----------", responseData);
+            setChainData(responseData);
+        } catch (error) {
+            console.error("Error fetching data:", error);
+            setError("Error fetching data");
+        } finally {
+            setIsLoading(false);
         }
     }
     return useMutation(fetchPortfolio);

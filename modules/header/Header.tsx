@@ -1,11 +1,11 @@
-import { useRef } from "react";
+import { useRef, useEffect, useLayoutEffect } from "react";
 
 import Link from "next/link";
 import Image from "next/image";
 import { FiCopy } from "react-icons/fi";
 import { CgSpinner } from "react-icons/cg";
 import { usePathname } from "next/navigation";
-import { useAddress } from "@thirdweb-dev/react";
+import { useAddress, useUser, useChainId, useChain } from "@thirdweb-dev/react";
 
 import { tHeader } from "./types";
 import { copyToClipboard } from "../../utils/helper";
@@ -16,6 +16,14 @@ import { NavigationList } from "../../utils/data/navigation";
 import TransferContainer from "../transfer/TransferContainer";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import SelectNetwork from "../../components/SelectNetwork/SelectNetwork";
+import { ConnectWallet } from "@thirdweb-dev/react";
+import { useConnectionStatus } from "@thirdweb-dev/react";
+
+import {
+    useMetamask,
+    useLogin,
+    useLogout,
+} from "@thirdweb-dev/react";
 
 const Header: React.FC<any> = ({ switchOnSpecificChain }: tHeader) => {
     const pathname = usePathname();
@@ -47,6 +55,34 @@ const Header: React.FC<any> = ({ switchOnSpecificChain }: tHeader) => {
         setShowTransferFundToggle(false);
     });
 
+    // const { isLoggedIn, isLoading } = useUser();
+
+    // useLayoutEffect(() => {
+    //     console.log("isLoggedIn", isLoggedIn)
+    //     if (!isLoggedIn && !isLoading) {
+    //         alert("You need to login")
+    //     }
+    // }, [isLoggedIn, isLoading]);
+
+    // const { isLoading, login } = useLogin();
+
+
+    const chainId = useChainId();
+
+    const chain = useChain();
+
+
+    useEffect(() => {
+        if (chainId) {
+            // Call your function here with the chainId
+            // alert("ChainID: -->> ", chainId.toString());
+            console.log("ChainData:  ", chain)
+            console.log("Id of Chain:  ", chainId)
+            switchOnSpecificChain(chain?.slug);
+        }
+    }, [chainId]);
+
+
     return (
         <div className="header-container w-full h-[69px]">
             <ul className="w-full h-full flex justify-between items-center gap-3 bg-backgound-100 p-2 shadow-md shadow-secondary-500">
@@ -68,9 +104,8 @@ const Header: React.FC<any> = ({ switchOnSpecificChain }: tHeader) => {
                             <Link
                                 href={item.route}
                                 key={item.title}
-                                className={`cursor-pointer px-5 py-1 text-sm md:text-base text-center rounded-full hover:bg-backgound-100 transition duration-300 ${
-                                    pathname === item.route ? "bg-backgound-100" : ""
-                                } `}
+                                className={`cursor-pointer px-5 py-1 text-sm md:text-base text-center rounded-full hover:bg-backgound-100 transition duration-300 ${pathname === item.route ? "bg-backgound-100" : ""
+                                    } `}
                             >
                                 {item.title}
                             </Link>
@@ -105,13 +140,12 @@ const Header: React.FC<any> = ({ switchOnSpecificChain }: tHeader) => {
                         </div>
 
                         <div
-                           
+
                             ref={transferModuleRef}
-                            className={`absolute w-full h-[calc(100%-69px)] top-[69px] z-40 ${
-                                showTransferFundToggle
-                                    ? "!right-0 !transition !duration-1000 !ease-out"
-                                    : "!hidden !transition !duration-700 !ease-out"
-                            } `}
+                            className={`absolute w-full h-[calc(100%-69px)] top-[69px] z-40 ${showTransferFundToggle
+                                ? "!right-0 !transition !duration-1000 !ease-out"
+                                : "!hidden !transition !duration-700 !ease-out"
+                                } `}
                         >
                             <TransferContainer />
                         </div>
@@ -120,7 +154,7 @@ const Header: React.FC<any> = ({ switchOnSpecificChain }: tHeader) => {
                     {connected && !smartAccount && !loading && (
                         <button
                             className="bg-button-100 py-2 px-5 rounded-lg text-font-100 font-medium border-b-4 transition duration-300 border-button-300 hover:border-button-400 flex justify-center items-center gap-2"
-                            //   onClick={handleConnect}
+                        //   onClick={handleConnect}
                         >
                             <svg
                                 className="h-4 w-4 text-font-100"
@@ -151,98 +185,116 @@ const Header: React.FC<any> = ({ switchOnSpecificChain }: tHeader) => {
                             </button>
                         </div>
                     )}
-                    {smartAccount && !loading && (
-                        <div className="flex flex-wrap justify-start items-center gap-3 text-base">
-                            <button
-                                type="button"
-                                onClick={() => setShowWalletAddress(!showWalletAddress)}
-                                className="relative wallet-container flex justify-center items-center gap-5 bg-backgound-600 p-2 pr-4 rounded-3xl text-font-100 font-medium transition duration-300"
-                            >
-                                <Image
-                                    src={metamask}
-                                    alt="close"
-                                    className="h-7 w-7 p-1 bg-font-100 rounded-full cursor-pointer"
-                                />
-                                <span className="text-sm font-medium">
-                                    {smartAccount &&
-                                        smartAccountAddress.slice(0, 5) + "..." + smartAccountAddress.slice(-3)}
-                                </span>
-                                <span className="flex justify-center items-center gap-2">
-                                    <FiCopy
-                                        className="text-font-100 hover:text-font-200 active:text-font-400"
-                                        onClick={() =>
-                                            copyToClipboard(smartAccountAddress, "Smart account address Copied")
-                                        }
-                                    />
-                                </span>
-                            </button>
+                    <div className="flex flex-wrap justify-start items-center gap-3 text-base">
+                        <div
+                            className="flex justify-center items-center gap-3"
+                        >
+                            {smartAccount && !loading && (
 
-                            {showWalletAddress && smartAccount && !loading && (
-                                <div
-                                    ref={walletAddressRef}
-                                    className="w-80 absolute top-16 right-28 z-50 flex flex-col justify-center items-start gap-4 bg-backgound-600 border-2 border-backgound-500 shadow-md shadow-backgound-100 p-3 rounded-lg"
+                                <button
+                                    type="button"
+                                    onClick={() => setShowWalletAddress(!showWalletAddress)}
+                                    className="relative wallet-container bg-backgound-600 px-3 py-2.5 rounded-3xl flex justify-center items-center gap-3 text-font-100 font-medium transition duration-300"
                                 >
-                                    <button className="w-full relative flex justify-between items-center gap-2">
-                                        <div className="flex flex-col justify-center items-start">
-                                            <span className="text-font-100 text-base font-medium">
-                                                {smartAccount &&
-                                                    smartAccountAddress.slice(0, 13) +
-                                                        "..." +
-                                                        smartAccountAddress.slice(-3)}
-                                            </span>
-                                            <span className="text-font-300 text-xs">
-                                                {smartAccount &&
-                                                    "SmartAccount : (" +
-                                                        scwBalance +
-                                                        " " +
-                                                        `${
-                                                            ChainIdDetails[selectedNetwork.chainId.toString()]
-                                                                ?.gasFeesName
-                                                        }` +
-                                                        ")"}
-                                            </span>
-                                        </div>
 
+                                    <span className="text-sm font-medium">
+                                        {smartAccount &&
+                                            smartAccountAddress.slice(0, 5) + "..." + smartAccountAddress.slice(-3)}
+                                    </span>
+                                    <span className="flex justify-center items-center gap-2">
                                         <FiCopy
-                                            size="35px"
-                                            className="text-font-100 active:text-font-300 p-2 hover:bg-backgound-700 rounded-md"
+                                            className="text-font-100 hover:text-font-200 active:text-font-400"
                                             onClick={() =>
                                                 copyToClipboard(smartAccountAddress, "Smart account address Copied")
                                             }
                                         />
-                                    </button>
-                                    <button className="w-full flex justify-between items-center gap-2">
-                                        <div className="flex flex-col justify-center items-start">
-                                            <span className="text-font-100 text-base font-medium">
-                                                {smartAccount &&
-                                                    address &&
-                                                    address.slice(0, 13) + "..." + address.slice(-3)}
-                                            </span>
-                                            <span className="text-font-300 text-xs">
-                                                {smartAccount &&
-                                                    "EOA : (" +
-                                                        eoaBalance +
-                                                        " " +
-                                                        `${
-                                                            ChainIdDetails[selectedNetwork.chainId.toString()]
-                                                                ?.gasFeesName
-                                                        }` +
-                                                        ")"}
-                                            </span>
-                                        </div>
-
-                                        <FiCopy
-                                            size="35px"
-                                            className="text-font-100 active:text-font-300 p-2 hover:bg-backgound-700 rounded-md"
-                                            onClick={() => copyToClipboard(address, "EOA address Copied")}
-                                        />
-                                    </button>
-                                </div>
+                                    </span>
+                                </button>
                             )}
+
+                            <ConnectWallet
+                                theme={"dark"}
+                                modalSize={"wide"}
+                                btnTitle="Login"
+                                className="bg-slate-800 h-[30px]"
+                                hideTestnetFaucet={true}
+                                detailsBtn={() => {
+                                    return (
+                                        <Image
+                                            src={metamask}
+                                            alt="close"
+                                            className="h-7 w-7 p-1 bg-font-100 rounded-full cursor-pointer"
+                                        />
+                                    )
+                                }}
+                            />
                         </div>
-                    )}
+
+                        {showWalletAddress && smartAccount && !loading && (
+                            <div
+                                ref={walletAddressRef}
+                                className="w-80 absolute top-16 right-28 z-50 flex flex-col justify-center items-start gap-4 bg-backgound-600 border-2 border-backgound-500 shadow-md shadow-backgound-100 p-3 rounded-lg"
+                            >
+                                <button className="w-full relative flex justify-between items-center gap-2">
+                                    <div className="flex flex-col justify-center items-start">
+                                        <span className="text-font-100 text-base font-medium">
+                                            {smartAccount &&
+                                                smartAccountAddress.slice(0, 13) +
+                                                "..." +
+                                                smartAccountAddress.slice(-3)}
+                                        </span>
+                                        <span className="text-font-300 text-xs">
+                                            {smartAccount &&
+                                                "SmartAccount : (" +
+                                                scwBalance +
+                                                " " +
+                                                `${ChainIdDetails[selectedNetwork.chainId.toString()]
+                                                    ?.gasFeesName
+                                                }` +
+                                                ")"}
+                                        </span>
+                                    </div>
+
+                                    <FiCopy
+                                        size="35px"
+                                        className="text-font-100 active:text-font-300 p-2 hover:bg-backgound-700 rounded-md"
+                                        onClick={() =>
+                                            copyToClipboard(smartAccountAddress, "Smart account address Copied")
+                                        }
+                                    />
+                                </button>
+                                <button className="w-full flex justify-between items-center gap-2">
+                                    <div className="flex flex-col justify-center items-start">
+                                        <span className="text-font-100 text-base font-medium">
+                                            {smartAccount &&
+                                                address &&
+                                                address.slice(0, 13) + "..." + address.slice(-3)}
+                                        </span>
+                                        <span className="text-font-300 text-xs">
+                                            {smartAccount &&
+                                                "EOA : (" +
+                                                eoaBalance +
+                                                " " +
+                                                `${ChainIdDetails[selectedNetwork.chainId.toString()]
+                                                    ?.gasFeesName
+                                                }` +
+                                                ")"}
+                                        </span>
+                                    </div>
+
+                                    <FiCopy
+                                        size="35px"
+                                        className="text-font-100 active:text-font-300 p-2 hover:bg-backgound-700 rounded-md"
+                                        onClick={() => copyToClipboard(address, "EOA address Copied")}
+                                    />
+                                </button>
+                            </div>
+                        )}
+
+                    </div>
 
                     <SelectNetwork switchOnSpecificChain={switchOnSpecificChain} />
+
                 </li>
             </ul>
         </div>

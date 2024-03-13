@@ -7,7 +7,7 @@ import { useMutation } from "@tanstack/react-query";
 import { Bundler, IBundler } from "@biconomy/bundler";
 import { BiconomyPaymaster, IPaymaster } from "@biconomy/paymaster";
 import { BiconomySmartAccountV2, BiconomySmartAccountConfig, DEFAULT_ENTRYPOINT_ADDRESS } from "@biconomy/account";
-import { metamaskWallet, useAddress, useChain, useConnect, useSigner, useSwitchChain } from "@thirdweb-dev/react";
+import { metamaskWallet, useAddress, useChain, useConnect, useSigner, useSwitchChain, useConnectionStatus } from "@thirdweb-dev/react";
 
 import { ChainIdDetails } from "../utils/data/network";
 import { iGlobal, useGlobalStore } from "../store/GlobalStore";
@@ -38,6 +38,9 @@ export function useSwitchOnSpecificChain() {
     const address: any = useAddress(); // Detect the connected address
     const signer: any = useSigner(); // Detect the connected address
     const chain = useChain();
+
+    
+
 
     useEffect(() => {
         async function changeWallet() {

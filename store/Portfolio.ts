@@ -1,56 +1,31 @@
 import { create } from "zustand";
 
-export interface iUserTokenInfo {
-    tokenAddress: string;
-    amount: string;
-    decimals: number;
-    name: string;
-    symbol: string;
-    logoURI: string;
+export interface iChainData {
     chainId: number;
-    type: string;
-
-    subtitle: string;
-    apy: string;
-    protocol: {
-        name: string;
-        slug: string;
-        logo: string;
-        url: string;
-        description: string;
-        twitter: string;
-        category: string;
-        chainIds: number[];
-    };
-
-    underlyingTokens: string[];
+    data: any;
 }
 
 export interface iPortfolio {
-    userTokensData: iUserTokenInfo[] | [] | null;
-    isUsersTokenLoading: boolean;
-    totalNetworth: string;
-
+    chainData: iChainData[] | [] | null;
+    isLoading: boolean;
+    error: string;
     isSCW: boolean;
 
-    setTotalNetworth: (totalNetworth: string) => void;
 
-    setUserTokensData: (userTokensData: iUserTokenInfo[] | any) => void;
-    setIsUsersTokenLoading: (isUsersTokenLoading: boolean) => void;
-
+    setChainData: (chainData: any) => void;
+    setIsLoading: (isLoading: boolean) => void;
+    setError: (error: string) => void;
     setIsSCW: (isSCW: boolean) => void;
 }
 
 export const usePortfolioStore = create<iPortfolio>((set) => ({
-    userTokensData: null,
-    isUsersTokenLoading: false,
-
+    chainData: null,
+    isLoading: true,
+    error: "",
     isSCW: false,
-    totalNetworth: "0",
 
-    setTotalNetworth: (totalNetworth) => set(() => ({ totalNetworth })),
-    setUserTokensData: (userTokensData) => set(() => ({ userTokensData })),
-    setIsUsersTokenLoading: (isUsersTokenLoading) => set(() => ({ isUsersTokenLoading })),
-
+    setChainData: (chainData) => set(() => ({ chainData })),
+    setIsLoading: (isLoading) => set(() => ({ isLoading })),
+    setError: (error) => set(() => ({ error })),
     setIsSCW: (isSCW) => set(() => ({ isSCW })),
 }));

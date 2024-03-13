@@ -29,9 +29,9 @@ const SelectNetwork = ({ switchOnSpecificChain }: tSelectNetwork) => {
         <div className="z-50">
             <div
                 className="flex justify-between items-center  cursor-pointer"
-                onClick={() => setShowSelectNetworkList(!showSelectNetworkList)}
+                // onClick={() => setShowSelectNetworkList(!showSelectNetworkList)}
             >
-                {selectedNetwork?.chainName ? (
+                {/* {selectedNetwork?.chainName ? (
                     <div className="rounded-full p-1">
                         <Image src={selectedNetwork.icon} alt="" className="h-8 w-8 rounded-full cursor-pointer" />
                     </div>
@@ -39,13 +39,17 @@ const SelectNetwork = ({ switchOnSpecificChain }: tSelectNetwork) => {
                     <div className="bg-button-100 py-2 px-5 rounded-lg text-font-100 font-medium border-b-4 transition duration-300 border-button-300 hover:border-button-400 flex justify-center items-center gap-2">
                         Select a Network
                     </div>
-                )}
+                )} */}
+                {selectedNetwork?.chainName &&
+                    <div className="rounded-full p-1">
+                        <Image src={selectedNetwork.icon} alt="" className="h-8 w-8 rounded-full" />
+                    </div>
+                }
             </div>
 
             <div
-                className={`absolute right-12 my-2 ${
-                    showSelectNetworkList ? "max-h- opacity-100" : "max-h-0 opacity-0"
-                } rounded-xl transition-all delay-100 duration-300 ease-linear`}
+                className={`absolute right-12 my-2 ${showSelectNetworkList ? "max-h- opacity-100" : "max-h-0 opacity-0"
+                    } rounded-xl transition-all delay-100 duration-300 ease-linear`}
             >
                 {showSelectNetworkList && (
                     <div
@@ -67,7 +71,7 @@ const SelectNetwork = ({ switchOnSpecificChain }: tSelectNetwork) => {
                     </div>
                 )}
             </div>
-        </div>
+        </div >
     );
 };
 export default SelectNetwork;
