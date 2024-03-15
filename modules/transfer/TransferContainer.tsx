@@ -109,6 +109,7 @@ const TransferContainer: React.FC<any> = () => {
     };
 
     const setBalance = async (_tokenName, _tokenAddress) => {
+        console.log("------------>>.",_tokenName,_tokenAddress)
         try {
             if (_tokenName == "ethereum") {
                 let provider = await new ethers.providers.Web3Provider(web3.givenProvider);
@@ -234,6 +235,7 @@ const TransferContainer: React.FC<any> = () => {
                     return;
                 }
                 tx = { to: _toAdress, value: amountIn, data: "0x" };
+                console.log("Native tx", tx, "isSCW", isSCW)
             } else {
                 const contract = await getContract(tokenAddress);
                 if (!contract) {
@@ -247,6 +249,7 @@ const TransferContainer: React.FC<any> = () => {
                 }
                 const data = await contract.populateTransaction.transfer(_toAdress, amountIn);
                 tx = { to: tokenAddress, data: data.data };
+                console.log("Not native tx", tx, "isSCW", isSCW)
             }
 
             if (isSCW) {

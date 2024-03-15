@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useAddress } from "@thirdweb-dev/react";
 
 import MigrateAsset from "./MigrateAsset";
-import { usePortfolio } from "../../hooks/portfolio/usePortfolio";
+import { usePortfolio } from "../../hooks/portfolio/usePortfolio.1";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import { iPortfolio, usePortfolioStore } from "../../store/Portfolio";
 import { BigNumber, ethers } from "ethers";

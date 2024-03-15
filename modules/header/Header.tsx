@@ -70,6 +70,7 @@ const Header: React.FC<any> = ({ switchOnSpecificChain }: tHeader) => {
     const chainId = useChainId();
 
     const chain = useChain();
+    const user = useUser();
 
 
     useEffect(() => {
@@ -81,6 +82,11 @@ const Header: React.FC<any> = ({ switchOnSpecificChain }: tHeader) => {
             switchOnSpecificChain(chain?.slug);
         }
     }, [chainId]);
+    useEffect(() => {
+        if (chainId) {
+            console.log("User ----------------:  ", user)
+        }
+    }, [user]);
 
 
     return (
@@ -140,7 +146,6 @@ const Header: React.FC<any> = ({ switchOnSpecificChain }: tHeader) => {
                         </div>
 
                         <div
-
                             ref={transferModuleRef}
                             className={`absolute w-full h-[calc(100%-69px)] top-[69px] z-40 ${showTransferFundToggle
                                 ? "!right-0 !transition !duration-1000 !ease-out"

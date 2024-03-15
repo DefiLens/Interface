@@ -3,9 +3,10 @@ import React, { useRef } from "react";
 import { tButton } from "./types";
 import { CgSpinner } from "react-icons/cg";
 
-const Button = ({ handleClick, isLoading = false, customStyle, innerText }: tButton) => (
+const Button = ({ handleClick, isLoading = false, customStyle, innerText, disabled }: tButton) => (
     <button
         type="button"
+        disabled={disabled}
         onClick={handleClick}
         className={`${
             isLoading ? "bg-button-1100 hover:bg-button-1100" : "bg-button-100 hover:bg-button-100"
