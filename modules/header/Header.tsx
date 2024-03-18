@@ -79,7 +79,11 @@ const Header: React.FC<any> = ({ switchOnSpecificChain }: tHeader) => {
             // alert("ChainID: -->> ", chainId.toString());
             console.log("ChainData:  ", chain)
             console.log("Id of Chain:  ", chainId)
-            switchOnSpecificChain(chain?.slug);
+            if (chain?.slug == "polygon" || chain?.slug == "base" || chain?.slug == "optimism") {
+                switchOnSpecificChain(chain?.slug);
+            } else {
+                alert("Only Base, Optimism and Polygon supported.")
+            }
         }
     }, [chainId]);
     useEffect(() => {
