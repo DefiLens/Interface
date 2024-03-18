@@ -13,8 +13,6 @@ import { defaultBlue } from "../../assets/images";
 import { BigNumber } from "ethers";
 import { BigNumber as bg } from "bignumber.js";
 
-
-
 const OneAsset: React.FC<any> = ({ details, send, handleAmountIn, currentChainId }: tPortfolio) => {
     const { isSCW, selectOneAsset, setSelectOneAsset, amountInDecimals, sendTxLoading, txhash }: iPortfolio = usePortfolioStore((state) => state);
     const { smartAccount }: iGlobal = useGlobalStore((state) => state);
@@ -39,6 +37,10 @@ const OneAsset: React.FC<any> = ({ details, send, handleAmountIn, currentChainId
                                 height={100}
                                 width={100}
                                 src={item?.logo_urls.token_logo_url || defaultBlue}
+                                // onError={(e) => {
+                                //     e.target.onerror = null; // prevent infinite loop
+                                //     e.target.src = defaultImage;
+                                // }}
                                 alt=""
                                 className="h-10 w-10 rounded-full"
                             />
@@ -64,12 +66,16 @@ const OneAsset: React.FC<any> = ({ details, send, handleAmountIn, currentChainId
                         <div className="w-[25%] text-start text-success-600">{item.quote && `$${item.quote.toFixed(5)}`}</div>
                         <div className="w-[3%]">
                             {chainId === currentChainId &&
-                                <BiDotsVerticalRounded
-                                    title="Migrate Assets"
-                                    size="30px"
-                                    className="text-font-100 active:text-font-300 p-1 hover:bg-backgound-700 rounded-md cursor-pointer"
-                                    onClick={() => setSelectOneAsset(item)}
-                                />
+                                <div className="group flex justify-center transition-all active:text-font-300 p-1 hover:bg-backgound-700 rounded-md cursor-pointer">
+                                    <BiDotsVerticalRounded
+                                        size="30px"
+                                        className="text-font-100 "
+                                        onClick={() => setSelectOneAsset(item)}
+                                    />
+                                    <span
+                                        className="absolute opacity-0 group-hover:opacity-100 group-hover:-translate-y-7 duration-700 text-sm whitespace-nowrap"
+                                    >Migrate Assets</span>
+                                </div>
                             }
                         </div>
                         {selectOneAsset === item && (

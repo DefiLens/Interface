@@ -38,6 +38,7 @@ const Portfolio: React.FC<any> = ({
 
     return (
         <div className="w-full flex flex-col justify-center items-center gap-10 p-4">
+          
             {smartAccountAddress && !isLoading && (
                 <>
                     <div className="max-w-6xl w-full flex flex-row justify-between items-center gap-3">
@@ -167,12 +168,11 @@ const Portfolio: React.FC<any> = ({
                                 <div className="w-[3%]"></div>
                             </div>
 
-                            <OneAsset details={details} send={send} handleAmountIn={handleAmountIn} currentChainId={details?.data?.chain_id}/>
+                            <OneAsset details={details} send={send} handleAmountIn={handleAmountIn} currentChainId={details?.data?.chain_id} />
                         </div>
                     ))}
                 </>
             )}
-
 
             {isLoading ? (
                 <div className="max-w-6xl w-full h-full flex flex-col justify-center items-center gap-5 rounded-3xl px-5 py-10 bg-backgound-300 text-font-100 border-backgound-600 shadow shadow-backgound-600">
