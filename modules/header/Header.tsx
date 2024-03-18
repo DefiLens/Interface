@@ -17,7 +17,7 @@ import TransferContainer from "../transfer/TransferContainer";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import SelectNetwork from "../../components/SelectNetwork/SelectNetwork";
 import { ConnectWallet } from "@thirdweb-dev/react";
-import { useConnectionStatus } from "@thirdweb-dev/react";
+import { useConnectionStatus, useNetworkMismatch } from "@thirdweb-dev/react";
 
 import {
     useMetamask,
@@ -75,19 +75,12 @@ const Header: React.FC<any> = ({ switchOnSpecificChain }: tHeader) => {
 
     useEffect(() => {
         if (chainId) {
-            // Call your function here with the chainId
-            // alert("ChainID: -->> ", chainId.toString());
-            console.log("ChainData:  ", chain)
-            console.log("Id of Chain:  ", chainId)
             switchOnSpecificChain(chain?.slug);
         }
     }, [chainId]);
-    useEffect(() => {
-        if (chainId) {
-            console.log("User ----------------:  ", user)
-        }
-    }, [user]);
 
+    const isMismatched = useNetworkMismatch();
+    console.log("isMismatched",isMismatched)
 
     return (
         <div className="header-container w-full h-[69px]">
@@ -134,7 +127,7 @@ const Header: React.FC<any> = ({ switchOnSpecificChain }: tHeader) => {
                                     className="transfer-fund-icon flex justify-center items-center gap-1 bg-backgound-600 hover:bg-backgound-700 active:bg-backgound-600 px-3 cursor-pointer"
                                 >
                                     <span className="font-bold text-font-100 pl-2">
-                                        Transfer Fund
+                                        Transfer Fund 
                                     </span>
                                     <Image
                                         src={wallet}

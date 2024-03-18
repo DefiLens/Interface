@@ -1,10 +1,13 @@
 import { iUserTokenInfo } from "../../../store/Portfolio";
 
 export type tPortfolio = {
-    isUsersTokenLoading: boolean
+    details: [];
+    isUsersTokenLoading: boolean;
     smartAccountAddress: string;
     userTokensData: iUserTokenInfo[];
     filteredDefiTokens: iUserTokenInfo[][];
     handleFetchPorfolioData: () => void;
-    totalNetWorth: number
+    totalNetWorth: number;
+    handleAmountIn: (_amountIn: string) => void;
+    send: () => void;
 };

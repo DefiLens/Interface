@@ -319,6 +319,7 @@ export function useSwitchOnSpecificChain() {
                 }
             } else {
                 if (chain) {
+                    console.log("Already on that chain")
                     const _smartAccount: any = await login(chain?.chainId);
                     const _smartAccountAddress = await _smartAccount.getAccountAddress()
                     console.log('_smartAccountAddress: ', _smartAccountAddress)
