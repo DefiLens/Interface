@@ -2,6 +2,7 @@ import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import { iPortfolio, usePortfolioStore } from "../../store/Portfolio";
 import Button from "../../components/Button/Button";
 import { copyToClipboard, decreasePowerByDecimals, shorten } from "../../utils/helper";
+import { useChainId } from "@thirdweb-dev/react";
 
 import { BiDotsVerticalRounded } from "react-icons/bi";
 import { RxCross2 } from "react-icons/rx";
@@ -14,7 +15,7 @@ import { BigNumber as bg } from "bignumber.js";
 
 
 
-const OneAsset: React.FC<any> = ({ details, send, handleAmountIn }: tPortfolio) => {
+const OneAsset: React.FC<any> = ({ details, send, handleAmountIn, currentChainId }: tPortfolio) => {
     const { isSCW, selectOneAsset, setSelectOneAsset, amountInDecimals, sendTxLoading, txhash }: iPortfolio = usePortfolioStore((state) => state);
     const { smartAccount }: iGlobal = useGlobalStore((state) => state);
 
@@ -23,7 +24,7 @@ const OneAsset: React.FC<any> = ({ details, send, handleAmountIn }: tPortfolio) 
     const toggleShowAll = () => {
         setShowAll(!showAll);
     };
-
+    const chainId = useChainId();
 
     return (
         <>
@@ -61,13 +62,15 @@ const OneAsset: React.FC<any> = ({ details, send, handleAmountIn }: tPortfolio) 
                             {item.contract_ticker_symbol}
                         </div>
                         <div className="w-[25%] text-start text-success-600">{item.quote && `$${item.quote.toFixed(5)}`}</div>
-                        <div className="w-[3%]" title="Migrate Assets">
-                            <BiDotsVerticalRounded
-                                size="30px"
-                                className="text-font-100 active:text-font-300 p-1 hover:bg-backgound-700 rounded-md cursor-pointer"
-                                onClick={() => setSelectOneAsset(item)}
-                            />
-                        </div>
+                        {chainId === currentChainId &&
+                            <div className="w-[3%]" title="Migrate Assets">
+                                <BiDotsVerticalRounded
+                                    size="30px"
+                                    className="text-font-100 active:text-font-300 p-1 hover:bg-backgound-700 rounded-md cursor-pointer"
+                                    onClick={() => setSelectOneAsset(item)}
+                                />
+                            </div>
+                        }
                         {selectOneAsset === item && (
                             <>
                                 <div

@@ -15,10 +15,9 @@ import { incresePowerByDecimals } from "../../utils/helper";
 
 const PortfolioContainer: React.FC<any> = () => {
     const { mutateAsync: fetchPortfolio } = usePortfolio();
-    const { smartAccount, smartAccountAddress, showTransferFundToggle, selectedNetwork }: iGlobal = useGlobalStore((state) => state);
+    const { smartAccount, smartAccountAddress }: iGlobal = useGlobalStore((state) => state);
     const address = useAddress();
     const signer: any = useSigner();
-    const chain = useChain();
 
     const {
         isSCW,

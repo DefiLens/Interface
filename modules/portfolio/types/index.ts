@@ -10,4 +10,5 @@ export type tPortfolio = {
     totalNetWorth: number;
     handleAmountIn: (_amountIn: string) => void;
     send: () => void;
+    currentChainId: number;
 };
