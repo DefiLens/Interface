@@ -62,15 +62,16 @@ const OneAsset: React.FC<any> = ({ details, send, handleAmountIn, currentChainId
                             {item.contract_ticker_symbol}
                         </div>
                         <div className="w-[25%] text-start text-success-600">{item.quote && `$${item.quote.toFixed(5)}`}</div>
-                        {chainId === currentChainId &&
-                            <div className="w-[3%]" title="Migrate Assets">
+                        <div className="w-[3%]">
+                            {chainId === currentChainId &&
                                 <BiDotsVerticalRounded
+                                    title="Migrate Assets"
                                     size="30px"
                                     className="text-font-100 active:text-font-300 p-1 hover:bg-backgound-700 rounded-md cursor-pointer"
                                     onClick={() => setSelectOneAsset(item)}
                                 />
-                            </div>
-                        }
+                            }
+                        </div>
                         {selectOneAsset === item && (
                             <>
                                 <div

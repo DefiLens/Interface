@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { startCase } from "lodash";
-import { useAddress, useChainId } from "@thirdweb-dev/react";
+import { useAddress } from "@thirdweb-dev/react";
 
 import { iPortfolio, usePortfolioStore } from "../../store/Portfolio";
 import { copyToClipboard } from "../../utils/helper";
@@ -35,8 +35,6 @@ const Portfolio: React.FC<any> = ({
         eoaBalance,
         selectedNetwork
     }: iGlobal = useGlobalStore((state) => state);
-
-    const chainId = useChainId();
 
     return (
         <div className="w-full flex flex-col justify-center items-center gap-10 p-4">
@@ -166,7 +164,7 @@ const Portfolio: React.FC<any> = ({
                                 <div className="w-[25%] text-start">PRICE</div>
                                 <div className="w-[25%] text-start">BALANCE</div>
                                 <div className="w-[25%] text-start">VALUE</div>
-                                {chainId === details?.data?.chain_id && <div className="w-[3%]"></div>}
+                                <div className="w-[3%]"></div>
                             </div>
 
                             <OneAsset details={details} send={send} handleAmountIn={handleAmountIn} currentChainId={details?.data?.chain_id}/>
