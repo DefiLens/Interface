@@ -53,7 +53,7 @@ const Header: React.FC<any> = ({ switchOnSpecificChain }: tHeader) => {
     });
 
       const handleSelectNetwork = (data: any) => {
-        if (selectedNetwork.chainName !== data.chainName) {
+        if (data.chainName) {
             switchOnSpecificChain(data.chainName);
         }
     };
