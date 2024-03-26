@@ -29,18 +29,18 @@ const ChainSelection: React.FC<ChainSelectionProps> = () => {
 
     return (
         <div
-            className=" text-primary-100 text-lg bg-backgound-300 rounded-lg px-2 cursor-pointer"
+            className=" text-N20 text-lg bg-gradient-to-br from-[#7339FD] via-[#56B0F6] to-[#4DD4F4] shadow-xl rounded-lg px-2 cursor-pointer"
         >
             <select
                 value={chainId}
                 onChange={handleSelectChange}
-                className="bg-backgound-300 py-2 cursor-pointer outline-none"
+                className="bg-transparent py-2 cursor-pointer outline-none"
             >
                 {chains.map((chain) => (
                     <option
                         key={chain.chainId}
                         value={chain.chainId}
-                        className="bg-backgound-300 py-2 px-4 border-none rounded-lg"
+                        className="bg-N20-300 py-2 px-4 border-none rounded-lg text-B100"
                     >
                         {chain.chainName}
                     </option>

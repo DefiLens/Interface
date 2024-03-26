@@ -1,11 +1,11 @@
-import { useRef, useEffect, useLayoutEffect } from "react";
+import { useRef, useEffect } from "react";
 
 import Link from "next/link";
 import Image from "next/image";
 import { FiCopy } from "react-icons/fi";
 import { CgSpinner } from "react-icons/cg";
 import { usePathname } from "next/navigation";
-import { useAddress, useUser, useChainId, useChain } from "@thirdweb-dev/react";
+import { useAddress, useChainId, useChain } from "@thirdweb-dev/react";
 
 import { tHeader } from "./types";
 import { copyToClipboard } from "../../utils/helper";
@@ -13,7 +13,6 @@ import { logoDark, metamask, wallet } from "../../assets/images";
 import useClickOutside from "../../hooks/useClickOutside";
 import { ChainIdDetails, NETWORK_LIST } from "../../utils/data/network";
 import { NavigationList } from "../../utils/data/navigation";
-import TransferContainer from "../transfer/TransferContainer";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import SelectNetwork from "../../components/SelectNetwork/SelectNetwork";
 import { ConnectWallet } from "@thirdweb-dev/react";
@@ -31,8 +30,6 @@ const Header: React.FC<any> = ({ switchOnSpecificChain }: tHeader) => {
         eoaBalance,
         showWalletAddress,
         setShowWalletAddress,
-        showTransferFundToggle,
-        setShowTransferFundToggle,
         selectedNetwork,
     }: iGlobal = useGlobalStore((state) => state);
 
@@ -41,18 +38,13 @@ const Header: React.FC<any> = ({ switchOnSpecificChain }: tHeader) => {
     const chain = useChain();
 
     const walletAddressRef = useRef(null);
-    const transferModuleRef = useRef(null);
     const selectNetworkRef = useRef(null);
 
     useClickOutside([walletAddressRef], () => {
         setShowWalletAddress(false);
     });
 
-    useClickOutside([transferModuleRef], () => {
-        setShowTransferFundToggle(false);
-    });
-
-      const handleSelectNetwork = (data: any) => {
+    const handleSelectNetwork = (data: any) => {
         if (data.chainName) {
             switchOnSpecificChain(data.chainName);
         }
@@ -70,8 +62,8 @@ const Header: React.FC<any> = ({ switchOnSpecificChain }: tHeader) => {
 
     return (
         <>
-            <div className="header-container w-full h-[69px]">
-                <ul className="w-full h-full flex justify-between items-center gap-3 bg-backgound-100 p-2 shadow-md shadow-secondary-500">
+            <div className="header-container bg-N40 w-full h-[69px]">
+                <ul className="w-full h-full flex justify-between items-center gap-3 p-2">
                     <li className="w-full xl:w-1/3 flex justify-start items-center">
                         <Link
                             href="https://defilens.tech"
@@ -90,7 +82,7 @@ const Header: React.FC<any> = ({ switchOnSpecificChain }: tHeader) => {
                                 <Link
                                     href={item.route}
                                     key={item.title}
-                                    className={`cursor-pointer px-5 py-1 text-sm md:text-base text-center rounded-full hover:bg-backgound-100 transition duration-300 ${pathname === item.route ? "bg-backgound-100" : ""
+                                    className={`cursor-pointer px-5 py-1 text-sm md:text-base text-center rounded-full hover:bg-backgound-100 transition duration-300 ${pathname === item.route ? "bg-gradient-to-br from-[#7339FD] via-[#56B0F6] to-[#4DD4F4]" : ""
                                         } `}
                                 >
                                     {item.title}
@@ -99,42 +91,20 @@ const Header: React.FC<any> = ({ switchOnSpecificChain }: tHeader) => {
                         }
                     </li>
                     <li className="w-full h-full xl:w-1/3 flex flex-wrap justify-end items-center gap-3 overflow-auto">
-                        <div className="flex flex-wrap justify-start items-center gap-3 text-base">
-                            <div className="relative flex justify-center items-center gap-1 bg-backgound-600 rounded-full font-medium transition duration-300 overflow-hidden">
-                                <span className="flex justify-center items-center gap-2">
-                                    <input
-                                        type="checkbox"
-                                        id="transfer-fund-toggle"
-                                        checked={showTransferFundToggle}
-                                        className="absolute hidden"
-                                        onChange={(e: any) => setShowTransferFundToggle(e.target.checked)}
-                                    />
-                                    <label
-                                        htmlFor="transfer-fund-toggle"
-                                        className="transfer-fund-icon flex justify-center items-center gap-1 bg-backgound-600 hover:bg-backgound-700 active:bg-backgound-600 px-3 cursor-pointer"
-                                    >
-                                        <span className="font-bold text-font-100 pl-2">
-                                            Transfer Fund
-                                        </span>
-                                        <Image
-                                            src={wallet}
-                                            alt="close"
-                                            className="h-10 w-10 p-1.5 rounded-lg"
-                                        />
-                                    </label>
-                                </span>
-                            </div>
-
-                            <div
-                                ref={transferModuleRef}
-                                className={`absolute w-full h-[calc(100%-69px)] top-[69px] z-40 ${showTransferFundToggle
-                                    ? "!right-0 !transition !duration-1000 !ease-out"
-                                    : "!hidden !transition !duration-700 !ease-out"
-                                    } `}
-                            >
-                                <TransferContainer />
-                            </div>
-                        </div>
+                        <Link
+                            href='/transfer-fund'
+                            className={`flex items-center justify-center gap-2 cursor-pointer px-5 py-1 text-sm md:text-base text-center rounded-full bg-backgound-600 hover:bg-backgound-300 transition duration-300 ${pathname === '/transfer-fund' ? "bg-gradient-to-br from-D600 via-D400 to-D100" : ""
+                                } `}
+                        >
+                            <span className="font-bold text-font-100 pl-2">
+                                Transfer Fund
+                            </span>
+                            <Image
+                                src={wallet}
+                                alt="close"
+                                className="h-10 w-10 p-1.5 rounded-lg"
+                            />
+                        </Link>
 
                         {connected && !smartAccount && !loading && (
                             <button
@@ -282,7 +252,7 @@ const Header: React.FC<any> = ({ switchOnSpecificChain }: tHeader) => {
 
                     </li>
                 </ul>
-            </div>
+            </div >
             {chainId &&
                 <>
                     {chain?.slug == "polygon" || chain?.slug == "base" || chain?.slug == "optimism" ? <></>

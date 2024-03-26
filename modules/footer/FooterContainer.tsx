@@ -4,40 +4,40 @@ import { tSocialHandle } from "./types";
 
 const FooterContainer: React.FC<any> = () => {
 
-    const SocialHandles: tSocialHandle[] = [
-        {
-          icon: email,
-          key: 'email',
-          href: 'mailto:radadiyasunny970@gmail.com',
-        },
-        {
-          icon: github,
-          key: 'github',
-          href: 'https://github.com/sunnyRK',
-        },
-        {
-          icon: twitter,
-          key: 'twitter',
-          href: 'https://twitter.com/DefiLensTech',
-        },
-        {
-          icon: telegram,
-          key: 'telegram',
-          href: 'https://t.me/rksunny',
-        },
-        {
-          icon: web,
-          key: 'web',
-          href: 'https://defilens.tech/',
-        },
-       
-      ];
+  const SocialHandles: tSocialHandle[] = [
+    {
+      icon: telegram,
+      key: 'telegram',
+      href: 'https://t.me/rksunny',
+    },
+    {
+      icon: twitter,
+      key: 'twitter',
+      href: 'https://twitter.com/DefiLensTech',
+    },
+    {
+      icon: email,
+      key: 'email',
+      href: 'mailto:radadiyasunny970@gmail.com',
+    },
+    {
+      icon: github,
+      key: 'github',
+      href: 'https://github.com/sunnyRK',
+    },
+    {
+      icon: web,
+      key: 'web',
+      href: 'https://defilens.tech/',
+    },
 
-    return (
-        <Footer
-            SocialHandles={SocialHandles}
-        />
-    )
+  ];
+
+  return (
+    <Footer
+      SocialHandles={SocialHandles}
+    />
+  )
 };
 
 export default FooterContainer;

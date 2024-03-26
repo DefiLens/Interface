@@ -59,33 +59,34 @@ const TransferContainer: React.FC<any> = () => {
 
     useEffect(() => {
         async function onChangeFromProtocol() {
-            if (showTransferFundToggle) {
-                const filteredTokens = getTokenListByChainId(selectedNetwork.chainId, UNISWAP_TOKENS);
-                if (selectedNetwork.chainId === '137') {
-                    filteredTokens.unshift({
-                        chainId: 137,
-                        address: "0x0000000000000000000000000000000000001010",
-                        name: "Matic",
-                        symbol: "MATIC",
-                        decimals: 18,
-                        logoURI: polygon,
-                    });
-                } else {
-                    filteredTokens.unshift({
-                        chainId: 1,
-                        address: "",
-                        name: "ethereum",
-                        symbol: "Ethereum",
-                        decimals: 18,
-                        logoURI: ethereum,
-                    });
-                }
-                setTokensData(filteredTokens);
+            // if (true) {
+            const filteredTokens = getTokenListByChainId(selectedNetwork.chainId, UNISWAP_TOKENS);
+            if (selectedNetwork.chainId === '137') {
+                filteredTokens.unshift({
+                    chainId: 137,
+                    address: "0x0000000000000000000000000000000000001010",
+                    name: "Matic",
+                    symbol: "MATIC",
+                    decimals: 18,
+                    logoURI: polygon,
+                });
+            } else {
+                filteredTokens.unshift({
+                    chainId: 1,
+                    address: "",
+                    name: "ethereum",
+                    symbol: "Ethereum",
+                    decimals: 18,
+                    logoURI: ethereum,
+                });
             }
+            setTokensData(filteredTokens);
         }
+        // }
         setTokenAddress("");
         onChangeFromProtocol();
-    }, [showTransferFundToggle, selectedNetwork.chainId]);
+        // }, [showTransferFundToggle, selectedNetwork.chainId]);
+    }, [selectedNetwork.chainId]);
 
     useEffect(() => {
         if (address && smartAccount) {
@@ -109,7 +110,7 @@ const TransferContainer: React.FC<any> = () => {
     };
 
     const setBalance = async (_tokenName, _tokenAddress) => {
-        console.log("------------>>.",_tokenName,_tokenAddress)
+        console.log("------------>>.", _tokenName, _tokenAddress)
         try {
             if (_tokenName == "ethereum") {
                 let provider = await new ethers.providers.Web3Provider(web3.givenProvider);

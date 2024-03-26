@@ -10,6 +10,15 @@
     display: inline-block;
 }
 
+.main-bg {
+    overflow: hidden;
+    position: relative;
+    -webkit-box-align: center;
+    background-image: url("../../images/main-bg.svg");
+    background-position: center top;
+    background-size: cover;
+}
+
 @keyframes headingClip {
     to {
         background-position: 200% center;

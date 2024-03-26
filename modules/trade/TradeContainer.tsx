@@ -535,12 +535,12 @@ const TradeContainer: React.FC<any> = () => {
 
                     const firstFromToken = protocolNames[selectedFromNetwork.chainId].key.find(
                         (entry) => entry.name == selectedFromProtocol
-                    ).tokenList[0].name;
+                    )?.tokenList[0].name;
 
                     const provider = await getProvider(selectedFromNetwork.chainId);
                     const tokenAddress = protocolNames[selectedFromNetwork.chainId].key.find(
                         (entry) => entry.name == selectedFromProtocol
-                    ).tokenAddresses[firstFromToken];
+                    )?.tokenAddresses[firstFromToken];
                     const erc20 = await getContractInstance(tokenAddress, IERC20, provider);
                     const fromTokendecimal = await getErc20Decimals(erc20);
                     setSafeState(setFromTokenDecimal, fromTokendecimal, 0);

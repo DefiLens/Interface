@@ -30,19 +30,15 @@ const OneAsset: React.FC<any> = ({ details, send, handleAmountIn, currentChainId
                 .slice(0, showAll ? undefined : 4).map((item: any) => (
                     <div
                         key={item.contract_address}
-                        className="w-full flex justify-end items-center gap-3 text-[13px] md:text-[15px] font-medium text-primary-100 py-4 border-t border-t-slate-700"
+                        className="w-full flex justify-end items-center gap-3 text-[13px] md:text-[15px] font-medium text-B200 py-4 border-t border-B50"
                     >
                         <div className="w-full flex justify-start items-center gap-3 text-start">
                             <Image
                                 height={100}
                                 width={100}
                                 src={item?.logo_urls.token_logo_url || defaultBlue}
-                                // onError={(e) => {
-                                //     e.target.onerror = null; // prevent infinite loop
-                                //     e.target.src = defaultImage;
-                                // }}
                                 alt=""
-                                className="h-10 w-10 rounded-full"
+                                className="h-10 w-10 rounded-full bg-N60"
                             />
                             <div className="flex flex-col justify-start items-start gap-1">
                                 <div>{item.contract_display_name}</div>
@@ -52,7 +48,7 @@ const OneAsset: React.FC<any> = ({ details, send, handleAmountIn, currentChainId
                                         width={10}
                                         src={item?.logo_urls.chain_logo_url}
                                         alt=""
-                                        className="h-4 w-4 rounded-full"
+                                        className="h-4 w-4 rounded-full bg-N60"
                                     />
                                     {details?.data?.chain_name}
                                 </div>
@@ -66,15 +62,15 @@ const OneAsset: React.FC<any> = ({ details, send, handleAmountIn, currentChainId
                         <div className="w-[25%] text-start text-success-600">{item.quote && `$${item.quote.toFixed(5)}`}</div>
                         <div className="w-[3%]">
                             {chainId === currentChainId &&
-                                <div className="group flex justify-center transition-all active:text-font-300 p-1 hover:bg-backgound-700 rounded-md cursor-pointer">
+                                <div className="group flex justify-center transition-all p-1 hover:bg-N40 rounded-md cursor-pointer">
                                     <BiDotsVerticalRounded
                                         size="30px"
-                                        className="text-font-100 "
+                                        className="text-B100"
                                         onClick={() => setSelectOneAsset(item)}
                                     />
                                     <span
-                                        className="absolute opacity-0 group-hover:opacity-100 group-hover:-translate-y-7 duration-700 text-sm whitespace-nowrap"
-                                    >Migrate Assets</span>
+                                        className="absolute opacity-0 group-hover:opacity-100 group-hover:-translate-y-3 duration-700 text-sm whitespace-nowrap"
+                                    >Migrate Asset</span>
                                 </div>
                             }
                         </div>
@@ -101,7 +97,7 @@ const OneAsset: React.FC<any> = ({ details, send, handleAmountIn, currentChainId
                                                     width={100}
                                                     src={item?.logo_urls.token_logo_url || defaultBlue}
                                                     alt=""
-                                                    className="h-12 w-12 rounded-full"
+                                                    className="h-12 w-12 rounded-full bg-N60"
                                                 />
                                                 <div className="flex flex-col justify-start items-start gap-1 text-primary-100 font-bold text-2xl">
                                                     <div>{item?.contract_display_name}</div>

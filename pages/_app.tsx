@@ -42,31 +42,12 @@ export default function App({ Component, pageProps }: AppProps) {
     return (
         <>
             {/* @ts-ignore */}
-            {/* <ChainContext.Provider value={{ selectedChain, setSelectedChain, selectedChainId, setSelectedChainId }}> */}
-            {/* <ThirdwebProvider
-                supportedChains={[Polygon, Arbitrum, Avalanche, Ethereum, Base, Optimism]}
-                clientId={process.env.NEXT_PUBLIC_TEMPLATE_CLIENT_ID}
-                activeChain={selectedNetwork.chainName}
-                // locale={en()}
-                supportedWallets={[
-                    metamaskWallet(),
-                    coinbaseWallet({ recommended: true }),
-                    walletConnect(),
-                    trustWallet({ recommended: true })
-                ]}
-                
-            > */}
             <ThirdwebProvider
                 supportedChains={[Polygon, Base, Optimism]}
                 clientId={process.env.NEXT_PUBLIC_TEMPLATE_CLIENT_ID}
                 activeChain={selectedNetwork.chainName}
-                // locale={en()}
                 supportedWallets={[
-                    // embeddedWallet(),
                     metamaskWallet({ recommended: true }),
-                    // coinbaseWallet(),
-                    // walletConnect(),
-                    // trustWallet(),
                 ]}
             >
 
@@ -104,19 +85,20 @@ export default function App({ Component, pageProps }: AppProps) {
                     </Toaster>
 
                     <Suspense fallback={<div>Loading...</div>}>
-                        <HeaderContainer />
+                        <div className="main-bg h-screen w-screen">
+                            <HeaderContainer />
 
-                        <div className="w-screen h-[calc(100%-109px)] bg-backgound-100 flex justify-center items-start">
-                            <main className="w-full h-full overflow-y-scroll  overflow-x-hidden">
-                                <Component {...pageProps} />
-                            </main>
+                            <div className="w-screen h-[calc(100%-109px)]  flex justify-center items-start">
+                                <main className="w-full h-full overflow-y-scroll overflow-x-hidden">
+                                    <Component {...pageProps} />
+                                </main>
+                            </div>
+
+                            <FooterContainer />
                         </div>
-
-                        <FooterContainer />
                     </Suspense>
                 </QueryClientProvider>
             </ThirdwebProvider>
-            {/* </ChainContext.Provider> */}
         </>
     );
 }

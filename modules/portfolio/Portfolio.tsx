@@ -38,9 +38,11 @@ const Portfolio: React.FC<any> = ({
 
     return (
         <div className="w-full flex flex-col justify-center items-center gap-10 p-4">
-          
+
             {smartAccountAddress && !isLoading && (
                 <>
+
+                    {/* Account Details */}
                     <div className="max-w-6xl w-full flex flex-row justify-between items-center gap-3">
                         <div className="w-full flex justify-start items-center gap-3 text-start mb-4">
                             <div>
@@ -52,16 +54,16 @@ const Portfolio: React.FC<any> = ({
                                     className="h-40 w-40 rounded-lg"
                                 />
                             </div>
-                            <div className="flex flex-col justify-start items-start gap-1 text-primary-100 font-bold text-2xl">
+                            <div className="flex flex-col justify-start items-start gap-1 text-B100 font-bold text-2xl">
                                 <div
-                                    className="w-full h-40 flex flex-col justify-center items-start gap-6 bg-backgound-200 border-2 border-backgound-500 shadow-md shadow-backgound-100 p-3 rounded-lg"
+                                    className="w-full h-40 flex flex-col justify-center items-start gap-6 bg-N20 text-B200 shadow-xl p-3 rounded-lg"
                                 >
                                     <button className="w-full relative flex justify-between items-center gap-2">
                                         <div className="flex flex-col justify-center items-start">
-                                            <span className="text-font-100 text-base font-medium">
+                                            <span className="text-B100 text-base font-medium">
                                                 {smartAccount && smartAccountAddress}
                                             </span>
-                                            <span className="text-font-300 text-xs">
+                                            <span className="text-B100 text-xs">
                                                 {smartAccount &&
                                                     "SmartAccount : (" +
                                                     scwBalance +
@@ -75,7 +77,7 @@ const Portfolio: React.FC<any> = ({
 
                                         <FiCopy
                                             size="35px"
-                                            className="text-font-100 active:text-font-300 p-2 hover:bg-backgound-700 rounded-md"
+                                            className="text-B100 active:text-B200 p-2 hover:bg-N40 rounded-md"
                                             onClick={() =>
                                                 copyToClipboard(smartAccountAddress, "Smart account address Copied")
                                             }
@@ -83,10 +85,10 @@ const Portfolio: React.FC<any> = ({
                                     </button>
                                     <button className="w-full flex justify-between items-center gap-2">
                                         <div className="flex flex-col justify-center items-start">
-                                            <span className="text-font-100 text-base font-medium">
+                                            <span className="text-B100 text-base font-medium">
                                                 {smartAccount && address}
                                             </span>
-                                            <span className="text-font-300 text-xs">
+                                            <span className="text-B100 text-xs">
                                                 {smartAccount &&
                                                     "EOA : (" +
                                                     eoaBalance +
@@ -100,7 +102,7 @@ const Portfolio: React.FC<any> = ({
 
                                         <FiCopy
                                             size="35px"
-                                            className="text-font-100 active:text-font-300 p-2 hover:bg-backgound-700 rounded-md"
+                                            className="text-B100 active:text-B200 p-2 hover:bg-N40 rounded-md"
                                             onClick={() => copyToClipboard(address, "EOA address Copied")}
                                         />
                                     </button>
@@ -109,8 +111,10 @@ const Portfolio: React.FC<any> = ({
                         </div>
                     </div>
 
-                    <div className="sticky h-[60px] top-0 z-20 max-w-6xl w-full flex flex-row justify-between items-center gap-3 bg-backgound-100 py-2 px-3">
-                        <h1 className="md:text-primary-100 text-2xl font-bold">Your Total Networth{"  "}·{"  "}
+
+                    {/* Filter Bar */}
+                    <div className="sticky h-[60px] top-0 z-20 max-w-6xl w-full flex flex-row justify-between items-center gap-3 bg-N20 rounded-xl py-2 px-3 shadow-xl">
+                        <h1 className="text-B100 text-2xl font-bold">Your Total Networth{"  "}·{"  "}
                             ${chainData?.reduce((acc: number, val?: { data?: { items?: { quote: number }[] } }) => {
                                 if (val && val.data && val.data.items) {
                                     return acc + val.data.items.reduce((subAcc: number, currentItem: { quote: number }) => subAcc + currentItem.quote, 0);
@@ -119,10 +123,11 @@ const Portfolio: React.FC<any> = ({
                             }, 0)?.toFixed(4)}
                         </h1>
 
+
                         <div className="md:flex gap-4">
-                            <div className="hidden md:flex justify-center items-center gap-2 text-primary-100 text-lg bg-backgound-300 rounded-lg p-1">
+                            <div className="hidden md:flex justify-center items-center gap-2 text-B100 text-lg bg-gradient-to-br from-[#7339FD] via-[#56B0F6] to-[#4DD4F4] shadow-2xl rounded-lg p-1">
                                 <div
-                                    className={`cursor-pointer px-3 py-1 text-sm md:text-base text-center rounded-lg ${!isSCW ? "hover:bg-backgound-500" : ""} transition duration-300 ${isSCW ? "bg-backgound-100" : ""} `}
+                                    className={`cursor-pointer px-3 py-1 text-sm md:text-base text-center rounded-lg ${!isSCW ? "hover:bg-N30" : ""} transition duration-300 ${isSCW ? "bg-N10" : "text-N20 hover:text-B100"} `}
                                     onClick={() => {
                                         setIsSCW(true)
                                         handleFetchPorfolioData()
@@ -131,7 +136,7 @@ const Portfolio: React.FC<any> = ({
                                     Smart Account
                                 </div>
                                 <div
-                                    className={`cursor-pointer px-3 py-1 text-sm md:text-base text-center rounded-lg ${isSCW ? "hover:bg-backgound-500" : ""} transition duration-300 ${!isSCW ? "bg-backgound-100" : ""} `}
+                                    className={`cursor-pointer px-3 py-1 text-sm md:text-base text-center rounded-lg ${isSCW ? "hover:bg-N30" : ""} transition duration-300 ${!isSCW ? "bg-N10" : "text-N20 hover:text-B100"} `}
                                     onClick={() => {
                                         setIsSCW(false)
                                         handleFetchPorfolioData()
@@ -145,7 +150,7 @@ const Portfolio: React.FC<any> = ({
                     </div>
 
                     {chainData?.map((details: any) => (
-                        <div className="max-w-6xl w-full bg-backgound-300 flex flex-col justify-start items-start text-gray-300 rounded-3xl p-8 relative">
+                        <div className="max-w-6xl w-full bg-N20 flex flex-col justify-start items-start text-B200 rounded-3xl p-8 relative shadow-xl">
 
                             <div className="w-full flex justify-start items-center gap-3 text-start mb-4">
                                 <Image
@@ -153,15 +158,15 @@ const Portfolio: React.FC<any> = ({
                                     width={100}
                                     src={details?.data?.items[0]?.logo_urls?.chain_logo_url || defaultBlue}
                                     alt=""
-                                    className="h-12 w-12 rounded-full"
+                                    className="h-12 w-12 rounded-full bg-N60"
                                 />
-                                <div className="flex flex-col justify-start items-start gap-1 text-primary-100 font-bold text-2xl">
+                                <div className="flex flex-col justify-start items-start gap-1 text-B100 font-bold text-2xl">
                                     <div>{startCase(details?.data?.chain_name)}  ·  ${details?.data?.items?.reduce((i: number, currentValue: number) => i + currentValue.quote, 0).toFixed(4)}</div>
                                 </div>
                             </div>
 
-                            <div className="sticky top-[60px] z-10 w-full bg-backgound-300 flex justify-end items-center gap-3 text-xs md:text-sm text-primary-300 h-7">
-                                <div className="w-full text-start text-primary-100 font-semibold">ASSET</div>
+                            <div className="sticky top-[60px] z-10 w-full bg-N20 flex justify-end items-center gap-3 text-xs md:text-sm text-B100 h-7">
+                                <div className="w-full text-start text-B200 font-semibold">ASSET</div>
                                 <div className="w-[25%] text-start">PRICE</div>
                                 <div className="w-[25%] text-start">BALANCE</div>
                                 <div className="w-[25%] text-start">VALUE</div>
@@ -175,14 +180,14 @@ const Portfolio: React.FC<any> = ({
             )}
 
             {isLoading ? (
-                <div className="max-w-6xl w-full h-full flex flex-col justify-center items-center gap-5 rounded-3xl px-5 py-10 bg-backgound-300 text-font-100 border-backgound-600 shadow shadow-backgound-600">
+                <div className="max-w-6xl w-full h-full flex flex-col justify-center items-center gap-5 rounded-3xl px-5 py-10 bg-N20 text-B200 shadow-xl">
                     <h1 className="w-full text-xl md:text-2xl font-extrabold text-center">Feching User Tokens</h1>
                     <h6 className="w-full flex justify-center items-center gap-2 text-base md:text-lg font-semibold text-center">
                         Please Wait... <BiLoaderAlt className="animate-spin h-5 w-5" />
                     </h6>
                 </div>
             ) : !chainData && smartAccountAddress ? (
-                <div className="max-w-6xl w-full h-full flex flex-col justify-center items-center gap-5 rounded-3xl px-5 py-10 bg-backgound-300 text-font-100 border-backgound-600 shadow shadow-backgound-600">
+                <div className="max-w-6xl w-full h-full flex flex-col justify-center items-center gap-5 rounded-3xl px-5 py-10 bg-N20 text-B200 shadow-xl">
                     <h1 className="w-full text-xl md:text-2xl font-extrabold text-center">
                         {selectedNetwork.chainId == "8453" ? "Base is not integrated for Portfolio." : ""}
                     </h1>
@@ -191,7 +196,7 @@ const Portfolio: React.FC<any> = ({
                         <Link
                             href="/"
                             key="trade"
-                            className="cursor-pointer px-8 py-1.5 text-sm md:text-base text-center rounded-full bg-backgound-600 hover:bg-backgound-700 transition duration-300"
+                            className="cursor-pointer px-8 py-1.5 text-sm md:text-base text-center rounded-full bg-W200 hover:bg-W100 transition duration-300"
                         >
                             Let&apos;s Trade
                         </Link>
@@ -199,7 +204,7 @@ const Portfolio: React.FC<any> = ({
                 </div>
             ) : (
                 !smartAccountAddress && (
-                    <div className="max-w-6xl w-full h-full flex flex-col justify-center items-center gap-5 rounded-3xl px-5 py-10 bg-backgound-300 text-font-100 border-backgound-600 shadow shadow-backgound-600">
+                    <div className="max-w-6xl w-full h-full flex flex-col justify-center items-center gap-5 rounded-3xl px-5 py-10 bg-N20 text-B200 shadow-xl">
                         <h1 className="w-full text-xl md:text-2xl font-extrabold text-center">
                             Please Conect Your Wallet
                         </h1>
