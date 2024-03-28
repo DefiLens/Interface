@@ -40,7 +40,7 @@ const ExecuteMethod = ({
                         alt={sendTxLoading ? 'loading' : 'click'}
                         className="w-14 h-14"
                     />
-                    <div className="w-full text-center text-xl md:text-2xl text-black font-extrabold cursor-pointer">
+                    <div className="w-full text-center text-xl md:text-2xl text-black font-extrabold">
                         Execute Batch in Single Click
                     </div>
                     <div className="w-[75%] max-h-96 overflow-auto flex flex-col justify-start items-center gap-5 px-5 py-2 mt-5">

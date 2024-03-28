@@ -19,7 +19,7 @@ const SelectionBar = ({
 }: tSelectionBar) => (
     <div
         onClick={handleSelectionMenu}
-        className="w-full rounded-lg px-5 py-3"
+        className="w-full rounded-lg px-5 py-3 hover:bg-[rgba(132,144,251,.4)] transition"
     >
         <h5 className="text-sm md:text-base lg:text-lg font-medium md:font-semibold text-font-100">
             {titlePlaceholder}
@@ -28,9 +28,9 @@ const SelectionBar = ({
             {iconCondition ? (
                 <div className="relative">
                     <div className="h-12 w-12">
-                        <Image src={mainIcon} alt="" className="h-12 w-12 full w-full bg-N40 rounded-full cursor-pointer" />
+                        <Image src={mainIcon} alt="" className="h-12 w-12 full w-full bg-N60 rounded-full cursor-pointer" />
                     </div>
-                    <div className="absolute -bottom-1 -right-1 bg-N40 h-6 w-6 flex justify-center items-center rounded-full p-1">
+                    <div className="absolute -bottom-1 -right-1 bg-N60 h-6 w-6 flex justify-center items-center rounded-full p-1">
                         <Image
                             src={subIcon ? subIcon : defaultBlue}
                             alt=""
@@ -40,9 +40,9 @@ const SelectionBar = ({
                 </div>
             ) : (
                 <div className="relative">
-                    <div className="h-12 w-12 bg-N40 rounded-full cursor-pointer" />
-                    <div className="absolute -bottom-1 -right-1  h-6 w-6 flex justify-center items-center rounded-full">
-                        <div className="h-5 w-5 bg-N60 rounded-full cursor-pointer" />
+                    <div className="h-12 w-12 bg-S100 rounded-full cursor-pointer" />
+                    <div className="absolute -bottom-1 -right-1  h-7 w-7 flex justify-center items-center rounded-full">
+                        <div className="h-5 w-5 bg-S200 rounded-full cursor-pointer" />
                     </div>
                 </div>
             )}

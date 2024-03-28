@@ -55,14 +55,14 @@ const Transfer: React.FC<any> = ({
     return (
         <div className="w-full h-full overflow-scroll flex flex-col justify-center items-center gap-5">
             {!smartAccount && (
-                <div className="w-full lg:w-[50%] flex justify-center items-center border-2 border-backgound-800 rounded-lg cursor-pointer my-10">
-                    <h3 className="font-semibold text-lg md:text-2xl text-font-200 py-4 bg-transparent">
+                <div className="w-full lg:w-[50%] flex justify-center bg-N0 items-center border-2 border-B75 rounded-lg cursor-pointer my-10">
+                    <h3 className="font-semibold text-lg md:text-2xl text-B100 py-4 bg-transparent">
                         Login First!
                     </h3>
                 </div>
             )}
             {smartAccount && (
-                <div className="w-full lg:max-w-xl flex flex-col justify-center items-center gap-3 shadow-2xl rounded-2xl bg-gradient-to-br from-D600 via-D200 to-D100 overflow-hidden">
+                <div className="w-full lg:max-w-xl flex flex-col justify-center items-center gap-3 shadow-2xl rounded-2xl bg-GR2 overflow-hidden">
                     <div className="w-full p-5">
                         <h3 className="font-semibold text-lg md:text-2xl text-N20 mb-3">Transfer Fund</h3>
                         <div className="w-full flex flex-col sm:flex-row justify-center items-center gap-2 md:gap-4 bg-[rgba(225,225,225,.4)] rounded-xl text-B100 p-3">

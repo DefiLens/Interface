@@ -18,6 +18,7 @@ import ExecuteMethod from "../../components/Models/ExecuteMethod/ExecuteMethod";
 import { iTokenData, iTrading, useTradingStore } from "../../store/TradingStore";
 import { defaultBlue, downLine, gas, optimism, swap, warning } from "../../assets/images";
 import { PiDotsThreeOutlineVertical } from "react-icons/pi";
+import { HiOutlineArrowsRightLeft } from "react-icons/hi2";
 
 bg.config({ DECIMAL_PLACES: 10 });
 
@@ -82,7 +83,7 @@ const Trade: React.FC<any> = ({
                 className={`${showBatchList ? "!w-full" : "!w-[50%]"
                     } h-full flex flex-col lg:flex-row justify-start lg:justify-center items-center lg:items-start gap-4`}
             >
-                <div className="w-full md:max-w-xl h-full flex flex-col justify-center items-center">
+                <div className="w-full md:max-w-xl h-full flex flex-col justify-start items-center">
                     {showFromSelectionMenu || showToSelectionMenu ? (
                         <div className="w-full max-h-full bg-W100 flex flex-col gap-2 rounded-lg cursor-pointer p-3 shadow-2xl">
                             <MdOutlineArrowBack
@@ -411,7 +412,7 @@ const Trade: React.FC<any> = ({
                             <div className="w-full flex flex-col gap-5">
                                 <div className="px-5 pt-7">
                                     <div
-                                        className={`w-full relative flex justify-center bg-[rgba(225,225,225,.4)] rounded-xl px-5 py-3 items-center gap-5 ${selectedToNetwork.chainName &&
+                                        className={`w-full relative flex justify-center bg-[rgba(225,225,225,.4)] border rounded-xl px-5 py-3 items-center gap-5 ${selectedToNetwork.chainName &&
                                             selectedToProtocol &&
                                             selectedToToken &&
                                             selectedFromNetwork.chainName &&
@@ -440,24 +441,23 @@ const Trade: React.FC<any> = ({
                                         />
                                         {/* ---------- FROM Section END ---------- */}
 
-                                        <div
-                                            onClick={handleSwap}
-                                            className="absolute flex justify-center items-center border-2 bg-[rgba(225,225,225,.5)] hover:bg-font-100 active:bg-font-400 rounded-full"
-                                        >
-                                            <Image
-                                                src={swap}
-                                                alt=""
-                                                className={`h-10 w-10 p-2 ${selectedToNetwork.chainName &&
-                                                    selectedToProtocol &&
-                                                    selectedToToken &&
-                                                    selectedFromNetwork.chainName &&
-                                                    selectedFromProtocol &&
-                                                    selectedFromToken
-                                                    ? "!rotate-90 h-9 w-9 p-1.5"
-                                                    : "!rotate-0"
-                                                    }`}
-                                            />
-                                        </div>
+                                        {selectedToNetwork.chainName &&
+                                            selectedToProtocol &&
+                                            selectedToToken &&
+                                            selectedFromNetwork.chainName &&
+                                            selectedFromProtocol &&
+                                            selectedFromToken &&
+
+                                            <div
+                                                onClick={handleSwap}
+                                                className="absolute flex justify-center items-center border-2 bg-N60 hover:bg-font-100 active:bg-font-400 rounded-full p-1"
+                                            >
+                                                <HiOutlineArrowsRightLeft
+                                                    size="25px"
+                                                    className="rotate-90 sm:rotate-0 text-B100"
+                                                />
+                                            </div>
+                                        }
 
                                         {/* ---------- To Section START ---------- */}
                                         <SelectionBar
@@ -495,7 +495,7 @@ const Trade: React.FC<any> = ({
                                                         alt=""
                                                         className="h-12 w-12 bg-N40 rounded-full cursor-pointer"
                                                     />
-                                                    <div className="absolute -bottom-1 -right-1 bg-N60 h-6 w-6 flex justify-center items-center rounded-full">
+                                                    <div className="absolute -bottom-1 -right-1 border-[3px] border-W100 bg-N50 h-6 w-6 flex justify-center items-center rounded-full">
                                                         <Image
                                                             src={
                                                                 protocolNames[selectedFromNetwork.chainId].key.find(
@@ -509,8 +509,8 @@ const Trade: React.FC<any> = ({
                                                 </div>
                                             ) : (
                                                 <div className="relative">
-                                                    <div className="h-12 w-12 bg-N40 rounded-full cursor-pointer" />
-                                                    <div className="absolute -bottom-1 -right-1 bg-N60 h-6 w-6 flex justify-center items-center rounded-full">
+                                                    <div className="h-12 w-12 bg-N50 rounded-full cursor-pointer" />
+                                                    <div className="absolute -bottom-1 border-[3px] border-W100 -right-1 bg-N50 h-6 w-6 flex justify-center items-center rounded-full">
                                                         <div className="h-5 w-5 rounded-full cursor-pointer" />
                                                     </div>
                                                 </div>
@@ -600,35 +600,36 @@ const Trade: React.FC<any> = ({
 
                 {selectedFromNetwork.chainId && showBatchList && (
                     <div className="w-full md:max-w-2xl max-h-full bg-W100 flex flex-col justify-start items-center gap-1 rounded-2xl cursor-pointer shadow-2xl">
-                        <h1 className="w-full text-B200 text-lg md:text-xl lg:text-2xl text-center font-bold rounded-t-2xl p-5">
-                            Batching List
-                        </h1>
-                        {selectedFromNetwork.chainId && totalfees.gt(0) && (
-                            <div className="w-auto flex justify-between items-center gap-10 sm:gap-40 border border-[#A9A9A9] rounded-lg mb-3 px-4 py-2.5">
-                                <h3 className="flex justify-start items-center gap-1 text-B200 font-bold text-xs md:text-sm">
-                                    <Image
-                                        src={gas}
-                                        alt="gas"
-                                        className="h-6 w-6 mr-1 sm:mr-2"
-                                    />
-                                    <span>
-                                        Total Gas
-                                    </span>
-                                    <span className="text-B300 font-medium text-xs">
-                                        (estimated)
-                                    </span>
-                                </h3>
-
-                                <div className="flex justify-between items-center gap-1">
-                                    <h6 className="text-B200 font-semibold text-sm">
-                                        {Number(totalfees).toPrecision(4).toString()} :
-                                        <span className="px-1 text-B300 font-medium text-xs">
-                                            {ChainIdDetails[selectedFromNetwork.chainId].gasFeesName}
+                        <div className="w-full flex justify-between items-center gap-1 px-5 pt-7">
+                            <h1 className="text-B200 text-lg md:text-xl lg:text-2xl text-center font-bold rounded-t-2xl ">
+                                Batching List...
+                            </h1>
+                            {selectedFromNetwork.chainId && totalfees.gt(0) && (
+                                <div className="w-auto flex justify-between items-center text-green-400 gap-4 md:gap-6 bg-[rgba(109,223,255,.2)] border border-green-400 rounded-xl px-4 py-2 border">
+                                    <h3 className="flex justify-start items-center gap-1 font-bold text-xs md:text-sm">
+                                        <Image
+                                            src={gas}
+                                            alt="gas"
+                                            className="h-5 w-5 mr-1 sm:mr-2"
+                                        />
+                                        <span>
+                                            Total Gas
                                         </span>
-                                    </h6>
+                                    </h3>
+
+                                    <div className="flex justify-between items-center gap-1">
+                                        <Image
+                                            src={ChainIdDetails[selectedFromNetwork.chainId].networkLogo}
+                                            alt="gas"
+                                            className="h-5 w-5 rounded-full"
+                                        />
+                                        <h6 className="font-semibold text-sm">
+                                            {Number(totalfees).toPrecision(4).toString()}
+                                        </h6>
+                                    </div>
                                 </div>
-                            </div>
-                        )}
+                            )}
+                        </div>
 
                         <div className="w-full max-h-full overflow-auto flex flex-col gap-5 px-5 py-7">
                             {selectedFromNetwork.chainId &&
@@ -638,9 +639,9 @@ const Trade: React.FC<any> = ({
                                     <>
                                         {bar.txArray.length > 0 && (
                                             <div key={bar.id} className="relative">
-                                                <div className="simulation-success flex flex-col justify-center items-start gap-1 bg-W300 p-5 rounded-xl text-black font-medium transition duration-300">
-                                                    <div className="w-full flex justify-between items-center gap-2">
-                                                        <h1 className="flex justify-center items-center gap-3 text-B100 font-semibold text-base">
+                                                <div className="simulation-success flex flex-col justify-center items-start gap-1 border-2 border-B50 rounded-lg bg-N0 p-5 rounded-xl text-black font-medium transition duration-300">
+                                                    <div className="w-full flex justify-between items-center gap-2 border-b border-B50">
+                                                        <h1 className="flex justify-center items-center gap-3 text-B100 font-extrabold text-base text-transparent bg-clip-text bg-gradient-to-br from-[#7339FD] via-[#56B0F6] to-[#4DD4F4]">
                                                             {inputBarIndex + 1}.
                                                             <span>
                                                                 {startCase(bar.data.fromNetwork)} To{" "}
@@ -685,7 +686,7 @@ const Trade: React.FC<any> = ({
                                                                     </div>
                                                                 </div>
                                                                 <div className="flex flex-col justify-start items-start">
-                                                                    <span className="text-lg md:text-xl lg:text-2xl font-bold text-B200">
+                                                                    <span className="text-md md:text-lg lg:text-xl font-bold text-B200">
                                                                         {bar.data.amountIn} {bar.data.fromToken}
                                                                     </span>
                                                                     <span className="text-sm md:text-base font-semibold text-font-400">
@@ -775,87 +776,60 @@ const Trade: React.FC<any> = ({
                                                                     ))}
                                                             </div>
                                                         )}
-                                                    </div>
-                                                    <div className="w-full flex flex-col justify-center gap-1 rounded-lg px-2 mt-3">
-                                                        <div className="w-full flex justify-between items-center gap-1">
-                                                            <h3 className="w-full text-green-400 font-bold text-xs">
-                                                                Gas Used
-                                                            </h3>
-                                                            <h6 className="w-full flex justify-end items-center gap-2 text-B200 font-semibold text-sm">
-                                                                <Image
-                                                                    src={gas}
-                                                                    alt="gas"
-                                                                    className="h-4 w-4 mr-1"
-                                                                />
-                                                                <span>
-                                                                    {Number(bar.data.fees).toPrecision(3).toString()} :
-                                                                </span>
-                                                                <span className="text-B300 font-medium text-xs">
-                                                                    {ChainIdDetails[selectedFromNetwork.chainId].gasFeesName}
-                                                                </span>
-                                                            </h6>
-                                                        </div>
-                                                        {Number(bar.data.extraValue) ? (
-                                                            <div className="w-full flex justify-between items-center gap-1">
-                                                                <h3 className="w-full text-green-400 font-bold text-xs">
-                                                                    Extra Native Gas
-                                                                </h3>
-                                                                <h6 className="w-full flex justify-end items-center gap-2 text-B200 font-semibold text-sm">
-                                                                    <Image
-                                                                        src={gas}
-                                                                        alt="gas"
-                                                                        className="h-4 w-4 mr-1"
-                                                                    />
-                                                                    <span>
-                                                                        {Number(bar.data.extraValue).toPrecision(3).toString()} :
-                                                                    </span>
-                                                                    <span className="text-B300 font-medium text-xs">
-                                                                        {ChainIdDetails[selectedFromNetwork.chainId].gasFeesName}
-                                                                    </span>
-                                                                </h6>
+                                                        {showIndividualBatchList === bar.id && (
+                                                            <div className="w-full flex justify-between items-center gap-1 rounded-lg px-2 mt-3">
+                                                                <div className="w-auto flex justify-between items-center text-green-400 gap-4 md:gap-6 bg-[rgba(109,223,255,.2)] border border-green-400 rounded-xl px-4 py-2 border">
+                                                                    <h3 className="flex justify-start items-center gap-1 font-bold text-xs md:text-sm">
+                                                                        <Image
+                                                                            src={gas}
+                                                                            alt="gas"
+                                                                            className="h-5 w-5 mr-1 sm:mr-2"
+                                                                        />
+                                                                        <span>
+                                                                            Gas Used
+                                                                        </span>
+                                                                    </h3>
+
+                                                                    <div className="flex justify-between items-center gap-1">
+                                                                        <Image
+                                                                            src={ChainIdDetails[selectedFromNetwork.chainId].networkLogo}
+                                                                            alt="gas"
+                                                                            className="h-5 w-5 rounded-full"
+                                                                        />
+                                                                        <h6 className="font-semibold text-sm">
+                                                                            {Number(bar.data.fees).toPrecision(3).toString()}
+                                                                        </h6>
+                                                                    </div>
+                                                                </div>
+
+                                                                {Number(bar.data.extraValue) ? (
+                                                                    <div className="w-auto flex justify-between items-center text-green-400 gap-4 md:gap-6 bg-[rgba(109,223,255,.2)] border border-green-400 rounded-xl px-4 py-2 border">
+                                                                        <h3 className="flex justify-start items-center gap-1 font-bold text-xs md:text-xs">
+                                                                            <Image
+                                                                                src={gas}
+                                                                                alt="gas"
+                                                                                className="h-5 w-5 mr-1 sm:mr-2"
+                                                                            />
+                                                                            <span>
+                                                                                Extra Native Gas
+                                                                            </span>
+                                                                        </h3>
+
+                                                                        <div className="flex justify-between items-center gap-1">
+                                                                            <Image
+                                                                                src={ChainIdDetails[selectedFromNetwork.chainId].networkLogo}
+                                                                                alt="gas"
+                                                                                className="h-5 w-5 rounded-full"
+                                                                            />
+                                                                            <h6 className="font-semibold text-sm">
+                                                                                {Number(bar.data.extraValue).toPrecision(3).toString()}
+                                                                            </h6>
+                                                                        </div>
+                                                                    </div>
+                                                                ) : null}
                                                             </div>
-                                                        ) : null}
+                                                        )}
                                                     </div>
-                                                    {/* <div className="flex justify-center items-center gap-3">
-                                                            {bar.simulation.isSuccess ? (
-                                                                <h6 className="flex justify-center items-center gap-3 bg-font-100 text-font-1100 shadow-md font-medium text-sm rounded-full p-1 pr-5">
-                                                                    <svg
-                                                                        className="h-5 w-5 text-green-500"
-                                                                        viewBox="0 0 24 24"
-                                                                        fill="none"
-                                                                        stroke="currentColor"
-                                                                        stroke-width="2"
-                                                                        stroke-linecap="round"
-                                                                        stroke-linejoin="round"
-                                                                    >
-                                                                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                                                                        <polyline points="22 4 12 14.01 9 11.01" />
-                                                                    </svg>
-                                                                    Simulation Success
-                                                                </h6>
-                                                            ) : bar.simulation.isError ? (
-                                                                <h6 className="flex justify-center items-center gap-3 bg-font-100 text-font-1100 shadow-md font-medium text-sm rounded-full p-1 pr-5">
-                                                                    <svg
-                                                                        className="h-5 w-5 text-red-500"
-                                                                        viewBox="0 0 24 24"
-                                                                        fill="none"
-                                                                        stroke="currentColor"
-                                                                        stroke-width="2"
-                                                                        stroke-linecap="round"
-                                                                        stroke-linejoin="round"
-                                                                    >
-                                                                        <circle cx="12" cy="12" r="10" />{" "}
-                                                                        <line x1="15" y1="9" x2="9" y2="15" />
-                                                                        <line x1="9" y1="9" x2="15" y2="15" />
-                                                                    </svg>
-                                                                    Simulation Error
-                                                                </h6>
-                                                            ) : (
-                                                                <h6 className="flex justify-center items-center gap-3 bg-font-100 text-font-1100 shadow-md font-medium text-sm rounded-full py-1 px-5">
-                                                                    Simulation
-                                                                </h6>
-                                                            )}
-                                                        </div> */}
                                                 </div>
                                             </div>
                                         )}
