@@ -28,6 +28,7 @@ import twitter from "./x.svg";
 import telegram from "./telegram.svg";
 import web from "./web.svg";
 import logoDark from "./logoDark.png";
+import logoLight from "./logoLight.svg";
 import dai from "./dai.png";
 import usdc from "./usdc.png";
 import usdt from "./usdt.png";
@@ -35,6 +36,10 @@ import moonwell from "./moonwell.svg";
 import seamless from "./seamless.svg";
 import checkBox from "./checkBox.png";
 import uncheckBox from "./uncheckBox.png";
+import portfolio from './nav-portfolio.svg';
+import batching from './nav-batching.svg';
+import conditional_trading from './nav-conditional-trading.svg';
+import mirgrate_asset from './nav-mirgrate-asset.svg';
 
 export {
     closeNarrow,
@@ -67,6 +72,7 @@ export {
     telegram,
     web,
     logoDark,
+    logoLight,
     dai,
     usdc,
     usdt,
@@ -74,4 +80,8 @@ export {
     seamless,
     checkBox,
     uncheckBox,
+    portfolio,
+    batching, 
+    conditional_trading, 
+    mirgrate_asset,
 };

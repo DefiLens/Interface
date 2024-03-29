@@ -80,7 +80,7 @@ const PortfolioContainer: React.FC<any> = () => {
                     setAmountIn(amountInByDecimals.toString());
                 }
             }
-            
+
         } catch (error) {
             console.log("handleAmountIn-error: ", error);
         }

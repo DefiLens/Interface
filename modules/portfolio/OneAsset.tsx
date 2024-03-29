@@ -200,11 +200,12 @@ const OneAsset: React.FC<any> = ({ details, send, handleAmountIn, currentChainId
                 ))}
             <div className="w-full flex justify-center items-center">
                 {details?.data?.items?.length > 5 && (
-                    <button onClick={toggleShowAll} className="cursor-pointer px-3 py-1 md:text-base text-center rounded-lg hover:bg-backgound-500 transition duration-300 bg-backgound-100">
+                    <button onClick={toggleShowAll} className="cursor-pointer px-3 py-1 md:text-base text-center rounded-lg transition duration-300 border border-B50 bg-N40 hover:bg-N50">
                         {showAll ? 'Show Less' : 'Show All'}
                     </button>
                 )}
             </div>
+
         </>
     )
 }

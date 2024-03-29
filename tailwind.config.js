@@ -142,9 +142,15 @@ module.exports = {
                 "N800": '#a3a3a3',
                 "N900": '#9e9e9e',
 
+
+                
                 dark: "#000000",
                 light: "#FFFFFF",
             },
+            backgroundImage: theme => ({
+                "GR1": "linear-gradient(to bottom right, #7339FD, #56B0F6, #4DD4F4)",
+                "GR2": "linear-gradient(to bottom right, #05272a, #24848b)",
+            }),
         },
     },
     plugins: [],

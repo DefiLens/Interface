@@ -53,7 +53,7 @@ export default function App({ Component, pageProps }: AppProps) {
 
 
                 <QueryClientProvider client={queryClient}>
-                    <Toaster
+                    {/* <Toaster
                         toastOptions={{
                             style: {
                                 height: "100%",
@@ -82,13 +82,31 @@ export default function App({ Component, pageProps }: AppProps) {
                                 )}
                             </ToastBar>
                         )}
-                    </Toaster>
+                    </Toaster> */}
+
+                       <Toaster
+                            position="bottom-right"
+                            toastOptions={{
+                            // icon: false,
+                            style: {
+                                background: '#fff',
+                                color: 'black',
+                                padding: '10px 20px',
+                                borderRadius: '4px',
+                                width: '350px',
+                                height: '65px',
+                                textAlign:'center'
+                            },
+                            }}
+                        />
 
                     <Suspense fallback={<div>Loading...</div>}>
                         <div className="main-bg h-screen w-screen">
-                            <HeaderContainer />
+                            <div className="h-[79px]">
+                                <HeaderContainer />
+                            </div>
 
-                            <div className="w-screen h-[calc(100%-109px)]  flex justify-center items-start">
+                            <div className="w-screen h-[calc(100%-119px)]  flex justify-center items-start">
                                 <main className="w-full h-full overflow-y-scroll overflow-x-hidden">
                                     <Component {...pageProps} />
                                 </main>

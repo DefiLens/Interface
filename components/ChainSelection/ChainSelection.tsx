@@ -1,3 +1,4 @@
+import React from 'react';
 import { iPortfolio, usePortfolioStore } from "../../store/Portfolio";
 
 interface Chain {
@@ -7,14 +8,19 @@ interface Chain {
 
 interface ChainSelectionProps {
     onChange: (chainId: number) => void;
+    dropdown?: boolean;
 }
 
-const ChainSelection: React.FC<ChainSelectionProps> = () => {
+const ChainSelection: React.FC<ChainSelectionProps> = ({ onChange, dropdown = false }) => {
     const { chainId, setChainId }: iPortfolio = usePortfolioStore((state) => state);
 
     const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedId = parseInt(e.target.value, 10);
         setChainId(selectedId);
+    };
+
+    const handleButtonClick = (chainId: number) => {
+        setChainId(chainId);
     };
 
     const chains: Chain[] = [
@@ -28,26 +34,39 @@ const ChainSelection: React.FC<ChainSelectionProps> = () => {
     ];
 
     return (
-        <div
-            className=" text-N20 text-lg bg-gradient-to-br from-[#7339FD] via-[#56B0F6] to-[#4DD4F4] shadow-xl rounded-lg px-2 cursor-pointer"
-        >
-            <select
-                value={chainId}
-                onChange={handleSelectChange}
-                className="bg-transparent py-2 cursor-pointer outline-none"
-            >
-                {chains.map((chain) => (
-                    <option
-                        key={chain.chainId}
-                        value={chain.chainId}
-                        className="bg-N20-300 py-2 px-4 border-none rounded-lg text-B100"
+        <div className="">
+            {dropdown ? (
+                <div className="text-N20 text-lg bg-GR1 border rounded-lg px-2 cursor-pointer shadow-lg">
+                    <select
+                        value={chainId}
+                        onChange={handleSelectChange}
+                        className="bg-transparent py-2 cursor-pointer outline-none"
                     >
-                        {chain.chainName}
-                    </option>
-                ))}
-            </select>
+                        {chains.map((chain) => (
+                            <option
+                                key={chain.chainId}
+                                value={chain.chainId}
+                                className="bg-N20-300 py-2 px-4 border-none rounded-lg text-B100"
+                            >
+                                {chain.chainName}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+            ) : (
+                <div className="w-full flex items-center gap-3 overflow-scroll" style={{ scrollbarWidth: 'none', '-ms-overflow-style': 'none' }}>
+                    {chains.map((chain) => (
+                        <button
+                            key={chain.chainId}
+                            onClick={() => handleButtonClick(chain.chainId)}
+                            className={`py-2 px-4 rounded-lg border border-B50 hover:bg-N50 ${chainId === chain.chainId ? 'bg-GR1 text-N20 border-none' : 'bg-N40 text-B100'}`}
+                        >
+                            {chain.chainName}
+                        </button>
+                    ))}
+                </div>
+            )}
         </div>
-
     );
 };
 
