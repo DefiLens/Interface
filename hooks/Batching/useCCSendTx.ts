@@ -16,6 +16,7 @@ import { findGasUsedBySimulation, calculateFees, chooseChianId } from "../../uti
 import { getContractInstance, getErc20Allownace } from "../../utils/web3Libs/ethers";
 import { _functionType, _nonce, BYTES_ZERO, ZERO_ADDRESS } from "../../utils/data/constants";
 import { nativeTokenFetcher, newChainPingByNetwork, starGateRouterByNetwork, tokensByNetworkForCC } from "../../utils/data/protocols";
+import { tCCSendTx, tStargateData } from "../types";
 
 export function useCCSendTx() {
     const { mutateAsync: oneInchSwap } = useOneInch();
@@ -46,7 +47,23 @@ export function useCCSendTx() {
         contractAddress,
         extraOrShareToken,
         tokenOutNum,
-    }) {
+    }: tCCSendTx): Promise<tStargateData | undefined> {
+        console.log(tokenIn,
+            _amountIn,
+            address,
+            isSCW,
+            params,
+            isThisAmount,
+            srcPoolId,
+            destPoolId,
+            fromChainId,
+            toChainId,
+            currentFunc,
+            currentAbi,
+            contractAddress,
+            extraOrShareToken,
+            tokenOutNum
+        )
         try {
             if (selectedToProtocol == "erc20") {
                 const tokenOutName = selectedToToken;

@@ -3,22 +3,15 @@ import { BigNumber, ethers } from "ethers";
 
 import { useMutation } from "@tanstack/react-query";
 
+import { tApprove, tOneInch } from "../types";
+import { useOneInch } from "../swaphooks/useOneInch";
 import { useApprove } from "../utilsHooks/useApprove";
 import { decreasePowerByDecimals } from "../../utils/helper";
+import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import { useCalculateGasCost } from "../utilsHooks/useCalculateGasCost";
 import { iBatchFlowData, iTrading, useTradingStore } from "../../store/TradingStore";
-import {
-    abiFetcher,
-    abiFetcherNum,
-    buildParams,
-    nativeTokenFetcher,
-    nativeTokenNum,
-    OneInchRouter,
-    uniswapSwapRouterByChainId,
-} from "../../utils/data/protocols";
-import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
-import { useOneInch } from "../swaphooks/useOneInch";
-import { tApprove, tOneInch } from "../types";
+import { abiFetcher, abiFetcherNum, buildParams, nativeTokenFetcher, nativeTokenNum, OneInchRouter, uniswapSwapRouterByChainId } from "../../utils/data/protocols";
+
 export function useRefinance() {
     const { mutateAsync: oneInchSwap } = useOneInch();
     const { mutateAsync: approve } = useApprove();

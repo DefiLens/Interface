@@ -47,9 +47,38 @@ export type OneInchSwapResponse = {
 };
 
 export type tApprove = {
-    tokenIn: string,
-    spender: string,
-    amountIn: BigNumberish,
-    address: string,
-    web3JsonProvider: ethers.providers.JsonRpcProvider | undefined
-}
+    tokenIn: string;
+    spender: string;
+    amountIn: BigNumberish;
+    address: string;
+    web3JsonProvider: ethers.providers.JsonRpcProvider | undefined;
+};
+
+export type tCCSendTx = {
+    tokenIn: string;
+    _amountIn: BigNumberish;
+    address: string;
+    isSCW: boolean;
+    params: [];
+    isThisAmount: string;
+    srcPoolId: string;
+    destPoolId: string;
+    fromChainId: number;
+    toChainId: number;
+    currentFunc: string;
+    currentAbi: Array<String>;
+    contractAddress: string;
+    extraOrShareToken: string;
+    tokenOutNum: string;
+};
+
+export type tTx = {
+    to: string;
+    data: string;
+    value?: string;
+};
+
+export type tStargateData = {
+    txArray: Array<tTx>;
+    value?: string;
+};

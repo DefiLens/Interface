@@ -1,30 +1,20 @@
-import { BigNumber, ethers } from "ethers";
 import { toast } from "react-hot-toast";
+import { BigNumber, ethers } from "ethers";
 
 import { useAddress } from "@thirdweb-dev/react";
 import { useMutation } from "@tanstack/react-query";
 
+import { useCCSendTx } from "./useCCSendTx";
+import { tApprove, tCCSendTx, tOneInch, tStargateData } from "../types";
+import { useOneInch } from "../swaphooks/useOneInch";
 import { useApprove } from "../utilsHooks/useApprove";
 import { ChainIdDetails } from "../../utils/data/network";
-import { iBatchFlowData, iTrading, useTradingStore } from "../../store/TradingStore";
-import {
-    abiFetcher,
-    abiFetcherNum,
-    buildParams,
-    nativeTokenFetcher,
-    nativeTokenNum,
-    OneInchRouter,
-    tokensByNetworkForCC,
-    uniswapSwapRouterByChainId,
-} from "../../utils/data/protocols";
-import { useCCSendTx } from "./useCCSendTx";
-import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import { incresePowerByDecimals } from "../../utils/helper";
-import { useOneInch } from "../swaphooks/useOneInch";
-import { tApprove, tOneInch } from "../types";
+import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
+import { iBatchFlowData, iTrading, useTradingStore } from "../../store/TradingStore";
+import { abiFetcher, abiFetcherNum, buildParams, nativeTokenFetcher, nativeTokenNum, OneInchRouter, tokensByNetworkForCC, uniswapSwapRouterByChainId } from "../../utils/data/protocols";
 
 export function useCCRefinance() {
-    const address = useAddress(); // Detect the connected address
     const { mutateAsync: approve } = useApprove();
     const { mutateAsync: sendTxToChain } = useCCSendTx();
     const { mutateAsync: oneInchSwap } = useOneInch();
@@ -172,11 +162,11 @@ export function useCCRefinance() {
                 batchFlows.push(batchFlow);
             }
 
-            let extraValue: any;
+            let extraValue;
             if (selectedFromNetwork.chainName != selectedToNetwork.chainName) {
                 if (toProtocol == "erc20") {
                     const _tempAmount = BigNumber.from(await incresePowerByDecimals(amountIn, 6).toString());
-                    let data: any = await sendTxToChain({
+                    let data: tStargateData | undefined = await sendTxToChain({
                         tokenIn: tokensByNetworkForCC[selectedFromNetwork.chainId].usdc,
                         _amountIn: isSwap ? swapData.amountOutprice : _tempAmount,
                         address,
@@ -192,7 +182,7 @@ export function useCCRefinance() {
                         contractAddress: "",
                         extraOrShareToken: "0x0000000000000000000000000000000000000000",
                         tokenOutNum: "",
-                    });
+                    } as tCCSendTx);
 
                     if (!data) return;
                     extraValue = data.value;
@@ -253,7 +243,7 @@ export function useCCRefinance() {
                     }
 
                     const _tempAmount = BigNumber.from(await incresePowerByDecimals(amountIn, 6).toString());
-                    let data: any = await sendTxToChain({
+                    let data: tStargateData | undefined = await sendTxToChain({
                         tokenIn: tokensByNetworkForCC[selectedFromNetwork.chainId].usdc,
                         _amountIn: isSwap ? swapData.amountOutprice : _tempAmount,
                         address,
@@ -269,7 +259,7 @@ export function useCCRefinance() {
                         contractAddress: tokenOutContractAddress,
                         extraOrShareToken: "0x0000000000000000000000000000000000000000",
                         tokenOutNum: tokenOutNum,
-                    });
+                    } as tCCSendTx);
 
                     if (!data) return;
                     extraValue = data.value;
