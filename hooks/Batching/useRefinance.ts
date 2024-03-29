@@ -3,7 +3,6 @@ import { BigNumber, ethers } from "ethers";
 
 import { useMutation } from "@tanstack/react-query";
 
-import { useUniswap } from "../swaphooks/useUniswap";
 import { useApprove } from "../utilsHooks/useApprove";
 import { decreasePowerByDecimals } from "../../utils/helper";
 import { useCalculateGasCost } from "../utilsHooks/useCalculateGasCost";
@@ -14,11 +13,13 @@ import {
     buildParams,
     nativeTokenFetcher,
     nativeTokenNum,
+    OneInchRouter,
     uniswapSwapRouterByChainId,
 } from "../../utils/data/protocols";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
+import { useOneInch } from "../swaphooks/useOneInch";
 export function useRefinance() {
-    const { mutateAsync: swap } = useUniswap();
+    const { mutateAsync: oneInchSwap } = useOneInch();
     const { mutateAsync: approve } = useApprove();
     const { mutateAsync: calculategasCost } = useCalculateGasCost();
     const { selectedNetwork }: iGlobal = useGlobalStore((state) => state);
@@ -133,13 +134,14 @@ export function useRefinance() {
 
                 const approveData = await approve({
                     tokenIn: nativeTokenIn,
-                    spender: uniswapSwapRouterByChainId[selectedFromNetwork.chainId],
+                    // spender: uniswapSwapRouterByChainId[selectedFromNetwork.chainId],
+                    spender: OneInchRouter,
                     amountIn: amount,
                     address,
                     web3JsonProvider: provider,
                 });
                 if (approveData) tempTxs.push(approveData);
-                swapData = await swap({
+                swapData = await oneInchSwap({
                     tokenIn: nativeTokenIn,
                     tokenOut: nativeTokenOut,
                     amountIn: amount,

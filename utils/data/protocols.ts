@@ -964,14 +964,14 @@ interface Tokens {
     [tokenName: string]: string;
 }
 
-export const chainPingByNetwork: ChainPing = {
-    "137": "0x664BFAA3ce3C03aAf18EC2627d81f439576f7969",
-    "43114": "0x934E5421D4ce678ae4c4B136306Fbee91bfDBbC8",
-    "42161": "0xBA821135197bB2614F5Bd8943b5d1607288DC60d",
-    "10": "0x2b2ED70C5B25b71CaA766C1054092A9Ff0900df0",
-    "1": "0x0000000000000000000000000000000000000000",
-    "8453": "0x5764FfF7629c03aFE36AA35114C250b2218a77E2",
-};
+// export const chainPingByNetwork: ChainPing = {
+//     "137": "0x664BFAA3ce3C03aAf18EC2627d81f439576f7969",
+//     "43114": "0x934E5421D4ce678ae4c4B136306Fbee91bfDBbC8",
+//     "42161": "0xBA821135197bB2614F5Bd8943b5d1607288DC60d",
+//     "10": "0x2b2ED70C5B25b71CaA766C1054092A9Ff0900df0",
+//     "1": "0x0000000000000000000000000000000000000000",
+//     "8453": "0x5764FfF7629c03aFE36AA35114C250b2218a77E2",
+// };
 
 export const newChainPingByNetwork: ChainPing = {
     // "137": "0x9Aab7e96A706444df9d965a4c1684132554737Fc",
@@ -993,6 +993,9 @@ export const starGateRouterByNetwork: StarGateRouter = {
     "1": "0xeCc19E177d24551aA7ed6Bc6FE566eCa726CC8a9",
     "8453": "0xeCc19E177d24551aA7ed6Bc6FE566eCa726CC8a9",
 };
+
+
+export const OneInchRouter = "0x111111125421ca6dc452d289314280a0f8842a65"
 
 export const uniswapSwapRouterByChainId = {
     "137": "0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45",

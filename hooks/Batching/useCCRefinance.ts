@@ -4,8 +4,6 @@ import { toast } from "react-hot-toast";
 import { useAddress } from "@thirdweb-dev/react";
 import { useMutation } from "@tanstack/react-query";
 
-import { useCCSendTx } from "./useCCSendTx";
-import { useUniswap } from "../swaphooks/useUniswap";
 import { useApprove } from "../utilsHooks/useApprove";
 import { ChainIdDetails } from "../../utils/data/network";
 import { iBatchFlowData, iTrading, useTradingStore } from "../../store/TradingStore";
@@ -15,19 +13,20 @@ import {
     buildParams,
     nativeTokenFetcher,
     nativeTokenNum,
+    OneInchRouter,
     tokensByNetworkForCC,
     uniswapSwapRouterByChainId,
 } from "../../utils/data/protocols";
-import { useCCSendTx2 } from "./useCCSendTx2";
+import { useCCSendTx } from "./useCCSendTx";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import { incresePowerByDecimals } from "../../utils/helper";
+import { useOneInch } from "../swaphooks/useOneInch";
 
 export function useCCRefinance() {
     const address = useAddress(); // Detect the connected address
-    const { mutateAsync: swap } = useUniswap();
     const { mutateAsync: approve } = useApprove();
     const { mutateAsync: sendTxToChain } = useCCSendTx();
-    const { mutateAsync: sendTxToChain2 } = useCCSendTx2();
+    const { mutateAsync: oneInchSwap } = useOneInch();
     const { selectedNetwork }: iGlobal = useGlobalStore((state) => state);
 
     const {
@@ -144,13 +143,14 @@ export function useCCRefinance() {
             if (isSwap) {
                 const approveData = await approve({
                     tokenIn: nativeTokenIn,
-                    spender: uniswapSwapRouterByChainId[selectedFromNetwork.chainId],
+                    // spender: uniswapSwapRouterByChainId[selectedFromNetwork.chainId],
+                    spender: OneInchRouter,
                     amountIn: amount,
                     address,
                     web3JsonProvider: provider,
                 });
                 if (approveData) tempTxs.push(approveData);
-                swapData = await swap({
+                swapData = await oneInchSwap({
                     tokenIn: nativeTokenIn, //: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
                     tokenOut: tokensByNetworkForCC[selectedFromNetwork.chainId].usdc, // nativeTokenOut, //: "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
                     amountIn: amount, //: BigNumber.from('1000000'),
@@ -175,41 +175,8 @@ export function useCCRefinance() {
             let extraValue: any;
             if (selectedFromNetwork.chainName != selectedToNetwork.chainName) {
                 if (toProtocol == "erc20") {
-                    // const tokenOutNum = nativeTokenNum[selectedToNetwork.chainId][tokenOutName];
-                    // const nativeTokenOutAddress = toTokensData?.filter((token) => token.symbol === tokenOutName)[0]
-                    //     .address;
-                    // const nativeTokenOutTemp = toTokensData?.filter((token) => token.symbol === tokenOutName)[0].symbol;
-                    // nativeTokenOutDecimal = toTokensData?.filter((token) => token.symbol === tokenOutName)[0].decimals;
-
-                    // abiNum = abiFetcherNum[selectedToNetwork.chainId][tokenOutName];
-                    // const newTokenIn = tokensByNetworkForCC[selectedToNetwork.chainId].usdc;
-                    // paramDetailsMethod = abiFetcher[selectedToNetwork.chainId][abiNum]["depositParamDetailsMethod"];
-
-                    // params = await buildParams({
-                    //     tokenIn,
-                    //     tokenOut,
-                    //     nativeTokenIn: nativeTokenOutTemp != "usdc" ? nativeTokenOutAddress : newTokenIn, // if bothe network different
-                    //     nativeTokenOut,
-                    //     amount,
-                    //     address,
-                    //     paramDetailsMethod,
-                    // });
-                    // abiNum = abiFetcherNum[selectedToNetwork.chainId][tokenOutName];
-                    // abi = abiFetcher[selectedToNetwork.chainId][abiNum]["depositAbi"];
-                    // methodName = abiFetcher[selectedToNetwork.chainId][abiNum]["depositMethodName"];
-                    // paramDetailsMethod = abiFetcher[selectedToNetwork.chainId][abiNum]["depositParamDetailsMethod"];
-                    // const tokenOutContractAddress = abiFetcher[selectedToNetwork.chainId][abiNum]["contractAddress"];
-                    // let tokenOutContractAddress;
-                    // isContractSet = abiFetcher[selectedToNetwork.chainId][abiNum]["isContractSet"];
-                    // if (isContractSet) {
-                    //     tokenOutContractAddress =
-                    //         abiFetcher[selectedToNetwork.chainId][abiNum]["contractSet"][tokenOutName];
-                    // } else {
-                    //     tokenOutContractAddress = abiFetcher[selectedToNetwork.chainId][abiNum]["contractAddress"];
-                    // }
-
                     const _tempAmount = BigNumber.from(await incresePowerByDecimals(amountIn, 6).toString());
-                    let data: any = await sendTxToChain2({
+                    let data: any = await sendTxToChain({
                         tokenIn: tokensByNetworkForCC[selectedFromNetwork.chainId].usdc,
                         _amountIn: isSwap ? swapData.amountOutprice : _tempAmount,
                         address,
@@ -286,7 +253,7 @@ export function useCCRefinance() {
                     }
 
                     const _tempAmount = BigNumber.from(await incresePowerByDecimals(amountIn, 6).toString());
-                    let data: any = await sendTxToChain2({
+                    let data: any = await sendTxToChain({
                         tokenIn: tokensByNetworkForCC[selectedFromNetwork.chainId].usdc,
                         _amountIn: isSwap ? swapData.amountOutprice : _tempAmount,
                         address,

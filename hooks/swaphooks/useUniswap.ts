@@ -10,7 +10,6 @@ import IERC20 from "../../abis/IERC20.json";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import { uniswapSwapRouterByChainId } from "../../utils/data/protocols";
 import { getContractInstance, getErc20Decimals, getProvider } from "../../utils/web3Libs/ethers";
-import { computePoolAddress } from '@uniswap/v3-sdk'
 
 export function useUniswap() {
     const { selectedNetwork }: iGlobal = useGlobalStore((state) => state);
