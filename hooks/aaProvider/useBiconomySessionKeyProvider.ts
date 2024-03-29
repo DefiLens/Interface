@@ -70,9 +70,13 @@ export function useBiconomySessionKeyProvider() {
             const userOpResponse = await smartAccount.sendUserOp(finalUserOp);
             const txReciept = await userOpResponse.wait();
             return txReciept?.receipt.transactionHash;
-        } catch (error: any) {
-            console.log("sendToERC20Biconomy-error: ", error);
-            setHasExecutionError(error.message ? error.message : error);
+        } catch (error: unknown) {
+            console.log("sendToSessionKeyBiconomy-error: ", error);
+            if (error instanceof Error && error.message) { // Type guard to check if error is an instance of Error
+                setHasExecutionError(error.message);
+            } else {
+                setHasExecutionError(String(error));
+            }
             return;
         }
     }

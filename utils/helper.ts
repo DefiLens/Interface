@@ -34,6 +34,30 @@ interface FunctionABI {
     payable: boolean;
 }
 
+export const getAbiUsingExplorereUrl = async (network: string, toAddress: string) => {
+    try {
+        let URL;
+        if (network === "101") {
+            URL = `https://api.etherscan.io/api?module=contract&action=getsourcecode&address=${toAddress}&apikey=${ETHERSCAN_API_KEY}`;
+        } else if (network === "109") {
+            URL = `https://api.polygonscan.com/api?module=contract&action=getsourcecode&address=${toAddress}&apikey=${POLYGON_ETHERSCAN_API_KEY}`;
+        } else if (network === "106") {
+            URL = `https://api.snowtrace.io/api?module=contract&action=getsourcecode&address=${toAddress}&apikey=${AVAX_ETHERSCAN_API_KEY}`;
+        } else if (network === "110") {
+            URL = `https://api.arbiscan.io/api?module=contract&action=getsourcecode&address=${toAddress}&apikey=${ARBITRUM_ETHERSCAN_API_KEY}`;
+        } else if (network === "111") {
+            URL = `https://api-optimistic.etherscan.io/api?module=contract&action=getsourcecode&address=${toAddress}&apikey=${OPTIMISM_ETHERSCAN_API_KEY}`;
+        } else if (network === "184") {
+            URL = `https://api.basescan.org/api?module=contract&action=getsourcecode&address=${toAddress}&apikey=${BASE_ETHERSCAN_API_KEY}`;
+        }
+        if (!URL) return;
+        const resABI = await axios.get(URL);
+        return resABI.data.result[0];
+    } catch (error) {
+        console.log("GetABI-Error: ", error);
+    }
+};
+
 // export const fetchContractDetails = async (
 //     provider: any,
 //     contractAddress: string,
@@ -69,30 +93,6 @@ interface FunctionABI {
 //         console.log("fetchdetails-error: ", error);
 //     }
 // };
-
-export const getAbiUsingExplorereUrl = async (network: string, toAddress: string) => {
-    try {
-        let URL;
-        if (network === "101") {
-            URL = `https://api.etherscan.io/api?module=contract&action=getsourcecode&address=${toAddress}&apikey=${ETHERSCAN_API_KEY}`;
-        } else if (network === "109") {
-            URL = `https://api.polygonscan.com/api?module=contract&action=getsourcecode&address=${toAddress}&apikey=${POLYGON_ETHERSCAN_API_KEY}`;
-        } else if (network === "106") {
-            URL = `https://api.snowtrace.io/api?module=contract&action=getsourcecode&address=${toAddress}&apikey=${AVAX_ETHERSCAN_API_KEY}`;
-        } else if (network === "110") {
-            URL = `https://api.arbiscan.io/api?module=contract&action=getsourcecode&address=${toAddress}&apikey=${ARBITRUM_ETHERSCAN_API_KEY}`;
-        } else if (network === "111") {
-            URL = `https://api-optimistic.etherscan.io/api?module=contract&action=getsourcecode&address=${toAddress}&apikey=${OPTIMISM_ETHERSCAN_API_KEY}`;
-        } else if (network === "184") {
-            URL = `https://api.basescan.org/api?module=contract&action=getsourcecode&address=${toAddress}&apikey=${BASE_ETHERSCAN_API_KEY}`;
-        }
-        if (!URL) return;
-        const resABI = await axios.get(URL);
-        return resABI.data.result[0];
-    } catch (error) {
-        console.log("GetABI-Error: ", error);
-    }
-};
 
 // export const checkIfContractIsProxy = async (abi: any, contratAddress: any, provider: any) => {
 //     try {
@@ -170,13 +170,13 @@ export const calculateFees = async (
     }
 };
 
-export const batch = async (
-    token: any,
-    chainPingContract: any,
-    txdata1: any,
-    txdata2: any,
-    isSimulate: any,
-    destChainId: any
+export const findGasUsedBySimulation = async (
+    token: string,
+    chainPingContract: string,
+    txdata1: string,
+    txdata2: string,
+    isSimulate: boolean,
+    destChainId: number
 ) => {
     console.time("Batch Simulation");
 
@@ -305,7 +305,7 @@ export function decreasePowerByDecimals(amount: any, decimals: any) {
     return bg(amount.toString()).dividedBy(bg(10).pow(decimals)).toString();
 }
 
-export const shorten = (text: any) => {
+export const shorten = (text: string) : string | undefined => {
     if (text) {
         return text.substring(0, 6) + "..." + text.substring(text.length - 4, text.length);
     } else {
@@ -319,20 +319,20 @@ export const copyToClipboard = (id: any, message: string) => {
     toast.success(message);
 };
 
-export const chooseChianId = (stargateChainId: any) => {
-    let realChainId = "0";
+export const chooseChianId = (stargateChainId: string): number => {
+    let realChainId: number = 0;
     if (stargateChainId == "106") {
-        realChainId = "43114";
+        realChainId = 43114;
     } else if (stargateChainId == "109") {
-        realChainId = "137";
+        realChainId = 137;
     } else if (stargateChainId == "110") {
-        realChainId = "42161";
+        realChainId = 42161;
     } else if (stargateChainId == "111") {
-        realChainId = "10";
+        realChainId = 10;
     } else if (stargateChainId == "101") {
-        realChainId = "1";
+        realChainId = 1;
     } else if (stargateChainId == "184") {
-        realChainId = "8453";
+        realChainId = 8453;
     }
     return realChainId;
 };

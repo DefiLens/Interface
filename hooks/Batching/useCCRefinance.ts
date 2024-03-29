@@ -21,6 +21,7 @@ import { useCCSendTx } from "./useCCSendTx";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import { incresePowerByDecimals } from "../../utils/helper";
 import { useOneInch } from "../swaphooks/useOneInch";
+import { tApprove, tOneInch } from "../types";
 
 export function useCCRefinance() {
     const address = useAddress(); // Detect the connected address
@@ -143,27 +144,26 @@ export function useCCRefinance() {
             if (isSwap) {
                 const approveData = await approve({
                     tokenIn: nativeTokenIn,
-                    // spender: uniswapSwapRouterByChainId[selectedFromNetwork.chainId],
                     spender: OneInchRouter,
                     amountIn: amount,
                     address,
                     web3JsonProvider: provider,
-                });
+                } as tApprove);
                 if (approveData) tempTxs.push(approveData);
                 swapData = await oneInchSwap({
-                    tokenIn: nativeTokenIn, //: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
-                    tokenOut: tokensByNetworkForCC[selectedFromNetwork.chainId].usdc, // nativeTokenOut, //: "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
-                    amountIn: amount, //: BigNumber.from('1000000'),
+                    tokenIn: nativeTokenIn,
+                    tokenOut: tokensByNetworkForCC[selectedFromNetwork.chainId].usdc,
+                    amountIn: amount,
                     address,
                     type: "exactIn",
-                    chainId: selectedNetwork.chainId,
-                });
+                    chainId: Number(selectedNetwork.chainId),
+                } as tOneInch);
                 tempTxs.push(swapData.swapTx);
 
                 let batchFlow: iBatchFlowData = {
                     fromChainId: selectedFromNetwork.chainId,
                     toChainId: selectedFromNetwork.chainId,
-                    protocol: "Uniswap",
+                    protocol: "1inch",
                     tokenIn: nativeTokenInSymbol,
                     tokenOut: nativeTokenOutSymbol,
                     amount: amountIn,

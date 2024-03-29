@@ -1,35 +1,36 @@
-import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
+
+import { useMutation } from "@tanstack/react-query";
+
+import { OneInchSwapResponse, tOneInch, tOneInchParams } from "../types";
 import { decreasePowerByDecimals } from "../../utils/helper";
 import { NODE_JWT_TOKEN, NODE_ONEINCH_URL } from "../../utils/keys";
-import { getAuthToken } from "../../utils/jwtutils";
 
 export function useOneInch() {
-    async function oneInchSwap({ tokenIn, tokenOut, amountIn, address, type, chainId }: any) {
+    async function oneInchSwap({ tokenIn, tokenOut, amountIn, address, type, chainId }: tOneInch) {
         try {
-            // await getAuthToken()
-            console.log("NODE_JWT_TOKEN", NODE_JWT_TOKEN)
             axios.defaults.headers.common['Authorization'] = `Bearer ${NODE_JWT_TOKEN}`;
-            const params = {
-                chainId: chainId,
+            const params: tOneInchParams = {
+                chainId: chainId.toString(),
                 tokenIn: tokenIn,
                 tokenOut: tokenOut,
-                amountIn: amountIn,
+                amountIn: amountIn.toString(),
                 from: address,
                 slippage: "1",
             }
             const paramswithUrl = new URLSearchParams(params).toString()
             const url = `${NODE_ONEINCH_URL}?${paramswithUrl}`;
-            const swapData: any = await axios.get(url);
-            const amountOutprice = swapData.data.response.dstAmount;
+            const swapData = await axios.get(url);
+            const parseSwapData: OneInchSwapResponse = swapData.data.response;
+            const amountOutprice = parseSwapData.dstAmount;
             const amountOutpriceWithoutDecimal = await decreasePowerByDecimals(
                 amountOutprice,
-                swapData.data.response.dstToken.decimals
+                parseSwapData.dstToken.decimals
             );
             const swapTx = {
-                to: swapData.data.response.tx.to,
-                data: swapData.data.response.tx.data,
-                value: swapData.data.response.tx.value
+                to: parseSwapData.tx.to,
+                data: parseSwapData.tx.data,
+                value: parseSwapData.tx.value
             };
             console.log('OnInchSwapTx: ', swapTx)
             return {
@@ -38,8 +39,8 @@ export function useOneInch() {
                 tokenOut,
                 amountOutprice,
                 amountOutpriceWithoutDecimal,
-                tokenInDecimals: swapData.data.response.srcToken.decimals,
-                tokenOutDecimals: swapData.data.response.dstToken.decimals,
+                tokenInDecimals: parseSwapData.srcToken.decimals,
+                tokenOutDecimals: parseSwapData.dstToken.decimals,
             };
         } catch (error) {
             console.log("oneInchSwap-error", error);

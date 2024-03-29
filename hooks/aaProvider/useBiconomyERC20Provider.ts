@@ -27,52 +27,49 @@ export function useBiconomyERC20Provider() {
             const feeQuotes = feeQuotesResponse.feeQuotes as PaymasterFeeQuote[];
             const usdcFeeQuotes = feeQuotes[0];
 
-            const finalUserOp = await smartAccount.buildTokenPaymasterUserOp(
-                partialUserOp,
-                {
-                  feeQuote: usdcFeeQuotes,
-                  spender: feeQuotesResponse.tokenPaymasterAddress || "",
-                  maxApproval: false,
-                }
-              );
+            const finalUserOp = await smartAccount.buildTokenPaymasterUserOp(partialUserOp, {
+                feeQuote: usdcFeeQuotes,
+                spender: feeQuotesResponse.tokenPaymasterAddress || "",
+                maxApproval: false,
+            });
 
-              const paymasterAndDataWithLimits =
-                await biconomyPaymaster.getPaymasterAndData(finalUserOp, {
-                  mode: PaymasterMode.ERC20, // - mandatory // now we know chosen fee token and requesting paymaster and data for it
-                  feeTokenAddress: usdcFeeQuotes?.tokenAddress,
-                  // - optional by default false
-                  // This flag tells the paymaster service to calculate gas limits for the userOp
-                  // since at this point callData is updated callGasLimit may change and based on paymaster to be used verification gas limit may change
-                  calculateGasLimits: true,
-                });
+            const paymasterAndDataWithLimits = await biconomyPaymaster.getPaymasterAndData(finalUserOp, {
+                mode: PaymasterMode.ERC20, // - mandatory // now we know chosen fee token and requesting paymaster and data for it
+                feeTokenAddress: usdcFeeQuotes?.tokenAddress,
+                // - optional by default false
+                // This flag tells the paymaster service to calculate gas limits for the userOp
+                // since at this point callData is updated callGasLimit may change and based on paymaster to be used verification gas limit may change
+                calculateGasLimits: true,
+            });
 
-              // below code is only needed if you sent the glaf calculateGasLimits = true
-              if (
+            // below code is only needed if you sent the glaf calculateGasLimits = true
+            if (
                 paymasterAndDataWithLimits?.callGasLimit &&
                 paymasterAndDataWithLimits?.verificationGasLimit &&
                 paymasterAndDataWithLimits?.preVerificationGas
-              ) {
+            ) {
                 // Returned gas limits must be replaced in your op as you update paymasterAndData.
                 // Because these are the limits paymaster service signed on to generate paymasterAndData
                 // If you receive AA34 error check here..
 
                 finalUserOp.callGasLimit = paymasterAndDataWithLimits.callGasLimit;
-                finalUserOp.verificationGasLimit =
-                  paymasterAndDataWithLimits.verificationGasLimit;
-                finalUserOp.preVerificationGas =
-                  paymasterAndDataWithLimits.preVerificationGas;
-              }
-              // update finalUserOp with paymasterAndData and send it to smart account
-              finalUserOp.paymasterAndData =
-                paymasterAndDataWithLimits.paymasterAndData;
-
+                finalUserOp.verificationGasLimit = paymasterAndDataWithLimits.verificationGasLimit;
+                finalUserOp.preVerificationGas = paymasterAndDataWithLimits.preVerificationGas;
+            }
+            // update finalUserOp with paymasterAndData and send it to smart account
+            finalUserOp.paymasterAndData = paymasterAndDataWithLimits.paymasterAndData;
 
             const userOpResponse = await smartAccount.sendUserOp(finalUserOp);
             const txReciept = await userOpResponse.wait();
             return txReciept?.receipt.transactionHash;
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.log("sendToERC20Biconomy-error: ", error);
-            setHasExecutionError(error.message ? error.message : error);
+            if (error instanceof Error && error.message) {
+                // Type guard to check if error is an instance of Error
+                setHasExecutionError(error.message);
+            } else {
+                setHasExecutionError(String(error));
+            }
             return;
         }
     }

@@ -3,7 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import { iTrading, useTradingStore } from "../../store/TradingStore";
 import { ChainIdDetails } from "../../utils/data/network";
-import { BigNumber, ethers } from "ethers";
+import { BigNumber } from "ethers";
 import { Bundler, IBundler } from "@biconomy/bundler";
 import { DEFAULT_ENTRYPOINT_ADDRESS } from "@biconomy/account";
 
@@ -23,7 +23,7 @@ export function useBiconomyProvider() {
                 entryPointAddress: DEFAULT_ENTRYPOINT_ADDRESS,
             });
 
-            const data: any = await bundler.estimateUserOpGas(userOp);
+            const data = await bundler.estimateUserOpGas(userOp);
             console.log("data: ", data);
             // userOp.callGasLimit = BigNumber.from(userOp.callGasLimit).add(0).toNumber();
             // userOp.verificationGasLimit = userOp.verificationGasLimit;
@@ -57,9 +57,13 @@ export function useBiconomyProvider() {
             console.log("userOpResponse-: ", userOpResponse);
             const txReciept = await userOpResponse.wait();
             return txReciept?.receipt.transactionHash;
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.log("sendToBiconomy-error: ", error);
-            setHasExecutionError(error.message ? error.message : error);
+            if (error instanceof Error && error.message) { // Type guard to check if error is an instance of Error
+                setHasExecutionError(error.message);
+            } else {
+                setHasExecutionError(String(error));
+            }
             return;
         }
     }

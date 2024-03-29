@@ -9,7 +9,7 @@
 // import IStarGateRouter from "../abis/IStarGateRouter.json";
 // import { useCalculateGasCost } from "./utilsHooks/useCalculateGasCost";
 // import { iGlobal, useGlobalStore } from "../store/GlobalStore";
-// import { batch, calculateFees, chooseChianId } from "../utils/helper";
+// import { findGasUsedBySimulation, calculateFees, chooseChianId } from "../utils/helper";
 // import { _functionType, _nonce } from "../utils/constants";
 // import { getContractInstance, getErc20Balanceof, getProvider } from "../utils/web3Libs/ethers";
 // import { incresePowerByDecimals } from "../utils/helper";
@@ -158,7 +158,7 @@
 //                 toChainPing,
 //                 amountAfterSlippage,
 //             ]);
-//             const simulation = await batch(
+//             const simulation = await findGasUsedBySimulation(
 //                 toUsdc,
 //                 toChainPing,
 //                 dummmyTranferToCheckData,

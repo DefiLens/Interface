@@ -5,13 +5,14 @@ import { useMutation } from "@tanstack/react-query";
 import { getProvider } from "../../utils/web3Libs/ethers";
 import { decreasePowerByDecimals } from "../../utils/helper";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
+import { ethers } from "ethers";
 
 export function useCalculatebalance() {
     const { smartAccount, setScwBalance, setEoaBalance }: iGlobal = useGlobalStore((state) => state);
 
     async function fetchNativeBalance({ chainId, eoaAddress, scwAddress }) {
         try {
-            const provider = await getProvider(chainId);
+            const provider: ethers.providers.JsonRpcProvider | undefined = await getProvider(chainId);
             if (!provider) throw "No Provider";
             if (eoaAddress) {
                 let _eoabalance: any = await provider.getBalance(eoaAddress);

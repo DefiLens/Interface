@@ -5,17 +5,11 @@ import { BigNumber } from "ethers";
 import { toast } from "react-hot-toast";
 import { BigNumber as bg } from "bignumber.js";
 
-import { defaultAbiCoder } from "ethers/lib/utils";
 import { Bundler, IBundler } from "@biconomy/bundler";
 import { useAddress, useSigner } from "@thirdweb-dev/react";
 import { BiconomyPaymaster, IPaymaster } from "@biconomy/paymaster";
-import { BiconomySmartAccountConfig, BiconomySmartAccountV2, DEFAULT_ENTRYPOINT_ADDRESS } from "@biconomy/account";
-import {
-    DEFAULT_ECDSA_OWNERSHIP_MODULE,
-    DEFAULT_SESSION_KEY_MANAGER_MODULE,
-    ECDSAOwnershipValidationModule,
-    SessionKeyManagerModule,
-} from "@biconomy/modules";
+import { BiconomySmartAccountV2, DEFAULT_ENTRYPOINT_ADDRESS } from "@biconomy/account";
+import { DEFAULT_ECDSA_OWNERSHIP_MODULE, DEFAULT_SESSION_KEY_MANAGER_MODULE, ECDSAOwnershipValidationModule, SessionKeyManagerModule } from "@biconomy/modules";
 
 import Trade from "./Trade";
 import IERC20 from "../../abis/IERC20.json";
@@ -35,16 +29,12 @@ import { useBiconomyGasLessProvider } from "../../hooks/aaProvider/useBiconomyGa
 import { useBiconomySessionKeyProvider } from "../../hooks/aaProvider/useBiconomySessionKeyProvider";
 import { decreasePowerByDecimals, getTokenListByChainId, incresePowerByDecimals } from "../../utils/helper";
 import { getContractInstance, getErc20Balanceof, getErc20Decimals, getProvider } from "../../utils/web3Libs/ethers";
-
 bg.config({ DECIMAL_PLACES: 10 });
 
 const TradeContainer: React.FC<any> = () => {
     const address = useAddress(); // Detect the connected address
     const signer: any = useSigner(); // Detect the connected address
 
-    const [isSessionKeyModuleEnabled, setIsSessionKeyModuleEnabled] = useState<boolean>(false);
-    const [isSessionActive, setIsSessionActive] = useState<boolean>(false);
-    // const [totalfees, setTotalFees] = useState<bg>(bg(0));
 
     const { mutateAsync: sendToBiconomy } = useBiconomyProvider();
     const { mutateAsync: sendToGasLessBiconomy } = useBiconomyGasLessProvider();
@@ -112,352 +102,6 @@ const TradeContainer: React.FC<any> = () => {
         setTotalFees,
         setShowExecuteMethodModel
     }: iTrading = useTradingStore((state) => state);
-
-    // useEffect(() => {
-    //     let checkSessionModuleEnabled = async () => {
-    //         if (!address || !smartAccount) {
-    //             setIsSessionKeyModuleEnabled(false);
-    //             return;
-    //         }
-    //         try {
-    //             const isEnabled = await smartAccount.isModuleEnabled(DEFAULT_SESSION_KEY_MANAGER_MODULE);
-    //             console.log("isSessionKeyModuleEnabled", isEnabled);
-    //             setIsSessionKeyModuleEnabled(isEnabled);
-    //             return;
-    //         } catch (err: any) {
-    //             console.log("checkSessionModuleEnabled-error", err);
-    //             console.error(err);
-    //             setIsSessionKeyModuleEnabled(false);
-    //             return;
-    //         }
-    //     };
-    //     checkSessionModuleEnabled();
-    // }, [isSessionKeyModuleEnabled, address, smartAccount]);
-
-    // const createSession = async (enableSessionKeyModule: boolean) => {
-    //     // toast.info("Creating Session...", {
-    //     //     position: "top-right",
-    //     //     autoClose: 15000,
-    //     //     hideProgressBar: false,
-    //     //     closeOnClick: true,
-    //     //     pauseOnHover: true,
-    //     //     draggable: true,
-    //     //     progress: undefined,
-    //     //     theme: "dark",
-    //     // });
-    //     if (!address || !smartAccount) {
-    //         alert("Please connect wallet first");
-    //     }
-    //     try {
-    //         const erc20ModuleAddr = "0x000000D50C68705bd6897B2d17c7de32FB519fDA";
-    //         // -----> setMerkle tree tx flow
-    //         // create dapp side session key
-    //         const sessionSigner = ethers.Wallet.createRandom();
-    //         const sessionKeyEOA = await sessionSigner.getAddress();
-    //         console.log("sessionKeyEOA", sessionKeyEOA);
-    //         // BREWARE JUST FOR DEMO: update local storage with session key
-    //         window.localStorage.setItem("sessionPKey", sessionSigner.privateKey);
-
-    //         if (!address) return;
-
-    //         // generate sessionModule
-    //         const sessionModule = await SessionKeyManagerModule.create({
-    //             moduleAddress: DEFAULT_SESSION_KEY_MANAGER_MODULE,
-    //             smartAccountAddress: smartAccountAddress,
-    //         });
-
-    //         // cretae session key data
-    //         const sessionKeyData = defaultAbiCoder.encode(
-    //             ["address", "address", "address", "uint256"],
-    //             [
-    //                 sessionKeyEOA,
-    //                 "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174", // erc20 token address
-    //                 "0x8Acf3088E8922e9Ec462B1D592B5e6aa63B8d2D5", // receiver address
-    //                 ethers.utils.parseUnits("10".toString(), 6).toHexString(), // 50 usdc amount
-    //             ]
-    //         );
-
-    //         const sessionTxData = await sessionModule.createSessionData([
-    //             {
-    //                 validUntil: 0,
-    //                 validAfter: 0,
-    //                 sessionValidationModule: erc20ModuleAddr,
-    //                 sessionPublicKey: sessionKeyEOA,
-    //                 sessionKeyData: sessionKeyData,
-    //             },
-    //         ]);
-    //         console.log("sessionTxData", sessionTxData);
-
-    //         // tx to set session key
-    //         const setSessiontrx = {
-    //             to: DEFAULT_SESSION_KEY_MANAGER_MODULE, // session manager module address
-    //             data: sessionTxData.data,
-    //         };
-    //         const transactionArray: any = [];
-
-    //         // if (enableSessionKeyModule) {
-    //         //     alert('enableSessionKeyModule+1---- ' + enableSessionKeyModule)
-    //         //     // -----> enableModule session manager module
-    //         // const enableModuleTrx = await smartAccount.getEnableModuleData(DEFAULT_SESSION_KEY_MANAGER_MODULE);
-    //         // transactionArray.push(enableModuleTrx);
-    //         // }
-    //         // alert('enableSessionKeyModule+2---- ' + enableSessionKeyModule)
-
-    //         const isEnabled2 = await smartAccount.isModuleEnabled(
-    //             DEFAULT_BATCHED_SESSION_ROUTER_MODULE
-    //           );
-
-    //         transactionArray.push(setSessiontrx);
-    //         let partialUserOp = await smartAccount.buildUserOp(transactionArray);
-    //         console.log("userOp Hash:", partialUserOp);
-
-    //         const userOpResponse = await smartAccount.sendUserOp(partialUserOp);
-    //         console.log(`userOp Hash: ${userOpResponse.userOpHash}`);
-    //         const transactionDetails = await userOpResponse.wait();
-    //         console.log("txHash", transactionDetails.receipt.transactionHash);
-    //         setIsSessionActive(true);
-    //         // toast.success(`Success! Session created succesfully`, {
-    //         //     position: "top-right",
-    //         //     autoClose: 18000,
-    //         //     hideProgressBar: false,
-    //         //     closeOnClick: true,
-    //         //     pauseOnHover: true,
-    //         //     draggable: true,
-    //         //     progress: undefined,
-    //         //     theme: "dark",
-    //         // });
-    //     } catch (err: any) {
-    //         console.error(err);
-    //     }
-    // };
-
-    // // const erc20Transfer2 = async () => {
-    // //     if (!address || !smartAccount || !address) {
-    // //         alert("Please connect wallet first");
-    // //         return;
-    // //     }
-    // //     try {
-    // //         //   toast.info('Transferring 1 USDC to recipient...', {
-    // //         //     position: "top-right",
-    // //         //     autoClose: 15000,
-    // //         //     hideProgressBar: false,
-    // //         //     closeOnClick: true,
-    // //         //     pauseOnHover: true,
-    // //         //     draggable: true,
-    // //         //     progress: undefined,
-    // //         //     theme: "dark",
-    // //         //     });
-    // //         const erc20ModuleAddr = "0x000000D50C68705bd6897B2d17c7de32FB519fDA";
-    // //         // get session key from local storage
-    // //         const sessionKeyPrivKey = window.localStorage.getItem("sessionPKey");
-    // //         console.log("sessionKeyPrivKey", sessionKeyPrivKey);
-    // //         if (!sessionKeyPrivKey) {
-    // //             alert("Session key not found please create session");
-    // //             return;
-    // //         }
-    // //         const sessionSigner = new ethers.Wallet(sessionKeyPrivKey);
-    // //         console.log("sessionSigner", sessionSigner);
-
-    // //         // generate sessionModule
-    // //         const sessionModule = await SessionKeyManagerModule.create({
-    // //             moduleAddress: DEFAULT_SESSION_KEY_MANAGER_MODULE,
-    // //             smartAccountAddress: smartAccountAddress,
-    // //         });
-
-    // //         // set active module to sessionModule
-    // //         console.log("smartAccount2-1", smartAccount);
-    // //         let smartAccount2: any = await smartAccount.setActiveValidationModule(sessionModule);
-    // //         console.log("smartAccount2-2", smartAccount2);
-
-    // //         const provider = await getProvider(selectedFromNetwork.chainId);
-    // //         const tokenContract: any = await getContractInstance(
-    // //             "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
-    // //             IERC20,
-    // //             provider
-    // //         );
-
-    // //         let decimals = 6;
-
-    // //         try {
-    // //             decimals = await tokenContract.decimals();
-    // //         } catch (error) {
-    // //             throw new Error("invalid token address supplied");
-    // //         }
-
-    // //         const { data } = await tokenContract.populateTransaction.transfer(
-    // //             "0x8Acf3088E8922e9Ec462B1D592B5e6aa63B8d2D5", // receiver address
-    // //             ethers.utils.parseUnits("0.001".toString(), decimals)
-    // //         );
-
-    // //         // generate tx data to erc20 transfer
-    // //         const tx1 = {
-    // //             to: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174", //erc20 token address
-    // //             data: data,
-    // //             value: "0",
-    // //         };
-
-    // //         // build user op
-    // //         let userOp = await smartAccount2.buildUserOp([tx1], {
-    // //             overrides: {
-    // //                 // signature: "0x0000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000456b395c4e107e0302553b90d1ef4a32e9000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000db3d753a1da5a6074a9f74f39a0a779d3300000000000000000000000000000000000000000000000000000000000000c0000000000000000000000000000000000000000000000000000000000000016000000000000000000000000000000000000000000000000000000000000001800000000000000000000000000000000000000000000000000000000000000080000000000000000000000000bfe121a6dcf92c49f6c2ebd4f306ba0ba0ab6f1c000000000000000000000000da5289fcaaf71d52a80a254da614a192b693e97700000000000000000000000042138576848e839827585a3539305774d36b96020000000000000000000000000000000000000000000000000000000002faf08000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000041feefc797ef9e9d8a6a41266a85ddf5f85c8f2a3d2654b10b415d348b150dabe82d34002240162ed7f6b7ffbc40162b10e62c3e35175975e43659654697caebfe1c00000000000000000000000000000000000000000000000000000000000000"
-    // //                 // callGasLimit: 2000000, // only if undeployed account
-    // //                 // verificationGasLimit: 700000
-    // //             },
-    // //             skipBundlerGasEstimation: false,
-    // //             params: {
-    // //                 sessionSigner: sessionSigner,
-    // //                 sessionValidationModule: erc20ModuleAddr,
-    // //             },
-    // //         });
-    // //         console.log("userOp", userOp);
-
-    // //         // send user op
-    // //         const userOpResponse = await smartAccount2.sendUserOp(userOp, {
-    // //             sessionSigner: sessionSigner,
-    // //             sessionValidationModule: erc20ModuleAddr,
-    // //             simulationType: "validation_and_execution",
-    // //         });
-
-    // //         console.log("userOpHash", userOpResponse);
-    // //         const { receipt } = await userOpResponse.wait(1);
-    // //         console.log("txHash", receipt.transactionHash);
-    // //         //   const polygonScanlink = `https://mumbai.polygonscan.com/tx/${receipt.transactionHash}`
-    // //         //   toast.success(<a target="_blank" href={polygonScanlink}>Success Click to view transaction</a>, {
-    // //         //     position: "top-right",
-    // //         //     autoClose: 18000,
-    // //         //     hideProgressBar: false,
-    // //         //     closeOnClick: true,
-    // //         //     pauseOnHover: true,
-    // //         //     draggable: true,
-    // //         //     progress: undefined,
-    // //         //     theme: "dark",
-    // //         //     });
-    // //     } catch (err: any) {
-    // //         console.error(err);
-    // //     }
-    // // };
-
-    // const erc20Transfer = async () => {
-    //     if (!address || !smartAccount || !address) {
-    //         alert("Please connect wallet first");
-    //         return;
-    //     }
-    //     try {
-    //         //   toast.info('Transferring 1 USDC to recipient...', {
-    //         //     position: "top-right",
-    //         //     autoClose: 15000,
-    //         //     hideProgressBar: false,
-    //         //     closeOnClick: true,
-    //         //     pauseOnHover: true,
-    //         //     draggable: true,
-    //         //     progress: undefined,
-    //         //     theme: "dark",
-    //         //   });
-    //         const erc20ModuleAddr = "0x000000D50C68705bd6897B2d17c7de32FB519fDA";
-    //         // get session key from local storage
-    //         const sessionKeyPrivKey = window.localStorage.getItem("sessionPKey");
-    //         console.log("sessionKeyPrivKey", sessionKeyPrivKey);
-    //         if (!sessionKeyPrivKey) {
-    //             alert("Session key not found please create session");
-    //             return;
-    //         }
-    //         const sessionSigner = new ethers.Wallet(sessionKeyPrivKey);
-    //         console.log("sessionSigner", sessionSigner);
-
-    //         // generate sessionModule
-    //         const sessionModule = await SessionKeyManagerModule.create({
-    //             moduleAddress: DEFAULT_SESSION_KEY_MANAGER_MODULE,
-    //             smartAccountAddress: smartAccountAddress,
-    //         });
-    //         console.log("sessionModule-1", sessionModule);
-
-
-    //         // set active module to sessionModule
-    //         console.log("smartAccount2-1", smartAccount);
-    //         let smartAccount2: any = await smartAccount.setActiveValidationModule(sessionModule);
-    //         console.log("smartAccount2-2", smartAccount2);
-
-    //         const provider = await getProvider(selectedFromNetwork.chainId);
-    //         const tokenContract: any = await getContractInstance(
-    //             "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
-    //             IERC20,
-    //             provider
-    //         );
-
-    //         let decimals = 6;
-    //         try {
-    //             decimals = await tokenContract.decimals();
-    //         } catch (error) {
-    //             throw new Error("invalid token address supplied");
-    //         }
-
-    //         const { data } = await tokenContract.populateTransaction.transfer(
-    //             "0x8Acf3088E8922e9Ec462B1D592B5e6aa63B8d2D5", // receiver address
-    //             ethers.utils.parseUnits("0.001".toString(), decimals)
-    //         );
-
-    //         // const { approveData } = await tokenContract.populateTransaction.approve(
-    //         //     "0x8Acf3088E8922e9Ec462B1D592B5e6aa63B8d2D5", // receiver address
-    //         //     ethers.utils.parseUnits("0.002".toString(), decimals)
-    //         // );
-
-    //         // generate tx data to erc20 transfer
-    //         const tx1 = {
-    //             to: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174", //erc20 token address
-    //             data: data,
-    //             value: "0",
-    //         };
-
-    //         // build user op
-    //         let userOp = await smartAccount2.buildUserOp([tx1], {
-    //             overrides: {
-    //                 // signature: "0x0000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000456b395c4e107e0302553b90d1ef4a32e9000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000db3d753a1da5a6074a9f74f39a0a779d3300000000000000000000000000000000000000000000000000000000000000c0000000000000000000000000000000000000000000000000000000000000016000000000000000000000000000000000000000000000000000000000000001800000000000000000000000000000000000000000000000000000000000000080000000000000000000000000bfe121a6dcf92c49f6c2ebd4f306ba0ba0ab6f1c000000000000000000000000da5289fcaaf71d52a80a254da614a192b693e97700000000000000000000000042138576848e839827585a3539305774d36b96020000000000000000000000000000000000000000000000000000000002faf08000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000041feefc797ef9e9d8a6a41266a85ddf5f85c8f2a3d2654b10b415d348b150dabe82d34002240162ed7f6b7ffbc40162b10e62c3e35175975e43659654697caebfe1c00000000000000000000000000000000000000000000000000000000000000"
-    //                 // callGasLimit: 2000000, // only if undeployed account
-    //                 // verificationGasLimit: 700000
-    //             },
-    //             skipBundlerGasEstimation: false,
-    //             params: {
-    //                 sessionSigner: sessionSigner,
-    //                 sessionValidationModule: erc20ModuleAddr,
-    //             },
-    //         });
-    //         console.log("userOp", userOp);
-
-    //         // send user op
-    //         const userOpResponse = await smartAccount2.sendUserOp(userOp, {
-    //             sessionSigner: sessionSigner,
-    //             sessionValidationModule: erc20ModuleAddr,
-    //             simulationType: "validation_and_execution",
-    //         });
-
-    //         console.log("userOpHash", userOpResponse);
-    //         const { receipt } = await userOpResponse.wait(1);
-    //         console.log("txHash", receipt.transactionHash);
-    //         //   const polygonScanlink = `https://mumbai.polygonscan.com/tx/${receipt.transactionHash}`
-    //         //   toast.success(<a target="_blank" href={polygonScanlink}>Success Click to view transaction</a>, {
-    //         //     position: "top-right",
-    //         //     autoClose: 18000,
-    //         //     hideProgressBar: false,
-    //         //     closeOnClick: true,
-    //         //     pauseOnHover: true,
-    //         //     draggable: true,
-    //         //     progress: undefined,
-    //         //     theme: "dark",
-    //         //     });
-    //     } catch (err: any) {
-    //         console.error(err);
-    //     }
-    // };
-
-    // useEffect(() => {
-    //     async function fetch(chainId, address) {
-    //         await fetchPortfolio({chainId, address})
-    //     }
-    //     if (selectedFromNetwork.chainId || smartAccountAddress) {
-    //         fetch(selectedFromNetwork.chainId, smartAccountAddress);
-    //     }
-    // }, [selectedFromNetwork]);
-
 
     useEffect(() => {
         if (individualBatch.length === 1 && individualBatch[0].txArray.length === 0) {
@@ -626,7 +270,7 @@ const TradeContainer: React.FC<any> = () => {
                 setSelectedFromToken(_fromToken);
             }
 
-            const provider = await getProvider(selectedFromNetwork.chainId);
+            const provider: ethers.providers.JsonRpcProvider | undefined = await getProvider(selectedFromNetwork.chainId);
             const erc20Address: any =
                 selectedFromProtocol == "erc20" ? fromTokensData.filter((token: any) => token.symbol === _fromToken) : "";
 
@@ -931,7 +575,7 @@ const TradeContainer: React.FC<any> = () => {
         }
     };
 
-    const sendSingleBatchToList = async (isSCW: any) => {
+    const sendSingleBatchToList = async (isSCW: boolean) => {
         try {
             if (isSCW) {
                 setAddToBatchLoading(true);
@@ -989,7 +633,7 @@ const TradeContainer: React.FC<any> = () => {
                 setAddToBatchLoading(false);
                 return;
             }
-            const provider = await getProvider(selectedFromNetwork.chainId);
+            const provider: ethers.providers.JsonRpcProvider | undefined = await getProvider(selectedFromNetwork.chainId);
             const _tempAmount = BigNumber.from(await incresePowerByDecimals(amountIn, fromTokenDecimal).toString());
             let refinaceData: any;
             let txArray;

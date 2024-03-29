@@ -4,9 +4,9 @@ import { BigNumber, ethers } from "ethers";
 import IERC20 from "../../abis/IERC20.json";
 import { ChainIdDetails } from "../data/network";
 
-export const getProvider = async (chainId) => {
+export const getProvider = async (chainId): Promise<ethers.providers.JsonRpcProvider | undefined> => {
     try {
-        const newprovider = new ethers.providers.JsonRpcProvider(ChainIdDetails[chainId].rpcURL);
+        const newprovider: ethers.providers.JsonRpcProvider = new ethers.providers.JsonRpcProvider(ChainIdDetails[chainId].rpcURL);
         return newprovider;
     } catch (error) {
         console.log("getProvider-error", error);

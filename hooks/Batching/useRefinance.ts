@@ -18,10 +18,10 @@ import {
 } from "../../utils/data/protocols";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import { useOneInch } from "../swaphooks/useOneInch";
+import { tApprove, tOneInch } from "../types";
 export function useRefinance() {
     const { mutateAsync: oneInchSwap } = useOneInch();
     const { mutateAsync: approve } = useApprove();
-    const { mutateAsync: calculategasCost } = useCalculateGasCost();
     const { selectedNetwork }: iGlobal = useGlobalStore((state) => state);
 
     const { selectedFromNetwork, selectedFromProtocol, selectedToProtocol, amountIn, fromTokensData, toTokensData }: iTrading =
@@ -134,12 +134,11 @@ export function useRefinance() {
 
                 const approveData = await approve({
                     tokenIn: nativeTokenIn,
-                    // spender: uniswapSwapRouterByChainId[selectedFromNetwork.chainId],
                     spender: OneInchRouter,
                     amountIn: amount,
                     address,
                     web3JsonProvider: provider,
-                });
+                } as tApprove);
                 if (approveData) tempTxs.push(approveData);
                 swapData = await oneInchSwap({
                     tokenIn: nativeTokenIn,
@@ -147,8 +146,8 @@ export function useRefinance() {
                     amountIn: amount,
                     address,
                     type: "exactIn",
-                    chainId: selectedNetwork.chainId
-                });
+                    chainId: Number(selectedNetwork.chainId)
+                } as tOneInch);
                 console.log('swapData: ', swapData, swapData.amountOutprice.toString())
                 tempTxs.push(swapData.swapTx);
 
@@ -189,7 +188,7 @@ export function useRefinance() {
                     amountIn: newAmount,
                     address,
                     web3JsonProvider: provider,
-                });
+                } as tApprove);
                 if (approveData) tempTxs.push(approveData);
 
                 abiInterface = new ethers.utils.Interface([abi]);

@@ -7,11 +7,8 @@ export function useCreateSession() {
     const { smartAccount }: iGlobal = useGlobalStore((state) => state);
     async function createSession() {
         try {
-
-            
-
-        } catch (error: any) {
-            console.log("sendToBiconomy-error: ", error);
+        } catch (error: unknown) {
+            console.log("createSession-error: ", error);
             return;
         }
     }

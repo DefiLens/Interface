@@ -6,28 +6,29 @@ import { useMutation } from "@tanstack/react-query";
 
 import IERC20 from "../../abis/IERC20.json";
 import ChainPing from "../../abis/ChainPing.json";
+import { useOneInch } from "../swaphooks/useOneInch";
 import { ChainIdDetails } from "../../utils/data/network";
+import { decreasePowerByDecimals } from "../../utils/helper";
 import IStarGateRouter from "../../abis/IStarGateRouter.json";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
-import { BYTES_ZERO, ZERO_ADDRESS, _functionType, _nonce } from "../../utils/data/constants";
 import { iTrading, useTradingStore } from "../../store/TradingStore";
-import { batch, calculateFees, chooseChianId } from "../../utils/helper";
-import { decreasePowerByDecimals, incresePowerByDecimals } from "../../utils/helper";
-import {
-    nativeTokenFetcher,
-    newChainPingByNetwork,
-    starGateRouterByNetwork,
-    tokensByNetworkForCC,
-} from "../../utils/data/protocols";
-import { getContractInstance, getErc20Allownace, getErc20Balanceof, getProvider } from "../../utils/web3Libs/ethers";
-import { useOneInch } from "../swaphooks/useOneInch";
+import { findGasUsedBySimulation, calculateFees, chooseChianId } from "../../utils/helper";
+import { getContractInstance, getErc20Allownace } from "../../utils/web3Libs/ethers";
+import { _functionType, _nonce, BYTES_ZERO, ZERO_ADDRESS } from "../../utils/data/constants";
+import { nativeTokenFetcher, newChainPingByNetwork, starGateRouterByNetwork, tokensByNetworkForCC } from "../../utils/data/protocols";
 
 export function useCCSendTx() {
     const { mutateAsync: oneInchSwap } = useOneInch();
     const { smartAccount, smartAccountAddress }: iGlobal = useGlobalStore((state) => state);
 
-    const { selectedFromNetwork, selectedToNetwork, setTxHash, selectedToProtocol, toTokensData, selectedToToken }: iTrading =
-        useTradingStore((state) => state);
+    const {
+        selectedFromNetwork,
+        selectedToNetwork,
+        setTxHash,
+        selectedToProtocol,
+        toTokensData,
+        selectedToToken,
+    }: iTrading = useTradingStore((state) => state);
 
     async function sendTxToChain({
         tokenIn,
@@ -48,10 +49,8 @@ export function useCCSendTx() {
     }) {
         try {
             if (selectedToProtocol == "erc20") {
-                const tokenOutName = selectedToToken
+                const tokenOutName = selectedToToken;
                 const nativeTokenOutAddress = toTokensData?.filter((token) => token.symbol === tokenOutName)[0].address;
-                // nativeTokenOutSymbol = toTokensData?.filter((token) => token.symbol === tokenOutName)[0].symbol;
-                // nativeTokenOutDecimal = toTokensData?.filter((token) => token.symbol === tokenOutName)[0].decimals;
 
                 const _tempAmount = _amountIn;
                 let _currentAddress;
@@ -64,10 +63,9 @@ export function useCCSendTx() {
                     _currentProvider = smartAccount.provider;
                 }
 
-                const fromStarGateRouter: any = starGateRouterByNetwork[selectedFromNetwork.chainId];
+                const fromStarGateRouter = starGateRouterByNetwork[selectedFromNetwork.chainId];
                 const toUsdc = tokensByNetworkForCC[selectedToNetwork.chainId].usdc;
-                // const toChainPing: any = chainPingByNetwork[selectedToNetwork.chainId];
-                const toChainPing: any = newChainPingByNetwork[selectedToNetwork.chainId];
+                const toChainPing = newChainPingByNetwork[selectedToNetwork.chainId];
 
                 setTxHash("");
                 const abi = ethers.utils.defaultAbiCoder;
@@ -97,11 +95,9 @@ export function useCCSendTx() {
                 const isSwap =
                     tokensByNetworkForCC[selectedToNetwork.chainId].usdc === nativeTokenOutAddress ? false : true;
 
-                let swapData: any;
-                let amountOutAfterSlippage: any;
+                let swapData;
+                let amountOutAfterSlippage;
                 if (isSwap) {
-                    console.log('nativeTokenOutAddress', nativeTokenOutAddress)
-
                     swapData = await oneInchSwap({
                         tokenIn: tokensByNetworkForCC[selectedToNetwork.chainId].usdc, //: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
                         tokenOut: nativeTokenOutAddress, // nativeTokenOut, //: "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
@@ -110,21 +106,11 @@ export function useCCSendTx() {
                         type: "exactIn",
                         chainId: selectedToNetwork.chainId,
                     });
-                    console.log('swapData?.amountOutprice', swapData?.amountOutprice.toString(), swapData)
+                    console.log("swapData?.amountOutprice", swapData?.amountOutprice.toString(), swapData);
                     amountOutAfterSlippage = BigNumber.from(swapData?.amountOutprice).sub(
                         BigNumber.from(swapData?.amountOutprice).mul("1000").div("1000000")
                     );
-                    // params[isThisAmount] = amountOutAfterSlippage.toString();
-                } else {
-                    // params[isThisAmount] = amountAfterSlippage.toString();
                 }
-
-                // let abiInterfaceForDestDefiProtocol = new ethers.utils.Interface(currentAbi);
-                // const destChainExecData = abiInterfaceForDestDefiProtocol.encodeFunctionData(currentFunc, params);
-
-                // const contractAddress = allNetworkData?.contracts[contractIndex].contractAddress;
-                // const extraOrShareToken = allNetworkData?.contracts[contractIndex].extraOrShareToken;
-                // const destChainExecTx = { to: contractAddress, data: destChainExecData };
 
                 let data;
                 if (toChainId == "106" || toChainId == "111" || toChainId == "184" || toChainId == "109") {
@@ -163,7 +149,7 @@ export function useCCSendTx() {
                     toChainPing,
                     amountAfterSlippage,
                 ]);
-                const gasUsed = await batch(
+                const gasUsed = await findGasUsedBySimulation(
                     toUsdc,
                     toChainPing,
                     dummmyTranferToCheckData,
@@ -238,10 +224,10 @@ export function useCCSendTx() {
                     _currentProvider = smartAccount.provider;
                 }
 
-                const fromStarGateRouter: any = starGateRouterByNetwork[selectedFromNetwork.chainId];
+                const fromStarGateRouter = starGateRouterByNetwork[selectedFromNetwork.chainId];
                 const toUsdc = tokensByNetworkForCC[selectedToNetwork.chainId].usdc;
-                // const toChainPing: any = chainPingByNetwork[selectedToNetwork.chainId];
-                const toChainPing: any = newChainPingByNetwork[selectedToNetwork.chainId];
+                // const toChainPing = chainPingByNetwork[selectedToNetwork.chainId];
+                const toChainPing = newChainPingByNetwork[selectedToNetwork.chainId];
 
                 setTxHash("");
                 const abi = ethers.utils.defaultAbiCoder;
@@ -271,8 +257,8 @@ export function useCCSendTx() {
                 const isSwap =
                     tokensByNetworkForCC[selectedToNetwork.chainId].usdc === nativeTokenOutAddress ? false : true;
 
-                let swapData: any;
-                let amountOutAfterSlippage: any;
+                let swapData;
+                let amountOutAfterSlippage;
                 if (isSwap) {
                     swapData = await oneInchSwap({
                         tokenIn: tokensByNetworkForCC[selectedToNetwork.chainId].usdc, //: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
@@ -334,7 +320,7 @@ export function useCCSendTx() {
                     toChainPing,
                     amountAfterSlippage,
                 ]);
-                const gasUsed = await batch(
+                const gasUsed = await findGasUsedBySimulation(
                     toUsdc,
                     toChainPing,
                     dummmyTranferToCheckData,
@@ -397,12 +383,8 @@ export function useCCSendTx() {
                     return { txArray: [sendTx], value: stargateTx.value };
                 }
             }
-        } catch (error: any) {
-            if (error.message) {
-                console.log("sendTx: Error: ", error);
-            } else {
-                console.log("sendTx: Error: ", error);
-            }
+        } catch (error: unknown) {
+            console.log("sendTx: Error: ", error);
             return;
         }
     }

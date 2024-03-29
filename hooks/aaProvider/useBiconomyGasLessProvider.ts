@@ -17,9 +17,13 @@ export function useBiconomyGasLessProvider() {
             const userOpResponse = await smartAccount.sendUserOp(userOp);
             const txReciept = await userOpResponse.wait();
             return txReciept?.receipt.transactionHash;
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.log("sendToGasLessBiconomy-error: ", error);
-            setHasExecutionError(error.message ? error.message : error);
+            if (error instanceof Error && error.message) { // Type guard to check if error is an instance of Error
+                setHasExecutionError(error.message);
+            } else {
+                setHasExecutionError(String(error));
+            }
             return;
         }
     }
