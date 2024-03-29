@@ -1,4 +1,5 @@
 import { BigNumberish, ethers } from "ethers";
+import { iBatchFlowData } from "../store/TradingStore";
 
 export type tOneInch = {
     tokenIn: string;
@@ -18,7 +19,7 @@ export type tOneInchParams = {
     slippage: string;
 };
 
-export type OneInchSwapResponse = {
+export type tOneInchSwapResponseFromApi = {
     dstAmount: string;
     tx: {
         from: string;
@@ -46,6 +47,16 @@ export type OneInchSwapResponse = {
     };
 };
 
+export type tOneInchSwapResponse = {
+    swapTx: tTx,
+    tokenIn: string,
+    tokenOut: string,
+    amountOutprice: BigNumberish,
+    amountOutpriceWithoutDecimal: BigNumberish,
+    tokenInDecimals: number,
+    tokenOutDecimals: number,
+};
+
 export type tApprove = {
     tokenIn: string;
     spender: string;
@@ -66,19 +77,38 @@ export type tCCSendTx = {
     fromChainId: number;
     toChainId: number;
     currentFunc: string;
-    currentAbi: Array<String>;
+    currentAbi: Array<string>;
     contractAddress: string;
     extraOrShareToken: string;
     tokenOutNum: string;
 };
 
 export type tTx = {
-    to: string;
-    data: string;
-    value?: string;
+    to: string | undefined;
+    data: string |  undefined;
+    value?: BigNumberish;
 };
 
 export type tStargateData = {
     txArray: Array<tTx>;
-    value?: string;
+    value?: BigNumberish;
+};
+
+export type tRefinance = {
+    isSCW: boolean,
+    fromProtocol: string,
+    toProtocol: string,
+    tokenIn: string,
+    tokenInName: string,
+    tokenOut: string,
+    tokenOutName: string,
+    amount: BigNumberish,
+    address: string,
+    provider: ethers.providers.JsonRpcProvider | undefined,
+}
+
+export type tRefinanceResponse = {
+    txArray: Array<tTx>;
+    value?: BigNumberish;
+    batchFlow: Array<iBatchFlowData>
 };

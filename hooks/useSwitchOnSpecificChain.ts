@@ -39,9 +39,6 @@ export function useSwitchOnSpecificChain() {
     const signer: any = useSigner(); // Detect the connected address
     const chain = useChain();
 
-    
-
-
     useEffect(() => {
         async function changeWallet() {
             if (address && smartAccount && chain) {

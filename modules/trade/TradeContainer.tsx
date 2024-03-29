@@ -29,6 +29,7 @@ import { useBiconomyGasLessProvider } from "../../hooks/aaProvider/useBiconomyGa
 import { useBiconomySessionKeyProvider } from "../../hooks/aaProvider/useBiconomySessionKeyProvider";
 import { decreasePowerByDecimals, getTokenListByChainId, incresePowerByDecimals } from "../../utils/helper";
 import { getContractInstance, getErc20Balanceof, getErc20Decimals, getProvider } from "../../utils/web3Libs/ethers";
+import { tRefinance, tRefinanceResponse, tTx } from "../../hooks/types";
 bg.config({ DECIMAL_PLACES: 10 });
 
 const TradeContainer: React.FC<any> = () => {
@@ -326,10 +327,11 @@ const TradeContainer: React.FC<any> = () => {
                 scwAddress = await createAccount(selectedFromNetwork.chainId);
             }
 
-            const maxBal: any = await getErc20Balanceof(
+            const maxBal: BigNumber | undefined = await getErc20Balanceof(
                 erc20,
                 smartAccountAddress ? smartAccountAddress : scwAddress.address
             );
+            if(!maxBal) return;
             const MaxBalance = await decreasePowerByDecimals(maxBal?.toString(), fromTokendecimal);
             setMaxBalance(MaxBalance);
             setIsmaxBalanceLoading(false);
@@ -504,7 +506,7 @@ const TradeContainer: React.FC<any> = () => {
         setFromTokenDecimal(0);
     };
 
-    const updateInputValues = (index: number, txArray: string[], batchesFlow: any, data: any, simulation: any) => {
+    const updateInputValues = (index: number, txArray: Array<tTx>, batchesFlow: any, data: any, simulation: any) => {
         if (txArray.length < 1) return toast.error("Please complete the last input before adding a new one.");
         if (individualBatch.length == 0) {
             setTotalFees(bg(0));
@@ -635,7 +637,7 @@ const TradeContainer: React.FC<any> = () => {
             }
             const provider: ethers.providers.JsonRpcProvider | undefined = await getProvider(selectedFromNetwork.chainId);
             const _tempAmount = BigNumber.from(await incresePowerByDecimals(amountIn, fromTokenDecimal).toString());
-            let refinaceData: any;
+            let refinaceData: tRefinanceResponse | undefined;
             let txArray;
             if (selectedFromNetwork.chainName == selectedToNetwork.chainName) {
                 refinaceData = await refinance({
@@ -649,7 +651,7 @@ const TradeContainer: React.FC<any> = () => {
                     amount: _tempAmount,
                     address: isSCW ? smartAccountAddress : address,
                     provider,
-                });
+                } as tRefinance);
             } else {
                 refinaceData = await refinanceForCC({
                     isSCW: isSCW,
@@ -662,7 +664,7 @@ const TradeContainer: React.FC<any> = () => {
                     amount: _tempAmount,
                     address: isSCW ? smartAccountAddress : address,
                     provider,
-                });
+                } as tRefinance);
             }
 
             if (!refinaceData) {
@@ -677,23 +679,6 @@ const TradeContainer: React.FC<any> = () => {
             };
 
             const userOp = await smartAccount.buildUserOp(refinaceData.txArray);
-
-            // const bundler: IBundler = new Bundler({
-            //     bundlerUrl: ChainIdDetails[selectedFromNetwork.chainId].bundlerURL,
-            //     chainId: BigNumber.from(selectedFromNetwork.chainId).toNumber(),
-            //     entryPointAddress: DEFAULT_ENTRYPOINT_ADDRESS,
-            // });
-
-            // const data = await bundler.estimateUserOpGas(userOp);
-            // console.log("data: ", data, refinaceData);
-
-            // const tempCallGasLimit = BigNumber.from(data.callGasLimit).gt(0) ? BigNumber.from(data.callGasLimit).toNumber() : BigNumber.from(userOp.callGasLimit);
-            // const tempVerificationGasLimit = BigNumber.from(data.verificationGasLimit).gt(0) ? BigNumber.from(data.verificationGasLimit).toNumber() : BigNumber.from(userOp.verificationGasLimit);
-            // const tempMaxFeePerGas = BigNumber.from(data.maxFeePerGas).gt(0) ? BigNumber.from(data.maxFeePerGas).toNumber() : BigNumber.from(userOp.maxFeePerGas);
-            // const tempMaxPriorityFeePerGas = BigNumber.from(data.maxPriorityFeePerGas).gt(0) ? BigNumber.from(data.maxPriorityFeePerGas).toNumber() : BigNumber.from(userOp.maxPriorityFeePerGas);
-            // const tempPreVerificationGas = BigNumber.from(data.preVerificationGas).gt(0) ? BigNumber.from(data.preVerificationGas).toNumber() : BigNumber.from(userOp.preVerificationGas);
-
-            // console.log('userOp-after: ', userOp)
 
             const fees = bg(userOp.callGasLimit.toString())
                 .plus(bg(userOp.verificationGasLimit.toString()))
@@ -712,7 +697,7 @@ const TradeContainer: React.FC<any> = () => {
 
             updateInputValues(
                 individualBatch.length - 1,
-                refinaceData.txArray.length > 0 && refinaceData.txArray,
+                refinaceData.txArray.length > 0 ? refinaceData.txArray : [],
                 refinaceData.batchFlow,
                 {
                     fromNetwork: selectedFromNetwork.chainName,
@@ -725,7 +710,7 @@ const TradeContainer: React.FC<any> = () => {
                     toToken: selectedToToken,
                     amountIn: amountIn,
                     fees: fees.toString(),
-                    extraValue: bg(refinaceData.value.toString()).dividedBy(1e18).toString(),
+                    extraValue: refinaceData.value ? bg(refinaceData.value.toString()).dividedBy(1e18).toString() : '0',
                 },
                 simulation
             );

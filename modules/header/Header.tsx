@@ -14,7 +14,6 @@ import useClickOutside from "../../hooks/useClickOutside";
 import { ChainIdDetails, NETWORK_LIST } from "../../utils/data/network";
 import { NavigationList } from "../../utils/data/navigation";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
-import SelectNetwork from "../../components/SelectNetwork/SelectNetwork";
 import { ConnectWallet } from "@thirdweb-dev/react";
 import toast from "react-hot-toast";
 

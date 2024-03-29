@@ -3,7 +3,7 @@ import { BigNumber, ethers } from "ethers";
 
 import { useMutation } from "@tanstack/react-query";
 
-import { tApprove, tOneInch } from "../types";
+import { tApprove, tOneInch, tOneInchSwapResponse, tRefinance, tRefinanceResponse } from "../types";
 import { useOneInch } from "../swaphooks/useOneInch";
 import { useApprove } from "../utilsHooks/useApprove";
 import { decreasePowerByDecimals } from "../../utils/helper";
@@ -31,7 +31,7 @@ export function useRefinance() {
         amount,
         address,
         provider,
-    }: any) {
+    }: tRefinance):  Promise<tRefinanceResponse | undefined> {
         try {
             if (!selectedFromNetwork.chainName) {
                 toast.error("Chain is not selected!!");
@@ -39,6 +39,7 @@ export function useRefinance() {
             const tempTxs: any = [];
             const batchFlows: iBatchFlowData[] = [];
 
+            let swapData: tOneInchSwapResponse | undefined
             let abiNum,
                 abi,
                 methodName,
@@ -48,7 +49,6 @@ export function useRefinance() {
                 abiInterface,
                 params,
                 txData,
-                swapData,
                 isSwap,
                 nativeTokenIn,
                 nativeTokenInSymbol,
@@ -141,6 +141,7 @@ export function useRefinance() {
                     type: "exactIn",
                     chainId: Number(selectedNetwork.chainId)
                 } as tOneInch);
+                if (!swapData) return
                 console.log('swapData: ', swapData, swapData.amountOutprice.toString())
                 tempTxs.push(swapData.swapTx);
 
@@ -159,13 +160,12 @@ export function useRefinance() {
             if (toProtocol != "erc20") {
                 const newTokenIn = isSwap ? nativeTokenOut : nativeTokenIn;
                 const newTokenInSymbol = isSwap ? nativeTokenOutSymbol : nativeTokenInSymbol;
-                const newAmount = isSwap ? swapData.amountOutprice : amount;
+                const newAmount = isSwap && swapData ? swapData.amountOutprice : amount;
 
                 abiNum = abiFetcherNum[selectedFromNetwork.chainId][tokenOutName];
                 abi = abiFetcher[selectedFromNetwork.chainId][abiNum]["depositAbi"];
                 methodName = abiFetcher[selectedFromNetwork.chainId][abiNum]["depositMethodName"];
                 paramDetailsMethod = abiFetcher[selectedFromNetwork.chainId][abiNum]["depositParamDetailsMethod"];
-                // const tokenOutContractAddress = abiFetcher[selectedFromNetwork.chainId][abiNum]["contractAddress"];
 
                 let tokenOutContractAddress;
                 isContractSet = abiFetcher[selectedFromNetwork.chainId][abiNum]["isContractSet"];
@@ -205,17 +205,14 @@ export function useRefinance() {
                     protocol: selectedToProtocol,
                     tokenIn: newTokenInSymbol,
                     tokenOut: tokenOutName,
-                    amount: isSwap
-                        ? await decreasePowerByDecimals(newAmount.toString(), swapData.tokenOutDecimals)
-                        : await decreasePowerByDecimals(amount.toString(), nativeTokenOutDecimal),
+                    amount: isSwap && swapData
+                        ? await decreasePowerByDecimals(newAmount, swapData.tokenOutDecimals)
+                        : await decreasePowerByDecimals(amount, nativeTokenOutDecimal),
                     action: "Deposit",
                 };
                 batchFlows.push(batchFlow);
             }
-            // const gasCost: number | undefined = await calculategasCost(selectedFromNetwork.chainId)
-            // alert(gasCost?.toString())
-
-            return { txArray: tempTxs, batchFlow: batchFlows, value: 0 };
+            return { txArray: tempTxs, batchFlow: batchFlows, value: BigNumber.from("0") };
         } catch (error: any) {
             if (error.message) {
                 console.log("refinance: Error", error.message);

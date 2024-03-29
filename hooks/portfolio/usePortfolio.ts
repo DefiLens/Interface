@@ -6,7 +6,6 @@ export function usePortfolio() {
     const { chainId, setChainData, setIsLoading, setError }: iPortfolio = usePortfolioStore((state) => state);
 
     async function fetchPortfolio(address: string) {
-        // address = "0x9Ce935D780424FB795bef7E72697f263A8258fAA";
         try {
             setIsLoading(true);
             const authToken = process.env.NEXT_PUBLIC_COVALENT_API_KEY;

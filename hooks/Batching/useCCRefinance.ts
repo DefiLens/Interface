@@ -5,7 +5,7 @@ import { useAddress } from "@thirdweb-dev/react";
 import { useMutation } from "@tanstack/react-query";
 
 import { useCCSendTx } from "./useCCSendTx";
-import { tApprove, tCCSendTx, tOneInch, tStargateData } from "../types";
+import { tApprove, tCCSendTx, tOneInch, tOneInchSwapResponse, tRefinance, tRefinanceResponse, tStargateData } from "../types";
 import { useOneInch } from "../swaphooks/useOneInch";
 import { useApprove } from "../utilsHooks/useApprove";
 import { ChainIdDetails } from "../../utils/data/network";
@@ -41,7 +41,7 @@ export function useCCRefinance() {
         amount,
         address,
         provider,
-    }: any) {
+    }: tRefinance): Promise<tRefinanceResponse | undefined> {
         try {
             if (!selectedFromNetwork.chainName) {
                 toast.error("Chain is not selected!!");
@@ -49,6 +49,7 @@ export function useCCRefinance() {
             let tempTxs: any = [];
             const batchFlows: iBatchFlowData[] = [];
 
+            let swapData: tOneInchSwapResponse | undefined
             let abiNum,
                 abi,
                 methodName,
@@ -58,7 +59,6 @@ export function useCCRefinance() {
                 abiInterface,
                 params,
                 txData,
-                swapData,
                 isSwap,
                 nativeTokenIn,
                 nativeTokenInSymbol,
@@ -148,6 +148,7 @@ export function useCCRefinance() {
                     type: "exactIn",
                     chainId: Number(selectedNetwork.chainId),
                 } as tOneInch);
+                if (!swapData) return
                 tempTxs.push(swapData.swapTx);
 
                 let batchFlow: iBatchFlowData = {
@@ -168,7 +169,7 @@ export function useCCRefinance() {
                     const _tempAmount = BigNumber.from(await incresePowerByDecimals(amountIn, 6).toString());
                     let data: tStargateData | undefined = await sendTxToChain({
                         tokenIn: tokensByNetworkForCC[selectedFromNetwork.chainId].usdc,
-                        _amountIn: isSwap ? swapData.amountOutprice : _tempAmount,
+                        _amountIn: isSwap && swapData ? swapData.amountOutprice : _tempAmount,
                         address,
                         isSCW: true,
                         params,
@@ -245,7 +246,7 @@ export function useCCRefinance() {
                     const _tempAmount = BigNumber.from(await incresePowerByDecimals(amountIn, 6).toString());
                     let data: tStargateData | undefined = await sendTxToChain({
                         tokenIn: tokensByNetworkForCC[selectedFromNetwork.chainId].usdc,
-                        _amountIn: isSwap ? swapData.amountOutprice : _tempAmount,
+                        _amountIn: isSwap && swapData ? swapData.amountOutprice : _tempAmount,
                         address,
                         isSCW: true,
                         params,

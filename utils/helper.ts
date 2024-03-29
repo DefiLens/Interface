@@ -1,5 +1,5 @@
 import axios from "axios";
-import { BigNumber } from "ethers";
+import { BigNumber, BigNumberish } from "ethers";
 import toast from "react-hot-toast";
 import { BigNumber as bg } from "bignumber.js";
 
@@ -297,11 +297,11 @@ export const getTokenListByChainId = (chainId: any, tokenList: any): iTokenInfo[
 
 ///// utils functions
 
-export function incresePowerByDecimals(amount: any, decimals: any) {
+export function incresePowerByDecimals(amount: BigNumberish | string, decimals: number) {
     return bg(amount.toString()).multipliedBy(bg(10).pow(decimals)).toString();
 }
 
-export function decreasePowerByDecimals(amount: any, decimals: any) {
+export function decreasePowerByDecimals(amount: BigNumberish | string, decimals: number) {
     return bg(amount.toString()).dividedBy(bg(10).pow(decimals)).toString();
 }
 
@@ -319,19 +319,19 @@ export const copyToClipboard = (id: any, message: string) => {
     toast.success(message);
 };
 
-export const chooseChianId = (stargateChainId: string): number => {
+export const chooseChianId = (stargateChainId: number): number => {
     let realChainId: number = 0;
-    if (stargateChainId == "106") {
+    if (stargateChainId == 106) {
         realChainId = 43114;
-    } else if (stargateChainId == "109") {
+    } else if (stargateChainId == 109) {
         realChainId = 137;
-    } else if (stargateChainId == "110") {
+    } else if (stargateChainId == 110) {
         realChainId = 42161;
-    } else if (stargateChainId == "111") {
+    } else if (stargateChainId == 111) {
         realChainId = 10;
-    } else if (stargateChainId == "101") {
+    } else if (stargateChainId == 101) {
         realChainId = 1;
-    } else if (stargateChainId == "184") {
+    } else if (stargateChainId == 184) {
         realChainId = 8453;
     }
     return realChainId;

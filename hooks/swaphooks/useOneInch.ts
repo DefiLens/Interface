@@ -2,12 +2,12 @@ import axios from "axios";
 
 import { useMutation } from "@tanstack/react-query";
 
-import { OneInchSwapResponse, tOneInch, tOneInchParams } from "../types";
+import { tOneInchSwapResponseFromApi, tOneInch, tOneInchParams, tOneInchSwapResponse } from "../types";
 import { decreasePowerByDecimals } from "../../utils/helper";
 import { NODE_JWT_TOKEN, NODE_ONEINCH_URL } from "../../utils/keys";
 
 export function useOneInch() {
-    async function oneInchSwap({ tokenIn, tokenOut, amountIn, address, type, chainId }: tOneInch) {
+    async function oneInchSwap({ tokenIn, tokenOut, amountIn, address, type, chainId }: tOneInch): Promise<tOneInchSwapResponse | undefined> {
         try {
             axios.defaults.headers.common['Authorization'] = `Bearer ${NODE_JWT_TOKEN}`;
             const params: tOneInchParams = {
@@ -21,7 +21,7 @@ export function useOneInch() {
             const paramswithUrl = new URLSearchParams(params).toString()
             const url = `${NODE_ONEINCH_URL}?${paramswithUrl}`;
             const swapData = await axios.get(url);
-            const parseSwapData: OneInchSwapResponse = swapData.data.response;
+            const parseSwapData: tOneInchSwapResponseFromApi = swapData.data.response;
             const amountOutprice = parseSwapData.dstAmount;
             const amountOutpriceWithoutDecimal = await decreasePowerByDecimals(
                 amountOutprice,
