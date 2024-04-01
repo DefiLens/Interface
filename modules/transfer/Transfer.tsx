@@ -17,6 +17,7 @@ import SelectInput from "../../components/SelectInput/SelectInput";
 import { iTransfer, useTransferStore } from "../../store/TransferStore";
 import { HiOutlineArrowsRightLeft } from "react-icons/hi2";
 import { HiOutlineInformationCircle } from "react-icons/hi2";
+import CopyButton from "../../components/common/CopyButton";
 
 const Transfer: React.FC<any> = ({
     onOptionChangeForWallet,
@@ -76,8 +77,8 @@ const Transfer: React.FC<any> = ({
                                                 size="25px"
                                                 className="text-B300 cursor-pointer"
                                             />
-                                            <span className="w-60 absolute z-50 top-7 -right-[65px] scale-0 transition-all group-hover:scale-100 rounded shadow-lg bg-N0 px-3 py-1 font-medium text-start text-xs text-B100">
-                                                <button className="w-full relative flex justify-between items-center gap-2">
+                                            <span className="w-fit absolute z-50 top-7 -right-[65px] scale-0 transition-all group-hover:scale-100 rounded shadow-lg bg-N0 px-3 py-1 font-medium text-start text-xs text-B100">
+                                                <button className="w-full relative flex justify-between items-center gap-3 py-2 px-2">
                                                     <div className="flex flex-col justify-center items-start text-B100 text-sm">
                                                         {isSCW
                                                             ? smartAccount &&
@@ -89,20 +90,7 @@ const Transfer: React.FC<any> = ({
                                                             address &&
                                                             address.slice(0, 13) + "..." + address.slice(-3)}
                                                     </div>
-                                                    <FiCopy
-                                                        size="35px"
-                                                        className="text-B100 p-2 hover:bg-N40 rounded-md"
-                                                        onClick={() => {
-                                                            if (isSCW) {
-                                                                copyToClipboard(
-                                                                    smartAccountAddress,
-                                                                    "Smart account address Copied"
-                                                                );
-                                                            } else {
-                                                                copyToClipboard(address, "EOA address Copied");
-                                                            }
-                                                        }}
-                                                    />
+                                                    <CopyButton copy={isSCW ? smartAccountAddress : address} />
                                                 </button>
                                             </span>
                                         </div>
@@ -130,8 +118,8 @@ const Transfer: React.FC<any> = ({
                                                 className="text-B300 cursor-pointer"
                                             />
 
-                                            <span className="w-60 absolute z-50 top-7 -right-[65px] scale-0 transition-all group-hover:scale-100 rounded shadow-lg bg-N0 px-3 py-1 font-medium text-start text-xs text-B100">
-                                                <button className="w-full relative flex justify-between items-center gap-2">
+                                            <span className="w-fit absolute z-50 top-7 -right-[65px] scale-0 transition-all group-hover:scale-100 rounded shadow-lg bg-N0 px-3 py-1 font-medium text-start text-xs text-B100">
+                                                <button className="w-full relative flex justify-between items-center gap-3 py-2 px-2">
                                                     <div className="flex flex-col justify-center items-start text-B100 text-sm">
                                                         {isSCW
                                                             ? smartAccount &&
@@ -143,20 +131,7 @@ const Transfer: React.FC<any> = ({
                                                             "..." +
                                                             smartAccountAddress.slice(-3)}
                                                     </div>
-                                                    <FiCopy
-                                                        size="35px"
-                                                        className="text-B100 p-2 hover:bg-N40 rounded-md"
-                                                        onClick={() => {
-                                                            if (isSCW) {
-                                                                copyToClipboard(address, "EOA address Copied");
-                                                            } else {
-                                                                copyToClipboard(
-                                                                    smartAccountAddress,
-                                                                    "Smart account address Copied"
-                                                                );
-                                                            }
-                                                        }}
-                                                    />
+                                                    <CopyButton copy={isSCW ? address : smartAccountAddress} />
                                                 </button>
                                             </span>
                                         </div>

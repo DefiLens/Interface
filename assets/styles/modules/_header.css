@@ -3,10 +3,16 @@
     display: none;
 }
 
-.header-container .wallet-container :checked ~ .drop-down {
+.header-container .wallet-container :checked~.drop-down {
     rotate: 180deg !important;
 }
 
 .header-container .wallet-container .drop-down {
     transition: all 0.4s ease-in-out;
+}
+
+
+.Custom-btn {
+    border-radius: 10px;
+    background: red;
 }
