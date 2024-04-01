@@ -14,7 +14,12 @@ import ChainSelection from "../../components/ChainSelection/ChainSelection";
 import OneAssetSkeleton from "../../components/skeleton/OneAssetSkeleton";
 import CopyButton from "../../components/common/CopyButton";
 
-const Portfolio: React.FC<tPortfolio> = ({ smartAccountAddress, handleFetchPorfolioData, send, handleAmountIn }) => {
+const Portfolio: React.FC<any> = ({
+    smartAccountAddress,
+    handleFetchPorfolioData,
+    send,
+    handleAmountIn,
+}: tPortfolio) => {
     const { isSCW, chainData, isLoading, setIsSCW }: iPortfolio = usePortfolioStore((state) => state);
     const { smartAccount, scwBalance, eoaBalance, selectedNetwork }: iGlobal = useGlobalStore((state) => state);
     const address = useAddress();
