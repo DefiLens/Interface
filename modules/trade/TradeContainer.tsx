@@ -286,7 +286,7 @@ const TradeContainer: React.FC<any> = () => {
             const tokenAddress =
                 selectedFromProtocol != "erc20"
                     ? protocolNames[selectedFromNetwork.chainId].key.find((entry) => entry.name == selectedFromProtocol)
-                          .tokenAddresses[_fromToken]
+                        .tokenAddresses[_fromToken]
                     : erc20Address[0].address;
 
             console.log(_fromToken, tokenAddress);
@@ -807,8 +807,8 @@ const TradeContainer: React.FC<any> = () => {
             closeFromSelectionMenu={closeFromSelectionMenu}
             closeToSelectionMenu={closeToSelectionMenu}
             totalfees={totalfees}
-            // createSession={createSession}
-            // erc20Transfer={erc20Transfer}
+        // createSession={createSession}
+        // erc20Transfer={erc20Transfer}
         />
     );
 };

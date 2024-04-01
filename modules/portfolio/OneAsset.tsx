@@ -13,10 +13,10 @@ import { defaultBlue } from "../../assets/images";
 import { BigNumber } from "ethers";
 import { BigNumber as bg } from "bignumber.js";
 import { tPortfolio } from "./types";
+import { tPortfolio } from "./types";
 
 const OneAsset: React.FC<tPortfolio> = ({ details, send, handleAmountIn, currentChainId }) => {
-    const { isSCW, selectOneAsset, setSelectOneAsset, amountInDecimals, sendTxLoading, txhash }: iPortfolio =
-        usePortfolioStore((state) => state);
+    const { isSCW, selectOneAsset, setSelectOneAsset, amountInDecimals, sendTxLoading, txhash }: iPortfolio = usePortfolioStore((state) => state);
     const { smartAccount }: iGlobal = useGlobalStore((state) => state);
 
     const [showAll, setShowAll] = useState(false);
@@ -84,6 +84,8 @@ const OneAsset: React.FC<tPortfolio> = ({ details, send, handleAmountIn, current
                                 </div>
                             )}
                         </div>
+
+                        {/* Modal */}
 
                         {/* Modal */}
                         {selectOneAsset === item && (

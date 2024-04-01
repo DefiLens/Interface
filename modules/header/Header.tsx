@@ -35,6 +35,7 @@ const Header: React.FC<tHeader> = ({ switchOnSpecificChain }) => {
     const walletAddressRef = useRef(null);
     const selectNetworkRef = useRef(null);
 
+
     // To close copy dropdown
     useClickOutside([walletAddressRef], () => {
         setShowWalletAddress(false);
@@ -62,6 +63,7 @@ const Header: React.FC<tHeader> = ({ switchOnSpecificChain }) => {
         <>
             <div className="w-full fixed top-0 left-0 right-0 md:top-3 z-10">
                 <div className="max-w-[1380px] w-full md:w-[94%] mx-auto h-[70px] placeholder:h-[70px] flex justify-between items-center gap-3 bg-N0 md:border md:shadow-lg md:rounded-full p-3">
+
                     {/* Left Side navigation */}
                     <div className="flex justify-between items-center gap-8">
                         {NavigationList.length > 0 &&
@@ -121,6 +123,7 @@ const Header: React.FC<tHeader> = ({ switchOnSpecificChain }) => {
                                         onClick={() => setShowWalletAddress(!showWalletAddress)}
                                         className="relative wallet-container bg-N0 px-3 py-2.5 rounded-3xl flex justify-center items-center gap-3 text-B100 shadow-lg font-medium transition duration-300 hover:bg-N20"
                                     >
+
                                         {/* Smart account address and copy btn */}
                                         <span className="text-sm font-medium">
                                             {smartAccount &&
@@ -155,6 +158,7 @@ const Header: React.FC<tHeader> = ({ switchOnSpecificChain }) => {
                                                                     ")"}
                                                         </span>
                                                     </div>
+
                                                     <CopyButton copy={smartAccountAddress} />
                                                 </button>
                                                 <button className="w-full flex justify-between items-center gap-2">
@@ -193,26 +197,23 @@ const Header: React.FC<tHeader> = ({ switchOnSpecificChain }) => {
                                     detailsBtn={() => {
                                         return (
                                             <div className="flex justify-between items-center shadow-lg rounded-full cursor-pointer">
-                                                {selectedNetwork?.chainName && (
+                                                {selectedNetwork?.chainName &&
                                                     <div className="rounded-full p-1">
-                                                        <Image
-                                                            src={selectedNetwork.icon}
-                                                            alt=""
-                                                            className="h-8 w-8 rounded-full"
-                                                        />
+                                                        <Image src={selectedNetwork.icon} alt="" className="h-8 w-8 rounded-full" />
                                                     </div>
-                                                )}
+                                                }
                                             </div>
-                                        );
+                                        )
                                     }}
                                 />
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
 
-            {chainId && (
+                    </div >
+                </div >
+            </div >
+
+            {chainId &&
                 <>
                     {chain?.slug == "polygon" || chain?.slug == "base" || chain?.slug == "optimism" ? (
                         <></>

@@ -7,6 +7,7 @@ import { iTrading, useTradingStore } from "../../store/TradingStore";
 import TokenSelectionMenu from "../../components/Batching/TokenSelectionMenu";
 import BatchSelectionSection from "../../components/Batching/BatchSelectionSection";
 import BatchingListSection from "../../components/Batching/BatchingListSection";
+import SearchInput from "../../components/common/SearchInput";
 
 bg.config({ DECIMAL_PLACES: 10 });
 
