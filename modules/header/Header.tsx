@@ -2,27 +2,24 @@ import { useRef, useEffect } from "react";
 
 import Link from "next/link";
 import Image from "next/image";
-import { FiCopy } from "react-icons/fi";
 import { CgSpinner } from "react-icons/cg";
 import { usePathname } from "next/navigation";
 import { useAddress, useChainId, useChain } from "@thirdweb-dev/react";
 
 import { tHeader } from "./types";
-import { copyToClipboard } from "../../utils/helper";
-import { logoDark, logoLight, metamask, wallet, portfolio, batching, mirgrate_asset } from "../../assets/images";
+import { wallet, mirgrate_asset } from "../../assets/images";
 import useClickOutside from "../../hooks/useClickOutside";
 import { ChainIdDetails, NETWORK_LIST } from "../../utils/data/network";
 import { NavigationList } from "../../utils/data/navigation";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
-import SelectNetwork from "../../components/SelectNetwork/SelectNetwork";
 import { ConnectWallet } from "@thirdweb-dev/react";
 import toast from "react-hot-toast";
+import CopyButton from "../../components/common/CopyButton";
 
 const Header: React.FC<any> = ({ switchOnSpecificChain }: tHeader) => {
     const pathname = usePathname();
 
     const {
-        connected,
         loading,
         smartAccount,
         smartAccountAddress,
@@ -40,16 +37,20 @@ const Header: React.FC<any> = ({ switchOnSpecificChain }: tHeader) => {
     const walletAddressRef = useRef(null);
     const selectNetworkRef = useRef(null);
 
+
+    // To close copy dropdown
     useClickOutside([walletAddressRef], () => {
         setShowWalletAddress(false);
     });
 
+    // To Set network
     const handleSelectNetwork = (data: any) => {
         if (data.chainName) {
             switchOnSpecificChain(data.chainName);
         }
     };
 
+    // To Check user remain on supported chains
     useEffect(() => {
         if (chainId) {
             if (chain?.slug == "polygon" || chain?.slug == "base" || chain?.slug == "optimism") {
@@ -64,6 +65,8 @@ const Header: React.FC<any> = ({ switchOnSpecificChain }: tHeader) => {
         <>
             <div className="w-full fixed top-0 left-0 right-0 md:top-3 z-10 ">
                 <div className="max-w-[1380px] w-full md:w-[94%] mx-auto h-[70px] placeholder:h-[70px] flex justify-between items-center gap-3 bg-N0 md:border md:shadow-lg md:rounded-full p-3">
+
+                    {/* Left Side navigation */}
                     <div className="flex justify-between items-center gap-8">
                         {NavigationList.length > 0 &&
                             NavigationList?.map((item) => (
@@ -95,6 +98,7 @@ const Header: React.FC<any> = ({ switchOnSpecificChain }: tHeader) => {
                     </div>
 
                     <div className="flex justify-between items-center gap-3">
+                        {/* Transfer funds */}
                         <Link
                             href='/transfer-fund'
                             className={`flex items-center justify-center gap-2 cursor-pointer px-5 py-1 text-sm md:text-base text-center rounded-full bg-N0 shadow-lg hover:bg-N20 transition duration-300 ${pathname === '/transfer-fund' ? "bg-gradient-to-br from-D600 via-D400 to-D100 text-N0" : "text-B100"
@@ -110,6 +114,7 @@ const Header: React.FC<any> = ({ switchOnSpecificChain }: tHeader) => {
                             />
                         </Link>
 
+                        {/* Loading spinner */}
                         {loading && (
                             <div className="flex flex-wrap justify-start items-center gap-3 text-base">
                                 <button
@@ -121,6 +126,8 @@ const Header: React.FC<any> = ({ switchOnSpecificChain }: tHeader) => {
                                 </button>
                             </div>
                         )}
+
+                        {/* Account Addreses */}
                         <div className="flex flex-wrap justify-start items-center gap-3 text-base">
                             <div
                                 className="flex justify-center items-center gap-3"
@@ -132,19 +139,14 @@ const Header: React.FC<any> = ({ switchOnSpecificChain }: tHeader) => {
                                         className="relative wallet-container bg-N0 px-3 py-2.5 rounded-3xl flex justify-center items-center gap-3 text-B100 shadow-lg font-medium transition duration-300 hover:bg-N20"
                                     >
 
+                                        {/* Smart account address and copy btn */}
                                         <span className="text-sm font-medium">
                                             {smartAccount &&
                                                 smartAccountAddress.slice(0, 5) + "..." + smartAccountAddress.slice(-3)}
                                         </span>
-                                        <span className="flex justify-center items-center gap-2">
-                                            <FiCopy
-                                                size="18px"
-                                                className="text-B100 active:text-B200"
-                                                onClick={() =>
-                                                    copyToClipboard(smartAccountAddress, "Smart account address Copied")
-                                                }
-                                            />
-                                        </span>
+                                        <CopyButton copy={smartAccountAddress} />
+
+                                        {/* Drop down see both addresses */}
                                         {showWalletAddress && smartAccount && !loading && (
                                             <div
                                                 ref={walletAddressRef}
@@ -170,13 +172,7 @@ const Header: React.FC<any> = ({ switchOnSpecificChain }: tHeader) => {
                                                         </span>
                                                     </div>
 
-                                                    <FiCopy
-                                                        size="35px"
-                                                        className="text-B100 active:text-B200 p-2 hover:bg-N40 rounded-md"
-                                                        onClick={() =>
-                                                            copyToClipboard(smartAccountAddress, "Smart account address Copied")
-                                                        }
-                                                    />
+                                                    <CopyButton copy={smartAccountAddress} />
                                                 </button>
                                                 <button className="w-full flex justify-between items-center gap-2">
                                                     <div className="flex flex-col justify-center items-start">
@@ -196,41 +192,32 @@ const Header: React.FC<any> = ({ switchOnSpecificChain }: tHeader) => {
                                                                 ")"}
                                                         </span>
                                                     </div>
-
-                                                    <FiCopy
-                                                        size="35px"
-                                                        className="text-B100 active:text-B200 p-2 hover:bg-N40 rounded-md"
-                                                        onClick={() => copyToClipboard(address, "EOA address Copied")}
-                                                    />
+                                                    <CopyButton copy={address} />
                                                 </button>
                                             </div>
                                         )}
                                     </button>
                                 )}
 
+                                {/* Third web auth btn */}
                                 <ConnectWallet
                                     theme={"light"}
                                     modalSize={"wide"}
                                     btnTitle="Login"
+                                    className="Custom-btn"
                                     detailsBtn={() => {
                                         return (
-                                            <Image
-                                                src={metamask}
-                                                alt="close"
-                                                className="h-7 w-7 p-1 bg-font-100 rounded-full cursor-pointer"
-                                            />
+                                            <div className="flex justify-between items-center shadow-lg rounded-full cursor-pointer">
+                                                {selectedNetwork?.chainName &&
+                                                    <div className="rounded-full p-1">
+                                                        <Image src={selectedNetwork.icon} alt="" className="h-8 w-8 rounded-full" />
+                                                    </div>
+                                                }
+                                            </div>
                                         )
                                     }}
                                 />
                             </div>
-                        </div>
-
-                        <div className="flex justify-between items-center">
-                            {selectedNetwork?.chainName &&
-                                <div className="rounded-full p-1">
-                                    <Image src={selectedNetwork.icon} alt="" className="h-8 w-8 rounded-full" />
-                                </div>
-                            }
                         </div>
 
                     </div >

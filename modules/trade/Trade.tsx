@@ -19,8 +19,129 @@ import { iTokenData, iTrading, useTradingStore } from "../../store/TradingStore"
 import { defaultBlue, downLine, gas, optimism, swap, warning } from "../../assets/images";
 import { PiDotsThreeOutlineVertical } from "react-icons/pi";
 import { HiOutlineArrowsRightLeft } from "react-icons/hi2";
+import SearchInput from "../../components/common/SearchInput";
 
 bg.config({ DECIMAL_PLACES: 10 });
+
+
+interface TokenListProps {
+    erc20: boolean;
+    filterValue: string;
+    setFilterValue: (value: string) => void;
+    tokens: any[];
+    onItemClick: (tokenName: string) => void;
+}
+
+const TokenList: React.FC<TokenListProps> = ({ erc20, filterValue, setFilterValue, tokens, onItemClick }) => {
+    return (
+        <>
+            <div className="border border-[rgba(132,144,251)] text-B200 rounded-lg p-3 my-1.5">
+                <SearchInput
+                    value={filterValue}
+                    onChange={setFilterValue}
+                    placeholder="Search by Token"
+                />
+                {tokens.map((token: any, index: number) => {
+                    const isErc20 = erc20 ? token.symbol.toLowerCase().includes(filterValue.toLowerCase()) : token.name.toLowerCase().includes(filterValue.toLowerCase());
+                    return (
+                        isErc20 && (
+                            <div
+                                key={index}
+                                onClick={() => onItemClick(erc20 ? token.symbol : token.name)}
+                                className="w-full flex justify-start items-center gap-3 hover:bg-[rgba(132,144,251,.1)] py-2 px-3 rounded-lg cursor-pointer my-2"
+                            >
+                                {erc20 && (
+                                    <Image
+                                        src={
+                                            token.logoURI.includes("s2.coinmarketcap.com")
+                                                ? optimism
+                                                : token.logoURI
+                                        }
+                                        alt=""
+                                        width={10}
+                                        height={10}
+                                        className="h-10 w-10 bg-font-200 rounded-full cursor-pointer"
+                                    />
+                                )}
+                                {/* {token.name} */}
+                                {erc20 ? token.symbol : token.name}
+                            </div>
+                        )
+                    );
+                })}
+
+            </div>
+        </>
+    );
+};
+
+
+const ProtocolSelection: React.FC<any> = ({
+    showMenu,
+    onChangeProtocol,
+    selectedNetwork,
+    filterToken,
+    setFilterToken,
+    filterAddress,
+    setFilterAddress,
+    tokensData,
+    selectedProtocol,
+    onChangeToken,
+    protocolNames,
+}) => {
+    return (
+        showMenu && selectedNetwork.chainName && (
+            <div className="w-full max-h-96">
+                {protocolNames[selectedNetwork.chainId]?.key.map((item: tTradeProtocol, protocolIndex: number) => {
+                    return protocolNames[selectedNetwork.chainId].value[protocolIndex].toLowerCase().includes(filterToken.toLowerCase()) ? (
+                        <div key={item.name} className="w-full py-0.5">
+                            <div
+                                key={item.name}
+                                onClick={() => onChangeProtocol(item.name)}
+                                className="w-full flex justify-between items-center gap-3 text-B300 bg-[rgba(132,144,251,.0.9) border border-[rgba(132,144,251)] hover:bg-[rgba(132,144,251,.1)] py-2 px-3 my-1 rounded-lg cursor-pointer"
+                            >
+                                <div className="w-full flex justify-start items-center gap-3">
+                                    <Image
+                                        src={item.icon}
+                                        alt=""
+                                        className="h-8 w-8 bg-N40 rounded-full cursor-pointer"
+                                    />
+                                    <div>
+                                        {protocolNames[selectedNetwork.chainId].value[protocolIndex]}
+                                    </div>
+                                </div>
+                                <CiCircleChevDown
+                                    size="30px"
+                                    className="text-[rgba(132,144,251)] h-7 w-7"
+                                />
+                            </div>
+
+                            {selectedProtocol === item.name && selectedProtocol !== "erc20" && (
+                                <TokenList
+                                    erc20={false}
+                                    filterValue={filterAddress}
+                                    setFilterValue={setFilterAddress}
+                                    tokens={item.tokenList}
+                                    onItemClick={onChangeToken}
+                                />
+                            )}
+                            {item.name === "erc20" && selectedProtocol === "erc20" && tokensData && (
+                                <TokenList
+                                    erc20={true}
+                                    filterValue={filterAddress}
+                                    setFilterValue={setFilterAddress}
+                                    tokens={tokensData}
+                                    onItemClick={onChangeToken}
+                                />
+                            )}
+                        </div>
+                    ) : null;
+                })}
+            </div>
+        )
+    );
+};
+
 
 const Trade: React.FC<any> = ({
     handleSelectFromNetwork,
@@ -77,6 +198,7 @@ const Trade: React.FC<any> = ({
         showExecuteMethodModel,
     }: iTrading = useTradingStore((state) => state);
 
+
     return (
         <div className="w-full h-full flex flex-col justify-center items-center py-5">
             <div
@@ -119,296 +241,51 @@ const Trade: React.FC<any> = ({
                                         );
                                     })}
                                 </div>
-                                <div className="w-full flex justify-start items-center gap-2 bg-N0 border-2 border-B50 rounded-md py-2 px-5">
-                                    <input
-                                        type="text"
-                                        value={showFromSelectionMenu ? filterFromToken : filterToToken}
-                                        onChange={
-                                            showFromSelectionMenu
-                                                ? (e) => setFilterFromToken(e.target.value)
-                                                : (e) => setFilterToToken(e.target.value)
-                                        }
-                                        placeholder="Search by Protocol"
-                                        className="w-full text-sm md:text-base outline-none placeholder-B75 text-B100"
-                                    />
-                                    <AiOutlineSearch />
-                                </div>
+                                <SearchInput
+                                    value={showFromSelectionMenu ? filterFromToken : filterToToken}
+                                    onChange={showFromSelectionMenu
+                                        ? setFilterFromToken
+                                        : setFilterToToken}
+                                    placeholder="Search by Protocol"
+                                />
+
                                 <div className="w-full overflow-auto flex flex-col justify-center items-center py-1">
-                                    {showFromSelectionMenu && selectedFromNetwork.chainName && (
-                                        <div className="w-full max-h-96">
-                                            {protocolNames[selectedFromNetwork.chainId]?.key.map(
-                                                (item: tTradeProtocol, protocolIndex: number) => {
-                                                    return protocolNames[selectedFromNetwork.chainId].value[
-                                                        protocolIndex
-                                                    ]
-                                                        .toLowerCase()
-                                                        .includes(filterFromToken.toLowerCase()) ? (
-                                                        <div key={item.name} className="w-full py-0.5">
-                                                            <div
-                                                                key={item.name}
-                                                                onClick={() => onChangeFromProtocol(item.name)}
-                                                                className="w-full flex justify-between items-center gap-3 text-B300 bg-[rgba(132,144,251,.0.9) border border-[rgba(132,144,251)] hover:bg-[rgba(132,144,251,.1)] py-2 px-3 my-1 rounded-lg cursor-pointer"
-                                                            >
-                                                                <div className="w-full flex justify-start items-center gap-3">
-                                                                    <Image
-                                                                        src={item.icon}
-                                                                        alt=""
-                                                                        className="h-8 w-8 bg-N40 rounded-full cursor-pointer"
-                                                                    />
-                                                                    <div>
-                                                                        {
-                                                                            protocolNames[selectedFromNetwork.chainId]
-                                                                                .value[protocolIndex]
-                                                                        }
-                                                                    </div>
-                                                                </div>
-                                                                <CiCircleChevDown
-                                                                    size="30px"
-                                                                    className="text-[rgba(132,144,251)] h-7 w-7"
-                                                                />
-                                                            </div>
+                                    <div className="w-full overflow-auto flex flex-col justify-center items-center py-1">
+                                        <ProtocolSelection
+                                            showMenu={showFromSelectionMenu}
+                                            onChangeProtocol={onChangeFromProtocol}
+                                            selectedNetwork={selectedFromNetwork}
+                                            filterToken={filterFromToken}
+                                            setFilterToken={setFilterFromToken}
+                                            filterAddress={filterFromAddress}
+                                            setFilterAddress={setFilterFromAddress}
+                                            tokensData={fromTokensData}
+                                            selectedProtocol={selectedFromProtocol}
+                                            onChangeToken={onChangeFromToken}
+                                            protocolNames={protocolNames}
+                                        />
 
-                                                            {selectedFromProtocol === item.name &&
-                                                                selectedFromProtocol !== "erc20" && (
-                                                                    <div className="border border-[rgba(132,144,251)] text-B200 rounded-lg p-3 my-1.5">
-                                                                        <div className="w-full flex justify-start items-center gap-2 bg-N0 border-2 border-B50 rounded-md py-1.5 px-5">
-                                                                            <input
-                                                                                type="text"
-                                                                                value={filterFromAddress}
-                                                                                onChange={(e) =>
-                                                                                    setFilterFromAddress(e.target.value)
-                                                                                }
-                                                                                placeholder="Search by Token"
-                                                                                className="w-full text-sm md:text-base outline-none placeholder-B75 text-B100"
-                                                                            />
-                                                                            <AiOutlineSearch />
-                                                                        </div>
-                                                                        {item.tokenList.length > 0 &&
-                                                                            item.tokenList?.map(
-                                                                                (
-                                                                                    token: tTradeProtocol,
-                                                                                    tokenIndex: number
-                                                                                ) => {
-                                                                                    return token.name
-                                                                                        .toLowerCase()
-                                                                                        .includes(
-                                                                                            filterFromAddress.toLowerCase()
-                                                                                        ) ? (
-                                                                                        <div
-                                                                                            key={tokenIndex}
-                                                                                            onClick={() =>
-                                                                                                onChangeFromToken(
-                                                                                                    token.name
-                                                                                                )
-                                                                                            }
-                                                                                            className="w-full flex justify-start items-center gap-3 hover:bg-[rgba(132,144,251,.1)] py-2 px-3 rounded-lg cursor-pointer my-2"
-                                                                                        >
-                                                                                            {token.name}
-                                                                                        </div>
-                                                                                    ) : null;
-                                                                                }
-                                                                            )}
-                                                                    </div>
-                                                                )}
+                                        <ProtocolSelection
+                                            showMenu={showToSelectionMenu}
+                                            onChangeProtocol={onChangeToProtocol}
+                                            selectedNetwork={selectedToNetwork}
+                                            filterToken={filterToToken}
+                                            setFilterToken={setFilterToToken}
+                                            filterAddress={filterToAddress}
+                                            setFilterAddress={setFilterToAddress}
+                                            tokensData={toTokensData}
+                                            selectedProtocol={selectedToProtocol}
+                                            onChangeToken={onChangeToToken}
+                                            protocolNames={protocolNames}
+                                        />
+                                    </div>
 
-                                                            {item.name === "erc20" &&
-                                                                selectedFromProtocol === "erc20" &&
-                                                                fromTokensData && (
-                                                                    <div className="border border-[rgba(132,144,251)] text-B200 rounded-lg p-3 my-1.5">
-                                                                        <div className="w-full flex justify-start items-center gap-2 bg-N0 border-2 border-B50 rounded-md py-1.5 px-5">
-                                                                            <input
-                                                                                type="text"
-                                                                                value={filterFromAddress}
-                                                                                onChange={(e) =>
-                                                                                    setFilterFromAddress(e.target.value)
-                                                                                }
-                                                                                placeholder="Search by Token"
-                                                                                className="w-full text-sm md:text-base outline-none placeholder-B75 text-B100"
-                                                                            />
-                                                                            <AiOutlineSearch />
-                                                                        </div>
-                                                                        {fromTokensData?.map(
-                                                                            (token: iTokenData, tokenIndex: number) => {
-                                                                                return token.symbol
-                                                                                    .toLowerCase()
-                                                                                    .includes(
-                                                                                        filterFromAddress.toLowerCase()
-                                                                                    ) ? (
-                                                                                    <div
-                                                                                        key={tokenIndex}
-                                                                                        onClick={() =>
-                                                                                            onChangeFromToken(
-                                                                                                token.symbol
-                                                                                            )
-                                                                                        }
-                                                                                        className="w-full flex justify-start items-center gap-3 text-B300 hover:bg-[rgba(132,144,251,.1)] py-2 px-3 rounded-lg cursor-pointer my-2"
-                                                                                    >
-                                                                                        <Image
-                                                                                            src={
-                                                                                                token.logoURI.includes(
-                                                                                                    "s2.coinmarketcap.com"
-                                                                                                )
-                                                                                                    ? optimism
-                                                                                                    : token.logoURI
-                                                                                            }
-                                                                                            alt=""
-                                                                                            width={10}
-                                                                                            height={10}
-                                                                                            className="h-10 w-10 bg-font-200 rounded-full cursor-pointer"
-                                                                                        />
-                                                                                        {token.symbol}
-                                                                                    </div>
-                                                                                ) : null;
-                                                                            }
-                                                                        )}
-                                                                    </div>
-                                                                )}
-                                                        </div>
-                                                    ) : null;
-                                                }
-                                            )}
-                                        </div>
-                                    )}
 
-                                    {showToSelectionMenu && selectedToNetwork.chainName && (
-                                        <div className="w-full max-h-96">
-                                            {protocolNames[selectedToNetwork.chainId]?.key.map(
-                                                (item: tTradeProtocol, protocolIndex: number) => {
-                                                    return protocolNames[selectedToNetwork.chainId].value[protocolIndex]
-                                                        .toLowerCase()
-                                                        .includes(filterToToken.toLowerCase()) ? (
-                                                        <div key={item.name} className="w-full py-0.5">
-                                                            <div
-                                                                key={item.name}
-                                                                onClick={() => onChangeToProtocol(item.name)}
-                                                                className="w-full flex justify-between items-center gap-3 text-B300 bg-[rgba(132,144,251,.0.9) border border-[rgba(132,144,251)] hover:bg-[rgba(132,144,251,.1)] py-2 px-3 my-1 rounded-lg cursor-pointer"
-                                                            >
-                                                                <div className="w-full flex justify-start items-center gap-3">
-                                                                    <Image
-                                                                        src={item.icon}
-                                                                        alt=""
-                                                                        className="h-8 w-8 bg-N40 rounded-full cursor-pointer"
-                                                                    />
-                                                                    <div>
-                                                                        {
-                                                                            protocolNames[selectedToNetwork.chainId]
-                                                                                .value[protocolIndex]
-                                                                        }
-                                                                    </div>
-                                                                </div>
-                                                                <CiCircleChevDown
-                                                                    size="30px"
-                                                                    className="text-[rgba(132,144,251)] h-7 w-7"
-                                                                />
-                                                            </div>
-                                                            {selectedToProtocol === item.name &&
-                                                                selectedToProtocol !== "erc20" && (
-                                                                    <div className="border border-[rgba(132,144,251)] text-B200 rounded-lg p-3 my-1.5">
-                                                                        <div className="w-full flex justify-start items-center gap-2 bg-N0 border-2 border-B50 rounded-md py-1.5 px-5">
-                                                                            <input
-                                                                                type="text"
-                                                                                value={filterToAddress}
-                                                                                onChange={(e) =>
-                                                                                    setFilterToAddress(e.target.value)
-                                                                                }
-                                                                                placeholder="Search by Token"
-                                                                                className="w-full text-sm md:text-base outline-none placeholder-B75 text-B100"
-                                                                            />
-                                                                            <AiOutlineSearch />
-                                                                        </div>
-                                                                        {item.tokenList.length > 0 &&
-                                                                            item.tokenList?.map(
-                                                                                (
-                                                                                    token: tTradeProtocol,
-                                                                                    tokenIndex: number
-                                                                                ) => {
-                                                                                    return token.name
-                                                                                        .toLowerCase()
-                                                                                        .includes(
-                                                                                            filterToAddress.toLowerCase()
-                                                                                        ) ? (
-                                                                                        <div
-                                                                                            key={tokenIndex}
-                                                                                            onClick={() =>
-                                                                                                onChangeToToken(
-                                                                                                    token.name
-                                                                                                )
-                                                                                            }
-                                                                                            className="w-full flex justify-start items-center gap-3 hover:bg-[rgba(132,144,251,.1)] py-2 px-3 rounded-lg cursor-pointer my-2"
-                                                                                        >
-                                                                                            {token.name}
-                                                                                        </div>
-                                                                                    ) : null;
-                                                                                }
-                                                                            )}
-                                                                    </div>
-                                                                )}
-                                                            {item.name === "erc20" &&
-                                                                selectedToProtocol === "erc20" &&
-                                                                toTokensData && (
-                                                                    <div className="border border-[rgba(132,144,251)] text-B200 rounded-lg p-3 my-1.5">
-                                                                        <div className="w-full flex justify-start items-center gap-2 bg-N0 border-2 border-B50 rounded-md py-1.5 px-5">
-                                                                            <input
-                                                                                type="text"
-                                                                                value={filterToAddress}
-                                                                                onChange={(e) =>
-                                                                                    setFilterToAddress(e.target.value)
-                                                                                }
-                                                                                placeholder="Search by Token"
-                                                                                className="w-full text-sm md:text-base outline-none placeholder-B75 text-B100"
-                                                                            />
-                                                                            <AiOutlineSearch />
-                                                                        </div>
-                                                                        {toTokensData?.map(
-                                                                            (token: iTokenData, tokenIndex: number) => {
-                                                                                return token.symbol
-                                                                                    .toLowerCase()
-                                                                                    .includes(
-                                                                                        filterToAddress.toLowerCase()
-                                                                                    ) ? (
-                                                                                    <div
-                                                                                        key={tokenIndex}
-                                                                                        onClick={() =>
-                                                                                            onChangeToToken(
-                                                                                                token.symbol
-                                                                                            )
-                                                                                        }
-                                                                                        className="w-full flex justify-start items-center gap-3 text-B300 hover:bg-[rgba(132,144,251,.1)] py-2 px-3 my-1 rounded-lg cursor-pointer"
-                                                                                    >
-                                                                                        <Image
-                                                                                            src={
-                                                                                                token.logoURI.includes(
-                                                                                                    "s2.coinmarketcap.com"
-                                                                                                )
-                                                                                                    ? optimism
-                                                                                                    : token.logoURI
-                                                                                            }
-                                                                                            alt=""
-                                                                                            width={10}
-                                                                                            height={10}
-                                                                                            className="h-10 w-10 bg-font-200 rounded-full cursor-pointer"
-                                                                                        />
-                                                                                        {token.symbol}
-                                                                                    </div>
-                                                                                ) : null;
-                                                                            }
-                                                                        )}
-                                                                    </div>
-                                                                )}
-                                                        </div>
-                                                    ) : null;
-                                                }
-                                            )}
-                                        </div>
-                                    )}
                                 </div>
                             </div>
                         </div>
                     ) : (
                         <div className="w-full bg-gradient-to-br from-[#7339FD] via-[#56B0F6] to-[#4DD4F4] flex flex-col gap-1 rounded-2xl cursor-pointer shadow-2xl">
-                            {/* <h1 className="w-full bg-backgound-300 text-B200 text-lg md:text-xl lg:text-2xl text-center font-bold rounded-t-2xl p-5">
-                                Building Batch No. {individualBatch.length}
-                            </h1> */}
                             <div className="w-full flex flex-col gap-5">
                                 <div className="px-5 pt-7">
                                     <div
@@ -605,7 +482,7 @@ const Trade: React.FC<any> = ({
                                 Batching List...
                             </h1>
                             {selectedFromNetwork.chainId && totalfees.gt(0) && (
-                                <div className="w-auto flex justify-between items-center text-green-400 gap-4 md:gap-6 bg-[rgba(109,223,255,.2)] border border-green-400 rounded-xl px-4 py-2 border">
+                                <div className="w-auto flex justify-between items-center text-green-400 gap-4 md:gap-6 bg-[rgba(109,223,255,.2)] border border-green-400 rounded-xl px-4 py-2">
                                     <h3 className="flex justify-start items-center gap-1 font-bold text-xs md:text-sm">
                                         <Image
                                             src={gas}
@@ -639,7 +516,7 @@ const Trade: React.FC<any> = ({
                                     <>
                                         {bar.txArray.length > 0 && (
                                             <div key={bar.id} className="relative">
-                                                <div className="simulation-success flex flex-col justify-center items-start gap-1 border-2 border-B50 rounded-lg bg-N0 p-5 rounded-xl text-black font-medium transition duration-300">
+                                                <div className="simulation-success flex flex-col justify-center items-start gap-1 border-2 border-B50 rounded-lg bg-N0 p-5 text-black font-medium transition duration-300">
                                                     <div className="w-full flex justify-between items-center gap-2 border-b border-B50">
                                                         <h1 className="flex justify-center items-center gap-3 text-B100 font-extrabold text-base text-transparent bg-clip-text bg-gradient-to-br from-[#7339FD] via-[#56B0F6] to-[#4DD4F4]">
                                                             {inputBarIndex + 1}.
@@ -760,11 +637,6 @@ const Trade: React.FC<any> = ({
                                                                                 </div>
                                                                             </div>
                                                                             {bar.batchesFlow.length - 1 > index ? (
-                                                                                // <Image
-                                                                                //     src={downLine}
-                                                                                //     alt=""
-                                                                                //     className="h-8"
-                                                                                // />
                                                                                 <PiDotsThreeOutlineVertical
                                                                                     size="32px"
                                                                                     className="text-B200"
@@ -778,7 +650,7 @@ const Trade: React.FC<any> = ({
                                                         )}
                                                         {showIndividualBatchList === bar.id && (
                                                             <div className="w-full flex justify-between items-center gap-1 rounded-lg px-2 mt-3">
-                                                                <div className="w-auto flex justify-between items-center text-green-400 gap-4 md:gap-6 bg-[rgba(109,223,255,.2)] border border-green-400 rounded-xl px-4 py-2 border">
+                                                                <div className="w-auto flex justify-between items-center text-green-400 gap-4 md:gap-6 bg-[rgba(109,223,255,.2)] border border-green-400 rounded-xl px-4 py-2">
                                                                     <h3 className="flex justify-start items-center gap-1 font-bold text-xs md:text-sm">
                                                                         <Image
                                                                             src={gas}
@@ -803,7 +675,7 @@ const Trade: React.FC<any> = ({
                                                                 </div>
 
                                                                 {Number(bar.data.extraValue) ? (
-                                                                    <div className="w-auto flex justify-between items-center text-green-400 gap-4 md:gap-6 bg-[rgba(109,223,255,.2)] border border-green-400 rounded-xl px-4 py-2 border">
+                                                                    <div className="w-auto flex justify-between items-center text-green-400 gap-4 md:gap-6 bg-[rgba(109,223,255,.2)] border border-green-400 rounded-xl px-4 py-2">
                                                                         <h3 className="flex justify-start items-center gap-1 font-bold text-xs md:text-xs">
                                                                             <Image
                                                                                 src={gas}
