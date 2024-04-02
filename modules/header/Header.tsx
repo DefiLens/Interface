@@ -245,7 +245,7 @@ const Header: React.FC<any> = ({ switchOnSpecificChain }: tHeader) => {
                                         {NETWORK_LIST?.map((item) => {
                                             return (
                                                 <div
-                                                    key={item.chainName}
+                                                    key={item.chainId}
                                                     onClick={() => handleSelectNetwork(item)}
                                                     className="flex justify-start items-center gap-3 hover:bg-N40 p-2 rounded-full cursor-pointer"
                                                 >
