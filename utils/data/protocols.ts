@@ -21,7 +21,21 @@ import {
     polygon,
 } from "../../assets/images";
 
-export const protocolNames = {
+interface iProtocolKey {
+    name: string;
+    icon: string | any;
+    tokenList: any;
+    tokenAddresses: any;
+}
+
+export interface iProtocolNames {
+    [chainId: string]: {
+        key: iProtocolKey[];
+        value: string[];
+    };
+}
+
+export const protocolNames: iProtocolNames = {
     "137": {
         key: [
             {
