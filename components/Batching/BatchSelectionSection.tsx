@@ -1,6 +1,4 @@
-import React from "react";
 import Image from "next/image";
-
 import { BigNumber as bg } from "bignumber.js";
 import SelectionBar from "../SelectionBar/SelectionBar";
 import { HiOutlineArrowsRightLeft } from "react-icons/hi2";

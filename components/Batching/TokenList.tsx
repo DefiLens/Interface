@@ -1,11 +1,12 @@
 import Image from "next/image";
 import SearchInput from "../common/SearchInput";
 import { optimism } from "../../assets/images";
+import { iTokenData } from "../../store/TradingStore";
 
 interface TokenListProps {
     erc20: boolean;
     filterValue: string;
-    tokens: any[];
+    tokens: iTokenData;
     setFilterValue: (value: string) => void;
     onItemClick: (tokenName: string) => void;
 }

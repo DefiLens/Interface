@@ -1,4 +1,3 @@
-import React from "react";
 import { NETWORK_LIST } from "../../utils/data/network";
 import { MdOutlineArrowBack } from "react-icons/md";
 import Image from "next/image";

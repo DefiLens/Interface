@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { BsArrowRight } from "react-icons/bs";
 
@@ -47,23 +47,22 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
 
     const handleTxnHistory = async (arg: any) => {
         try {
-          await axiosInstance
-            .post('txn-history', arg)
-            .then(async (res) => {
-              console.log("Thanks for Working with us")
-
-            })
-            .catch((err) => {
-                console.log("Error! While storing history", err)
-            });
+            await axiosInstance
+                .post("txn-history", arg)
+                .then(async (res) => {
+                    console.log("Thanks for Working with us");
+                })
+                .catch((err) => {
+                    console.log("Error! While storing history", err);
+                });
         } catch (error: any) {
-          console.log("handleTxnHistory: error:", error)
+            console.log("handleTxnHistory: error:", error);
         }
     };
 
     useEffect(() => {
         if (individualBatch.length > 0 && txhash) {
-            const txHistory = individualBatch.slice(0, -1).map((item : any) => ({
+            const txHistory = individualBatch.slice(0, -1).map((item: any) => ({
                 amountIn: item.data.amountIn,
                 fromNetwork: item.data.fromNetwork,
                 toNetwork: item.data.toNetwork,
@@ -100,8 +99,8 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
                         {txhash
                             ? "Execute Batches Successfully"
                             : hasExecutionError
-                            ? "Execution Error"
-                            : "Executing All Batches"}
+                              ? "Execution Error"
+                              : "Executing All Batches"}
                     </div>
                     <div className="w-full overflow-auto">
                         {selectedFromNetwork &&

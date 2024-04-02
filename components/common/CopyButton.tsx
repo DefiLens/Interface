@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { FiCopy, FiCheck } from 'react-icons/fi';
+import { useState } from "react";
+import { FiCopy, FiCheck } from "react-icons/fi";
 import toast from "react-hot-toast";
 
 interface CopyButtonProps {
@@ -19,14 +19,12 @@ const CopyButton: React.FC<CopyButtonProps> = ({ copy }) => {
     };
 
     return (
-        <button
-            onClick={() => copyToClipboard(copy)}
-        >
-            {copied ?
+        <button onClick={() => copyToClipboard(copy)}>
+            {copied ? (
                 <FiCheck size="18px" className="text-success-600 active:text-B200" />
-                :
+            ) : (
                 <FiCopy size="18px" className="text-B100 active:text-B200" />
-            }
+            )}
         </button>
     );
 };

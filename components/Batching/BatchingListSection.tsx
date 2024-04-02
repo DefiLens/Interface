@@ -1,4 +1,3 @@
-import React from "react";
 import gas from "../../assets/images/gas.png";
 import { protocolNames } from "../../utils/data/protocols";
 import { ChainIdDetails } from "../../utils/data/network";

@@ -1,7 +1,4 @@
-import React, { useRef } from "react";
-
 import Image from "next/image";
-
 import { tSelectionBar } from "./types";
 import { defaultBlue } from "../../assets/images";
 
@@ -28,7 +25,11 @@ const SelectionBar = ({
             {iconCondition ? (
                 <div className="relative">
                     <div className="h-12 w-12">
-                        <Image src={mainIcon} alt="" className="h-12 w-12 full w-full bg-N60 rounded-full cursor-pointer" />
+                        <Image
+                            src={mainIcon}
+                            alt=""
+                            className="h-12 w-12 full w-full bg-N60 rounded-full cursor-pointer"
+                        />
                     </div>
                     <div className="absolute -bottom-1 -right-1 bg-N60 h-6 w-6 flex justify-center items-center rounded-full p-1">
                         <Image

@@ -1,11 +1,10 @@
-import React from 'react'
-import { tTradeProtocol } from '../../modules/trade/types';
-import { CiCircleChevDown } from 'react-icons/ci';
-import TokenList from './TokenList';
-import Image from 'next/image';
-import { iSelectedNetwork } from '../../store/GlobalStore';
-import { iTokenData } from '../../store/TradingStore';
-import { iProtocolNames } from '../../utils/data/protocols';
+import { tTradeProtocol } from "../../modules/trade/types";
+import { CiCircleChevDown } from "react-icons/ci";
+import TokenList from "./TokenList";
+import Image from "next/image";
+import { iSelectedNetwork } from "../../store/GlobalStore";
+import { iTokenData } from "../../store/TradingStore";
+import { iProtocolNames } from "../../utils/data/protocols";
 
 interface iProtocolSelectionProps {
     showMenu: any;
@@ -68,7 +67,7 @@ const ProtocolSelection: React.FC<iProtocolSelectionProps> = ({
                                     onItemClick={onChangeToken}
                                 />
                             )}
-                            
+
                             {/* ERC20 Tokens */}
                             {item.name === "erc20" && selectedProtocol === "erc20" && tokensData && (
                                 <TokenList
@@ -87,4 +86,4 @@ const ProtocolSelection: React.FC<iProtocolSelectionProps> = ({
     );
 };
 
-export default ProtocolSelection
+export default ProtocolSelection;

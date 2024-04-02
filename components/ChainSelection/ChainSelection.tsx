@@ -1,4 +1,3 @@
-import React from 'react';
 import { iPortfolio, usePortfolioStore } from "../../store/Portfolio";
 
 interface Chain {
@@ -54,12 +53,15 @@ const ChainSelection: React.FC<ChainSelectionProps> = ({ onChange, dropdown = fa
                     </select>
                 </div>
             ) : (
-                <div className="w-full flex items-center gap-3 overflow-scroll" style={{ scrollbarWidth: 'none', '-ms-overflow-style': 'none' }}>
+                <div
+                    className="w-full flex items-center gap-3 overflow-scroll"
+                    style={{ scrollbarWidth: "none", "-ms-overflow-style": "none" }}
+                >
                     {chains.map((chain) => (
                         <button
                             key={chain.chainId}
                             onClick={() => handleButtonClick(chain.chainId)}
-                            className={`py-2 px-4 rounded-lg border border-B50 hover:bg-N50 ${chainId === chain.chainId ? 'bg-GR1 text-N20 border-none' : 'bg-N40 text-B100'}`}
+                            className={`py-2 px-4 rounded-lg border border-B50 hover:bg-N50 ${chainId === chain.chainId ? "bg-GR1 text-N20 border-none" : "bg-N40 text-B100"}`}
                         >
                             {chain.chainName}
                         </button>

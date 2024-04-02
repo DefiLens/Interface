@@ -1,5 +1,3 @@
-import React, { useRef } from "react";
-
 import { tButton } from "./types";
 import { CgSpinner } from "react-icons/cg";
 
