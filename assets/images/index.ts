@@ -36,10 +36,10 @@ import moonwell from "./moonwell.svg";
 import seamless from "./seamless.svg";
 import checkBox from "./checkBox.png";
 import uncheckBox from "./uncheckBox.png";
-import portfolio from './nav-portfolio.svg';
-import batching from './nav-batching.svg';
-import conditional_trading from './nav-conditional-trading.svg';
-import mirgrate_asset from './nav-mirgrate-asset.svg';
+import portfolio from "./nav-portfolio.svg";
+import batching from "./nav-batching.svg";
+import conditional_trading from "./nav-conditional-trading.svg";
+import mirgrate_asset from "./nav-mirgrate-asset.svg";
 
 export {
     closeNarrow,
@@ -81,7 +81,7 @@ export {
     checkBox,
     uncheckBox,
     portfolio,
-    batching, 
-    conditional_trading, 
+    batching,
+    conditional_trading,
     mirgrate_asset,
 };

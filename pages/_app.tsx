@@ -1,4 +1,3 @@
-import * as React from "react";
 import { Suspense } from "react";
 import { Toaster } from "react-hot-toast";
 import { AppProps } from "next/app";
@@ -26,7 +25,6 @@ export default function App({ Component, pageProps }: AppProps) {
 
     return (
         <>
-            {/* @ts-ignore */}
             <ThirdwebProvider
                 supportedChains={[Polygon, Base, Optimism]}
                 clientId={process.env.NEXT_PUBLIC_TEMPLATE_CLIENT_ID}
@@ -48,19 +46,14 @@ export default function App({ Component, pageProps }: AppProps) {
                             },
                         }}
                     />
-
                     <Suspense fallback={<div>Loading...</div>}>
                         <div className="main-bg h-screen w-screen">
-                            <div className="h-[79px]">
-                                <HeaderContainer />
-                            </div>
-
-                            <div className="w-screen h-[calc(100%-119px)]  flex justify-center items-start">
+                            <HeaderContainer />
+                            <div className="w-screen mt-20 flex justify-center items-start">
                                 <main className="w-full h-full overflow-y-scroll overflow-x-hidden">
                                     <Component {...pageProps} />
                                 </main>
                             </div>
-
                             <FooterContainer />
                         </div>
                     </Suspense>

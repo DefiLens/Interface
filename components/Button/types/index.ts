@@ -3,5 +3,5 @@ export type tButton = {
     isLoading: boolean;
     customStyle: string;
     innerText: string;
-    disabled: boolean;
+    disabled?: boolean;
 };

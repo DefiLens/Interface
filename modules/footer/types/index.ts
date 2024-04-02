@@ -1,9 +1,9 @@
 export type tSocialHandle = {
-    icon: any,
-    key: string,
-    href: string,
+    icon: any;
+    key: string;
+    href: string;
 };
 
 export type tFooter = {
-    SocialHandles: tSocialHandle[],
+    SocialHandles: tSocialHandle[];
 };
