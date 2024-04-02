@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useAddress } from "@thirdweb-dev/react";
 
 import MigrateAsset from "./MigrateAsset";
-import { usePortfolio } from "../../hooks/portfolio/usePortfolio.1";
+import { usePortfolio } from "../../hooks/portfolio/usePortfolio";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import { iPortfolio, usePortfolioStore } from "../../store/Portfolio";
 import { BigNumber, ethers } from "ethers";
@@ -72,7 +72,7 @@ const MigrateAssetContainer: React.FC<any> = () => {
     };
 
     useEffect(() => {
-        // Load checked tokens from local storage if any, otherwise set [] on component mount 
+        // Load checked tokens from local storage if any, otherwise set [] on component mount
         const storedTokens1 = JSON.parse(localStorage.getItem("scwTokenAddressesData") || "[]");
         const storedTokens2 = JSON.parse(localStorage.getItem("eoaTokenAddressesData") || "[]");
         setScwTokenAddressesData(storedTokens1);
