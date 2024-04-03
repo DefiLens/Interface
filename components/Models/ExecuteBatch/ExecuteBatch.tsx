@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { BsArrowRight } from "react-icons/bs";
-
 import axiosInstance from "../../../axiosInstance/axiosInstance";
-import { tExecuteBatch } from "./types";
+import { tExecuteBatch, TransactionHistory } from "./types";
 import { buildTxHash } from "../../../utils/helper";
 import { closeNarrow } from "../../../assets/images";
 import { ChainIdDetails } from "../../../utils/data/network";
@@ -35,9 +34,7 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
     const handleIsCrossChainTxs = () => {
         const txn =
             individualBatch.length > 0 &&
-            individualBatch.filter(
-                (item: iIndividualBatch, index: number) => item.data.fromNetwork !== item.data.toNetwork
-            );
+            individualBatch.filter((item, index) => item.data.fromNetwork !== item.data.toNetwork);
         setHasCrossChainTxs(txn);
     };
 
@@ -45,7 +42,7 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
         handleIsCrossChainTxs();
     }, [individualBatch]);
 
-    const handleTxnHistory = async (arg: any) => {
+    const handleTxnHistory = async (arg: TransactionHistory) => {
         try {
             await axiosInstance
                 .post("txn-history", arg)
@@ -55,14 +52,14 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
                 .catch((err) => {
                     console.log("Error! While storing history", err);
                 });
-        } catch (error: any) {
+        } catch (error) {
             console.log("handleTxnHistory: error:", error);
         }
     };
 
     useEffect(() => {
         if (individualBatch.length > 0 && txhash) {
-            const txHistory = individualBatch.slice(0, -1).map((item: any) => ({
+            const txHistory = individualBatch.slice(0, -1).map((item) => ({
                 amountIn: item.data.amountIn,
                 fromNetwork: item.data.fromNetwork,
                 toNetwork: item.data.toNetwork,
@@ -134,7 +131,7 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
                                                                         protocolNames[
                                                                             selectedFromNetwork.chainId
                                                                         ].key.find(
-                                                                            (entry: any) =>
+                                                                            (entry) =>
                                                                                 entry.name == bar.data.fromProtocol
                                                                         )?.icon
                                                                     }
@@ -169,8 +166,7 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
                                                                 <Image
                                                                     src={
                                                                         protocolNames[bar.data.toChainId].key.find(
-                                                                            (entry: any) =>
-                                                                                entry.name == bar.data.toProtocol
+                                                                            (entry) => entry.name == bar.data.toProtocol
                                                                         )?.icon
                                                                     }
                                                                     alt=""

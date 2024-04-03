@@ -3,7 +3,7 @@ import Link from "next/link";
 
 import { startCase } from "lodash";
 import { useAddress } from "@thirdweb-dev/react";
-import { iPortfolio, usePortfolioStore } from "../../store/Portfolio";
+import { iChainData, iPortfolio, usePortfolioStore } from "../../store/Portfolio";
 import { ChainIdDetails } from "../../utils/data/network";
 import { defaultBlue, metamask } from "../../assets/images";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
@@ -152,8 +152,11 @@ const Portfolio: React.FC<any> = ({
                         <OneAssetSkeleton count={2} />
                     ) : (
                         <>
-                            {chainData?.map((details: any) => (
-                                <div className="max-w-6xl w-full bg-N0 flex flex-col justify-start items-start text-B200 rounded-3xl p-8 relative border border-B50">
+                            {chainData?.map((details, index) => (
+                                <div
+                                    key={index}
+                                    className="max-w-6xl w-full bg-N0 flex flex-col justify-start items-start text-B200 rounded-3xl p-8 relative border border-B50"
+                                >
                                     <div className="w-full flex justify-start items-center gap-3 text-start mb-4">
                                         {/* Network logo and name */}
                                         <Image

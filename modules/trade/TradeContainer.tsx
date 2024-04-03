@@ -9,7 +9,12 @@ import { Bundler, IBundler } from "@biconomy/bundler";
 import { useAddress, useSigner } from "@thirdweb-dev/react";
 import { BiconomyPaymaster, IPaymaster } from "@biconomy/paymaster";
 import { BiconomySmartAccountV2, DEFAULT_ENTRYPOINT_ADDRESS } from "@biconomy/account";
-import { DEFAULT_ECDSA_OWNERSHIP_MODULE, DEFAULT_SESSION_KEY_MANAGER_MODULE, ECDSAOwnershipValidationModule, SessionKeyManagerModule } from "@biconomy/modules";
+import {
+    DEFAULT_ECDSA_OWNERSHIP_MODULE,
+    DEFAULT_SESSION_KEY_MANAGER_MODULE,
+    ECDSAOwnershipValidationModule,
+    SessionKeyManagerModule,
+} from "@biconomy/modules";
 
 import Trade from "./Trade";
 import IERC20 from "../../abis/IERC20.json";
@@ -35,7 +40,6 @@ bg.config({ DECIMAL_PLACES: 10 });
 const TradeContainer: React.FC<any> = () => {
     const address = useAddress(); // Detect the connected address
     const signer: any = useSigner(); // Detect the connected address
-
 
     const { mutateAsync: sendToBiconomy } = useBiconomyProvider();
     const { mutateAsync: sendToGasLessBiconomy } = useBiconomyGasLessProvider();
@@ -101,7 +105,7 @@ const TradeContainer: React.FC<any> = () => {
         setHasExecutionError,
         totalfees,
         setTotalFees,
-        setShowExecuteMethodModel
+        setShowExecuteMethodModel,
     }: iTrading = useTradingStore((state) => state);
 
     useEffect(() => {
@@ -271,17 +275,21 @@ const TradeContainer: React.FC<any> = () => {
                 setSelectedFromToken(_fromToken);
             }
 
-            const provider: ethers.providers.JsonRpcProvider | undefined = await getProvider(selectedFromNetwork.chainId);
+            const provider: ethers.providers.JsonRpcProvider | undefined = await getProvider(
+                selectedFromNetwork.chainId
+            );
             const erc20Address: any =
-                selectedFromProtocol == "erc20" ? fromTokensData.filter((token: any) => token.symbol === _fromToken) : "";
+                selectedFromProtocol == "erc20"
+                    ? fromTokensData.filter((token: any) => token.symbol === _fromToken)
+                    : "";
 
             const tokenAddress =
                 selectedFromProtocol != "erc20"
                     ? protocolNames[selectedFromNetwork.chainId].key.find((entry) => entry.name == selectedFromProtocol)
-                        .tokenAddresses[_fromToken]
+                          .tokenAddresses[_fromToken]
                     : erc20Address[0].address;
 
-            console.log(_fromToken, tokenAddress)
+            console.log(_fromToken, tokenAddress);
 
             const erc20 = await getContractInstance(tokenAddress, IERC20, provider);
             const fromTokendecimal: any = await getErc20Decimals(erc20);
@@ -331,7 +339,7 @@ const TradeContainer: React.FC<any> = () => {
                 erc20,
                 smartAccountAddress ? smartAccountAddress : scwAddress.address
             );
-            if(!maxBal) return;
+            if (!maxBal) return;
             const MaxBalance = await decreasePowerByDecimals(maxBal?.toString(), fromTokendecimal);
             setMaxBalance(MaxBalance);
             setIsmaxBalanceLoading(false);
@@ -635,7 +643,9 @@ const TradeContainer: React.FC<any> = () => {
                 setAddToBatchLoading(false);
                 return;
             }
-            const provider: ethers.providers.JsonRpcProvider | undefined = await getProvider(selectedFromNetwork.chainId);
+            const provider: ethers.providers.JsonRpcProvider | undefined = await getProvider(
+                selectedFromNetwork.chainId
+            );
             const _tempAmount = BigNumber.from(await incresePowerByDecimals(amountIn, fromTokenDecimal).toString());
             let refinaceData: tRefinanceResponse | undefined;
             let txArray;
@@ -710,7 +720,7 @@ const TradeContainer: React.FC<any> = () => {
                     toToken: selectedToToken,
                     amountIn: amountIn,
                     fees: fees.toString(),
-                    extraValue: refinaceData.value ? bg(refinaceData.value.toString()).dividedBy(1e18).toString() : '0',
+                    extraValue: refinaceData.value ? bg(refinaceData.value.toString()).dividedBy(1e18).toString() : "0",
                 },
                 simulation
             );
@@ -797,8 +807,8 @@ const TradeContainer: React.FC<any> = () => {
             closeFromSelectionMenu={closeFromSelectionMenu}
             closeToSelectionMenu={closeToSelectionMenu}
             totalfees={totalfees}
-        // createSession={createSession}
-        // erc20Transfer={erc20Transfer}
+            // createSession={createSession}
+            // erc20Transfer={erc20Transfer}
         />
     );
 };

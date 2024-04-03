@@ -8,7 +8,14 @@ import { tApprove } from "../types";
 
 export function useApprove() {
     async function approve({ tokenIn, spender, amountIn, address, web3JsonProvider }: tApprove) {
-    console.log("🚀 ~ approve ~ tokenIn, spender, amountIn, address, web3JsonProvider:", typeof tokenIn, typeof spender, typeof amountIn, typeof address, typeof web3JsonProvider)
+        console.log(
+            "🚀 ~ approve ~ tokenIn, spender, amountIn, address, web3JsonProvider:",
+            typeof tokenIn,
+            typeof spender,
+            typeof amountIn,
+            typeof address,
+            typeof web3JsonProvider
+        );
 
         try {
             const erc20 = await getContractInstance(tokenIn, IERC20, web3JsonProvider);

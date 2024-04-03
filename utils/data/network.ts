@@ -105,3 +105,10 @@ export const ChainIdDetails = {
         stargateChainId: "184",
     },
 };
+
+export type tNetwork = {
+    key: string;
+    chainName: string;
+    chainId: string;
+    icon: any;
+};

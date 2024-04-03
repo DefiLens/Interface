@@ -21,7 +21,7 @@ const SelectInput = ({
                 <input
                     type="text"
                     value={selectedOption.symbol ? selectedOption.symbol : inputSearch}
-                    onChange={(e: any) => {
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                         setSelectedOption({});
                         setInputSearch(e.target.value);
                     }}
@@ -31,13 +31,13 @@ const SelectInput = ({
                 <BiSolidChevronDown
                     size="30px"
                     onClick={() => setShowOptionList(!showOptionList)}
-                    className="p-1 cursor-pointer text-B100 hover:bg-[rgba(132,144,251,.1)] rounded-full p-1"
+                    className="p-1 cursor-pointer text-B100 hover:bg-[rgba(132,144,251,.1)] rounded-full"
                 />
             </div>
             {(inputSearch.length > 0 || showOptionList) && (
                 <div className="w-full max-h-44 bg-N20 border-2 border-B50 text-B100 overflow-scroll px-2 mt-1 rounded-md shadow-lg">
                     {selectOptions.length > 0 &&
-                        selectOptions.map((option: any, optionIndex: number) => {
+                        selectOptions.map((option, optionIndex) => {
                             return option.name.toLowerCase().includes(inputSearch.toLowerCase()) ? (
                                 <div
                                     key={optionIndex}

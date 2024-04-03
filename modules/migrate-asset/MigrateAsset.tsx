@@ -15,7 +15,7 @@ import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import { useAddress } from "@thirdweb-dev/react";
 bg.config({ DECIMAL_PLACES: 5 });
 
-const MigrateAsset: React.FC<any> = ({
+const MigrateAsset: React.FC<tMigrateAsset> = ({
     isUsersTokenLoading,
     smartAccountAddress,
     userTokensData,
@@ -27,7 +27,7 @@ const MigrateAsset: React.FC<any> = ({
     isAllErc20Selected,
     isAllDefiSelected,
     selectAllTokens,
-}: tMigrateAsset) => {
+}) => {
     const address = useAddress();
     const { isSCW, setIsSCW }: iPortfolio = usePortfolioStore((state) => state);
     const { selectedNetwork }: iGlobal = useGlobalStore((state) => state);
@@ -128,26 +128,24 @@ const MigrateAsset: React.FC<any> = ({
                                     onClick={() =>
                                         selectAllTokens(
                                             "erc20Token",
-                                            userTokensData.filter((token: any) => token.type === "erc20Token")
+                                            userTokensData.filter((token) => token.type === "erc20Token")
                                         )
                                     }
                                     className="w-5 h-5 cursor-pointer"
                                 />
-                                <p className="text-start text-md font-semibold">
-                                    Select All ERC20 Tokens
-                                </p>
+                                <p className="text-start text-md font-semibold">Select All ERC20 Tokens</p>
                             </div>
                         </div>
 
                         {userTokensData.length > 0 &&
                             userTokensData
-                                .filter((token: any) => token.type === "erc20Token")
-                                .map((item: any, i: any) => (
+                                .filter((token) => token.type === "erc20Token")
+                                .map((item, index) => (
                                     <div
                                         key={item.tokenAddress}
                                         className="w-full flex justify-end items-center gap-2 text-sm md:text-base font-medium text-primary-100 py-1"
                                     >
-                                        <div className="w-14 text-start" key={i}>
+                                        <div className="w-14 text-start" key={index}>
                                             {isSCW ? (
                                                 //     <Image
                                                 //         alt="checkbox"
@@ -238,7 +236,7 @@ const MigrateAsset: React.FC<any> = ({
             )}
 
             {filteredDefiTokens.length > 0 &&
-                filteredDefiTokens.map((subArray: any) => (
+                filteredDefiTokens.map((subArray) => (
                     <div
                         key={subArray[0]?.protocol?.name}
                         className="w-full bg-backgound-500 flex flex-col justify-start items-start gap-3 text-primary-100 border border-backgound-600 shadow shadow-backgound-600 rounded-lg p-8"
@@ -262,49 +260,47 @@ const MigrateAsset: React.FC<any> = ({
                                     onClick={() =>
                                         selectAllTokens(
                                             "defiToken",
-                                            userTokensData.filter((token: any) => token.type === "defiToken")
+                                            userTokensData.filter((token) => token.type === "defiToken")
                                         )
                                     }
                                     className="w-5 h-5 cursor-pointer"
                                 />
-                                <p className="text-start text-md font-semibold">
-                                    Select All Defi Tokens
-                                </p>
+                                <p className="text-start text-md font-semibold">Select All Defi Tokens</p>
                             </div>
                         </div>
                         {subArray.length > 0 &&
-                            subArray.map((item: any) => (
+                            subArray.map((item) => (
                                 <div
                                     key={item.name}
                                     className="w-full flex justify-end items-center gap-2 text-sm md:text-base font-medium text-primary-100 py-1"
                                 >
                                     <div className="w-14 text-start">
-                                            {isSCW ? (
-                                                <Image
-                                                    alt="checkbox"
-                                                    src={
-                                                        scwTokenAddressesData &&
-                                                        scwTokenAddressesData.includes(item.tokenAddress)
-                                                            ? checkBox
-                                                            : uncheckBox
-                                                    }
-                                                    onClick={() => checkTokensData(item.tokenAddress)}
-                                                    className="w-5 h-5 cursor-pointer"
-                                                />
-                                            ) : (
-                                                <Image
-                                                    alt="checkbox"
-                                                    src={
-                                                        eoaTokenAddressesData &&
-                                                        eoaTokenAddressesData.includes(item.tokenAddress)
-                                                            ? checkBox
-                                                            : uncheckBox
-                                                    }
-                                                    onClick={() => checkTokensData(item.tokenAddress)}
-                                                    className="w-5 h-5 cursor-pointer"
-                                                />
-                                            )}
-                                        </div>
+                                        {isSCW ? (
+                                            <Image
+                                                alt="checkbox"
+                                                src={
+                                                    scwTokenAddressesData &&
+                                                    scwTokenAddressesData.includes(item.tokenAddress)
+                                                        ? checkBox
+                                                        : uncheckBox
+                                                }
+                                                onClick={() => checkTokensData(item.tokenAddress)}
+                                                className="w-5 h-5 cursor-pointer"
+                                            />
+                                        ) : (
+                                            <Image
+                                                alt="checkbox"
+                                                src={
+                                                    eoaTokenAddressesData &&
+                                                    eoaTokenAddressesData.includes(item.tokenAddress)
+                                                        ? checkBox
+                                                        : uncheckBox
+                                                }
+                                                onClick={() => checkTokensData(item.tokenAddress)}
+                                                className="w-5 h-5 cursor-pointer"
+                                            />
+                                        )}
+                                    </div>
                                     <div className="w-full flex justify-start items-center gap-3 text-start">
                                         <Image
                                             height={100}

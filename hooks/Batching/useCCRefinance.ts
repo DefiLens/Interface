@@ -1,18 +1,35 @@
 import { toast } from "react-hot-toast";
 import { BigNumber, ethers } from "ethers";
-
-import { useAddress } from "@thirdweb-dev/react";
+import { tTx } from "../types";
+// import { useAddress } from "@thirdweb-dev/react";
 import { useMutation } from "@tanstack/react-query";
 
 import { useCCSendTx } from "./useCCSendTx";
-import { tApprove, tCCSendTx, tOneInch, tOneInchSwapResponse, tRefinance, tRefinanceResponse, tStargateData } from "../types";
+import {
+    tApprove,
+    tCCSendTx,
+    tOneInch,
+    tOneInchSwapResponse,
+    tRefinance,
+    tRefinanceResponse,
+    tStargateData,
+} from "../types";
 import { useOneInch } from "../swaphooks/useOneInch";
 import { useApprove } from "../utilsHooks/useApprove";
 import { ChainIdDetails } from "../../utils/data/network";
 import { incresePowerByDecimals } from "../../utils/helper";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import { iBatchFlowData, iTrading, useTradingStore } from "../../store/TradingStore";
-import { abiFetcher, abiFetcherNum, buildParams, nativeTokenFetcher, nativeTokenNum, OneInchRouter, tokensByNetworkForCC, uniswapSwapRouterByChainId } from "../../utils/data/protocols";
+import {
+    abiFetcher,
+    abiFetcherNum,
+    buildParams,
+    nativeTokenFetcher,
+    nativeTokenNum,
+    OneInchRouter,
+    tokensByNetworkForCC,
+    uniswapSwapRouterByChainId,
+} from "../../utils/data/protocols";
 
 export function useCCRefinance() {
     const { mutateAsync: approve } = useApprove();
@@ -46,10 +63,10 @@ export function useCCRefinance() {
             if (!selectedFromNetwork.chainName) {
                 toast.error("Chain is not selected!!");
             }
-            let tempTxs: any = [];
+            let tempTxs = new Array<tTx>();
             const batchFlows: iBatchFlowData[] = [];
 
-            let swapData: tOneInchSwapResponse | undefined
+            let swapData: tOneInchSwapResponse | undefined;
             let abiNum,
                 abi,
                 methodName,
@@ -148,7 +165,7 @@ export function useCCRefinance() {
                     type: "exactIn",
                     chainId: Number(selectedNetwork.chainId),
                 } as tOneInch);
-                if (!swapData) return
+                if (!swapData) return;
                 tempTxs.push(swapData.swapTx);
 
                 let batchFlow: iBatchFlowData = {
@@ -207,7 +224,7 @@ export function useCCRefinance() {
                         tokenIn: "USDC",
                         tokenOut: tokenOutName == "USDC" ? "" : tokenOutName,
                         amount: amountIn,
-                        action: tokenOutName == "USDC" ? "Send USDC": "Swap",
+                        action: tokenOutName == "USDC" ? "Send USDC" : "Swap",
                     };
                     batchFlows.push(batchFlow);
                 } else {

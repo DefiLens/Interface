@@ -58,7 +58,7 @@ const BatchSelectionSection: React.FC<tTrade> = ({
                             mainIcon={selectedFromNetwork?.icon}
                             subIcon={
                                 protocolNames[selectedFromNetwork.chainId]?.key.find(
-                                    (entry: any) => entry.name == selectedFromProtocol
+                                    (entry) => entry.name == selectedFromProtocol
                                 )?.icon
                             }
                             valueCondition={selectedFromNetwork.chainName}
@@ -91,7 +91,7 @@ const BatchSelectionSection: React.FC<tTrade> = ({
                             mainIcon={selectedToNetwork?.icon}
                             subIcon={
                                 protocolNames[selectedToNetwork.chainId]?.key.find(
-                                    (entry: any) => entry.name == selectedToProtocol
+                                    (entry) => entry.name == selectedToProtocol
                                 )?.icon
                             }
                             valueCondition={selectedToNetwork.chainName}
@@ -127,7 +127,7 @@ const BatchSelectionSection: React.FC<tTrade> = ({
                                         <Image
                                             src={
                                                 protocolNames[selectedFromNetwork.chainId].key.find(
-                                                    (entry: any) => entry.name == selectedFromProtocol
+                                                    (entry) => entry.name == selectedFromProtocol
                                                 )?.icon || defaultBlue
                                             }
                                             alt=""

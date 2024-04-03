@@ -9,7 +9,7 @@ import { iTokenData } from "../../store/TradingStore";
 interface TokenSelectionMenuProps {
     showMenu: boolean;
     closeMenu: () => void;
-    handleSelectNetwork: (item: any) => void;
+    handleSelectNetwork: (item: iSelectedNetwork) => void;
     selectedNetwork: iSelectedNetwork;
     filterToken: string;
     setFilterToken: (filterToken: string) => void;
@@ -17,7 +17,7 @@ interface TokenSelectionMenuProps {
     setFilterAddress: (filterAddress: string) => void;
     tokensData: iTokenData;
     selectedProtocol: string;
-    onChangeToken: (item: any) => void;
+    onChangeToken: (item: string) => void;
     onChangeProtocol: (protocol: string) => void;
     protocolNames: {};
 }

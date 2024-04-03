@@ -8,7 +8,7 @@ import { useSwitchOnSpecificChain } from "../../hooks/useSwitchOnSpecificChain";
 
 bg.config({ DECIMAL_PLACES: 5 });
 
-const HeaderContainer: React.FC<any> = () => {
+const HeaderContainer: React.FC = () => {
     const { setConnected }: iGlobal = useGlobalStore((state) => state);
 
     const { mutateAsync: switchOnSpecificChain } = useSwitchOnSpecificChain();

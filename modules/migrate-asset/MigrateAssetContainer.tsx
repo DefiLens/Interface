@@ -22,10 +22,7 @@ const MigrateAssetContainer: React.FC<any> = () => {
     const [isAllErc20Selected, setIsAllErc20Selected] = useState<any>(false);
     const [isAllDefiSelected, setIsAllDefiSelected] = useState<any>(false);
 
-    const {
-        smartAccountAddress,
-        selectedNetwork
-    }: iGlobal = useGlobalStore((state) => state);
+    const { smartAccountAddress, selectedNetwork }: iGlobal = useGlobalStore((state) => state);
 
     const { userTokensData, setUserTokensData, isUsersTokenLoading, isSCW }: iPortfolio = usePortfolioStore(
         (state) => state
@@ -33,8 +30,8 @@ const MigrateAssetContainer: React.FC<any> = () => {
 
     const handleFetchPorfolioData = () => {
         const fetch = async (address: string, chainId: string) => {
-            setIsAllErc20Selected(false)
-            setIsAllDefiSelected(false)
+            setIsAllErc20Selected(false);
+            setIsAllDefiSelected(false);
             await fetchPortfolio({ address, chainId });
         };
 
@@ -110,8 +107,8 @@ const MigrateAssetContainer: React.FC<any> = () => {
     };
 
     const selectAllTokens = (tokenType: string, userTokensData: any) => {
-        if (tokenType === 'erc20Token' && !isAllErc20Selected) {
-            const allTokenAddresses = userTokensData.map(token => token.tokenAddress);
+        if (tokenType === "erc20Token" && !isAllErc20Selected) {
+            const allTokenAddresses = userTokensData.map((token) => token.tokenAddress);
             if (isSCW) {
                 setScwTokenAddressesData(allTokenAddresses);
                 localStorage.setItem("scwTokenAddressesData", JSON.stringify(allTokenAddresses));
@@ -122,12 +119,11 @@ const MigrateAssetContainer: React.FC<any> = () => {
                 setIsAllErc20Selected(true);
             }
         }
-        if (tokenType === 'erc20Token' && isAllErc20Selected) {
+        if (tokenType === "erc20Token" && isAllErc20Selected) {
             if (isSCW) {
                 setScwTokenAddressesData([]);
                 localStorage.setItem("scwTokenAddressesData", JSON.stringify([]));
                 setIsAllErc20Selected(false);
-
             } else {
                 setEoaTokenAddressesData([]);
                 localStorage.setItem("eoaTokenAddressesData", JSON.stringify([]));
@@ -135,31 +131,29 @@ const MigrateAssetContainer: React.FC<any> = () => {
             }
         }
 
-        if (tokenType === 'defiToken' && !isAllDefiSelected) {
-            const allTokenAddresses = userTokensData.map(token => token.tokenAddress);
+        if (tokenType === "defiToken" && !isAllDefiSelected) {
+            const allTokenAddresses = userTokensData.map((token) => token.tokenAddress);
             if (isSCW) {
                 setScwTokenAddressesData(allTokenAddresses);
                 localStorage.setItem("scwTokenAddressesData", JSON.stringify(allTokenAddresses));
-                setIsAllDefiSelected(true)
+                setIsAllDefiSelected(true);
             } else {
                 setEoaTokenAddressesData(allTokenAddresses);
                 localStorage.setItem("eoaTokenAddressesData", JSON.stringify(allTokenAddresses));
-                setIsAllDefiSelected(true)
+                setIsAllDefiSelected(true);
             }
         }
-        if (tokenType === 'defiToken' && isAllDefiSelected) {
+        if (tokenType === "defiToken" && isAllDefiSelected) {
             if (isSCW) {
                 setScwTokenAddressesData([]);
                 localStorage.setItem("scwTokenAddressesData", JSON.stringify([]));
-                setIsAllDefiSelected(false)
-
+                setIsAllDefiSelected(false);
             } else {
                 setEoaTokenAddressesData([]);
                 localStorage.setItem("eoaTokenAddressesData", JSON.stringify([]));
-                setIsAllDefiSelected(false)
+                setIsAllDefiSelected(false);
             }
         }
-
     };
 
     const sendAllTokens = async (isSCW, _tokenAddresses) => {

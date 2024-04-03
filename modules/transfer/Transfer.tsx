@@ -57,9 +57,7 @@ const Transfer: React.FC<any> = ({
         <div className="w-full h-full overflow-scroll flex flex-col justify-center items-center gap-5">
             {!smartAccount && (
                 <div className="w-full lg:w-[50%] flex justify-center bg-N0 items-center border-2 border-B75 rounded-lg cursor-pointer my-10">
-                    <h3 className="font-semibold text-lg md:text-2xl text-B100 py-4 bg-transparent">
-                        Login First!
-                    </h3>
+                    <h3 className="font-semibold text-lg md:text-2xl text-B100 py-4 bg-transparent">Login First!</h3>
                 </div>
             )}
             {smartAccount && (
@@ -82,13 +80,13 @@ const Transfer: React.FC<any> = ({
                                                     <div className="flex flex-col justify-center items-start text-B100 text-sm">
                                                         {isSCW
                                                             ? smartAccount &&
-                                                            smartAccountAddress &&
-                                                            smartAccountAddress.slice(0, 13) +
-                                                            "..." +
-                                                            smartAccountAddress.slice(-3)
+                                                              smartAccountAddress &&
+                                                              smartAccountAddress.slice(0, 13) +
+                                                                  "..." +
+                                                                  smartAccountAddress.slice(-3)
                                                             : smartAccount &&
-                                                            address &&
-                                                            address.slice(0, 13) + "..." + address.slice(-3)}
+                                                              address &&
+                                                              address.slice(0, 13) + "..." + address.slice(-3)}
                                                     </div>
                                                     <CopyButton copy={isSCW ? smartAccountAddress : address} />
                                                 </button>
@@ -102,10 +100,7 @@ const Transfer: React.FC<any> = ({
                                 onClick={() => onOptionChangeForWallet()}
                                 className="w-10 h-10 rounded-full bg-N20 flex items-center justify-center"
                             >
-                                <HiOutlineArrowsRightLeft
-                                    size="30px"
-                                    className="rotate-90 sm:rotate-0 text-bg-N40"
-                                />
+                                <HiOutlineArrowsRightLeft size="30px" className="rotate-90 sm:rotate-0 text-bg-N40" />
                             </button>
                             <div className="flex-1 md:w-40 flex flex-col justify-center items-center gap-2">
                                 <div className="flex flex-col justify-center gap-2">
@@ -123,13 +118,13 @@ const Transfer: React.FC<any> = ({
                                                     <div className="flex flex-col justify-center items-start text-B100 text-sm">
                                                         {isSCW
                                                             ? smartAccount &&
-                                                            address &&
-                                                            address.slice(0, 13) + "..." + address.slice(-3)
+                                                              address &&
+                                                              address.slice(0, 13) + "..." + address.slice(-3)
                                                             : smartAccount &&
-                                                            smartAccountAddress &&
-                                                            smartAccountAddress.slice(0, 13) +
-                                                            "..." +
-                                                            smartAccountAddress.slice(-3)}
+                                                              smartAccountAddress &&
+                                                              smartAccountAddress.slice(0, 13) +
+                                                                  "..." +
+                                                                  smartAccountAddress.slice(-3)}
                                                     </div>
                                                     <CopyButton copy={isSCW ? address : smartAccountAddress} />
                                                 </button>
@@ -164,9 +159,9 @@ const Transfer: React.FC<any> = ({
                                             <span className="font-bold text-B100 text-base px-1">
                                                 {!scwBalance.isZero()
                                                     ? decreasePowerByDecimals(
-                                                        BigNumber.from(scwBalance).toString(),
-                                                        tokenInDecimals
-                                                    )
+                                                          BigNumber.from(scwBalance).toString(),
+                                                          tokenInDecimals
+                                                      )
                                                     : "0"}
                                             </span>
                                         </div>
@@ -176,9 +171,9 @@ const Transfer: React.FC<any> = ({
                                             <span className="font-bold text-B100 text-base px-1">
                                                 {!eoaBalance.isZero()
                                                     ? decreasePowerByDecimals(
-                                                        BigNumber.from(eoaBalance).toString(),
-                                                        tokenInDecimals
-                                                    )
+                                                          BigNumber.from(eoaBalance).toString(),
+                                                          tokenInDecimals
+                                                      )
                                                     : "0"}
                                             </span>
                                         </div>
@@ -199,13 +194,13 @@ const Transfer: React.FC<any> = ({
                                             handleAmountIn(
                                                 isSCW
                                                     ? decreasePowerByDecimals(
-                                                        BigNumber.from(scwBalance).toString(),
-                                                        tokenInDecimals
-                                                    )
+                                                          BigNumber.from(scwBalance).toString(),
+                                                          tokenInDecimals
+                                                      )
                                                     : decreasePowerByDecimals(
-                                                        BigNumber.from(eoaBalance).toString(),
-                                                        tokenInDecimals
-                                                    )
+                                                          BigNumber.from(eoaBalance).toString(),
+                                                          tokenInDecimals
+                                                      )
                                             )
                                         }
                                         className="w-20 font-bold text-center bg-[rgba(109,223,255,.4)] text-S600 rounded-lg py-1"
@@ -234,8 +229,9 @@ const Transfer: React.FC<any> = ({
                                         </h6>
                                         <MdKeyboardArrowUp
                                             size="25px"
-                                            className={`${isGasCostExpanded ? "!rotate-0" : "!rotate-180"
-                                                } hover:bg-[rgba(132,144,251,.1)] text-B100 rounded-full duration-150 transition-all delay-150 cursor-pointer`}
+                                            className={`${
+                                                isGasCostExpanded ? "!rotate-0" : "!rotate-180"
+                                            } hover:bg-[rgba(132,144,251,.1)] text-B100 rounded-full duration-150 transition-all delay-150 cursor-pointer`}
                                         />
                                     </div>
                                 </div>

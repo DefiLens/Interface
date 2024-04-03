@@ -44,7 +44,7 @@ const BatchingListSection: React.FC<tTrade> = ({ removeBatch, toggleShowBatchLis
             {/* Batching List Content */}
             <div className="w-full max-h-full overflow-auto flex flex-col gap-5 px-5 py-7">
                 {selectedFromNetwork.chainId && individualBatch.length > 0 && individualBatch[0].txArray.length > 0 ? (
-                    individualBatch.map((bar: any, inputBarIndex) => (
+                    individualBatch.map((bar, inputBarIndex) => (
                         <>
                             {/* Display individual batch */}
                             {bar.txArray.length > 0 && (
@@ -86,8 +86,7 @@ const BatchingListSection: React.FC<tTrade> = ({ removeBatch, toggleShowBatchLis
                                                             <Image
                                                                 src={
                                                                     protocolNames[selectedFromNetwork.chainId].key.find(
-                                                                        (entry: any) =>
-                                                                            entry.name == bar.data.fromProtocol
+                                                                        (entry) => entry.name == bar.data.fromProtocol
                                                                     )?.icon || defaultBlue
                                                                 }
                                                                 alt=""
@@ -122,7 +121,7 @@ const BatchingListSection: React.FC<tTrade> = ({ removeBatch, toggleShowBatchLis
                                             {showIndividualBatchList === inputBarIndex && (
                                                 <div className="flex flex-col justify-start items-start gap-1 pl-10 pt-3">
                                                     {bar.batchesFlow.length > 0 &&
-                                                        bar.batchesFlow.map((item: any, index: number) => (
+                                                        bar.batchesFlow.map((item, index: number) => (
                                                             <div
                                                                 key={item.action}
                                                                 className="flex flex-col justify-start items-start gap-1"
@@ -146,7 +145,7 @@ const BatchingListSection: React.FC<tTrade> = ({ removeBatch, toggleShowBatchLis
                                                                                     protocolNames[
                                                                                         item.fromChainId
                                                                                     ].key.find(
-                                                                                        (entry: any) =>
+                                                                                        (entry) =>
                                                                                             entry.name === item.protocol
                                                                                     )?.icon || defaultBlue
                                                                                 }

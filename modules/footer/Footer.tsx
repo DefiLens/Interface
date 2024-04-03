@@ -3,7 +3,7 @@ import { tFooter } from "./types";
 
 const Footer: React.FC<tFooter> = ({ SocialHandles }) => {
     return (
-        <div className="w-full flex justify-center bottom-0 fixed items-center gap-1 py-2 px-2">
+        <div className="w-full flex justify-center items-center gap-1 p-2">
             <div className="flex justify-center items-center gap-5">
                 {SocialHandles.length > 0 &&
                     SocialHandles.map((item) => (

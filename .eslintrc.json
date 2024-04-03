@@ -6,9 +6,9 @@
         "browser": true,
         "jest": true,
         "node": true
-      },
-      "rules": {
+    },
+    "rules": {
         "react-hooks/exhaustive-deps": "off",
         "no-unused-vars": "off"
-      }
+    }
 }

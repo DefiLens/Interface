@@ -48,13 +48,13 @@ export type tOneInchSwapResponseFromApi = {
 };
 
 export type tOneInchSwapResponse = {
-    swapTx: tTx,
-    tokenIn: string,
-    tokenOut: string,
-    amountOutprice: BigNumberish,
-    amountOutpriceWithoutDecimal: BigNumberish,
-    tokenInDecimals: number,
-    tokenOutDecimals: number,
+    swapTx: tTx;
+    tokenIn: string;
+    tokenOut: string;
+    amountOutprice: BigNumberish;
+    amountOutpriceWithoutDecimal: BigNumberish;
+    tokenInDecimals: number;
+    tokenOutDecimals: number;
 };
 
 export type tApprove = {
@@ -85,7 +85,7 @@ export type tCCSendTx = {
 
 export type tTx = {
     to: string | undefined;
-    data: string |  undefined;
+    data: string | undefined;
     value?: BigNumberish;
 };
 
@@ -95,20 +95,20 @@ export type tStargateData = {
 };
 
 export type tRefinance = {
-    isSCW: boolean,
-    fromProtocol: string,
-    toProtocol: string,
-    tokenIn: string,
-    tokenInName: string,
-    tokenOut: string,
-    tokenOutName: string,
-    amount: BigNumberish,
-    address: string,
-    provider: ethers.providers.JsonRpcProvider | undefined,
-}
+    isSCW: boolean;
+    fromProtocol: string;
+    toProtocol: string;
+    tokenIn: string;
+    tokenInName: string;
+    tokenOut: string;
+    tokenOutName: string;
+    amount: BigNumberish;
+    address: string;
+    provider: ethers.providers.JsonRpcProvider | undefined;
+};
 
 export type tRefinanceResponse = {
     txArray: Array<tTx>;
     value?: BigNumberish;
-    batchFlow: Array<iBatchFlowData>
+    batchFlow: Array<iBatchFlowData>;
 };

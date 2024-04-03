@@ -7,14 +7,14 @@ import { useAddress, useChainId, useChain } from "@thirdweb-dev/react";
 import { tHeader } from "./types";
 import { wallet, mirgrate_asset } from "../../assets/images";
 import useClickOutside from "../../hooks/useClickOutside";
-import { ChainIdDetails, NETWORK_LIST } from "../../utils/data/network";
+import { ChainIdDetails, NETWORK_LIST, tNetwork } from "../../utils/data/network";
 import { NavigationList } from "../../utils/data/navigation";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import { ConnectWallet } from "@thirdweb-dev/react";
 import toast from "react-hot-toast";
 import CopyButton from "../../components/common/CopyButton";
 
-const Header: React.FC<any> = ({ switchOnSpecificChain }: tHeader) => {
+const Header: React.FC<tHeader> = ({ switchOnSpecificChain }) => {
     const pathname = usePathname();
 
     const {
@@ -28,7 +28,7 @@ const Header: React.FC<any> = ({ switchOnSpecificChain }: tHeader) => {
         selectedNetwork,
     }: iGlobal = useGlobalStore((state) => state);
 
-    const address: any = useAddress();
+    const address = useAddress();
     const chainId = useChainId();
     const chain = useChain();
 
@@ -41,7 +41,7 @@ const Header: React.FC<any> = ({ switchOnSpecificChain }: tHeader) => {
     });
 
     // To Set network
-    const handleSelectNetwork = (data: any) => {
+    const handleSelectNetwork = (data: tNetwork) => {
         if (data.chainName) {
             switchOnSpecificChain(data.chainName);
         }

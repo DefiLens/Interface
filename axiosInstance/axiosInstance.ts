@@ -1,8 +1,8 @@
-import axios, { AxiosInstance } from 'axios';
-import { BASE_URL } from '../utils/keys';
+import axios, { AxiosInstance } from "axios";
+import { BASE_URL } from "../utils/keys";
 
 const axiosInstance: AxiosInstance = axios.create({
-  baseURL: BASE_URL,
+    baseURL: BASE_URL,
 });
 
 axiosInstance.interceptors.request.use(
@@ -13,12 +13,12 @@ axiosInstance.interceptors.request.use(
         };
         return config;
     },
-  (error: any) => Promise.reject(error),
+    (error: any) => Promise.reject(error)
 );
 
 axiosInstance.interceptors.response.use(
-  (response: any) => response,
-  (error: any) => Promise.reject(error),
+    (response: any) => response,
+    (error: any) => Promise.reject(error)
 );
 
 export default axiosInstance;

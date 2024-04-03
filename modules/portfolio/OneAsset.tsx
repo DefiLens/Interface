@@ -15,7 +15,8 @@ import { BigNumber as bg } from "bignumber.js";
 import { tPortfolio } from "./types";
 
 const OneAsset: React.FC<tPortfolio> = ({ details, send, handleAmountIn, currentChainId }) => {
-    const { isSCW, selectOneAsset, setSelectOneAsset, amountInDecimals, sendTxLoading, txhash }: iPortfolio = usePortfolioStore((state) => state);
+    const { isSCW, selectOneAsset, setSelectOneAsset, amountInDecimals, sendTxLoading, txhash }: iPortfolio =
+        usePortfolioStore((state) => state);
     const { smartAccount }: iGlobal = useGlobalStore((state) => state);
 
     const [showAll, setShowAll] = useState(false);
@@ -27,8 +28,10 @@ const OneAsset: React.FC<tPortfolio> = ({ details, send, handleAmountIn, current
 
     return (
         <>
-            {details?.data?.items?.sort((a: any, b: any) => b.quote - a.quote)
-                .slice(0, showAll ? undefined : 4).map((item: any) => (
+            {details?.data?.items
+                ?.sort((a: any, b: any) => b.quote - a.quote)
+                .slice(0, showAll ? undefined : 4)
+                .map((item: any) => (
                     <div
                         key={item.contract_address}
                         className="w-full flex justify-end items-center gap-3 text-[13px] md:text-[15px] font-medium text-B200 py-4 border-t border-B50"
@@ -64,20 +67,22 @@ const OneAsset: React.FC<tPortfolio> = ({ details, send, handleAmountIn, current
                             {decreasePowerByDecimals(bg(item.balance).toString(), item.contract_decimals)}{" "}
                             {item.contract_ticker_symbol}
                         </div>
-                        <div className="w-[25%] text-start text-success-600">{item.quote && `$${item.quote.toFixed(5)}`}</div>
+                        <div className="w-[25%] text-start text-success-600">
+                            {item.quote && `$${item.quote.toFixed(5)}`}
+                        </div>
                         <div className="w-[3%]">
-                            {chainId === currentChainId &&
+                            {chainId === currentChainId && (
                                 <div className="group flex justify-center transition-all p-1 hover:bg-N40 rounded-md cursor-pointer">
                                     <BiDotsVerticalRounded
                                         size="30px"
                                         className="text-B100"
                                         onClick={() => setSelectOneAsset(item)}
                                     />
-                                    <span
-                                        className="absolute opacity-0 group-hover:opacity-100 group-hover:-translate-y-3 duration-700 text-sm whitespace-nowrap"
-                                    >Migrate Asset</span>
+                                    <span className="absolute opacity-0 group-hover:opacity-100 group-hover:-translate-y-3 duration-700 text-sm whitespace-nowrap">
+                                        Migrate Asset
+                                    </span>
                                 </div>
-                            }
+                            )}
                         </div>
 
                         {/* Modal */}
@@ -85,14 +90,15 @@ const OneAsset: React.FC<tPortfolio> = ({ details, send, handleAmountIn, current
                             <>
                                 <div
                                     className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 bg-N0 border-1 border-B75 p-3 rounded-lg transition duration-300 shadow-lg"
-                                    style={{ minWidth: '30%', minHeight: '30%' }}
+                                    style={{ minWidth: "30%", minHeight: "30%" }}
                                 >
                                     {smartAccount && (
                                         <div className="w-full flex flex-col justify-center items-center gap-3">
-
                                             {/* Heading and close btn */}
                                             <div className="w-full flex justify-between items-center gap-3 text-start mb-4">
-                                                <h3 className="font-semibold text-lg md:text-2xl text-B200 p-1">Migrate Asset</h3>
+                                                <h3 className="font-semibold text-lg md:text-2xl text-B200 p-1">
+                                                    Migrate Asset
+                                                </h3>
                                                 <RxCross2
                                                     size="32px"
                                                     className="text-B200 active:text-B200 p-1 hover:bg-N60 rounded-md cursor-pointer"
@@ -118,23 +124,23 @@ const OneAsset: React.FC<tPortfolio> = ({ details, send, handleAmountIn, current
                                             <div className="w-full lg:w-[100%] flex flex-col sm:flex-row justify-center items-center gap-5 md:gap-10 bg-GR1 p-5 rounded-md">
                                                 <div className="w-auto md:w-40 flex justify-center items-baseline gap-3">
                                                     <span className="font-bold text-xs text-N20">From</span>
-                                                    <span className="font-bold text-xl text-N0">{isSCW ? "SCW" : "EOA"}</span>
+                                                    <span className="font-bold text-xl text-N0">
+                                                        {isSCW ? "SCW" : "EOA"}
+                                                    </span>
                                                 </div>
 
-                                                <BsArrowRight
-                                                    size="25px"
-                                                    className="text-N0"
-                                                />
+                                                <BsArrowRight size="25px" className="text-N0" />
 
                                                 <div className="w-auto md:w-40 flex justify-center items-baseline gap-3">
                                                     <span className="font-bold text-xs text-N20">To</span>
-                                                    <span className="font-bold text-xl text-N0">{isSCW ? "EOA" : "SCW"}</span>
+                                                    <span className="font-bold text-xl text-N0">
+                                                        {isSCW ? "EOA" : "SCW"}
+                                                    </span>
                                                 </div>
                                             </div>
 
                                             <div className="w-full lg:w-[100%] flex flex-col justify-center items-center gap-3 my-1">
                                                 <div className="w-full">
-
                                                     {/* Show current balance */}
                                                     <div className="flex justify-end items-center gap-2 font-semibold text-xs md:text-sm p-1">
                                                         {isSCW ? (
@@ -142,7 +148,9 @@ const OneAsset: React.FC<tPortfolio> = ({ details, send, handleAmountIn, current
                                                                 SmartAccount Balance :
                                                                 <span className="font-bold text-B100 text-base px-1">
                                                                     {decreasePowerByDecimals(
-                                                                        BigNumber.from(selectOneAsset.balance).toString(),
+                                                                        BigNumber.from(
+                                                                            selectOneAsset.balance
+                                                                        ).toString(),
                                                                         selectOneAsset.contract_decimals
                                                                     )}
                                                                 </span>
@@ -152,7 +160,9 @@ const OneAsset: React.FC<tPortfolio> = ({ details, send, handleAmountIn, current
                                                                 EOA Balance :
                                                                 <span className="font-bold text-B100 text-base px-1">
                                                                     {decreasePowerByDecimals(
-                                                                        BigNumber.from(selectOneAsset.balance).toString(),
+                                                                        BigNumber.from(
+                                                                            selectOneAsset.balance
+                                                                        ).toString(),
                                                                         selectOneAsset.contract_decimals
                                                                     )}
                                                                 </span>
@@ -177,7 +187,9 @@ const OneAsset: React.FC<tPortfolio> = ({ details, send, handleAmountIn, current
                                                             onClick={() =>
                                                                 handleAmountIn(
                                                                     decreasePowerByDecimals(
-                                                                        BigNumber.from(selectOneAsset.balance).toString(),
+                                                                        BigNumber.from(
+                                                                            selectOneAsset.balance
+                                                                        ).toString(),
                                                                         selectOneAsset.contract_decimals
                                                                     )
                                                                 )
@@ -196,19 +208,24 @@ const OneAsset: React.FC<tPortfolio> = ({ details, send, handleAmountIn, current
                                                 disabled={sendTxLoading}
                                                 isLoading={sendTxLoading}
                                                 customStyle="sm:w-[100%] mt-4"
-                                                innerText={isSCW ? "Send SmartAccount to EOA" : "Send EOA to SmartAccount"}
+                                                innerText={
+                                                    isSCW ? "Send SmartAccount to EOA" : "Send EOA to SmartAccount"
+                                                }
                                             />
 
                                             {/* Show TxHash when tx. completes */}
                                             {txhash && (
                                                 <div className="text-font-100 flex flex-wrap justify-start items-center gap-3 text-base">
-                                                    <FiCopy onClick={() => copyToClipboard(txhash, "Transaction Hash Copied")} />
+                                                    <FiCopy
+                                                        onClick={() =>
+                                                            copyToClipboard(txhash, "Transaction Hash Copied")
+                                                        }
+                                                    />
                                                     <p>TxHash : {shorten(txhash)}</p>
                                                 </div>
                                             )}
                                         </div>
                                     )}
-
                                 </div>
 
                                 {/* Modal Backdrop */}
@@ -218,21 +235,22 @@ const OneAsset: React.FC<tPortfolio> = ({ details, send, handleAmountIn, current
                                 ></div>
                             </>
                         )}
-
-                    </div >
+                    </div>
                 ))}
 
             {/* Show all btn */}
             <div className="w-full flex justify-center items-center">
                 {details?.data?.items?.length > 5 && (
-                    <button onClick={toggleShowAll} className="cursor-pointer px-3 py-1 md:text-base text-center rounded-lg transition duration-300 border border-B50 bg-N40 hover:bg-N50">
-                        {showAll ? 'Show Less' : 'Show All'}
+                    <button
+                        onClick={toggleShowAll}
+                        className="cursor-pointer px-3 py-1 md:text-base text-center rounded-lg transition duration-300 border border-B50 bg-N40 hover:bg-N50"
+                    >
+                        {showAll ? "Show Less" : "Show All"}
                     </button>
                 )}
             </div>
-
         </>
-    )
-}
+    );
+};
 
 export default OneAsset;

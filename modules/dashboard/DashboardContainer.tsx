@@ -1,5 +1,15 @@
 import Dashboard from "./Dashboard";
 
-const DashboardContainer: React.FC<any> = () => <Dashboard />;
+/**
+ *
+ * @returns A Wrapped Dashboard
+ */
+const DashboardContainer: React.FC = () => {
+    return (
+        <>
+            <Dashboard />
+        </>
+    );
+};
 
 export default DashboardContainer;

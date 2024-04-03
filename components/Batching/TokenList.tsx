@@ -6,7 +6,7 @@ import { iTokenData } from "../../store/TradingStore";
 interface TokenListProps {
     erc20: boolean;
     filterValue: string;
-    tokens: iTokenData;
+    tokens: iTokenData[];
     setFilterValue: (value: string) => void;
     onItemClick: (tokenName: string) => void;
 }
@@ -18,7 +18,7 @@ const TokenList: React.FC<TokenListProps> = ({ erc20, filterValue, setFilterValu
                 {/* Search input */}
                 <SearchInput value={filterValue} onChange={setFilterValue} placeholder="Search by Token" />
 
-                {tokens.map((token: any, index: number) => {
+                {tokens.map((token, index: number) => {
                     // Check if the token matches the filter value
                     const isErc20 = erc20
                         ? token.symbol.toLowerCase().includes(filterValue.toLowerCase())

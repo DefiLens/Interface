@@ -34,7 +34,7 @@ const ExecuteMethod = ({ ExecuteAllBatches }: tExecuteMethod) => {
                     </div>
                     <div className="w-[75%] max-h-96 overflow-auto flex flex-col justify-start items-center gap-5 px-5 py-2 mt-5">
                         {ExecutionMethodsList.length > 0 &&
-                            ExecutionMethodsList.map((item: any) => (
+                            ExecutionMethodsList.map((item) => (
                                 <div
                                     key={item.title}
                                     role="presentation"
@@ -42,7 +42,7 @@ const ExecuteMethod = ({ ExecuteAllBatches }: tExecuteMethod) => {
                                 >
                                     <div className="w-full flex justify-center items-center">
                                         {item.icons.length > 0 &&
-                                            item.icons?.map((logo: any) => (
+                                            item.icons?.map((logo) => (
                                                 <Image
                                                     key={logo.name}
                                                     src={logo.icon}

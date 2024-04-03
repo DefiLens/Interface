@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 import Portfolio from "./Portfolio";
 import { usePortfolio } from "../../hooks/portfolio/usePortfolio";
@@ -28,9 +28,8 @@ const PortfolioContainer: React.FC<any> = () => {
         setAmountIn,
         setAmountInDecimals,
         setSendtxLoading,
-        setTxHash
+        setTxHash,
     }: iPortfolio = usePortfolioStore((state) => state);
-
 
     // To fetch portfolio
     const handleFetchPorfolioData = () => {
@@ -53,7 +52,6 @@ const PortfolioContainer: React.FC<any> = () => {
     useEffect(() => {
         handleFetchPorfolioData();
     }, [isSCW, chainId]);
-
 
     //To migrate assets
     const handleAmountIn = async (_amountIn) => {
@@ -80,7 +78,6 @@ const PortfolioContainer: React.FC<any> = () => {
                     setAmountIn(amountInByDecimals.toString());
                 }
             }
-
         } catch (error) {
             console.log("handleAmountIn-error: ", error);
         }
@@ -104,7 +101,7 @@ const PortfolioContainer: React.FC<any> = () => {
             toast.error("Select One Token");
             return;
         }
-        console.log(amountIn)
+        console.log(amountIn);
         if (amountIn == "") {
             toast.error("Please Enter Amount");
             return;
@@ -127,13 +124,13 @@ const PortfolioContainer: React.FC<any> = () => {
                 }
 
                 const balance = await provider.getBalance(_fromAddress);
-                console.log("balance checking____))))))", balance)
+                console.log("balance checking____))))))", balance);
                 if (!BigNumber.from(balance).gte(amountIn)) {
                     toast.error("Not native enough balance-");
                     return;
                 }
                 tx = { to: _toAdress, value: amountIn, data: "0x" };
-                console.log("Native token tx", tx, "isSCW", isSCW)
+                console.log("Native token tx", tx, "isSCW", isSCW);
             } else {
                 const contract = await getContract(selectOneAsset?.contract_address);
                 if (!contract) {
@@ -147,7 +144,7 @@ const PortfolioContainer: React.FC<any> = () => {
                 }
                 const data = await contract.populateTransaction.transfer(_toAdress, amountIn);
                 tx = { to: selectOneAsset?.contract_address, data: data.data };
-                console.log("Not native tx", tx, "isSCW", isSCW)
+                console.log("Not native tx", tx, "isSCW", isSCW);
             }
 
             if (isSCW) {

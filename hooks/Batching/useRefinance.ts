@@ -10,15 +10,29 @@ import { decreasePowerByDecimals } from "../../utils/helper";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import { useCalculateGasCost } from "../utilsHooks/useCalculateGasCost";
 import { iBatchFlowData, iTrading, useTradingStore } from "../../store/TradingStore";
-import { abiFetcher, abiFetcherNum, buildParams, nativeTokenFetcher, nativeTokenNum, OneInchRouter, uniswapSwapRouterByChainId } from "../../utils/data/protocols";
+import {
+    abiFetcher,
+    abiFetcherNum,
+    buildParams,
+    nativeTokenFetcher,
+    nativeTokenNum,
+    OneInchRouter,
+    uniswapSwapRouterByChainId,
+} from "../../utils/data/protocols";
 
 export function useRefinance() {
     const { mutateAsync: oneInchSwap } = useOneInch();
     const { mutateAsync: approve } = useApprove();
     const { selectedNetwork }: iGlobal = useGlobalStore((state) => state);
 
-    const { selectedFromNetwork, selectedFromProtocol, selectedToProtocol, amountIn, fromTokensData, toTokensData }: iTrading =
-        useTradingStore((state) => state);
+    const {
+        selectedFromNetwork,
+        selectedFromProtocol,
+        selectedToProtocol,
+        amountIn,
+        fromTokensData,
+        toTokensData,
+    }: iTrading = useTradingStore((state) => state);
 
     async function refinance({
         isSCW,
@@ -31,24 +45,27 @@ export function useRefinance() {
         amount,
         address,
         provider,
-    }: tRefinance):  Promise<tRefinanceResponse | undefined> {
+    }: tRefinance): Promise<tRefinanceResponse | undefined> {
         try {
             if (!selectedFromNetwork.chainName) {
                 toast.error("Chain is not selected!!");
             }
-            const tempTxs: any = [];
+            const tempTxs: {
+                to: string;
+                data: string;
+            }[] = [];
             const batchFlows: iBatchFlowData[] = [];
 
-            let swapData: tOneInchSwapResponse | undefined
+            let swapData: tOneInchSwapResponse | undefined;
             let abiNum,
                 abi,
                 methodName,
                 isContractSet,
                 paramDetailsMethod,
-                tokenInContractAddress,
+                tokenInContractAddress: string,
                 abiInterface,
                 params,
-                txData,
+                txData: string,
                 isSwap,
                 nativeTokenIn,
                 nativeTokenInSymbol,
@@ -83,7 +100,8 @@ export function useRefinance() {
                 paramDetailsMethod = abiFetcher[selectedFromNetwork.chainId][abiNum]["withdrawParamDetailsMethod"];
                 isContractSet = abiFetcher[selectedFromNetwork.chainId][abiNum]["isContractSet"];
                 if (isContractSet) {
-                    tokenInContractAddress = abiFetcher[selectedFromNetwork.chainId][abiNum]["contractSet"][tokenInName];
+                    tokenInContractAddress =
+                        abiFetcher[selectedFromNetwork.chainId][abiNum]["contractSet"][tokenInName];
                 } else {
                     tokenInContractAddress = abiFetcher[selectedFromNetwork.chainId][abiNum]["contractAddress"];
                 }
@@ -139,10 +157,10 @@ export function useRefinance() {
                     amountIn: amount,
                     address,
                     type: "exactIn",
-                    chainId: Number(selectedNetwork.chainId)
+                    chainId: Number(selectedNetwork.chainId),
                 } as tOneInch);
-                if (!swapData) return
-                console.log('swapData: ', swapData, swapData.amountOutprice.toString())
+                if (!swapData) return;
+                console.log("swapData: ", swapData, swapData.amountOutprice.toString());
                 tempTxs.push(swapData.swapTx);
 
                 let batchFlow: iBatchFlowData = {
@@ -170,7 +188,8 @@ export function useRefinance() {
                 let tokenOutContractAddress;
                 isContractSet = abiFetcher[selectedFromNetwork.chainId][abiNum]["isContractSet"];
                 if (isContractSet) {
-                    tokenOutContractAddress = abiFetcher[selectedFromNetwork.chainId][abiNum]["contractSet"][tokenOutName];
+                    tokenOutContractAddress =
+                        abiFetcher[selectedFromNetwork.chainId][abiNum]["contractSet"][tokenOutName];
                 } else {
                     tokenOutContractAddress = abiFetcher[selectedFromNetwork.chainId][abiNum]["contractAddress"];
                 }
@@ -194,7 +213,7 @@ export function useRefinance() {
                     address,
                     paramDetailsMethod,
                 });
-                console.log('params', params)
+                console.log("params", params);
                 txData = abiInterface.encodeFunctionData(methodName, params);
                 const tx2 = { to: tokenOutContractAddress, data: txData };
                 tempTxs.push(tx2);
@@ -205,9 +224,10 @@ export function useRefinance() {
                     protocol: selectedToProtocol,
                     tokenIn: newTokenInSymbol,
                     tokenOut: tokenOutName,
-                    amount: isSwap && swapData
-                        ? await decreasePowerByDecimals(newAmount, swapData.tokenOutDecimals)
-                        : await decreasePowerByDecimals(amount, nativeTokenOutDecimal),
+                    amount:
+                        isSwap && swapData
+                            ? await decreasePowerByDecimals(newAmount, swapData.tokenOutDecimals)
+                            : await decreasePowerByDecimals(amount, nativeTokenOutDecimal),
                     action: "Deposit",
                 };
                 batchFlows.push(batchFlow);

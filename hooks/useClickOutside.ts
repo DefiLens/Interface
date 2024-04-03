@@ -1,6 +1,6 @@
-import { useEffect, useRef } from "react";
+import { MutableRefObject, useEffect, useRef } from "react";
 
-const useClickOutside = (refs: any, callback: any) => {
+const useClickOutside = (refs: MutableRefObject<HTMLElement | null>[], callback: () => void) => {
     const callbackRef = useRef(callback);
 
     useEffect(() => {
@@ -8,12 +8,12 @@ const useClickOutside = (refs: any, callback: any) => {
     }, [callback]);
 
     useEffect(() => {
-        function handleClickOutside(event) {
-            const isOutside = refs.every((ref: any) => ref.current && !ref.current.contains(event.target));
+        const handleClickOutside = (event: MouseEvent) => {
+            const isOutside = refs.every((ref) => ref.current && !ref.current.contains(event.target as Node));
             if (isOutside) {
                 callbackRef.current();
             }
-        }
+        };
 
         document.addEventListener("mousedown", handleClickOutside);
 

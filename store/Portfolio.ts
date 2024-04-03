@@ -14,14 +14,12 @@ export interface iPortfolio {
     chainId: number;
     selectOneAsset: any;
 
-
     setChainData: (chainData: any) => void;
     setIsLoading: (isLoading: boolean) => void;
     setError: (error: string) => void;
     setIsSCW: (isSCW: boolean) => void;
     setChainId: (chainId: number) => void;
     setSelectOneAsset: (selectOneAsset: any) => void;
-
 
     //Migrate assets
     tokenAddress: number | string;
@@ -71,7 +69,6 @@ export const usePortfolioStore = create<iPortfolio>((set) => ({
     setIsSCW: (isSCW) => set(() => ({ isSCW })),
     setChainId: (chainId) => set(() => ({ chainId })),
     setSelectOneAsset: (selectOneAsset) => set(() => ({ selectOneAsset })),
-
 
     //Migrate assets
     tokenAddress: 0,
