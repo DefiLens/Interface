@@ -29,14 +29,6 @@ const nextConfig = {
             "arbitrum.foundation",
         ], // Add your image domains here
         unoptimized: true,
-        // remotePatterns: [
-        //   {
-        //     protocol: 'https',
-        //     hostname: '**',
-        //     port: '',
-        //     pathname: '**',
-        //   },
-        // ],
     },
 };
 
