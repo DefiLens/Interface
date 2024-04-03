@@ -197,9 +197,9 @@ const Portfolio: React.FC<tPortfolio> = ({ smartAccountAddress, handleFetchPorfo
             {/* No data or Wallet not connected */}
             {!chainData && !isLoading && smartAccountAddress ? (
                 <div className="max-w-6xl w-full h-full flex flex-col justify-center items-center gap-5 rounded-3xl px-5 py-10 bg-N20 text-B200 shadow-xl">
-                    <h1 className="w-full text-xl md:text-2xl font-extrabold text-center">
+                    {/* <h1 className="w-full text-xl md:text-2xl font-extrabold text-center">
                         {selectedNetwork.chainId == "8453" ? "Base is not integrated for Portfolio." : ""}
-                    </h1>
+                    </h1> */}
                     <h1 className="w-full text-xl md:text-2xl font-extrabold text-center">No Data Found!</h1>
                     <h6 className="w-full text-xl md:text-2xl font-extrabold text-center">
                         <Link
