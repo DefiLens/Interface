@@ -1,21 +1,15 @@
 import Image from "next/image";
 import Link from "next/link";
-
 import { startCase } from "lodash";
 import { useAddress } from "@thirdweb-dev/react";
 import { iPortfolio, usePortfolioStore } from "../../store/Portfolio";
-import { copyToClipboard } from "../../utils/helper";
 import { ChainIdDetails } from "../../utils/data/network";
 import { defaultBlue, metamask } from "../../assets/images";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import { tPortfolio } from "./types";
-
-import OneAsset from "./OneAsset";
-
 import OneAsset from "./OneAsset";
 import ChainSelection from "../../components/ChainSelection/ChainSelection";
 import OneAssetSkeleton from "../../components/skeleton/OneAssetSkeleton";
-import CopyButton from "../../components/common/CopyButton";
 import CopyButton from "../../components/common/CopyButton";
 
 const Portfolio: React.FC<tPortfolio> = ({ smartAccountAddress, handleFetchPorfolioData, send, handleAmountIn }) => {
@@ -30,7 +24,6 @@ const Portfolio: React.FC<tPortfolio> = ({ smartAccountAddress, handleFetchPorfo
                     {/* Account Details */}
                     <div className="max-w-6xl w-full flex flex-row justify-between items-center gap-3 bg-N0 shadow-lg rounded-lg p-3">
                         <div className="w-full flex justify-between items-center gap-3 text-start ">
-
                             {/* User Image and total Worth of tokens */}
                             <div className="flex items-center gap-6">
                                 <Image
@@ -72,9 +65,7 @@ const Portfolio: React.FC<tPortfolio> = ({ smartAccountAddress, handleFetchPorfo
 
                             {/* Account Address */}
                             <div className="flex flex-col justify-start items-start gap-1 text-B100 font-bold text-2xl">
-                                <div
-                                    className="w-full h-40 flex flex-col justify-center items-start gap-6 text-B200 "
-                                >
+                                <div className="w-full h-40 flex flex-col justify-center items-start gap-6 text-B200 ">
                                     <button className="w-full relative flex justify-between items-center gap-3">
                                         <div className="flex flex-col justify-center items-start">
                                             <span className="text-B100 text-base font-medium">
