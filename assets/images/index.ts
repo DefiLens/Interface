@@ -6,11 +6,12 @@ import ethereum from "./ethereum.svg";
 import metamask from "./metamask.svg";
 import optimism from "./optimism.svg";
 import polygon from "./polygon.svg";
+import sonne from './sonne-icon.svg';
 import compoundV3 from "./compoundV3.png";
 import aave from "./aave.png";
 import aavev2 from "./aavev2.svg";
 import aavev3 from "./aavev3.svg";
-import dforce from "./dforce.svg";
+import dforce from "./dforce.jpeg";
 import wallet from "./wallet.png";
 import warning from "./warning.png";
 import swap from "./swap.png";
@@ -32,8 +33,8 @@ import logoLight from "./logoLight.svg";
 import dai from "./dai.png";
 import usdc from "./usdc.png";
 import usdt from "./usdt.png";
-import moonwell from "./moonwell.svg";
-import seamless from "./seamless.svg";
+import moonwell from "./moonwell.png";
+import seamless from "./seamless.jpeg";
 import checkBox from "./checkBox.png";
 import uncheckBox from "./uncheckBox.png";
 import portfolio from './nav-portfolio.svg';
@@ -50,6 +51,7 @@ export {
     metamask,
     optimism,
     polygon,
+    sonne,
     compoundV3,
     aave,
     aavev2,
@@ -81,7 +83,7 @@ export {
     checkBox,
     uncheckBox,
     portfolio,
-    batching, 
-    conditional_trading, 
+    batching,
+    conditional_trading,
     mirgrate_asset,
 };
