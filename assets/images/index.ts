@@ -7,6 +7,8 @@ import metamask from "./metamask.svg";
 import optimism from "./optimism.svg";
 import polygon from "./polygon.svg";
 import sonne from './sonne-icon.svg';
+import exactly from './exactly.png';
+import tarot from "./Tarot.jpeg";
 import compoundV3 from "./compoundV3.png";
 import aave from "./aave.png";
 import aavev2 from "./aavev2.svg";
@@ -51,6 +53,8 @@ export {
     metamask,
     optimism,
     polygon,
+    tarot,
+    exactly,
     sonne,
     compoundV3,
     aave,
