@@ -22,6 +22,7 @@ import {
     sonne,
     tarot,
     exactly,
+    granary,
 } from "../../assets/images";
 
 interface iProtocolKey {
@@ -141,13 +142,19 @@ export const protocolNames: iProtocolNames = {
                 tokenAddresses: tokenAddressByProtocol.optimism.exactly,
             },
             {
+                name: "granary",
+                icon: granary,
+                tokenList: tokensByProtocol.optimism.granary,
+                tokenAddresses: tokenAddressByProtocol.optimism.granary,
+            },
+            {
                 name: "erc20",
                 icon: optimism,
                 tokenList: "tokenList",
                 tokenAddresses: "tokenAddresses",
             },
         ],
-        value: ["AAVE V3", "Sonne Finance", "Exactly Finance", "ERC20"],
+        value: ["AAVE V3", "Sonne Finance", "Exactly Finance", "Granary Finance", "ERC20"],
     },
     "8453": {
         key: [
@@ -289,6 +296,17 @@ export const abiFetcherNum = {
         "exaWBTC": "3",
         "exaWETH": "3",
         "exawstETH": "3",
+
+        "grainDAI": "4",
+        "grainUSDC": "4",
+        "grainUSDT": "4",
+        "grainWBTC": "4",
+        "grainWETH": "4",
+        "grainOP": "4",
+        "grainSUSD": "4",
+        "grainBAL": "4",
+        "grainSNX": "4",
+        "grainWSTETH": "4",
     },
     "8453": {
         cUSDbCv3: "1",
@@ -500,6 +518,18 @@ export const abiFetcher = {
             },
             apyFetch: "fetchApyForExactlyOptimism",
         },
+        "4": {
+            depositAbi: "function deposit(address asset, uint256 amount, address onBehalfOf, uint16 referralCode)",
+            withdrawAbi: "function withdraw(address asset, uint256 amount, address to)",
+            depositMethodName: "deposit",
+            withdrawMethodName: "withdraw",
+            paramDetailsMethod: "granary_deposit",
+            depositParamDetailsMethod: "granary_deposit",
+            withdrawParamDetailsMethod: "granary_withdraw",
+            contractAddress: "0x8FD4aF47E4E63d1D2D45582c3286b4BD9Bb95DfE",
+            isContractSet: false,
+            apyFetch: "fetchApyForGranaryOptimism",
+        },
     },
     "8453": {
         "1": {
@@ -678,6 +708,17 @@ export const nativeTokenNum = {
         "exaWBTC": "5",
         "exaWETH": "3",
         "exawstETH": "4",
+
+        "grainDAI": "1",
+        "grainUSDC": "6",
+        "grainUSDT": "7",
+        "grainWBTC": "5",
+        "grainWETH": "3",
+        "grainOP": "2",
+        "grainSUSD": "9",
+        "grainBAL": "17",
+        "grainSNX": "15",
+        "grainWSTETH": "4",
     },
     "8453": {
         cUSDbCv3: "1",
@@ -972,6 +1013,11 @@ export const nativeTokenFetcher = {
             nativeToken: "0x1DB2466d9F5e10D7090E7152B68d62703a2245F0",
             symbol: "sonne",
             decimals: 18,
+        },
+        "17": {
+            nativeToken: "0xFE8B128bA8C78aabC59d4c64cEE7fF28e9379921",
+            symbol: "bal",
+            decimals: 18
         }
     },
     "8453": {
@@ -1025,13 +1071,15 @@ export async function buildParams({
     if (
         paramDetailsMethod == "aave_deposit" ||
         paramDetailsMethod == "aave_supply_v3" ||
-        paramDetailsMethod == "seamless_supply_v3"
+        paramDetailsMethod == "seamless_supply_v3" ||
+        paramDetailsMethod == "granary_deposit"
     ) {
         return [nativeTokenIn, amount, address, 0];
     } else if (
         paramDetailsMethod == "aave_withdraw" ||
         paramDetailsMethod == "aave_withdraw_v3" ||
-        paramDetailsMethod == "seamless_withdraw_v3"
+        paramDetailsMethod == "seamless_withdraw_v3" ||
+        paramDetailsMethod == "granary_withdraw"
     ) {
         return [nativeTokenIn, amount, address];
     } else if (paramDetailsMethod == "compound_supply") {

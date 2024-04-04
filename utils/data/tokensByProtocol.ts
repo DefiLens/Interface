@@ -373,6 +373,48 @@ export const tokensByProtocol = {
                 name: "exawstETH",
                 icon: optimism
             },
+        ],
+        granary: [
+            {
+                name: "grainDAI",
+                icon: optimism
+            },
+            {
+                name: "grainUSDC",
+                icon: optimism
+            },
+            {
+                name: "grainUSDT",
+                icon: optimism
+            },
+            {
+                name: "grainWBTC",
+                icon: optimism
+            },
+            {
+                name: "grainWETH",
+                icon: optimism
+            },
+            {
+                name: "grainOP",
+                icon: optimism
+            },
+            {
+                name: "grainSUSD",
+                icon: optimism
+            },
+            {
+                name: "grainBAL",
+                icon: optimism
+            },
+            {
+                name: "grainSNX",
+                icon: optimism
+            },
+            {
+                name: "grainWSTETH",
+                icon: optimism
+            },
         ]
     },
     base: {
@@ -584,6 +626,18 @@ export const tokenAddressByProtocol = {
             "exaWBTC": "0x6f748FD65d7c71949BA6641B3248C4C191F3b322",
             "exaWETH": "0xc4d4500326981eacD020e20A81b1c479c161c7EF",
             "exawstETH": "0x22ab31Cd55130435b5efBf9224b6a9d5EC36533F",
+        },
+        granary: {
+            "grainDAI": "0x18D2b18Af9A1f379025f46b8aeB4aF75f6642c9F",
+            "grainUSDC": "0x7A0FDDBA78FF45D353B1630B77f4D175A00df0c0",
+            "grainUSDT": "0x4e7849f846f8cdDAF37c72065b65Ec22cecEE109",
+            "grainWBTC": "0xbd3dbf914f3e9c3133a815b04a4d0E5930957cB9",
+            "grainWETH": "0xfF94cc8E2c4B17e3CC65d7B83c7e8c643030D936",
+            "grainOP": "0x30091e843deb234ebb45c7e1da4bbc4c33b3f0b4",
+            "grainSUSD": "0x8AaA9d29305D331aE67AD65495B9e22cf98f9035",
+            "grainBAL": "0x7fB37AE8BE7F6177F265E3Ff6d6731672779eb0B",
+            "grainSNX": "0xa73b7C26eF3221BF9eA7E5981840519427f7dCaF",
+            "grainWSTETH": "0x1a7450AACc67d90afB9e2C056229973354cc8987",
         }
     },
     ethereum: {},
