@@ -7,9 +7,9 @@ import { iTrading, useTradingStore } from "../../store/TradingStore";
 import Image from "next/image";
 import { PiDotsThreeOutlineVertical } from "react-icons/pi";
 import { defaultBlue } from "../../assets/images";
-import { tTrade } from "../../modules/trade/types";
+import { tBatchingListSection } from "../../modules/trade/types";
 
-const BatchingListSection: React.FC<tTrade> = ({ removeBatch, toggleShowBatchList }) => {
+const BatchingListSection: React.FC<tBatchingListSection> = ({ removeBatch, toggleShowBatchList }) => {
     const { selectedFromNetwork, showIndividualBatchList, txhash, individualBatch, totalfees }: iTrading =
         useTradingStore((state) => state);
 

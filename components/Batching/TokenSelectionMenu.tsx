@@ -15,7 +15,7 @@ interface TokenSelectionMenuProps {
     setFilterToken: (filterToken: string) => void;
     filterAddress: string;
     setFilterAddress: (filterAddress: string) => void;
-    tokensData: iTokenData;
+    tokensData: iTokenData[];
     selectedProtocol: string;
     onChangeToken: (item: string) => void;
     onChangeProtocol: (protocol: string) => void;

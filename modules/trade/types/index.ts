@@ -20,6 +20,18 @@ export type tTrade = {
     erc20Transfer: () => void;
 };
 
+export type tBatchSectionSelection = {
+    handleSwap: () => void;
+    onChangeAmountIn: (_amountIn: string) => void;
+    sendSingleBatchToList: (isSCW: any) => void;
+    handleExecuteMethod: () => void;
+};
+
+export type tBatchingListSection = {
+    removeBatch: (index: number) => void;
+    toggleShowBatchList: (id: number) => void;
+};
+
 export type tTradeProtocol = {
     name: string;
     icon: any;

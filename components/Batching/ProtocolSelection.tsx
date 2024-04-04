@@ -13,7 +13,7 @@ interface iProtocolSelectionProps {
     filterToken: string;
     filterAddress: string;
     setFilterAddress: (filterAddress: string) => void;
-    tokensData: iTokenData;
+    tokensData: iTokenData[];
     selectedProtocol: string;
     onChangeToken: (item: string) => void;
     protocolNames: iProtocolNames;

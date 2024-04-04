@@ -7,10 +7,10 @@ import { iTrading, useTradingStore } from "../../store/TradingStore";
 import { protocolNames } from "../../utils/data/protocols";
 import { defaultBlue } from "../../assets/images";
 import { BiLoaderAlt } from "react-icons/bi";
-import { tTrade } from "../../modules/trade/types";
+import { tTrade, tBatchSectionSelection } from "../../modules/trade/types";
 bg.config({ DECIMAL_PLACES: 10 });
 
-const BatchSelectionSection: React.FC<tTrade> = ({
+const BatchSelectionSection: React.FC<tBatchSectionSelection> = ({
     handleSwap,
     onChangeAmountIn,
     sendSingleBatchToList,
