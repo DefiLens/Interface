@@ -13,7 +13,7 @@ import { iBatchFlowData, iSelectedNetwork, iTokenData, iTrading, useTradingStore
 import { abiFetcher, abiFetcherNum, buildParams, nativeTokenFetcher, nativeTokenNum, OneInchRouter, uniswapSwapRouterByChainId } from "../../utils/data/protocols";
 import { useState } from "react";
 import UNISWAP_TOKENS from "../../abis/tokens/Uniswap.json";
-
+import { ETH_ADDRESS } from "../../utils/data/constants";
 
 export function useRefinance() {
     const { mutateAsync: oneInchSwap } = useOneInch();
@@ -55,6 +55,7 @@ export function useRefinance() {
         // console.log("--------------useRefinance", toTokensData)
 
         try {
+            console.log("tokenInName", tokenInName)
             if (!selectedFromNetwork.chainName) {
                 toast.error("Chain is not selected!!");
             }
@@ -150,15 +151,18 @@ export function useRefinance() {
                     return;
                 }
 
-                const approveData = await approve({
-                    tokenIn: nativeTokenIn,
-                    spender: OneInchRouter,
-                    amountIn: amount,
-                    address,
-                    web3JsonProvider: provider,
-                } as tApprove);
-
-                if (approveData) tempTxs.push(approveData);
+                let approveData
+                if (nativeTokenIn != ETH_ADDRESS) {
+                    approveData = await approve({
+                        tokenIn: nativeTokenIn,
+                        spender: OneInchRouter,
+                        amountIn: amount,
+                        address,
+                        web3JsonProvider: provider,
+                    } as tApprove);
+                    console.log("approveData", approveData)
+                    if (approveData) tempTxs.push(approveData);
+                }
                 swapData = await oneInchSwap({
                     tokenIn: nativeTokenIn,
                     tokenOut: nativeTokenOut,
