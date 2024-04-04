@@ -14,6 +14,7 @@ export type tTrade = {
     sendSingleBatchToList: (isSCW: any) => void;
     handleExecuteMethod: () => void;
     ExecuteAllBatches: (isSCW: any, whichProvider: string) => void;
+    buildRebalance: () => void;
     closeFromSelectionMenu: () => void;
     closeToSelectionMenu: () => void;
     createSession: () => void;
