@@ -8,6 +8,7 @@ export const _functionType = 1;
 export const _nonce = 1;
 export const BYTES_ZERO = "0x0000000000000000000000000000000000000000000000000000000000000000"
 export const ZERO_ADDRESS = ADDRESS_ZERO
+export const ETH_ADDRESS = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
 
 export const ExecutionMethodsList = [
     {

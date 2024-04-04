@@ -13,6 +13,7 @@ import { incresePowerByDecimals } from "../../utils/helper";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import { iBatchFlowData, iTrading, useTradingStore } from "../../store/TradingStore";
 import { abiFetcher, abiFetcherNum, buildParams, nativeTokenFetcher, nativeTokenNum, OneInchRouter, tokensByNetworkForCC, uniswapSwapRouterByChainId } from "../../utils/data/protocols";
+import { ETH_ADDRESS } from "../../utils/data/constants";
 
 export function useCCRefinance() {
     const { mutateAsync: approve } = useApprove();
@@ -132,14 +133,18 @@ export function useCCRefinance() {
 
             isSwap = nativeTokenIn != tokensByNetworkForCC[selectedFromNetwork.chainId].usdc ? true : false;
             if (isSwap) {
-                const approveData = await approve({
-                    tokenIn: nativeTokenIn,
-                    spender: OneInchRouter,
-                    amountIn: amount,
-                    address,
-                    web3JsonProvider: provider,
-                } as tApprove);
-                if (approveData) tempTxs.push(approveData);
+                let approveData
+                if (nativeTokenIn != ETH_ADDRESS) {
+                    approveData = await approve({
+                        tokenIn: nativeTokenIn,
+                        spender: OneInchRouter,
+                        amountIn: amount,
+                        address,
+                        web3JsonProvider: provider,
+                    } as tApprove);
+                    if (approveData) tempTxs.push(approveData);
+                }
+                console.log("nativeTokenIn", nativeTokenIn)
                 swapData = await oneInchSwap({
                     tokenIn: nativeTokenIn,
                     tokenOut: tokensByNetworkForCC[selectedFromNetwork.chainId].usdc,
