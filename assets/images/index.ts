@@ -37,6 +37,7 @@ import usdc from "./usdc.png";
 import usdt from "./usdt.png";
 import moonwell from "./moonwell.png";
 import seamless from "./seamless.jpeg";
+import granary from "./granary.jpeg";
 import checkBox from "./checkBox.png";
 import uncheckBox from "./uncheckBox.png";
 import portfolio from './nav-portfolio.svg';
@@ -82,6 +83,7 @@ export {
     dai,
     usdc,
     usdt,
+    granary,
     moonwell,
     seamless,
     checkBox,
