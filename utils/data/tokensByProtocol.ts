@@ -351,6 +351,28 @@ export const tokensByProtocol = {
                 name: "soUSDC",
                 icon: optimism
             }
+        ],
+        exactly: [
+            {
+                name: "exaOP",
+                icon: optimism
+            },
+            {
+                name: "exaUSDC",
+                icon: optimism
+            },
+            {
+                name: "exaWBTC",
+                icon: optimism
+            },
+            {
+                name: "exaWETH",
+                icon: optimism
+            },
+            {
+                name: "exawstETH",
+                icon: optimism
+            },
         ]
     },
     base: {
@@ -555,6 +577,13 @@ export const tokenAddressByProtocol = {
             sowstETH: "0x26AaB17f27CD1c8d06a0Ad8E4a1Af8B1032171d5",
             soMAI: "0xE7De932d50EfC9ea0a7a409Fc015B4f71443528e",
             soUSDC: "0x1AfD1fF9E441973B7D34c7B8AbE91d94F1B23ce0"
+        },
+        exactly: {
+            "exaOP": "0xa430A427bd00210506589906a71B54d6C256CEdb",
+            "exaUSDC": "0x81C9A7B55A4df39A9B7B5F781ec0e53539694873",
+            "exaWBTC": "0x6f748FD65d7c71949BA6641B3248C4C191F3b322",
+            "exaWETH": "0xc4d4500326981eacD020e20A81b1c479c161c7EF",
+            "exawstETH": "0x22ab31Cd55130435b5efBf9224b6a9d5EC36533F",
         }
     },
     ethereum: {},

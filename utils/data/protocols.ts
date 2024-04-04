@@ -20,6 +20,8 @@ import {
     optimism,
     polygon,
     sonne,
+    tarot,
+    exactly,
 } from "../../assets/images";
 
 interface iProtocolKey {
@@ -133,13 +135,19 @@ export const protocolNames: iProtocolNames = {
                 tokenAddresses: tokenAddressByProtocol.optimism.sonne,
             },
             {
+                name: "exactly",
+                icon: exactly,
+                tokenList: tokensByProtocol.optimism.exactly,
+                tokenAddresses: tokenAddressByProtocol.optimism.exactly,
+            },
+            {
                 name: "erc20",
                 icon: optimism,
                 tokenList: "tokenList",
                 tokenAddresses: "tokenAddresses",
             },
         ],
-        value: ["AAVE V3", "Sonne Finance", "ERC20"],
+        value: ["AAVE V3", "Sonne Finance", "Exactly Finance", "ERC20"],
     },
     "8453": {
         key: [
@@ -274,7 +282,13 @@ export const abiFetcherNum = {
         soLUSD: "2",
         sowstETH: "2",
         soMAI: "2",
-        soUSDC: "2"
+        soUSDC: "2",
+
+        "exaOP": "3",
+        "exaUSDC": "3",
+        "exaWBTC": "3",
+        "exaWETH": "3",
+        "exawstETH": "3",
     },
     "8453": {
         cUSDbCv3: "1",
@@ -467,6 +481,25 @@ export const abiFetcher = {
             },
             apyFetch: "fetchApyForSonneOptimism",
         },
+        "3": {
+            depositAbi: "function deposit(uint256 assets,address receiver)",
+            withdrawAbi: "function withdraw(uint256 assets,address receiver,address owner)",
+            depositMethodName: "deposit",
+            withdrawMethodName: "withdraw",
+            paramDetailsMethod: "exactly_deposit",
+            depositParamDetailsMethod: "exactly_deposit",
+            withdrawParamDetailsMethod: "exactly_withdraw",
+            contractAddress: "",
+            isContractSet: true,
+            contractSet: {
+                "exaOP": "0xa430A427bd00210506589906a71B54d6C256CEdb",
+                "exaUSDC": "0x81C9A7B55A4df39A9B7B5F781ec0e53539694873",
+                "exaWBTC": "0x6f748FD65d7c71949BA6641B3248C4C191F3b322",
+                "exaWETH": "0xc4d4500326981eacD020e20A81b1c479c161c7EF",
+                "exawstETH": "0x22ab31Cd55130435b5efBf9224b6a9d5EC36533F",
+            },
+            apyFetch: "fetchApyForExactlyOptimism",
+        },
     },
     "8453": {
         "1": {
@@ -638,7 +671,13 @@ export const nativeTokenNum = {
         soLUSD: "12",
         sowstETH: "4",
         soMAI: "14",
-        soUSDC: "13"
+        soUSDC: "13",
+
+        "exaOP": "2",
+        "exaUSDC": "6",
+        "exaWBTC": "5",
+        "exaWETH": "3",
+        "exawstETH": "4",
     },
     "8453": {
         cUSDbCv3: "1",
@@ -1015,6 +1054,14 @@ export async function buildParams({
         paramDetailsMethod == "sonne_redeem"
     ) {
         return [amount];
+    } else if (
+        paramDetailsMethod == "exactly_deposit"
+    ) {
+        return [amount, address];
+    } else if (
+        paramDetailsMethod == "exactly_withdraw"
+    ) {
+        return [amount, address, address];
     }
 }
 
