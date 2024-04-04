@@ -19,6 +19,7 @@ import {
     seamless,
     optimism,
     polygon,
+    sonne,
 } from "../../assets/images";
 
 interface iProtocolKey {
@@ -126,13 +127,19 @@ export const protocolNames: iProtocolNames = {
                 tokenAddresses: tokenAddressByProtocol.optimism.aaveV3,
             },
             {
+                name: "sonne",
+                icon: sonne,
+                tokenList: tokensByProtocol.optimism.sonne,
+                tokenAddresses: tokenAddressByProtocol.optimism.sonne,
+            },
+            {
                 name: "erc20",
                 icon: optimism,
                 tokenList: "tokenList",
                 tokenAddresses: "tokenAddresses",
             },
         ],
-        value: ["AAVE V3", "ERC20"],
+        value: ["AAVE V3", "Sonne Finance", "ERC20"],
     },
     "8453": {
         key: [
@@ -162,7 +169,7 @@ export const protocolNames: iProtocolNames = {
             },
             {
                 name: "sonne",
-                icon: base,
+                icon: sonne,
                 tokenList: tokensByProtocol.base.sonne,
                 tokenAddresses: "tokenAddresses",
             },
@@ -254,6 +261,20 @@ export const abiFetcherNum = {
         arETH: "1",
         aAAVE: "1",
         aLUSD: "1",
+
+        soWETH: "2",
+        soDAI: "2",
+        "soUSDC.e": "2",
+        soUSDT: "2",
+        soOP: "2",
+        soSUSD: "2",
+        sSONNE: "2",
+        soSNX: "2",
+        soWBTC: "2",
+        soLUSD: "2",
+        sowstETH: "2",
+        soMAI: "2",
+        soUSDC: "2"
     },
     "8453": {
         cUSDbCv3: "1",
@@ -419,6 +440,33 @@ export const abiFetcher = {
             isContractSet: false,
             apyFetch: "fetchApyForAaveV3Optimism",
         },
+        "2": {
+            depositAbi: "function mint(uint256 mintAmount)",
+            withdrawAbi: "function redeem(uint256 redeemTokens)",
+            depositMethodName: "mint",
+            withdrawMethodName: "redeem",
+            paramDetailsMethod: "sonne_mint",
+            depositParamDetailsMethod: "sonne_mint",
+            withdrawParamDetailsMethod: "sonne_redeem",
+            contractAddress: "",
+            isContractSet: true,
+            contractSet: {
+                soWETH: "0xf7B5965f5C117Eb1B5450187c9DcFccc3C317e8E",
+                soDAI: "0x5569b83de187375d43FBd747598bfe64fC8f6436",
+                "soUSDC.e": "0xEC8FEa79026FfEd168cCf5C627c7f486D77b765F",
+                soUSDT: "0x5Ff29E4470799b982408130EFAaBdeeAE7f66a10",
+                soOP: "0x8cD6b19A07d754bF36AdEEE79EDF4F2134a8F571",
+                soSUSD: "0xd14451E0Fa44B18f08aeB1E4a4d092B823CaCa68",
+                sSONNE: "0xdc05d85069dc4aba65954008ff99f2d73ff12618",
+                soSNX: "0xD7dAabd899D1fAbbC3A9ac162568939CEc0393Cc",
+                soWBTC: "0x33865E09A572d4F1CC4d75Afc9ABcc5D3d4d867D",
+                soLUSD: "0xAFdf91f120DEC93c65fd63DBD5ec372e5dcA5f82",
+                sowstETH: "0x26AaB17f27CD1c8d06a0Ad8E4a1Af8B1032171d5",
+                soMAI: "0xE7De932d50EfC9ea0a7a409Fc015B4f71443528e",
+                soUSDC: "0x1AfD1fF9E441973B7D34c7B8AbE91d94F1B23ce0"
+            },
+            apyFetch: "fetchApyForSonneOptimism",
+        },
     },
     "8453": {
         "1": {
@@ -577,6 +625,20 @@ export const nativeTokenNum = {
         arETH: "10",
         aAAVE: "11",
         aLUSD: "12",
+
+        soWETH: "3",
+        soDAI: "1",
+        "soUSDC.e": "6",
+        soUSDT: "7",
+        soOP: "2",
+        soSUSD: "9",
+        sSONNE: "16", //
+        soSNX: "15",
+        soWBTC: "5",
+        soLUSD: "12",
+        sowstETH: "4",
+        soMAI: "14",
+        soUSDC: "13"
     },
     "8453": {
         cUSDbCv3: "1",
@@ -793,65 +855,85 @@ export const nativeTokenFetcher = {
     },
     "10": {
         "1": {
-            nativeToken: "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1", // USDC
+            nativeToken: "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1",
             symbol: "dai",
             decimals: 18,
         },
         "2": {
-            nativeToken: "0x4200000000000000000000000000000000000042", // WETH
+            nativeToken: "0x4200000000000000000000000000000000000042",
             symbol: "op",
             decimals: 18,
         },
         "3": {
-            nativeToken: "0x4200000000000000000000000000000000000006", // cbETH
+            nativeToken: "0x4200000000000000000000000000000000000006",
             symbol: "weth",
             decimals: 18,
         },
         "4": {
-            nativeToken: "0x1F32b1c2345538c0c6f582fCB022739c4A194Ebb", // USDC
+            nativeToken: "0x1F32b1c2345538c0c6f582fCB022739c4A194Ebb",
             symbol: "wsteth",
             decimals: 18,
         },
         "5": {
-            nativeToken: "0x68f180fcCe6836688e9084f035309E29Bf0A2095", // WETH
+            nativeToken: "0x68f180fcCe6836688e9084f035309E29Bf0A2095",
             symbol: "wbtc",
             decimals: 8,
         },
         "6": {
-            nativeToken: "0x7F5c764cBc14f9669B88837ca1490cCa17c31607", // cbETH
+            nativeToken: "0x7F5c764cBc14f9669B88837ca1490cCa17c31607",
             symbol: "usdc",
             decimals: 6,
         },
         "7": {
-            nativeToken: "0x94b008aA00579c1307B0EF2c499aD98a8ce58e58", // USDC
+            nativeToken: "0x94b008aA00579c1307B0EF2c499aD98a8ce58e58",
             symbol: "usdt",
             decimals: 6,
         },
         "8": {
-            nativeToken: "0x350a791Bfc2C21F9Ed5d10980Dad2e2638ffa7f6", // WETH
+            nativeToken: "0x350a791Bfc2C21F9Ed5d10980Dad2e2638ffa7f6",
             symbol: "link",
             decimals: 18,
         },
         "9": {
-            nativeToken: "0x8c6f28f2F1A3C87F0f938b96d27520d9751ec8d9", // cbETH
+            nativeToken: "0x8c6f28f2F1A3C87F0f938b96d27520d9751ec8d9",
             symbol: "susd",
             decimals: 18,
         },
         "10": {
-            nativeToken: "0x9Bcef72be871e61ED4fBbc7630889beE758eb81D", // USDC
+            nativeToken: "0x9Bcef72be871e61ED4fBbc7630889beE758eb81D",
             symbol: "reth",
             decimals: 18,
         },
         "11": {
-            nativeToken: "0x76FB31fb4af56892A25e32cFC43De717950c9278", // WETH
+            nativeToken: "0x76FB31fb4af56892A25e32cFC43De717950c9278",
             symbol: "aave",
             decimals: 18,
         },
         "12": {
-            nativeToken: "0xc40F949F8a4e094D1b49a23ea9241D289B7b2819", // cbETH
+            nativeToken: "0xc40F949F8a4e094D1b49a23ea9241D289B7b2819",
             symbol: "lusd",
             decimals: 18,
         },
+        "13": {
+            nativeToken: "0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85",
+            symbol: "usdc",
+            decimals: 6,
+        },
+        "14": {
+            nativeToken: "0xdFA46478F9e5EA86d57387849598dbFB2e964b02",
+            symbol: "mai",
+            decimals: 18,
+        },
+        "15": {
+            nativeToken: "0x8700dAec35aF8Ff88c16BdF0418774CB3D7599B4",
+            symbol: "snx",
+            decimals: 18,
+        },
+        "16": {
+            nativeToken: "0x1DB2466d9F5e10D7090E7152B68d62703a2245F0",
+            symbol: "sonne",
+            decimals: 18,
+        }
     },
     "8453": {
         "1": {

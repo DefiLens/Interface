@@ -298,6 +298,60 @@ export const tokensByProtocol = {
                 icon: optimism,
             },
         ],
+        sonne: [
+            {
+                name: "soWETH",
+                icon: optimism
+            },
+            {
+                name: "soDAI",
+                icon: optimism
+            },
+            {
+                name: "soUSDC.e",
+                icon: optimism
+            },
+            {
+                name: "soUSDT",
+                icon: optimism
+            },
+            {
+                name: "soOP",
+                icon: optimism
+            },
+            {
+                name: "soSUSD",
+                icon: optimism
+            },
+            {
+                name: "sSONNE",
+                icon: optimism
+            },
+            {
+                name: "soSNX",
+                icon: optimism
+            },
+            {
+                name: "soWBTC",
+                icon: optimism
+            },
+            {
+                name: "soLUSD",
+                icon: optimism
+            },
+            {
+                name: "sowstETH",
+                icon: optimism
+            },
+            {
+                name: "soMAI",
+                icon: optimism
+            },
+            {
+                name: "soUSDC",
+                icon: optimism
+            }
+        ]
     },
     base: {
         aaveV3: [
@@ -487,6 +541,21 @@ export const tokenAddressByProtocol = {
             aAAVE: "0xf329e36C7bF6E5E86ce2150875a84Ce77f477375",
             aLUSD: "0x8Eb270e296023E9D92081fdF967dDd7878724424",
         },
+        sonne: {
+            soWETH: "0xf7B5965f5C117Eb1B5450187c9DcFccc3C317e8E",
+            soDAI: "0x5569b83de187375d43FBd747598bfe64fC8f6436",
+            "soUSDC.e": "0xEC8FEa79026FfEd168cCf5C627c7f486D77b765F",
+            soUSDT: "0x5Ff29E4470799b982408130EFAaBdeeAE7f66a10",
+            soOP: "0x8cD6b19A07d754bF36AdEEE79EDF4F2134a8F571",
+            soSUSD: "0xd14451E0Fa44B18f08aeB1E4a4d092B823CaCa68",
+            sSONNE: "0xdc05d85069dc4aba65954008ff99f2d73ff12618",
+            soSNX: "0xD7dAabd899D1fAbbC3A9ac162568939CEc0393Cc",
+            soWBTC: "0x33865E09A572d4F1CC4d75Afc9ABcc5D3d4d867D",
+            soLUSD: "0xAFdf91f120DEC93c65fd63DBD5ec372e5dcA5f82",
+            sowstETH: "0x26AaB17f27CD1c8d06a0Ad8E4a1Af8B1032171d5",
+            soMAI: "0xE7De932d50EfC9ea0a7a409Fc015B4f71443528e",
+            soUSDC: "0x1AfD1fF9E441973B7D34c7B8AbE91d94F1B23ce0"
+        }
     },
     ethereum: {},
     base: {
