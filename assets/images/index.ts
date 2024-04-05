@@ -44,6 +44,7 @@ import portfolio from './nav-portfolio.svg';
 import batching from './nav-batching.svg';
 import conditional_trading from './nav-conditional-trading.svg';
 import mirgrate_asset from './nav-mirgrate-asset.svg';
+import radiant from './radiant.jpeg';
 
 export {
     closeNarrow,
@@ -92,4 +93,5 @@ export {
     batching,
     conditional_trading,
     mirgrate_asset,
+    radiant
 };
