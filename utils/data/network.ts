@@ -17,12 +17,12 @@ export const NETWORK_LIST = [
         chainId: "137",
         icon: polygon,
     },
-    // {
-    //     key: "Arbitrum",
-    //     chainName: "arbitrum",
-    //     chainId: "42161",
-    //     icon: arbitrum,
-    // },
+    {
+        key: "Arbitrum",
+        chainName: "arbitrum",
+        chainId: "42161",
+        icon: arbitrum,
+    },
     // {
     //     key: "Avalanche",
     //     chainName: "avalanche",

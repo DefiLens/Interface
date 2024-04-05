@@ -130,7 +130,7 @@ export function useCCSendTx() {
             }
 
             let data;
-            if (toChainId == 106 || toChainId == 111 || toChainId == 184 || toChainId == 109) {
+            if (toChainId == 106 || toChainId == 111 || toChainId == 184 || toChainId == 109 || toChainId == 110) {
                 data = abi.encode(
                     ["bool", "address", "bytes", "uint256", "uint256", "address", "address", "address", "bytes"],
                     [

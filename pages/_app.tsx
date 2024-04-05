@@ -4,7 +4,7 @@ import { Toaster } from "react-hot-toast";
 import { AppProps } from "next/app";
 import { ThirdwebProvider, metamaskWallet } from "@thirdweb-dev/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Base, Optimism, Polygon } from "@thirdweb-dev/chains";
+import { Base, Optimism, Polygon, Arbitrum } from "@thirdweb-dev/chains";
 import { iGlobal, useGlobalStore } from "../store/GlobalStore";
 
 import HeaderContainer from "../modules/header/HeaderContainer";
@@ -28,7 +28,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <>
             {/* @ts-ignore */}
             <ThirdwebProvider
-                supportedChains={[Polygon, Base, Optimism]}
+                supportedChains={[Polygon, Base, Optimism, Arbitrum]}
                 clientId={process.env.NEXT_PUBLIC_TEMPLATE_CLIENT_ID}
                 activeChain={selectedNetwork.chainName}
                 supportedWallets={[metamaskWallet({ recommended: true })]}

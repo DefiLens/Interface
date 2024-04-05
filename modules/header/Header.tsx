@@ -53,7 +53,7 @@ const Header: React.FC<any> = ({ switchOnSpecificChain }: tHeader) => {
     // To Check user remain on supported chains
     useEffect(() => {
         if (chainId) {
-            if (chain?.slug == "polygon" || chain?.slug == "base" || chain?.slug == "optimism") {
+            if (chain?.slug == "polygon" || chain?.slug == "base" || chain?.slug == "optimism" || chain?.slug == "arbitrum") {
                 switchOnSpecificChain(chain?.slug);
             } else {
                 toast.error("Only Base, Optimism and Polygon supported.")
@@ -226,7 +226,7 @@ const Header: React.FC<any> = ({ switchOnSpecificChain }: tHeader) => {
 
             {chainId &&
                 <>
-                    {chain?.slug == "polygon" || chain?.slug == "base" || chain?.slug == "optimism" ? <></>
+                    {chain?.slug == "polygon" || chain?.slug == "base" || chain?.slug == "optimism" || chain?.slug == "arbitrum" ? <></>
                         :
                         <>
                             <div
