@@ -23,6 +23,7 @@ import {
     tarot,
     exactly,
     granary,
+    radiant,
 } from "../../assets/images";
 
 interface iProtocolKey {
@@ -113,13 +114,19 @@ export const protocolNames: iProtocolNames = {
                 tokenAddresses: tokenAddressByProtocol.arbitrum.compoundV3,
             },
             {
+                name: "radiant",
+                icon: radiant,
+                tokenList: tokensByProtocol.arbitrum.radiant,
+                tokenAddresses: tokenAddressByProtocol.arbitrum.radiant,
+            },
+            {
                 name: "erc20",
                 icon: arbitrum,
                 tokenList: "tokenList",
                 tokenAddresses: "tokenAddresses",
             },
         ],
-        value: ["AAVE V3", "Compound V3", "ERC20"],
+        value: ["AAVE V3", "Compound V3", "Radiant", "ERC20"],
     },
     "10": {
         key: [
@@ -262,6 +269,15 @@ export const abiFetcherNum = {
         aEURS: "1",
         cUSDCev3: "2",
         cUSDCv3: "3",
+
+        rWBTC: "",
+        rUSDT: "",
+        "rUSDC.e": "",
+        rDAI: "",
+        rWETH: "",
+        rwstETH: "",
+        rARB: "",
+        rUSDC: "",
     },
     "10": {
         aDAI: "1",
@@ -457,6 +473,18 @@ export const abiFetcher = {
             contractAddress: "0x9c4ec768c28520B50860ea7a15bd7213a9fF58bf",
             isContractSet: false,
             apyFetch: "fetchApyForCompoundArbitrum",
+        },
+        "4": {
+            depositAbi: "function deposit(address asset,uint256 amount,address onBehalfOf,uint16 referralCode)",
+            withdrawAbi: "function withdraw(address asset,uint256 amount,address to)",
+            depositMethodName: "deposit",
+            withdrawMethodName: "withdraw",
+            paramDetailsMethod: "radiant_deposit",
+            depositParamDetailsMethod: "radiant_deposit",
+            withdrawParamDetailsMethod: "radiant_withdraw",
+            contractAddress: "0xF4B1486DD74D07706052A33d31d7c0AAFD0659E1",
+            isContractSet: false,
+            apyFetch: "fetchApyForRadiantArbitrum",
         },
     },
     "10": {
@@ -1072,14 +1100,16 @@ export async function buildParams({
         paramDetailsMethod == "aave_deposit" ||
         paramDetailsMethod == "aave_supply_v3" ||
         paramDetailsMethod == "seamless_supply_v3" ||
-        paramDetailsMethod == "granary_deposit"
+        paramDetailsMethod == "granary_deposit" ||
+        paramDetailsMethod == "radiant_deposit"
     ) {
         return [nativeTokenIn, amount, address, 0];
     } else if (
         paramDetailsMethod == "aave_withdraw" ||
         paramDetailsMethod == "aave_withdraw_v3" ||
         paramDetailsMethod == "seamless_withdraw_v3" ||
-        paramDetailsMethod == "granary_withdraw"
+        paramDetailsMethod == "granary_withdraw" ||
+        paramDetailsMethod == "radiant_withdraw"
     ) {
         return [nativeTokenIn, amount, address];
     } else if (paramDetailsMethod == "compound_supply") {

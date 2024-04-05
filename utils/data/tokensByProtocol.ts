@@ -246,6 +246,41 @@ export const tokensByProtocol = {
                 icon: arbitrum,
             },
         ],
+        radiant: [
+            {
+                name: "rWBTC",
+                icon: arbitrum,
+            },
+            {
+                name: "rUSDT",
+                icon: arbitrum,
+            },
+            {
+                name: "rUSDC.e",
+                icon: arbitrum,
+            },
+            {
+                name: "rDAI",
+                icon: arbitrum,
+            },
+            {
+                name: "rWETH",
+                icon: arbitrum,
+            },
+            {
+                name: "rwstETH",
+                icon: arbitrum,
+            },
+            {
+                name: "rARB",
+                icon: arbitrum,
+            },
+            {
+                name: "rUSDC",
+                icon: arbitrum,
+            },
+        ],
+
     },
     optimism: {
         aaveV3: [
@@ -588,6 +623,16 @@ export const tokenAddressByProtocol = {
         compoundV3: {
             cUSDCev3: "0xA5EDBDD9646f8dFF606d7448e414884C7d905dCA",
             cUSDCv3: "0x9c4ec768c28520B50860ea7a15bd7213a9fF58bf",
+        },
+        radiant: {
+            rWBTC: "0x727354712BDFcd8596a3852Fd2065b3C34F4F770",
+            rUSDT: "0xd69D402D1bDB9A2b8c3d88D98b9CEaf9e4Cd72d9",
+            "rUSDC.e": "0x48a29E756CC1C097388f3B2f3b570ED270423b3d",
+            rDAI: "0x0D914606f3424804FA1BbBE56CCC3416733acEC6",
+            rWETH: "0x0dF5dfd95966753f01cb80E76dc20EA958238C46",
+            rwstETH: "0x42C248D137512907048021B30d9dA17f48B5b7B2",
+            rARB: "0x2dADe5b7df9DA3a7e1c9748d169Cd6dFf77e3d01",
+            rUSDC: "0x3a2d44e354f2d88EF6DA7A5A4646fd70182A7F55",
         },
     },
     optimism: {
