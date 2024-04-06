@@ -7,11 +7,10 @@ interface Chain {
 }
 
 interface ChainSelectionProps {
-    onChange: (chainId: number) => void;
     dropdown?: boolean;
 }
 
-const ChainSelection: React.FC<ChainSelectionProps> = ({ onChange, dropdown = false }) => {
+const ChainSelection: React.FC<ChainSelectionProps> = ({ dropdown = false }) => {
     const { chainId, setChainId }: iPortfolio = usePortfolioStore((state) => state);
 
     const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {

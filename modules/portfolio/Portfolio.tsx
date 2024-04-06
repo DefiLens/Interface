@@ -6,13 +6,96 @@ import { useAddress } from "@thirdweb-dev/react";
 import { iPortfolio, usePortfolioStore } from "../../store/Portfolio";
 import { ChainIdDetails } from "../../utils/data/network";
 import { defaultBlue, metamask } from "../../assets/images";
-import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import { tPortfolio } from "./types";
 
 import OneAsset from "./OneAsset";
 import ChainSelection from "../../components/ChainSelection/ChainSelection";
 import OneAssetSkeleton from "../../components/skeleton/OneAssetSkeleton";
 import CopyButton from "../../components/common/CopyButton";
+
+import { useState } from "react";
+import axios from "axios";
+import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
+import axiosInstance from "../../axiosInstance/axiosInstance";
+
+const SampleDataGenerator = () => {
+    const { smartAccountAddress }: iGlobal = useGlobalStore((state) => state);
+
+    const [generated, setGenerated] = useState(false);
+
+    const generateSampleData = async () => {
+        // Generate sample individual batch data
+        const individualBatch = [
+            {
+                data: {
+                    amountIn: "1.78",
+                    fromNetwork: "polygon",
+                    toNetwork: "polygon",
+                    fromProtocol: "erc20",
+                    toProtocol: "aaveV2",
+                    fromToken: "MATIC",
+                    toToken: "aUSDC",
+                },
+            },
+            {
+                data: {
+                    amountIn: "2.7",
+                    fromNetwork: "polygon",
+                    toNetwork: "polygon",
+                    fromProtocol: "erc20",
+                    toProtocol: "aaveV3",
+                    fromToken: "MATIC",
+                    toToken: "aUSDC",
+                },
+            },
+        ];
+
+        // Generate sample txhash
+        const txhash = "0x89f506005163bef5aaab61cc3f1b47942a0ed0a66f5019b85a7b93df377bf4g4g4";
+
+        // Create txHistory object
+        const txHistory = {
+            transactions: individualBatch.map((item) => ({
+                amountIn: item.data.amountIn,
+                fromNetwork: item.data.fromNetwork,
+                toNetwork: item.data.toNetwork,
+                fromProtocol: item.data.fromProtocol,
+                toProtocol: item.data.toProtocol,
+                fromToken: item.data.fromToken,
+                toToken: item.data.toToken,
+                txHash: txhash,
+            })),
+            smartAccount: smartAccountAddress, // Replace with actual smart account data
+        };
+
+        try {
+            // Call the API with the generated data
+            await handleTxnHistory(txHistory);
+
+            // Set generated state to true
+            setGenerated(true);
+        } catch (error) {
+            console.error("Error generating sample data:", error);
+        }
+    };
+
+    const handleTxnHistory = async (txHistory: any) => {
+        try {
+            await axiosInstance.post("/transactions", txHistory);
+        } catch (error) {
+            console.error("Error sending data to backend:", error);
+            throw error; 
+        }
+    };
+
+    return (
+        <div>
+            <button onClick={generateSampleData} disabled={generated}>
+                {generated ? "Sample Data Generated" : "Generate Sample Data"}
+            </button>
+        </div>
+    );
+};
 
 const Portfolio: React.FC<tPortfolio> = ({ smartAccountAddress, handleFetchPorfolioData, send, handleAmountIn }) => {
     const { isSCW, chainData, isLoading, setIsSCW }: iPortfolio = usePortfolioStore((state) => state);
@@ -62,6 +145,9 @@ const Portfolio: React.FC<tPortfolio> = ({ smartAccountAddress, handleFetchPorfo
                                                 ?.toFixed(4)}
                                         </h1>
                                     )}
+                                    <Link href="/portfolio/batch-history" className="">
+                                        See Batch History
+                                    </Link>
                                 </div>
                             </div>
 

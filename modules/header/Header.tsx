@@ -69,10 +69,10 @@ const Header: React.FC<any> = ({ switchOnSpecificChain }: tHeader) => {
                     {/* Left Side navigation */}
                     <div className="flex justify-between items-center gap-8">
                         {NavigationList.length > 0 &&
-                            NavigationList?.map((item) => (
+                            NavigationList?.map((item, index: number) => (
                                 <Link
                                     href={item.route}
-                                    key={item.title}
+                                    key={index}
                                     className={`lg:flex hidden flex-row justify-between items-center gap-3 text-black text-lg`}
                                 >
                                     {item.image &&

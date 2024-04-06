@@ -12,6 +12,7 @@ export interface iPortfolio {
     error: string;
     isSCW: boolean;
     chainId: number;
+    chainName: string;
     selectOneAsset: any;
 
 
@@ -20,6 +21,7 @@ export interface iPortfolio {
     setError: (error: string) => void;
     setIsSCW: (isSCW: boolean) => void;
     setChainId: (chainId: number) => void;
+    setChainName: (chainName: string) => void;
     setSelectOneAsset: (selectOneAsset: any) => void;
 
 
@@ -63,6 +65,7 @@ export const usePortfolioStore = create<iPortfolio>((set) => ({
     error: "",
     isSCW: false,
     chainId: 0,
+    chainName: "",
     selectOneAsset: null,
 
     setChainData: (chainData) => set(() => ({ chainData })),
@@ -70,6 +73,7 @@ export const usePortfolioStore = create<iPortfolio>((set) => ({
     setError: (error) => set(() => ({ error })),
     setIsSCW: (isSCW) => set(() => ({ isSCW })),
     setChainId: (chainId) => set(() => ({ chainId })),
+    setChainName: (chainName) => set(() => ({ chainName })),
     setSelectOneAsset: (selectOneAsset) => set(() => ({ selectOneAsset })),
 
 
