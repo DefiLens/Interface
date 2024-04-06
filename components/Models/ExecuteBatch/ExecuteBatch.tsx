@@ -10,6 +10,8 @@ import { ChainIdDetails } from "../../../utils/data/network";
 import { protocolNames } from "../../../utils/data/protocols";
 import { error, loading, success } from "../../../assets/gifs";
 import { iIndividualBatch, iTrading, useTradingStore } from "../../../store/TradingStore";
+import { iBatchHistory, iSingleTransaction } from "../../../modules/portfolio/types";
+import { iGlobal, useGlobalStore } from "../../../store/GlobalStore";
 
 const ExecuteBatch = ({}: tExecuteBatch) => {
     const {
@@ -22,6 +24,7 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
         txhash,
         setTxHash,
     }: iTrading = useTradingStore((state) => state);
+    const { smartAccountAddress }: iGlobal = useGlobalStore((state) => state);
 
     const closeExecuteBatchModel = () => {
         setShowExecuteBatchModel(false);
@@ -45,25 +48,24 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
         handleIsCrossChainTxs();
     }, [individualBatch]);
 
-    const handleTxnHistory = async (arg: any) => {
+    const handleTxnHistory = async (txHistory: iBatchHistory) => {
         try {
-          await axiosInstance
-            .post('txn-history', arg)
-            .then(async (res) => {
-              console.log("Thanks for Working with us")
-
-            })
-            .catch((err) => {
-                console.log("Error! While storing history", err)
-            });
+            await axiosInstance.post("transactions", txHistory)
+                .then(async (res) => {
+                    console.log("Thanks for Working with us");
+                })
+                .catch((err) => {
+                    console.log("Error! While storing history", err);
+                });
         } catch (error: any) {
-          console.log("handleTxnHistory: error:", error)
+            console.log("handleTxnHistory: error:", error);
         }
     };
 
     useEffect(() => {
+        console.log("individualBatch", individualBatch)
         if (individualBatch.length > 0 && txhash) {
-            const txHistory = individualBatch.slice(0, -1).map((item : any) => ({
+            const txHistory: iSingleTransaction[] = individualBatch.slice(0, -1).map((item: any) => ({
                 amountIn: item.data.amountIn,
                 fromNetwork: item.data.fromNetwork,
                 toNetwork: item.data.toNetwork,
@@ -74,7 +76,12 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
                 txHash: txhash,
             }));
 
-            handleTxnHistory(txHistory);
+            const dataToSend: iBatchHistory= {
+                transactions: txHistory,
+                smartAccount: smartAccountAddress
+            };
+
+            handleTxnHistory(dataToSend);
         }
     }, [txhash]);
 

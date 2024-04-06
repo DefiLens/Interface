@@ -345,3 +345,15 @@ export async function fetchData<T>(url: string): Promise<T> {
         throw new Error(`Error fetching data: ${error}`);
     }
 }
+
+export const formatDate = (dateString: Date | undefined) => {
+    if (!dateString) {
+        return ""; // Return an empty string or handle the undefined case as per your requirement
+    }
+
+    const date = new Date(dateString);
+    const day = date.getDate();
+    const month = date.toLocaleString("default", { month: "short" });
+    const year = date.getFullYear();
+    return `${day} ${month} ${year}`;
+};
