@@ -1,5 +1,5 @@
 // Library Imports
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { ethers, BigNumber, Signer } from "ethers";
 import { toast } from "react-hot-toast";
 import { BigNumber as bg } from "bignumber.js";
@@ -49,9 +49,10 @@ import {
 import { ETH_ADDRESS } from "../../utils/data/constants";
 bg.config({ DECIMAL_PLACES: 10 });
 
-const TradeContainer: React.FC = () => {
+const TradeContainer: React.FC<any> = () => {
+    const [tokenBalances, setTokenBalances] = useState<{ [key: string]: number }>({});
     const address = useAddress(); // Detect the connected address
-    const signer = useSigner(); // Detect the connected address
+    const signer: any = useSigner(); // Detect the connected address
 
     const { mutateAsync: sendToBiconomy } = useBiconomyProvider();
     const { mutateAsync: sendToGasLessBiconomy } = useBiconomyGasLessProvider();
@@ -412,7 +413,14 @@ const TradeContainer: React.FC = () => {
             }
             if(!maxBal) return;
             MaxBalance = await decreasePowerByDecimals(maxBal?.toString(), fromTokendecimal);
-            setMaxBalance(MaxBalance);
+
+            console.log("tokenBalances", tokenBalances, _fromToken)
+            if (hasTokenBalance(_fromToken)) {
+                setMaxBalance(getTokenBalance(_fromToken).toString());
+            } else {
+                setMaxBalance(MaxBalance);
+            }
+
             setIsmaxBalanceLoading(false);
         } catch (error: any) {
             setIsmaxBalanceLoading(false);
@@ -420,7 +428,29 @@ const TradeContainer: React.FC = () => {
         }
     };
 
-    const onChangeToProtocol = (_toProtocol: string) => {
+    const hasTokenBalance = (token: string) => {
+        return tokenBalances[token] !== undefined && tokenBalances[token] > 0;
+    };
+
+    const setMaxTokenBalance = (token: string, amount: number, isRemove: boolean, maxbal?: number) => {
+        if (isRemove) {
+            setTokenBalances(prevBalances => ({
+                ...prevBalances,
+                [token]: (Number(maxbal) || 0) + amount,
+            }));
+        } else {
+            setTokenBalances(prevBalances => ({
+                ...prevBalances,
+                [token]: (Number(maxBalance) || 0) - amount,
+            }));
+        }
+    };
+
+    const getTokenBalance = (token: string) => {
+        return tokenBalances[token] || 0;
+    };
+
+    const onChangeToProtocol = async (_toProtocol: string) => {
         if (addToBatchLoading) {
             toast.error("wait, tx loading");
             return;
@@ -538,6 +568,8 @@ const TradeContainer: React.FC = () => {
     };
 
     const removeBatch = (index: number) => {
+        const updatedBatch = [...individualBatch];
+        setMaxTokenBalance(updatedBatch[index].data.fromToken, Number(updatedBatch[index].data.amountIn), true, getTokenBalance(updatedBatch[index].data.fromToken))
         removeBatchItem(index);
     };
 
@@ -679,6 +711,13 @@ const TradeContainer: React.FC = () => {
                     selectedToToken: selectedToToken,
                     amountIn: amountIn,
                 } as tRefinance);
+            }
+
+            const _amt = await decreasePowerByDecimals(_tempAmount?.toString(), fromTokenDecimal);
+            if (hasTokenBalance(selectedFromToken)) {
+                setMaxTokenBalance(selectedFromToken, Number(_amt), false);
+            } else {
+                setMaxTokenBalance(selectedFromToken, Number(_amt), false);
             }
 
             if (!refinaceData) {
