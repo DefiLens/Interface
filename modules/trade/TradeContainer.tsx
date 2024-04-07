@@ -34,9 +34,9 @@ import { ETH_ADDRESS } from "../../utils/data/constants";
 bg.config({ DECIMAL_PLACES: 10 });
 
 const TradeContainer: React.FC<any> = () => {
+    const [tokenBalances, setTokenBalances] = useState<{ [key: string]: number }>({});
     const address = useAddress(); // Detect the connected address
     const signer: any = useSigner(); // Detect the connected address
-
 
     const { mutateAsync: sendToBiconomy } = useBiconomyProvider();
     const { mutateAsync: sendToGasLessBiconomy } = useBiconomyGasLessProvider();
@@ -375,12 +375,41 @@ const TradeContainer: React.FC<any> = () => {
             }
             if(!maxBal) return;
             MaxBalance = await decreasePowerByDecimals(maxBal?.toString(), fromTokendecimal);
-            setMaxBalance(MaxBalance);
+
+            console.log("tokenBalances", tokenBalances, _fromToken)
+            if (hasTokenBalance(_fromToken)) {
+                setMaxBalance(getTokenBalance(_fromToken).toString());
+            } else {
+                setMaxBalance(MaxBalance);
+            }
+
             setIsmaxBalanceLoading(false);
         } catch (error: any) {
             setIsmaxBalanceLoading(false);
             console.log("onChangeFromToken ~ error:", error);
         }
+    };
+
+    const hasTokenBalance = (token: string) => {
+        return tokenBalances[token] !== undefined && tokenBalances[token] > 0;
+    };
+
+    const setMaxTokenBalance = (token: string, amount: number, isRemove: boolean, maxbal?: number) => {
+        if (isRemove) {
+            setTokenBalances(prevBalances => ({
+                ...prevBalances,
+                [token]: (Number(maxbal) || 0) + amount,
+            }));
+        } else {
+            setTokenBalances(prevBalances => ({
+                ...prevBalances,
+                [token]: (Number(maxBalance) || 0) - amount,
+            }));
+        }
+    };
+
+    const getTokenBalance = (token: string) => {
+        return tokenBalances[token] || 0;
     };
 
     const onChangeToProtocol = async (_toProtocol: string) => {
@@ -529,6 +558,7 @@ const TradeContainer: React.FC<any> = () => {
 
     const removeBatch = (index: number) => {
         const updatedBatch = [...individualBatch];
+        setMaxTokenBalance(updatedBatch[index].data.fromToken, Number(updatedBatch[index].data.amountIn), true, getTokenBalance(updatedBatch[index].data.fromToken))
         updatedBatch.splice(index, 1); // Remove the InputBar at the specified index
         setIndividualBatch(updatedBatch);
     };
@@ -707,6 +737,13 @@ const TradeContainer: React.FC<any> = () => {
                     address: isSCW ? smartAccountAddress : address,
                     provider,
                 } as tRefinance);
+            }
+
+            const _amt = await decreasePowerByDecimals(_tempAmount?.toString(), fromTokenDecimal);
+            if (hasTokenBalance(selectedFromToken)) {
+                setMaxTokenBalance(selectedFromToken, Number(_amt), false);
+            } else {
+                setMaxTokenBalance(selectedFromToken, Number(_amt), false);
             }
 
             if (!refinaceData) {
