@@ -9,7 +9,12 @@ import { Bundler, IBundler } from "@biconomy/bundler";
 import { useAddress, useSigner } from "@thirdweb-dev/react";
 import { BiconomyPaymaster, IPaymaster } from "@biconomy/paymaster";
 import { BiconomySmartAccountV2, DEFAULT_ENTRYPOINT_ADDRESS } from "@biconomy/account";
-import { DEFAULT_ECDSA_OWNERSHIP_MODULE, DEFAULT_SESSION_KEY_MANAGER_MODULE, ECDSAOwnershipValidationModule, SessionKeyManagerModule } from "@biconomy/modules";
+import {
+    DEFAULT_ECDSA_OWNERSHIP_MODULE,
+    DEFAULT_SESSION_KEY_MANAGER_MODULE,
+    ECDSAOwnershipValidationModule,
+    SessionKeyManagerModule,
+} from "@biconomy/modules";
 
 import Trade from "./Trade";
 import IERC20 from "../../abis/IERC20.json";
@@ -23,7 +28,7 @@ import { useCCRefinance } from "../../hooks/Batching/useCCRefinance";
 import { useEoaProvider } from "../../hooks/aaProvider/useEoaProvider";
 import { useSwitchOnSpecificChain } from "../../hooks/useSwitchOnSpecificChain";
 import { useBiconomyProvider } from "../../hooks/aaProvider/useBiconomyProvider";
-import { iSelectedNetwork, iTrading, useTradingStore } from "../../store/TradingStore";
+import { iRebalance, iSelectedNetwork, iTrading, useRebalanceStore, useTradingStore } from "../../store/TradingStore";
 import { useBiconomyERC20Provider } from "../../hooks/aaProvider/useBiconomyERC20Provider";
 import { useBiconomyGasLessProvider } from "../../hooks/aaProvider/useBiconomyGasLessProvider";
 import { useBiconomySessionKeyProvider } from "../../hooks/aaProvider/useBiconomySessionKeyProvider";
@@ -35,7 +40,6 @@ bg.config({ DECIMAL_PLACES: 10 });
 const TradeContainer: React.FC<any> = () => {
     const address = useAddress(); // Detect the connected address
     const signer: any = useSigner(); // Detect the connected address
-
 
     const { mutateAsync: sendToBiconomy } = useBiconomyProvider();
     const { mutateAsync: sendToGasLessBiconomy } = useBiconomyGasLessProvider();
@@ -101,8 +105,12 @@ const TradeContainer: React.FC<any> = () => {
         setHasExecutionError,
         totalfees,
         setTotalFees,
-        setShowExecuteMethodModel
+        setShowExecuteMethodModel,
     }: iTrading = useTradingStore((state) => state);
+
+    const { isModalOpen, isRebalance, rebalanceData }: iRebalance = useRebalanceStore((state) => state);
+
+    // console.log("individial", individualBatch);
 
     useEffect(() => {
         if (individualBatch.length === 1 && individualBatch[0].txArray.length === 0) {
@@ -198,17 +206,28 @@ const TradeContainer: React.FC<any> = () => {
         onChangeselectedFromProtocol();
     }, [selectedFromProtocol]);
 
-    useEffect(() => {
-        async function onChangeselectedToProtocol() {
-            if (selectedToProtocol) {
-                if (selectedToProtocol == "erc20") {
-                    const filteredTokens = getTokenListByChainId(selectedToNetwork.chainId, UNISWAP_TOKENS);
-                    setToTokensData(filteredTokens);
-                }
-            }
+    // useEffect(() => {
+    //     async function onChangeselectedToProtocol() {
+    //         if (selectedToProtocol) {
+    //             if (selectedToProtocol == "erc20") {
+    //                 const filteredTokens = getTokenListByChainId(selectedToNetwork.chainId, UNISWAP_TOKENS);
+    //                 setToTokensData(filteredTokens);
+    //             }
+    //         }
+    //     }
+    //     onChangeselectedToProtocol();
+    // }, [selectedToProtocol]);
+
+    async function onChangeselectedToProtocol(protocol: string, network: iSelectedNetwork, setTokensData: any) {
+        if (protocol && protocol === "erc20") {
+            const filteredTokens = getTokenListByChainId(network.chainId, UNISWAP_TOKENS);
+            setTokensData(filteredTokens);
         }
-        onChangeselectedToProtocol();
-    }, [selectedToProtocol]);
+    }
+    useEffect(() => {
+        // Call the function with the provided parameters
+        onChangeselectedToProtocol(selectedToProtocol, selectedToNetwork, setToTokensData);
+    }, [selectedToProtocol, rebalanceData, isModalOpen, isRebalance]);
 
     const onChangeFromProtocol = async (_fromProtocol: string) => {
         if (addToBatchLoading) {
@@ -271,17 +290,21 @@ const TradeContainer: React.FC<any> = () => {
                 setSelectedFromToken(_fromToken);
             }
 
-            const provider: ethers.providers.JsonRpcProvider | undefined = await getProvider(selectedFromNetwork.chainId);
+            const provider: ethers.providers.JsonRpcProvider | undefined = await getProvider(
+                selectedFromNetwork.chainId
+            );
             const erc20Address: any =
-                selectedFromProtocol == "erc20" ? fromTokensData.filter((token: any) => token.symbol === _fromToken) : "";
+                selectedFromProtocol == "erc20"
+                    ? fromTokensData.filter((token: any) => token.symbol === _fromToken)
+                    : "";
 
             const tokenAddress =
                 selectedFromProtocol != "erc20"
                     ? protocolNames[selectedFromNetwork.chainId].key.find((entry) => entry.name == selectedFromProtocol)
-                        .tokenAddresses[_fromToken]
+                          .tokenAddresses[_fromToken]
                     : erc20Address[0].address;
 
-            console.log(_fromToken, tokenAddress)
+            console.log(_fromToken, tokenAddress);
 
             const erc20 = await getContractInstance(tokenAddress, IERC20, provider);
             const fromTokendecimal: any = await getErc20Decimals(erc20);
@@ -331,7 +354,7 @@ const TradeContainer: React.FC<any> = () => {
                 erc20,
                 smartAccountAddress ? smartAccountAddress : scwAddress.address
             );
-            if(!maxBal) return;
+            if (!maxBal) return;
             const MaxBalance = await decreasePowerByDecimals(maxBal?.toString(), fromTokendecimal);
             setMaxBalance(MaxBalance);
             setIsmaxBalanceLoading(false);
@@ -536,6 +559,7 @@ const TradeContainer: React.FC<any> = () => {
                 },
             ]);
         }
+        console.log("------------index in update", index)
         const updatedBatch: any = [...individualBatch];
         updatedBatch[index].txArray = txArray;
         updatedBatch[index].batchesFlow = batchesFlow;
@@ -566,7 +590,7 @@ const TradeContainer: React.FC<any> = () => {
                 },
             },
         ]);
-        clearSelectedBatchData();
+       {!isRebalance && clearSelectedBatchData()};
     };
 
     const toggleShowBatchList = (id: number): void => {
@@ -635,7 +659,9 @@ const TradeContainer: React.FC<any> = () => {
                 setAddToBatchLoading(false);
                 return;
             }
-            const provider: ethers.providers.JsonRpcProvider | undefined = await getProvider(selectedFromNetwork.chainId);
+            const provider: ethers.providers.JsonRpcProvider | undefined = await getProvider(
+                selectedFromNetwork.chainId
+            );
             const _tempAmount = BigNumber.from(await incresePowerByDecimals(amountIn, fromTokenDecimal).toString());
             let refinaceData: tRefinanceResponse | undefined;
             let txArray;
@@ -710,7 +736,7 @@ const TradeContainer: React.FC<any> = () => {
                     toToken: selectedToToken,
                     amountIn: amountIn,
                     fees: fees.toString(),
-                    extraValue: refinaceData.value ? bg(refinaceData.value.toString()).dividedBy(1e18).toString() : '0',
+                    extraValue: refinaceData.value ? bg(refinaceData.value.toString()).dividedBy(1e18).toString() : "0",
                 },
                 simulation
             );
@@ -776,6 +802,191 @@ const TradeContainer: React.FC<any> = () => {
         }
     };
 
+    const addRebalancedBatches = async (
+        isSCW: boolean,
+        selectedToNetwork: iSelectedNetwork,
+        selectedToProtocol: string,
+        selectedToToken: string,
+        rePercentage: number,
+        amount: number,
+        index: number
+    ) => {
+        console.log(
+            "addRebalancedBatches",
+            isSCW,
+            selectedToNetwork,
+            selectedToProtocol,
+            selectedToToken,
+            rePercentage,
+            amount
+        );
+        try {
+            onChangeselectedToProtocol(selectedToProtocol, selectedToNetwork, setToTokensData);
+            if (isSCW) {
+                setAddToBatchLoading(true);
+            }
+            if (selectedFromToken == selectedToToken && selectedFromNetwork.chainName === selectedToNetwork.chainName) {
+                toast.error("fromToken and toToken should not same");
+                setAddToBatchLoading(false);
+                return;
+            }
+            if (
+                !(
+                    selectedFromNetwork.chainName == "polygon" ||
+                    selectedFromNetwork.chainName == "base" ||
+                    selectedFromNetwork.chainName == "avalanche" ||
+                    selectedFromNetwork.chainName == "arbitrum" ||
+                    selectedFromNetwork.chainName == "optimism"
+                )
+            ) {
+                toast.error("Batching is only supported on polygon as of now");
+                setAddToBatchLoading(false);
+                return;
+            }
+            if (bg(maxBalance).isLessThan(amount)) {
+                toast.error("You don't have enough funds to complete transaction");
+                setAddToBatchLoading(false);
+                return;
+            }
+            if (addToBatchLoading) {
+                toast.error("wait, tx loading");
+                setAddToBatchLoading(false);
+                return;
+            }
+            if (!selectedFromProtocol) {
+                toast.error("select from protocol");
+                setAddToBatchLoading(false);
+                return;
+            }
+            if (!selectedFromToken) {
+                toast.error("select fromToken");
+                setAddToBatchLoading(false);
+                return;
+            }
+            if (!selectedToProtocol) {
+                toast.error("Select to protocol");
+                setAddToBatchLoading(false);
+                return;
+            }
+            if (!selectedToToken) {
+                toast.error("select toToken");
+                setAddToBatchLoading(false);
+                return;
+            }
+            if (!amountIn && fromTokenDecimal) {
+                toast.error("Select Token amount");
+                console.log(amount, fromTokenDecimal);
+                setAddToBatchLoading(false);
+                return;
+            }
+            if (!amount && fromTokenDecimal) {
+                toast.error("select amount");
+                console.log(amount, fromTokenDecimal);
+                setAddToBatchLoading(false);
+                return;
+            }
+            const provider: ethers.providers.JsonRpcProvider | undefined = await getProvider(
+                selectedFromNetwork.chainId
+            );
+            const _tempAmount = BigNumber.from(await incresePowerByDecimals(amount, fromTokenDecimal).toString());
+            let refinaceData: tRefinanceResponse | undefined;
+            let txArray;
+
+            // console.log("--------------In start of refinance-----------");
+            if (selectedFromNetwork.chainName == selectedToNetwork.chainName) {
+                refinaceData = await refinance({
+                    isSCW: isSCW,
+                    fromProtocol: selectedFromProtocol,
+                    toProtocol: selectedToProtocol,
+                    tokenIn: "",
+                    tokenInName: selectedFromToken,
+                    tokenOut: "",
+                    tokenOutName: selectedToToken,
+                    amount: _tempAmount,
+                    address: isSCW ? smartAccountAddress : address,
+                    provider,
+                } as tRefinance);
+            } else {
+                refinaceData = await refinanceForCC({
+                    isSCW: isSCW,
+                    fromProtocol: selectedFromProtocol,
+                    toProtocol: selectedToProtocol,
+                    tokenIn: "",
+                    tokenInName: selectedFromToken,
+                    tokenOut: "",
+                    tokenOutName: selectedToToken,
+                    amount: _tempAmount,
+                    address: isSCW ? smartAccountAddress : address,
+                    provider,
+                } as tRefinance);
+            }
+            console.log("--------------refinaceData", refinaceData);
+
+            if (!refinaceData) {
+                setAddToBatchLoading(false);
+                setShowBatchList(true);
+                return;
+            }
+
+            const simulation = {
+                isSuccess: true,
+                isError: false,
+            };
+
+            const userOp = await smartAccount.buildUserOp(refinaceData.txArray);
+
+            const fees = bg(userOp.callGasLimit.toString())
+                .plus(bg(userOp.verificationGasLimit.toString()))
+                .multipliedBy(bg(userOp.maxFeePerGas.toString()))
+                .dividedBy(1e18);
+            let _totalfees = totalfees;
+
+            if (refinaceData.value) {
+                _totalfees = bg(_totalfees.toString())
+                    .plus(fees.toString())
+                    .plus(bg(refinaceData.value.toString()).dividedBy(1e18));
+            } else {
+                _totalfees = bg(_totalfees).plus(fees);
+            }
+            setTotalFees(bg(_totalfees));
+
+            console.log("individualBatch", individualBatch.length);
+            console.log("index", index);
+            console.log("individualBatch----1", individualBatch.length - 1);
+            updateInputValues(
+                individualBatch.length + index - 1,
+                refinaceData.txArray.length > 0 ? refinaceData.txArray : [],
+                refinaceData.batchFlow,
+                {
+                    fromNetwork: selectedFromNetwork.chainName,
+                    toNetwork: selectedToNetwork.chainName,
+                    fromChainId: selectedFromNetwork.chainId,
+                    toChainId: selectedToNetwork.chainId,
+                    fromProtocol: selectedFromProtocol,
+                    toProtocol: selectedToProtocol,
+                    fromToken: selectedFromToken,
+                    toToken: selectedToToken,
+                    amountIn: amount,
+                    fees: fees.toString(),
+                    extraValue: refinaceData.value ? bg(refinaceData.value.toString()).dividedBy(1e18).toString() : "0",
+                },
+                simulation
+            );
+            setAddToBatchLoading(false);
+            setShowBatchList(true);
+        } catch (error: any) {
+            setAddToBatchLoading(false);
+            setShowBatchList(true);
+
+            if (error.message) {
+                console.log("sendBatch: Error", error.message);
+            } else {
+                console.log("sendBatch: Eerror", error);
+            }
+            return;
+        }
+    };
+
     return (
         <Trade
             handleSelectFromNetwork={handleSelectFromNetwork}
@@ -797,8 +1008,7 @@ const TradeContainer: React.FC<any> = () => {
             closeFromSelectionMenu={closeFromSelectionMenu}
             closeToSelectionMenu={closeToSelectionMenu}
             totalfees={totalfees}
-        // createSession={createSession}
-        // erc20Transfer={erc20Transfer}
+            addRebalancedBatches={addRebalancedBatches}
         />
     );
 };

@@ -42,6 +42,11 @@ export function useCCRefinance() {
         address,
         provider,
     }: tRefinance): Promise<tRefinanceResponse | undefined> {
+
+        // console.log("refinanceForCC: Called")
+        // console.log("refinanceForCC: address", address)
+
+
         try {
             if (!selectedFromNetwork.chainName) {
                 toast.error("Chain is not selected!!");
@@ -207,7 +212,7 @@ export function useCCRefinance() {
                         tokenIn: "USDC",
                         tokenOut: tokenOutName == "USDC" ? "" : tokenOutName,
                         amount: amountIn,
-                        action: tokenOutName == "USDC" ? "Send USDC": "Swap",
+                        action: tokenOutName == "USDC" ? "Send USDC" : "Swap",
                     };
                     batchFlows.push(batchFlow);
                 } else {

@@ -16,10 +16,11 @@ const SelectionBar = ({
     mainValue,
     firstSubValue,
     secondSubValue,
+    showBg = true,
 }: tSelectionBar) => (
     <div
         onClick={handleSelectionMenu}
-        className="w-full rounded-lg px-5 py-3 hover:bg-[rgba(132,144,251,.4)] transition"
+        className={`w-full rounded-lg px-5 py-3 ${showBg && 'bg-[rgba(132,144,251,.4)]'} transition`}
     >
         <h5 className="text-sm md:text-base lg:text-lg font-medium md:font-semibold text-font-100">
             {titlePlaceholder}

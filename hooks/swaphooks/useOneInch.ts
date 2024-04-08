@@ -5,6 +5,7 @@ import { useMutation } from "@tanstack/react-query";
 import { tOneInchSwapResponseFromApi, tOneInch, tOneInchParams, tOneInchSwapResponse } from "../types";
 import { decreasePowerByDecimals } from "../../utils/helper";
 import { NODE_JWT_TOKEN, NODE_ONEINCH_URL } from "../../utils/keys";
+import toast from "react-hot-toast";
 
 export function useOneInch() {
     async function oneInchSwap({ tokenIn, tokenOut, amountIn, address, type, chainId }: tOneInch): Promise<tOneInchSwapResponse | undefined> {
@@ -32,7 +33,7 @@ export function useOneInch() {
                 data: parseSwapData.tx.data,
                 value: parseSwapData.tx.value
             };
-            console.log('OnInchSwapTx: ', swapTx)
+            // console.log('OnInchSwapTx: ', swapTx)
             return {
                 swapTx,
                 tokenIn,
@@ -44,6 +45,7 @@ export function useOneInch() {
             };
         } catch (error) {
             console.log("oneInchSwap-error", error);
+            toast.error("Swap failed, This token is not supported by 1inch. Please try another token.");
         }
     }
     return useMutation(oneInchSwap);
