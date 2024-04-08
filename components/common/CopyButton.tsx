@@ -19,7 +19,7 @@ const CopyButton: React.FC<CopyButtonProps> = ({ copy }) => {
     };
 
     return (
-        <button
+        <div
             onClick={() => copyToClipboard(copy)}
         >
             {copied ?
@@ -27,7 +27,7 @@ const CopyButton: React.FC<CopyButtonProps> = ({ copy }) => {
                 :
                 <FiCopy size="18px" className="text-B100 active:text-B200" />
             }
-        </button>
+        </div>
     );
 };
 
