@@ -5,7 +5,7 @@ import Image from "next/image";
 import SearchInput from "../common/SearchInput";
 import ProtocolSelection from "./ProtocolSelection";
 import { iSelectedNetwork } from "../../store/GlobalStore";
-import { iTokenData } from "../../store/TradingStore";
+import { iRebalance, iTokenData, iTrading, useRebalanceStore, useTradingStore } from "../../store/TradingStore";
 
 interface TokenSelectionMenuProps {
     showMenu: boolean;
@@ -16,7 +16,7 @@ interface TokenSelectionMenuProps {
     setFilterToken: (filterToken: string) => void;
     filterAddress: string;
     setFilterAddress: (filterAddress: string) => void;
-    tokensData: iTokenData;
+    tokensData: iTokenData[];
     selectedProtocol: string;
     onChangeToken: (item: any) => void;
     onChangeProtocol: (protocol: string) => void;
@@ -38,6 +38,8 @@ const TokenSelectionMenu: React.FC<TokenSelectionMenuProps> = ({
     onChangeProtocol,
     protocolNames,
 }) => {
+    const { isRebalance }: iRebalance = useRebalanceStore((state) => state);
+
     return (
         <div
             className={`w-full max-h-full bg-W100 flex flex-col gap-2 rounded-lg cursor-pointer p-3 shadow-2xl ${
@@ -59,7 +61,7 @@ const TokenSelectionMenu: React.FC<TokenSelectionMenuProps> = ({
                                 key={item.chainName}
                                 onClick={() => handleSelectNetwork(item)}
                                 className={`h-14 w-14 flex justify-center items-center gap-3 bg-font-100 hover:bg-font-200 active:bg-font-400 border-2 border-font-200 hover:border-font-300 shadow-sm rounded-md cursor-pointer  ${
-                                    selectedNetwork.chainName === item.chainName
+                                    selectedNetwork?.chainName === item.chainName
                                         ? "bg-gradient-to-br from-[#7339FD] to-[#4DD4F4]"
                                         : ""
                                 }`}
@@ -71,7 +73,9 @@ const TokenSelectionMenu: React.FC<TokenSelectionMenuProps> = ({
                 </div>
 
                 {/* Search for by protocol */}
-                <SearchInput value={filterToken} onChange={setFilterToken} placeholder="Search by Protocol" />
+                {!isRebalance && (
+                    <SearchInput value={filterToken} onChange={setFilterToken} placeholder="Search by Protocol" />
+                )}
 
                 {/* Select Protocol */}
                 <div className="w-full overflow-auto flex flex-col justify-center items-center py-1">

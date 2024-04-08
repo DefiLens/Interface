@@ -19,6 +19,7 @@ export type tTrade = {
     closeToSelectionMenu: () => void;
     createSession: () => void;
     erc20Transfer: () => void;
+    addRebalancedBatches: () => void;
 };
 
 export type tTradeProtocol = {

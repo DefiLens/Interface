@@ -3,10 +3,11 @@ import { tTrade } from "./types";
 import { protocolNames } from "../../utils/data/protocols";
 import ExecuteBatch from "../../components/Models/ExecuteBatch/ExecuteBatch";
 import ExecuteMethod from "../../components/Models/ExecuteMethod/ExecuteMethod";
-import { iTrading, useTradingStore } from "../../store/TradingStore";
+import { iRebalance, iTrading, useRebalanceStore, useTradingStore } from "../../store/TradingStore";
 import TokenSelectionMenu from "../../components/Batching/TokenSelectionMenu";
 import BatchSelectionSection from "../../components/Batching/BatchSelectionSection";
 import BatchingListSection from "../../components/Batching/BatchingListSection";
+import CustomCheckbox from "../../components/common/CustomCheckbox";
 
 bg.config({ DECIMAL_PLACES: 10 });
 
@@ -26,6 +27,7 @@ const Trade: React.FC<any> = ({
     ExecuteAllBatches,
     closeFromSelectionMenu,
     closeToSelectionMenu,
+    addRebalancedBatches
 }: tTrade) => {
     const {
         selectedFromNetwork,
@@ -47,7 +49,10 @@ const Trade: React.FC<any> = ({
         showBatchList,
         showExecuteBatchModel,
         showExecuteMethodModel,
+        setSelectedToProtocol,
     }: iTrading = useTradingStore((state) => state);
+
+    const { isRebalance }: iRebalance = useRebalanceStore((state) => state);
 
     return (
         <div className="w-full h-full flex flex-col justify-center items-center py-5">
@@ -97,6 +102,7 @@ const Trade: React.FC<any> = ({
                             onChangeAmountIn={onChangeAmountIn}
                             sendSingleBatchToList={sendSingleBatchToList}
                             handleExecuteMethod={handleExecuteMethod}
+                            addRebalancedBatches={addRebalancedBatches}
                         />
                     )}
                 </div>

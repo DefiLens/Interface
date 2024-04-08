@@ -5,18 +5,22 @@ import { BigNumber as bg } from "bignumber.js";
 import SelectionBar from "../SelectionBar/SelectionBar";
 import { HiOutlineArrowsRightLeft } from "react-icons/hi2";
 import Button from "../Button/Button";
-import { iTrading, useTradingStore } from "../../store/TradingStore";
+import { iRebalance, iTrading, useRebalanceStore, useTradingStore } from "../../store/TradingStore";
 import { protocolNames } from "../../utils/data/protocols";
 import { defaultBlue } from "../../assets/images";
 import { BiLoaderAlt } from "react-icons/bi";
 import { tTrade } from "../../modules/trade/types";
 bg.config({ DECIMAL_PLACES: 10 });
 
+import CustomCheckbox from "../common/CustomCheckbox";
+import { Rebalance } from "./Rebalance";
+
 const BatchSelectionSection: React.FC<tTrade> = ({
     handleSwap,
     onChangeAmountIn,
     sendSingleBatchToList,
     handleExecuteMethod,
+    addRebalancedBatches
 }) => {
     const {
         maxBalance,
@@ -33,75 +37,101 @@ const BatchSelectionSection: React.FC<tTrade> = ({
         fromTokenDecimal,
         addToBatchLoading,
         sendTxLoading,
+        setSelectedToProtocol,
     }: iTrading = useTradingStore((state) => state);
+
+    const { isRebalance, setIsRebalance }: iRebalance = useRebalanceStore((state) => state);
+
+    const handleCheckboxChange = (event: any) => {
+        setIsRebalance(event.target.checked);
+        setSelectedToProtocol("erc20");
+    };
 
     return (
         <div className="w-full bg-gradient-to-br from-[#7339FD] via-[#56B0F6] to-[#4DD4F4] flex flex-col gap-1 rounded-2xl cursor-pointer shadow-2xl">
             <div className="w-full flex flex-col gap-5">
                 <div className="px-5 pt-7">
-                    {/* Token Selection */}
-                    <div
-                        className={`w-full relative flex justify-center bg-[rgba(225,225,225,.4)] border rounded-xl px-5 py-3 items-center gap-5 ${
-                            selectedToNetwork.chainName &&
-                            selectedToProtocol &&
-                            selectedToToken &&
-                            selectedFromNetwork.chainName &&
-                            selectedFromProtocol &&
-                            selectedFromToken
-                                ? "flex-row"
-                                : "flex-col"
-                        }`}
-                    >
-                        {/* Selection Bar - FROM */}
-                        <SelectionBar
-                            handleSelectionMenu={() => setShowFromSelectionMenu(true)}
-                            titlePlaceholder="From"
-                            iconCondition={selectedFromNetwork.chainName && selectedFromProtocol}
-                            mainIcon={selectedFromNetwork?.icon}
-                            subIcon={
-                                protocolNames[selectedFromNetwork.chainId]?.key.find(
-                                    (entry: any) => entry.name == selectedFromProtocol
-                                )?.icon
-                            }
-                            valueCondition={selectedFromNetwork.chainName}
-                            valuePlaceholder="Select Chain and token"
-                            mainValue={selectedFromNetwork.key}
-                            firstSubValue={selectedFromProtocol}
-                            secondSubValue={selectedFromToken}
-                        />
+                    <div className="flex flex-col gap-3 bg-[rgba(225,225,225,.4)] border rounded-xl px-5 py-3 ">
+                        {/* Token Selection */}
+                        <div
+                            className={`w-full relative flex justify-center items-center gap-5 ${
+                                !isRebalance &&
+                                selectedToNetwork.chainName &&
+                                selectedToProtocol &&
+                                selectedToToken &&
+                                selectedFromNetwork.chainName &&
+                                selectedFromProtocol &&
+                                selectedFromToken
+                                    ? "flex-row"
+                                    : "flex-col"
+                            }`}
+                        >
+                            {/* Selection Bar - FROM */}
+                            <SelectionBar
+                                handleSelectionMenu={() => setShowFromSelectionMenu(true)}
+                                titlePlaceholder="From"
+                                iconCondition={selectedFromNetwork.chainName && selectedFromProtocol}
+                                mainIcon={selectedFromNetwork?.icon}
+                                subIcon={
+                                    protocolNames[selectedFromNetwork.chainId]?.key.find(
+                                        (entry: any) => entry.name == selectedFromProtocol
+                                    )?.icon
+                                }
+                                valueCondition={selectedFromNetwork.chainName}
+                                valuePlaceholder="Select Chain and token"
+                                mainValue={selectedFromNetwork.key}
+                                firstSubValue={selectedFromProtocol}
+                                secondSubValue={selectedFromToken}
+                            />
 
-                        {/* Swap Btn */}
-                        {selectedToNetwork.chainName &&
-                            selectedToProtocol &&
-                            selectedToToken &&
-                            selectedFromNetwork.chainName &&
-                            selectedFromProtocol &&
-                            selectedFromToken && (
-                                <div
-                                    onClick={handleSwap}
-                                    className="absolute flex justify-center items-center border-2 bg-N60 hover:bg-font-100 active:bg-font-400 rounded-full p-1"
-                                >
-                                    <HiOutlineArrowsRightLeft size="25px" className="rotate-90 sm:rotate-0 text-B100" />
-                                </div>
+                            {/* Swap Btn */}
+                            {!isRebalance &&
+                                selectedToNetwork.chainName &&
+                                selectedToProtocol &&
+                                selectedToToken &&
+                                selectedFromNetwork.chainName &&
+                                selectedFromProtocol &&
+                                selectedFromToken && (
+                                    <div
+                                        onClick={handleSwap}
+                                        className="absolute flex justify-center items-center border-2 bg-N60 hover:bg-font-100 active:bg-font-400 rounded-full p-1"
+                                    >
+                                        <HiOutlineArrowsRightLeft
+                                            size="25px"
+                                            className="rotate-90 sm:rotate-0 text-B100"
+                                        />
+                                    </div>
+                                )}
+
+                            {/* Selection Bar - TO */}
+                            {!isRebalance ? (
+                                <SelectionBar
+                                    handleSelectionMenu={() => setShowToSelectionMenu(true)}
+                                    titlePlaceholder="To"
+                                    iconCondition={selectedToNetwork.chainName}
+                                    mainIcon={selectedToNetwork?.icon}
+                                    subIcon={
+                                        protocolNames[selectedToNetwork.chainId]?.key.find(
+                                            (entry: any) => entry.name == selectedToProtocol
+                                        )?.icon
+                                    }
+                                    valueCondition={selectedToNetwork.chainName}
+                                    valuePlaceholder="Select Chain and token"
+                                    mainValue={selectedToNetwork.key}
+                                    firstSubValue={selectedToProtocol}
+                                    secondSubValue={selectedToToken}
+                                />
+                            ) : (
+                                <Rebalance addRebalancedBatches={addRebalancedBatches}/>
                             )}
-
-                        {/* Selection Bar - TO */}
-                        <SelectionBar
-                            handleSelectionMenu={() => setShowToSelectionMenu(true)}
-                            titlePlaceholder="To"
-                            iconCondition={selectedToNetwork.chainName}
-                            mainIcon={selectedToNetwork?.icon}
-                            subIcon={
-                                protocolNames[selectedToNetwork.chainId]?.key.find(
-                                    (entry: any) => entry.name == selectedToProtocol
-                                )?.icon
-                            }
-                            valueCondition={selectedToNetwork.chainName}
-                            valuePlaceholder="Select Chain and token"
-                            mainValue={selectedToNetwork.key}
-                            firstSubValue={selectedToProtocol}
-                            secondSubValue={selectedToToken}
-                        />
+                        </div>
+                        <div className="flex justify-between items-center w-full mt-2">
+                            <div></div>
+                            <div className="inline-flex items-center relative">
+                                <CustomCheckbox checked={isRebalance} onChange={handleCheckboxChange} />
+                                <span className="ml-2 text-N0 ">Rebalance</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -200,12 +230,21 @@ const BatchSelectionSection: React.FC<tTrade> = ({
 
                     {/* Action Buttons */}
                     <div className="w-full flex flex-col justify-center items-center gap-3">
-                        <Button
-                            handleClick={() => sendSingleBatchToList(true)}
-                            isLoading={addToBatchLoading}
-                            customStyle=""
-                            innerText="Add Batch to List"
-                        />
+                        {isRebalance ? (
+                            <Button
+                                handleClick={() => sendSingleBatchToList(true)}
+                                isLoading={addToBatchLoading}
+                                customStyle=""
+                                innerText="Rebalance"
+                            />
+                        ) : (
+                            <Button
+                                handleClick={() => sendSingleBatchToList(true)}
+                                isLoading={addToBatchLoading}
+                                customStyle=""
+                                innerText="Add Batch to List"
+                            />
+                        )}
 
                         <Button
                             handleClick={() => handleExecuteMethod()}
