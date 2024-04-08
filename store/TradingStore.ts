@@ -107,7 +107,7 @@ export interface iTrading {
 
     fromTokensData: iTokenData[];
     toTokensData: iTokenData[];
-    amountIn: string;
+    amountIn: string | any;
     fromTokenDecimal: number;
 
     filterFromToken: string;
@@ -294,3 +294,105 @@ export const useTradingStore = create<iTrading>((set) => ({
     setHasExecutionError: (hasExecutionError) => set(() => ({ hasExecutionError })),
     setShowExecuteMethodModel: (showExecuteMethodModel) => set(() => ({ showExecuteMethodModel })),
 }));
+
+
+
+
+
+
+
+
+
+
+
+//Rebalance Store
+export interface iRebalanceData {
+    network: iSelectedNetwork;
+    protocol: string;
+    token: string;
+    percentage: number;
+    amount: number;
+}
+
+
+export interface iRebalance {
+    isRebalance: boolean;
+    setIsRebalance: (isRebalance: boolean) => void;
+
+    splitEqually: boolean;
+    setSplitEqually: (splitEqually: boolean) => void;
+
+    percentages: number[];
+    setPercentages: (percentages: number[]) => void;
+
+    isModalOpen: number | null;
+    setIsModalOpen: (isOpen: number | null) => void;
+
+    rebalanceData: iRebalanceData[];
+    setRebalanceData: (index: number | null, newData?: iRebalanceData, remove?: boolean) => void;
+    addNewEmptyData: () => void;
+    removeDataAtIndex: (index: number) => void;
+
+}
+// Create global state
+export const useRebalanceStore = create<iRebalance>((set) => ({
+    isRebalance: false,
+    setIsRebalance: (isRebalance) => set(() => ({ isRebalance })),
+
+    splitEqually: true,
+    setSplitEqually: (splitEqually) => set(() => ({ splitEqually })),
+
+    percentages: [],
+    setPercentages: (percentages) => set(() => ({ percentages })),
+
+    isModalOpen: null,
+    setIsModalOpen: (isOpen) => set(() => ({ isModalOpen: isOpen })),
+
+    rebalanceData: [
+        {
+            network: { key: "", chainName: "", chainId: "", icon: "" },
+            protocol: "erc20",
+            token: "",
+            percentage: 0,
+            amount: 0,
+        },
+    ],
+    setRebalanceData: (index, newData) => {
+        set((state) => {
+            let updatedData: iRebalanceData[];
+            console.log("index", index);
+    
+            if (newData) {
+                // Add or update the data
+                if (index !== null && index >= 0 && index < state.rebalanceData.length) {
+                    // Update existing data if index is provided
+                    updatedData = [...state.rebalanceData];
+                    updatedData[index] = newData;
+                } else {
+                    // Add new data at the end of the array
+                    updatedData = [...state.rebalanceData, newData];
+                }
+            } else {
+                updatedData = state.rebalanceData;
+            }
+    
+            return { rebalanceData: updatedData };
+        });
+    },
+    
+    addNewEmptyData: () => {
+        set((state) => ({ rebalanceData: [...state.rebalanceData, createEmptyData()] }));
+    },
+
+    removeDataAtIndex: (index) => {
+        set((state) => ({ rebalanceData: state.rebalanceData.filter((_, i) => i !== index) }));
+    },
+}));
+
+const createEmptyData = (): iRebalanceData => ({
+    network: { key: "", chainName: "", chainId: "", icon: "" },
+    protocol: "erc20",
+    token: "",
+    percentage: 0,
+    amount: 0,
+});

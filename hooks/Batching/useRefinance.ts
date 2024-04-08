@@ -32,9 +32,21 @@ export function useRefinance() {
         amount,
         address,
         provider,
-    }: tRefinance):  Promise<tRefinanceResponse | undefined> {
+    }: tRefinance): Promise<tRefinanceResponse | undefined> {
+
+
+        // console.log("refinance: Called")
+        // console.log("refinanceFor: isSCW", isSCW)
+        // console.log("refinanceFor: fromProtocol", fromProtocol)
+        // console.log("refinanceFor: toProtocol", toProtocol)
+        // console.log("refinanceFor: tokenIn", tokenIn)
+        // console.log("refinanceFor: tokenInName", tokenInName)
+        // console.log("refinanceFor: tokenOut", tokenOut)
+        // console.log("refinanceFor: tokenOutName", tokenOutName)
+        // console.log("refinanceFor: amount", amount)
+        // console.log("refinance: address", address)
+
         try {
-            console.log("tokenInName", tokenInName)
             if (!selectedFromNetwork.chainName) {
                 toast.error("Chain is not selected!!");
             }
@@ -42,28 +54,29 @@ export function useRefinance() {
             const batchFlows: iBatchFlowData[] = [];
 
             let swapData: tOneInchSwapResponse | undefined
-            let abiNum,
-                abi,
-                methodName,
-                isContractSet,
-                paramDetailsMethod,
-                tokenInContractAddress,
-                abiInterface,
-                params,
-                txData,
-                isSwap,
-                nativeTokenIn,
-                nativeTokenInSymbol,
-                nativeTokenInDecimal,
-                nativeTokenOut,
-                nativeTokenOutSymbol,
-                nativeTokenOutDecimal;
+            let abiNum: any,
+                abi: any,
+                methodName: any,
+                isContractSet: any,
+                paramDetailsMethod: any,
+                tokenInContractAddress: any,
+                abiInterface: any,
+                params: any,
+                txData: any,
+                isSwap: any,
+                nativeTokenIn: any,
+                nativeTokenInSymbol: any,
+                nativeTokenInDecimal: any,
+                nativeTokenOut: any,
+                nativeTokenOutSymbol: any,
+                nativeTokenOutDecimal: any;
 
             if (fromProtocol == "erc20") {
                 nativeTokenIn = fromTokensData?.filter((token) => token.symbol === tokenInName)[0].address;
                 nativeTokenInSymbol = fromTokensData?.filter((token) => token.symbol === tokenInName)[0].symbol;
                 nativeTokenInDecimal = fromTokensData?.filter((token) => token.symbol === tokenInName)[0].decimals;
             }
+
 
             if (toProtocol == "erc20") {
                 nativeTokenOut = toTokensData?.filter((token) => token.symbol === tokenOutName)[0].address;
@@ -119,6 +132,7 @@ export function useRefinance() {
                 batchFlows.push(batchFlow);
             }
 
+
             isSwap = nativeTokenIn != nativeTokenOut ? true : false;
             if (isSwap) {
                 if (selectedFromNetwork.chainId == "43114") {
@@ -127,18 +141,15 @@ export function useRefinance() {
                     return;
                 }
 
-                let approveData
-                if (nativeTokenIn != ETH_ADDRESS) {
-                    approveData = await approve({
-                        tokenIn: nativeTokenIn,
-                        spender: OneInchRouter,
-                        amountIn: amount,
-                        address,
-                        web3JsonProvider: provider,
-                    } as tApprove);
-                    console.log("approveData", approveData)
-                    if (approveData) tempTxs.push(approveData);
-                }
+                const approveData = await approve({
+                    tokenIn: nativeTokenIn,
+                    spender: OneInchRouter,
+                    amountIn: amount,
+                    address,
+                    web3JsonProvider: provider,
+                } as tApprove);
+
+                if (approveData) tempTxs.push(approveData);
                 swapData = await oneInchSwap({
                     tokenIn: nativeTokenIn,
                     tokenOut: nativeTokenOut,
@@ -147,8 +158,9 @@ export function useRefinance() {
                     type: "exactIn",
                     chainId: Number(selectedNetwork.chainId)
                 } as tOneInch);
+
                 if (!swapData) return
-                console.log('swapData: ', swapData, swapData.amountOutprice.toString())
+                // console.log('swapData: ', swapData, swapData.amountOutprice.toString())
                 tempTxs.push(swapData.swapTx);
 
                 let batchFlow: iBatchFlowData = {
@@ -160,6 +172,7 @@ export function useRefinance() {
                     amount: amountIn,
                     action: "Swap",
                 };
+
                 batchFlows.push(batchFlow);
             }
 
@@ -218,6 +231,7 @@ export function useRefinance() {
                 };
                 batchFlows.push(batchFlow);
             }
+
             return { txArray: tempTxs, batchFlow: batchFlows, value: BigNumber.from("0") };
         } catch (error: any) {
             if (error.message) {
