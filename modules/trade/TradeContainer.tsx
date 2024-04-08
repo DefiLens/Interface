@@ -509,6 +509,7 @@ const TradeContainer: React.FC<any> = () => {
     };
 
     const removeBatch = (index: number) => {
+        // console.log(individualBatch)
         const updatedBatch = [...individualBatch];
         updatedBatch.splice(index, 1); // Remove the InputBar at the specified index
         setIndividualBatch(updatedBatch);
@@ -559,12 +560,13 @@ const TradeContainer: React.FC<any> = () => {
                 },
             ]);
         }
-        console.log("------------index in update", index)
+
         const updatedBatch: any = [...individualBatch];
         updatedBatch[index].txArray = txArray;
         updatedBatch[index].batchesFlow = batchesFlow;
         updatedBatch[index].data = data;
         updatedBatch[index].simulation = simulation;
+
         setIndividualBatch([
             ...updatedBatch,
             {
@@ -590,6 +592,79 @@ const TradeContainer: React.FC<any> = () => {
                 },
             },
         ]);
+       {!isRebalance && clearSelectedBatchData()};
+    };
+
+    const updateInputValuesForRebalance = (index: number, txArray: Array<tTx>, batchesFlow: any, data: any, simulation: any) => {
+        if (txArray.length < 1) return toast.error("Please complete the last input before adding a new one.");
+        let updatedBatch: any = [...individualBatch];
+
+        if (individualBatch.length == 0) {
+            setTotalFees(bg(0));
+            updatedBatch.push({
+                    id: 0,
+                    txArray: [],
+                    batchesFlow: [],
+                    data: {
+                        fromNetwork: "",
+                        toNetwork: "",
+                        fromChainId: "",
+                        toChainId: "",
+                        fromProtocol: "",
+                        toProtocol: "",
+                        fromToken: "",
+                        toToken: "",
+                        amountIn: "",
+                        fees: "",
+                        extraValue: "",
+                    },
+                    simulation: {
+                        isSuccess: false,
+                        isError: false,
+                    },
+                },
+            );
+        }
+
+        if (index < updatedBatch.length) {
+            updatedBatch[index].txArray = txArray;
+            updatedBatch[index].batchesFlow = batchesFlow;
+            updatedBatch[index].data = data;
+            updatedBatch[index].simulation = simulation;
+        } else {
+            updatedBatch.push({
+                    id: index,
+                    txArray,
+                    batchesFlow,
+                    data,
+                    simulation,
+                },
+            );
+            updatedBatch.push({
+                    id: updatedBatch.length,
+                    txArray: [],
+                    batchesFlow: [],
+                    data: {
+                        fromNetwork: "",
+                        toNetwork: "",
+                        fromChainId: "",
+                        toChainId: "",
+                        fromProtocol: "",
+                        toProtocol: "",
+                        fromToken: "",
+                        toToken: "",
+                        amountIn: "",
+                        fees: "",
+                        extraValue: "",
+                    },
+                    simulation: {
+                        isSuccess: false,
+                        isError: false,
+                    },
+                },
+            );
+        }
+        setIndividualBatch(updatedBatch);
        {!isRebalance && clearSelectedBatchData()};
     };
 
@@ -920,7 +995,6 @@ const TradeContainer: React.FC<any> = () => {
                     provider,
                 } as tRefinance);
             }
-            console.log("--------------refinaceData", refinaceData);
 
             if (!refinaceData) {
                 setAddToBatchLoading(false);
@@ -950,11 +1024,8 @@ const TradeContainer: React.FC<any> = () => {
             }
             setTotalFees(bg(_totalfees));
 
-            console.log("individualBatch", individualBatch.length);
-            console.log("index", index);
-            console.log("individualBatch----1", individualBatch.length - 1);
-            updateInputValues(
-                individualBatch.length + index - 1,
+            updateInputValuesForRebalance(
+                individualBatch.length + index - 1, // as we looping this function, so to access individualBatch
                 refinaceData.txArray.length > 0 ? refinaceData.txArray : [],
                 refinaceData.batchFlow,
                 {
