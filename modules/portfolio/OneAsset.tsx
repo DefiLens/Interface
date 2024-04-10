@@ -14,6 +14,7 @@ import { BigNumber } from "ethers";
 import { BigNumber as bg } from "bignumber.js";
 import { tOneAsset } from "./types";
 import { FiCopy } from "react-icons/fi";
+import { startCase } from "lodash";
 
 const OneAsset: React.FC<tOneAsset> = ({ positions, send, handleAmountIn, currentChainId }) => {
     const { isSCW, selectOneAsset, setSelectOneAsset, amountInDecimals, sendTxLoading, txhash }: iPortfolio =
@@ -30,43 +31,57 @@ const OneAsset: React.FC<tOneAsset> = ({ positions, send, handleAmountIn, curren
     return (
         <>
             {positions
-                ?.sort((a, b) => b.quote - a.quote)
+                ?.sort((a, b) => b.attributes.value - a.attributes.value)
                 .slice(0, showAll ? undefined : 4)
                 .map((item) => (
                     <div
-                        key={item.contract_address}
+                        key={item.id}
                         className="w-full flex justify-end items-center gap-3 text-[13px] md:text-[15px] font-medium text-B200 py-4 border-t border-B50"
                     >
-                        <div className="w-full flex justify-start items-center gap-3 text-start">
+                        <div className="w-full flex max-w-md justify-start items-center gap-3 text-start">
                             {/* Token logo */}
                             <Image
-                                height={100}
-                                width={100}
-                                src={item?.logo_url || defaultBlue}
-                                alt=""
-                                className="h-10 w-10 rounded-full bg-N60"
+                                height={38}
+                                width={38}
+                                src={item?.attributes.fungible_info.icon?.url || defaultBlue}
+                                alt="Token logo"
+                                className="rounded-full bg-N60"
                             />
-                            <div className="flex flex-col justify-start items-start gap-1">
+                            <div className="flex flex-col gap-[6px]">
                                 {/* Token Name */}
-                                <div>{item.contract_display_name}</div>
+                                <div>{item?.attributes.fungible_info.name}</div>
                                 {/* Chain logo and name */}
                                 <div className="inline-flex justify-start items-center gap-1 text-xs text-font-500">
-                                    <p className="text-gray-500">Protocol</p> |
-                                    <p className="bg-gray-100 text-gray-500 rounded-md px-[6px] py-[2px]">
-                                        isDeposited
+                                    <p className="text-gray-500 font-medium">
+                                        {item?.attributes.protocol
+                                            ? item?.attributes.protocol.toUpperCase()
+                                            : startCase(item?.attributes.position_type)}
                                     </p>
+                                    {item?.attributes.protocol && (
+                                        <>
+                                            <span className="text-sm"> · </span>
+                                            <p className="bg-gray-100 text-gray-500 rounded-md px-[6px] py-[2px]">
+                                                Deposited
+                                            </p>
+                                        </>
+                                    )}
                                 </div>
                             </div>
                         </div>
-                        <div className="w-[25%] text-start">{item.quote_rate && `$${item.quote_rate}`}</div>
-                        <div className="w-[25%] text-start">
-                            {Number(
+                        <div className="w-full inline-flex items-center">
+                            <div className="w-1/3 text-start">
+                                {item?.attributes.price && `$${item.attributes.price.toFixed(5)}`}
+                            </div>
+                            <div className="w-1/3 text-start">
+                                {/* {Number(
                                 decreasePowerByDecimals(bg(item.balance).toString(), item.contract_decimals)
-                            ).toLocaleString("en-US")}{" "}
-                            {item.contract_ticker_symbol}
-                        </div>
-                        <div className="w-[25%] text-start text-success-600">
-                            {item.quote && `$${Number(item.quote).toLocaleString("en-US")}`}
+                            ).toLocaleString("en-US")}{" "} */}
+                                {item?.attributes.quantity.float.toLocaleString("en-US")}{" "}
+                                {item?.attributes.fungible_info.symbol}
+                            </div>
+                            <div className="w-1/3 text-start text-success-600">
+                                {item?.attributes.value && `$${Number(item.attributes.value).toLocaleString("en-US")}`}
+                            </div>
                         </div>
                         <div className="w-[3%]">
                             {chainId === currentChainId && (
@@ -109,12 +124,12 @@ const OneAsset: React.FC<tOneAsset> = ({ positions, send, handleAmountIn, curren
                                                 <Image
                                                     height={100}
                                                     width={100}
-                                                    src={item?.logo_urls.token_logo_url || defaultBlue}
+                                                    src={item?.attributes.fungible_info.icon?.url || defaultBlue}
                                                     alt=""
                                                     className="h-12 w-12 rounded-full bg-N60"
                                                 />
                                                 <div className="flex flex-col justify-start items-start gap-1 text-B100 font-bold text-2xl">
-                                                    <div>{item?.contract_display_name}</div>
+                                                    <div>{item?.attributes.fungible_info.name}</div>
                                                 </div>
                                             </div>
 

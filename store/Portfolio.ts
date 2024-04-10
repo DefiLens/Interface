@@ -1,9 +1,10 @@
 import { create } from "zustand";
 import { BigNumber } from "ethers";
+import { tPosition } from "../modules/portfolio/types";
 
 export interface iChainData {
     chainId: number;
-    data: any;
+    data: tPosition[];
 }
 
 export interface iPortfolio {

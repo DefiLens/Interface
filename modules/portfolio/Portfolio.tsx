@@ -7,17 +7,44 @@ import { iPortfolio, usePortfolioStore } from "../../store/Portfolio";
 import { ChainIdDetails } from "../../utils/data/network";
 import { defaultBlue, metamask } from "../../assets/images";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
-import { tPortfolio } from "./types";
+import { tPortfolio, tPosition } from "./types";
 
 import OneAsset from "./OneAsset";
 import ChainSelection from "../../components/ChainSelection";
 import OneAssetSkeleton from "../../components/skeleton/OneAssetSkeleton";
 import CopyButton from "../../components/common/CopyButton";
+import { useEffect, useMemo } from "react";
 
 const Portfolio: React.FC<tPortfolio> = ({ smartAccountAddress, handleFetchPorfolioData, send, handleAmountIn }) => {
     const { isSCW, chainData, isLoading, setIsSCW }: iPortfolio = usePortfolioStore((state) => state);
     const { smartAccount, scwBalance, eoaBalance, selectedNetwork }: iGlobal = useGlobalStore((state) => state);
     const address = useAddress();
+
+    const getTotalNetworth = useMemo(() => {
+        return chainData
+            ?.reduce(
+                (
+                    acc: number,
+                    pos?: {
+                        data?: {
+                            attributes?: {
+                                value: number;
+                            };
+                        }[];
+                    }
+                ) => {
+                    if (pos && pos.data) {
+                        return (
+                            acc +
+                            pos.data.reduce((subAcc, currentItem) => subAcc + (currentItem?.attributes?.value ?? 0), 0)
+                        );
+                    }
+                    return acc;
+                },
+                0
+            )
+            .toFixed(4);
+    }, [chainData]);
 
     return (
         <div className="w-full flex flex-col justify-center items-center gap-10 p-4">
@@ -40,27 +67,7 @@ const Portfolio: React.FC<tPortfolio> = ({ smartAccountAddress, handleFetchPorfo
                                     {isLoading ? (
                                         <div className="animate-pulse bg-gray-300 h-6 w-full rounded-md"></div>
                                     ) : (
-                                        <h1 className="text-4xl font-bold">
-                                            $
-                                            {chainData
-                                                ?.reduce(
-                                                    (acc: number, val?: { data?: { items?: { quote: number }[] } }) => {
-                                                        if (val && val.data && val.data.items) {
-                                                            return (
-                                                                acc +
-                                                                val.data.items.reduce(
-                                                                    (subAcc: number, currentItem: { quote: number }) =>
-                                                                        subAcc + currentItem.quote,
-                                                                    0
-                                                                )
-                                                            );
-                                                        }
-                                                        return acc;
-                                                    },
-                                                    0
-                                                )
-                                                ?.toFixed(4)}
-                                        </h1>
+                                        <h1 className="text-4xl font-bold">${getTotalNetworth ?? ""}</h1>
                                     )}
                                 </div>
                             </div>
@@ -147,12 +154,13 @@ const Portfolio: React.FC<tPortfolio> = ({ smartAccountAddress, handleFetchPorfo
                         <OneAssetSkeleton count={2} />
                     ) : (
                         <>
+                            {/* Mapping All the chains and their positions.  */}
                             {chainData?.map((portfolioData) => {
-                                const filteredPositions: any[] = portfolioData?.data?.items?.filter(
-                                    (item: any) => item.quote > 0.001
+                                const positions = portfolioData?.data?.filter(
+                                    (position) => position.attributes.value > 0.001
                                 );
                                 return (
-                                    filteredPositions.length > 0 && (
+                                    positions.length > 0 && (
                                         <div
                                             key={portfolioData.chainId}
                                             className="max-w-6xl w-full bg-N0 flex flex-col justify-start items-start text-B200 rounded-3xl p-8 relative border border-B50"
@@ -163,10 +171,11 @@ const Portfolio: React.FC<tPortfolio> = ({ smartAccountAddress, handleFetchPorfo
                                                     <Image
                                                         height={42}
                                                         width={42}
-                                                        src={
-                                                            portfolioData?.data?.items[0]?.logo_urls?.chain_logo_url ||
-                                                            defaultBlue
-                                                        }
+                                                        src={`https://chain-icons.s3.amazonaws.com/chainlist/${portfolioData.chainId}`}
+                                                        // src={
+                                                        //     portfolioData?.data?.items[0]?.logo_urls?.chain_logo_url ||
+                                                        //     defaultBlue
+                                                        // }
                                                         alt="Chain logo"
                                                         className="rounded-full"
                                                     />
@@ -174,11 +183,11 @@ const Portfolio: React.FC<tPortfolio> = ({ smartAccountAddress, handleFetchPorfo
                                                 {/* Network Asset worth */}
                                                 <div className="flex flex-col justify-start items-start gap-1 text-B100 font-bold text-2xl">
                                                     <div>
-                                                        {startCase(portfolioData?.data?.chain_name)} · $
-                                                        {portfolioData?.data?.items
+                                                        {startCase(portfolioData?.data[0].relationships.chain.data.id)}{" "}
+                                                        · $
+                                                        {portfolioData?.data
                                                             ?.reduce(
-                                                                (i: number, currentValue: any) =>
-                                                                    i + currentValue.quote,
+                                                                (i, currentValue) => i + currentValue.attributes.value,
                                                                 0
                                                             )
                                                             .toFixed(4)}
@@ -187,19 +196,21 @@ const Portfolio: React.FC<tPortfolio> = ({ smartAccountAddress, handleFetchPorfo
                                             </div>
 
                                             {/* Heading  */}
-                                            <div className="sticky top-[114px] z-10 w-full bg-N0 flex justify-end items-center gap-3 text-xs md:text-sm text-B100 font-bold h-7">
-                                                <div className="w-full text-start text-B300 font-semibold">ASSET</div>
-                                                <div className="w-[25%] text-start">PRICE</div>
-                                                <div className="w-[25%] text-start">BALANCE</div>
-                                                <div className="w-[25%] text-start">VALUE</div>
+                                            <div className="sticky top-[114px] z-10 w-full bg-N0 flex justify-end items-center gap-3 text-xs md:text-sm text-B75 font-bold h-7">
+                                                <div className="w-full max-w-md text-start text-B300 font-semibold">ASSET</div>
+                                                <div className="w-full inline-flex items-center">
+                                                    <div className="w-1/3 text-start">PRICE</div>
+                                                    <div className="w-1/3 text-start">BALANCE</div>
+                                                    <div className="w-1/3 text-start">VALUE</div>
+                                                </div>
                                                 <div className="w-[3%]"></div>
                                             </div>
 
                                             <OneAsset
-                                                positions={filteredPositions}
+                                                positions={positions}
                                                 send={send}
                                                 handleAmountIn={handleAmountIn}
-                                                currentChainId={portfolioData?.data?.chain_id}
+                                                currentChainId={portfolioData.chainId}
                                             />
                                         </div>
                                     )
