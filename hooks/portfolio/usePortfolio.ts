@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useMutation } from "@tanstack/react-query";
 import { iPortfolio, usePortfolioStore } from "../../store/Portfolio";
+import { chains } from "../../modules/portfolio/constants";
 
 export function usePortfolio() {
     const { chainId, setChainData, setIsLoading, setError }: iPortfolio = usePortfolioStore((state) => state);
@@ -10,16 +11,8 @@ export function usePortfolio() {
             setIsLoading(true);
             const authToken = process.env.NEXT_PUBLIC_COVALENT_API_KEY;
 
-            const chains = [
-                { chainName: "Polygon", chainId: 137 }, // Polygon (Matic)
-                { chainName: "Ethereum", chainId: 1 }, // Ethereum
-                { chainName: "Base", chainId: 8453 }, // Base
-                { chainName: "Optimism", chainId: 10 }, // Optimism
-                { chainName: "Avalanche", chainId: 43114 }, // Avalanche
-                { chainName: "Arbitrum", chainId: 42161 }, // Arbitrum
-            ];
-
             let requests;
+
             if (chainId) {
                 // Fetch data for a specific chain if chainId is provided
                 const chain = chains.find((c) => c.chainId === chainId);
@@ -30,6 +23,7 @@ export function usePortfolio() {
                     `https://api.covalenthq.com/v1/${chainId}/address/${address}/balances_v2/`,
                     {
                         headers: {
+                            Accept: "application/json",
                             Authorization: `Bearer ${authToken}`,
                         },
                     }
@@ -43,6 +37,7 @@ export function usePortfolio() {
                             `https://api.covalenthq.com/v1/${chainId}/address/${address}/balances_v2/`,
                             {
                                 headers: {
+                                    Accept: "application/json",
                                     Authorization: `Bearer ${authToken}`,
                                 },
                             }
@@ -51,7 +46,7 @@ export function usePortfolio() {
                     })
                 );
             }
-
+            // Storing the array of req results of portfolio into chainData: { chainId, data }
             setChainData(requests);
         } catch (error) {
             console.error("Error fetching data:", error);

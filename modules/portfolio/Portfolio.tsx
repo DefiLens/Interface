@@ -10,7 +10,7 @@ import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import { tPortfolio } from "./types";
 
 import OneAsset from "./OneAsset";
-import ChainSelection from "../../components/ChainSelection/ChainSelection";
+import ChainSelection from "../../components/ChainSelection";
 import OneAssetSkeleton from "../../components/skeleton/OneAssetSkeleton";
 import CopyButton from "../../components/common/CopyButton";
 
@@ -104,7 +104,7 @@ const Portfolio: React.FC<tPortfolio> = ({ smartAccountAddress, handleFetchPorfo
                                                         ")"}
                                             </span>
                                         </div>
-                                        <CopyButton copy={address} />
+                                        <CopyButton copy={address ?? ""} />
                                     </button>
                                 </div>
                             </div>
@@ -115,8 +115,8 @@ const Portfolio: React.FC<tPortfolio> = ({ smartAccountAddress, handleFetchPorfo
                     <div className="sticky h-[115px] top-0 z-20 max-w-6xl w-full flex flex-col justify-between gap-3 shadow-lg bg-N0 rounded-lg p-2">
                         <div className="md:flex gap-4 flex justify-between items-center">
                             <div className="hidden md:flex justify-center items-center gap-2 text-B100 text-lg bg-GR1 shadow-lg rounded-lg p-1">
-                                <div
-                                    className={`cursor-pointer px-3 py-1 text-sm md:text-base text-center rounded-lg ${
+                                <button
+                                    className={`cursor-pointer px-3 py-1 text-sm md:text-base text-center rounded-md ${
                                         !isSCW ? "hover:bg-N30" : ""
                                     } transition duration-300 ${isSCW ? "bg-N10" : "text-N20 hover:text-B100"} `}
                                     onClick={() => {
@@ -125,9 +125,9 @@ const Portfolio: React.FC<tPortfolio> = ({ smartAccountAddress, handleFetchPorfo
                                     }}
                                 >
                                     Smart Account
-                                </div>
-                                <div
-                                    className={`cursor-pointer px-3 py-1 text-sm md:text-base text-center rounded-lg ${
+                                </button>
+                                <button
+                                    className={`cursor-pointer px-3 py-1 text-sm md:text-base text-center rounded-md ${
                                         isSCW ? "hover:bg-N30" : ""
                                     } transition duration-300 ${!isSCW ? "bg-N10" : "text-N20 hover:text-B100"} `}
                                     onClick={() => {
@@ -136,7 +136,7 @@ const Portfolio: React.FC<tPortfolio> = ({ smartAccountAddress, handleFetchPorfo
                                     }}
                                 >
                                     EOA
-                                </div>
+                                </button>
                             </div>
                             <ChainSelection dropdown={true} />
                         </div>
@@ -147,48 +147,64 @@ const Portfolio: React.FC<tPortfolio> = ({ smartAccountAddress, handleFetchPorfo
                         <OneAssetSkeleton count={2} />
                     ) : (
                         <>
-                            {chainData?.map((details: any) => (
-                                <div className="max-w-6xl w-full bg-N0 flex flex-col justify-start items-start text-B200 rounded-3xl p-8 relative border border-B50">
-                                    <div className="w-full flex justify-start items-center gap-3 text-start mb-4">
-                                        {/* Network logo and name */}
-                                        <Image
-                                            height={100}
-                                            width={100}
-                                            src={details?.data?.items[0]?.logo_urls?.chain_logo_url || defaultBlue}
-                                            alt=""
-                                            className="h-12 w-12 rounded-full bg-N60"
-                                        />
-                                        {/* Network Aseet worth */}
-                                        <div className="flex flex-col justify-start items-start gap-1 text-B100 font-bold text-2xl">
-                                            <div>
-                                                {startCase(details?.data?.chain_name)} · $
-                                                {details?.data?.items
-                                                    ?.reduce(
-                                                        (i: number, currentValue: number) => i + currentValue.quote,
-                                                        0
-                                                    )
-                                                    .toFixed(4)}
+                            {chainData?.map((portfolioData) => {
+                                const filteredPositions: any[] = portfolioData?.data?.items?.filter(
+                                    (item: any) => item.quote > 0.001
+                                );
+                                return (
+                                    filteredPositions.length > 0 && (
+                                        <div
+                                            key={portfolioData.chainId}
+                                            className="max-w-6xl w-full bg-N0 flex flex-col justify-start items-start text-B200 rounded-3xl p-8 relative border border-B50"
+                                        >
+                                            <div className="w-full flex justify-start items-center gap-3 text-start mb-4">
+                                                {/* Network logo and name */}
+                                                <div className="p-1.5 bg-N60 rounded-full">
+                                                    <Image
+                                                        height={42}
+                                                        width={42}
+                                                        src={
+                                                            portfolioData?.data?.items[0]?.logo_urls?.chain_logo_url ||
+                                                            defaultBlue
+                                                        }
+                                                        alt="Chain logo"
+                                                        className="rounded-full"
+                                                    />
+                                                </div>
+                                                {/* Network Asset worth */}
+                                                <div className="flex flex-col justify-start items-start gap-1 text-B100 font-bold text-2xl">
+                                                    <div>
+                                                        {startCase(portfolioData?.data?.chain_name)} · $
+                                                        {portfolioData?.data?.items
+                                                            ?.reduce(
+                                                                (i: number, currentValue: any) =>
+                                                                    i + currentValue.quote,
+                                                                0
+                                                            )
+                                                            .toFixed(4)}
+                                                    </div>
+                                                </div>
                                             </div>
+
+                                            {/* Heading  */}
+                                            <div className="sticky top-[114px] z-10 w-full bg-N0 flex justify-end items-center gap-3 text-xs md:text-sm text-B100 font-bold h-7">
+                                                <div className="w-full text-start text-B300 font-semibold">ASSET</div>
+                                                <div className="w-[25%] text-start">PRICE</div>
+                                                <div className="w-[25%] text-start">BALANCE</div>
+                                                <div className="w-[25%] text-start">VALUE</div>
+                                                <div className="w-[3%]"></div>
+                                            </div>
+
+                                            <OneAsset
+                                                positions={filteredPositions}
+                                                send={send}
+                                                handleAmountIn={handleAmountIn}
+                                                currentChainId={portfolioData?.data?.chain_id}
+                                            />
                                         </div>
-                                    </div>
-
-                                    {/* Heading  */}
-                                    <div className="sticky top-[114px] z-10 w-full bg-N0 flex justify-end items-center gap-3 text-xs md:text-sm text-B100 font-bold h-7">
-                                        <div className="w-full text-start text-B300 font-semibold">ASSET</div>
-                                        <div className="w-[25%] text-start">PRICE</div>
-                                        <div className="w-[25%] text-start">BALANCE</div>
-                                        <div className="w-[25%] text-start">VALUE</div>
-                                        <div className="w-[3%]"></div>
-                                    </div>
-
-                                    <OneAsset
-                                        details={details}
-                                        send={send}
-                                        handleAmountIn={handleAmountIn}
-                                        currentChainId={details?.data?.chain_id}
-                                    />
-                                </div>
-                            ))}
+                                    )
+                                );
+                            })}
                         </>
                     )}
                 </>

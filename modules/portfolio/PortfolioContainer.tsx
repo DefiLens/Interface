@@ -1,11 +1,9 @@
-import { useEffect, useState } from "react";
-
+import { useEffect } from "react";
 import Portfolio from "./Portfolio";
 import { usePortfolio } from "../../hooks/portfolio/usePortfolio";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import { iPortfolio, usePortfolioStore } from "../../store/Portfolio";
-import { useAddress, useSigner, useChain } from "@thirdweb-dev/react";
-
+import { useAddress, useSigner } from "@thirdweb-dev/react";
 import toast from "react-hot-toast";
 import { BigNumber, ethers } from "ethers";
 import { BigNumber as bg } from "bignumber.js";
@@ -13,7 +11,7 @@ import web3 from "web3";
 import IERC20 from "../../abis/IERC20.json";
 import { incresePowerByDecimals } from "../../utils/helper";
 
-const PortfolioContainer: React.FC<any> = () => {
+const PortfolioContainer: React.FC = () => {
     const { mutateAsync: fetchPortfolio } = usePortfolio();
     const { smartAccount, smartAccountAddress }: iGlobal = useGlobalStore((state) => state);
     const address = useAddress();
@@ -31,10 +29,9 @@ const PortfolioContainer: React.FC<any> = () => {
         setTxHash
     }: iPortfolio = usePortfolioStore((state) => state);
 
-
     // To fetch portfolio
     const handleFetchPorfolioData = () => {
-        const fetch = async (address: any) => {
+        const fetch = async (address: string) => {
             await fetchPortfolio(address);
         };
 
@@ -49,7 +46,8 @@ const PortfolioContainer: React.FC<any> = () => {
             fetch(address);
         }
     };
-
+    
+    // fetches user's portfolio data when onload, or either isSCW or chainId changes
     useEffect(() => {
         handleFetchPorfolioData();
     }, [isSCW, chainId]);

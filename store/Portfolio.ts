@@ -7,7 +7,7 @@ export interface iChainData {
 }
 
 export interface iPortfolio {
-    chainData: iChainData[] | [] | null;
+    chainData: iChainData[] | null;
     isLoading: boolean;
     error: string;
     isSCW: boolean;
@@ -29,7 +29,7 @@ export interface iPortfolio {
     amountInDecimals: number | string;
     isNative: boolean;
     sendTxLoading: boolean;
-    txhash: boolean | string;
+    txhash: string;
     tokensData: object[];
     scwBalance: BigNumber;
     eoaBalance: BigNumber;

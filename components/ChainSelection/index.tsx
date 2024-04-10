@@ -1,18 +1,18 @@
-import React from 'react';
+import React from "react";
 import { iPortfolio, usePortfolioStore } from "../../store/Portfolio";
-
-interface Chain {
-    chainName: string;
-    chainId: number;
-}
+import { chains } from "../../modules/portfolio/constants";
 
 interface ChainSelectionProps {
-    onChange: (chainId: number) => void;
+    // onChange: (chainId: number) => void;
     dropdown?: boolean;
 }
 
-const ChainSelection: React.FC<ChainSelectionProps> = ({ onChange, dropdown = false }) => {
+const ChainSelection: React.FC<ChainSelectionProps> = ({ dropdown = false }) => {
     const { chainId, setChainId }: iPortfolio = usePortfolioStore((state) => state);
+    const allChains = [
+        { chainName: "All", chainId: 0 },
+        ...chains,
+    ];
 
     const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedId = parseInt(e.target.value, 10);
@@ -23,16 +23,6 @@ const ChainSelection: React.FC<ChainSelectionProps> = ({ onChange, dropdown = fa
         setChainId(chainId);
     };
 
-    const chains: Chain[] = [
-        { chainName: "All", chainId: 0 }, // All Chains
-        { chainName: "Polygon", chainId: 137 }, // Polygon (Matic)
-        { chainName: "Ethereum", chainId: 1 }, // Ethereum
-        { chainName: "Base", chainId: 8453 }, // Base
-        { chainName: "Optimism", chainId: 10 }, // Optimism
-        { chainName: "Avalanche", chainId: 43114 }, // Avalanche
-        { chainName: "Arbitrum", chainId: 42161 }, // Arbitrum
-    ];
-
     return (
         <div className="">
             {dropdown ? (
@@ -42,7 +32,7 @@ const ChainSelection: React.FC<ChainSelectionProps> = ({ onChange, dropdown = fa
                         onChange={handleSelectChange}
                         className="bg-transparent py-2 cursor-pointer outline-none"
                     >
-                        {chains.map((chain) => (
+                        {allChains.map((chain) => (
                             <option
                                 key={chain.chainId}
                                 value={chain.chainId}
@@ -54,12 +44,17 @@ const ChainSelection: React.FC<ChainSelectionProps> = ({ onChange, dropdown = fa
                     </select>
                 </div>
             ) : (
-                <div className="w-full flex items-center gap-3 overflow-scroll" style={{ scrollbarWidth: 'none', '-ms-overflow-style': 'none' }}>
-                    {chains.map((chain) => (
+                <div
+                    className="w-full flex items-center gap-3 overflow-scroll"
+                    style={{ scrollbarWidth: "none", "msOverflowStyle": "none" }}
+                >
+                    {allChains.map((chain) => (
                         <button
                             key={chain.chainId}
                             onClick={() => handleButtonClick(chain.chainId)}
-                            className={`py-2 px-4 rounded-lg border border-B50 hover:bg-N50 ${chainId === chain.chainId ? 'bg-GR1 text-N20 border-none' : 'bg-N40 text-B100'}`}
+                            className={`py-2 px-4 rounded-lg border border-B50 hover:bg-N50 ${
+                                chainId === chain.chainId ? "bg-GR1 text-N20 border-none" : "bg-N40 text-B100"
+                            }`}
                         >
                             {chain.chainName}
                         </button>
