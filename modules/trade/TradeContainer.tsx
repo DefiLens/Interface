@@ -206,18 +206,6 @@ const TradeContainer: React.FC<any> = () => {
         onChangeselectedFromProtocol();
     }, [selectedFromProtocol]);
 
-    // useEffect(() => {
-    //     async function onChangeselectedToProtocol() {
-    //         if (selectedToProtocol) {
-    //             if (selectedToProtocol == "erc20") {
-    //                 const filteredTokens = getTokenListByChainId(selectedToNetwork.chainId, UNISWAP_TOKENS);
-    //                 setToTokensData(filteredTokens);
-    //             }
-    //         }
-    //     }
-    //     onChangeselectedToProtocol();
-    // }, [selectedToProtocol]);
-
     async function onChangeselectedToProtocol(protocol: string, network: iSelectedNetwork, setTokensData: any) {
         if (protocol && protocol === "erc20") {
             const filteredTokens = getTokenListByChainId(network.chainId, UNISWAP_TOKENS);
@@ -225,7 +213,6 @@ const TradeContainer: React.FC<any> = () => {
         }
     }
     useEffect(() => {
-        // Call the function with the provided parameters
         onChangeselectedToProtocol(selectedToProtocol, selectedToNetwork, setToTokensData);
     }, [selectedToProtocol, rebalanceData, isModalOpen, isRebalance]);
 
@@ -414,7 +401,6 @@ const TradeContainer: React.FC<any> = () => {
         }
     };
 
-    // for e.g 0 -> 1000
     const onChangeAmountIn = async (_amountIn: string) => {
         if (addToBatchLoading) {
             toast.error("wait, tx loading");
@@ -592,38 +578,45 @@ const TradeContainer: React.FC<any> = () => {
                 },
             },
         ]);
-       {!isRebalance && clearSelectedBatchData()};
+        {
+            !isRebalance && clearSelectedBatchData();
+        }
     };
 
-    const updateInputValuesForRebalance = (index: number, txArray: Array<tTx>, batchesFlow: any, data: any, simulation: any) => {
+    const updateInputValuesForRebalance = (
+        index: number,
+        txArray: Array<tTx>,
+        batchesFlow: any,
+        data: any,
+        simulation: any
+    ) => {
         if (txArray.length < 1) return toast.error("Please complete the last input before adding a new one.");
         let updatedBatch: any = [...individualBatch];
 
         if (individualBatch.length == 0) {
             setTotalFees(bg(0));
             updatedBatch.push({
-                    id: 0,
-                    txArray: [],
-                    batchesFlow: [],
-                    data: {
-                        fromNetwork: "",
-                        toNetwork: "",
-                        fromChainId: "",
-                        toChainId: "",
-                        fromProtocol: "",
-                        toProtocol: "",
-                        fromToken: "",
-                        toToken: "",
-                        amountIn: "",
-                        fees: "",
-                        extraValue: "",
-                    },
-                    simulation: {
-                        isSuccess: false,
-                        isError: false,
-                    },
+                id: 0,
+                txArray: [],
+                batchesFlow: [],
+                data: {
+                    fromNetwork: "",
+                    toNetwork: "",
+                    fromChainId: "",
+                    toChainId: "",
+                    fromProtocol: "",
+                    toProtocol: "",
+                    fromToken: "",
+                    toToken: "",
+                    amountIn: "",
+                    fees: "",
+                    extraValue: "",
                 },
-            );
+                simulation: {
+                    isSuccess: false,
+                    isError: false,
+                },
+            });
         }
 
         if (index < updatedBatch.length) {
@@ -633,39 +626,39 @@ const TradeContainer: React.FC<any> = () => {
             updatedBatch[index].simulation = simulation;
         } else {
             updatedBatch.push({
-                    id: index,
-                    txArray,
-                    batchesFlow,
-                    data,
-                    simulation,
-                },
-            );
+                id: index,
+                txArray,
+                batchesFlow,
+                data,
+                simulation,
+            });
             updatedBatch.push({
-                    id: updatedBatch.length,
-                    txArray: [],
-                    batchesFlow: [],
-                    data: {
-                        fromNetwork: "",
-                        toNetwork: "",
-                        fromChainId: "",
-                        toChainId: "",
-                        fromProtocol: "",
-                        toProtocol: "",
-                        fromToken: "",
-                        toToken: "",
-                        amountIn: "",
-                        fees: "",
-                        extraValue: "",
-                    },
-                    simulation: {
-                        isSuccess: false,
-                        isError: false,
-                    },
+                id: updatedBatch.length,
+                txArray: [],
+                batchesFlow: [],
+                data: {
+                    fromNetwork: "",
+                    toNetwork: "",
+                    fromChainId: "",
+                    toChainId: "",
+                    fromProtocol: "",
+                    toProtocol: "",
+                    fromToken: "",
+                    toToken: "",
+                    amountIn: "",
+                    fees: "",
+                    extraValue: "",
                 },
-            );
+                simulation: {
+                    isSuccess: false,
+                    isError: false,
+                },
+            });
         }
         setIndividualBatch(updatedBatch);
-       {!isRebalance && clearSelectedBatchData()};
+        {
+            !isRebalance && clearSelectedBatchData();
+        }
     };
 
     const toggleShowBatchList = (id: number): void => {
@@ -877,6 +870,7 @@ const TradeContainer: React.FC<any> = () => {
         }
     };
 
+    console.log("reba", rebalanceData);
     const addRebalancedBatches = async (
         isSCW: boolean,
         selectedToNetwork: iSelectedNetwork,
@@ -896,7 +890,18 @@ const TradeContainer: React.FC<any> = () => {
             amount
         );
         try {
-            onChangeselectedToProtocol(selectedToProtocol, selectedToNetwork, setToTokensData);
+            // onChangeselectedToProtocol(selectedToProtocol, selectedToNetwork, setToTokensData);
+            // const validateTotalPercentage = () => {
+            //     const totalPercentage = rebalanceData.reduce((acc, curr) => acc + Math.floor(curr.percentage), 0);
+            //     return totalPercentage === 98;
+            // };
+
+            // const isValid = validateTotalPercentage();
+            // if (!isValid) {
+            //     toast.error("Total Percentage should be 100%");
+            //     setAddToBatchLoading(false);
+            //     return;
+            // }
             if (isSCW) {
                 setAddToBatchLoading(true);
             }
@@ -905,6 +910,7 @@ const TradeContainer: React.FC<any> = () => {
                 setAddToBatchLoading(false);
                 return;
             }
+
             if (
                 !(
                     selectedFromNetwork.chainName == "polygon" ||
@@ -1024,6 +1030,7 @@ const TradeContainer: React.FC<any> = () => {
             }
             setTotalFees(bg(_totalfees));
 
+
             updateInputValuesForRebalance(
                 individualBatch.length + index - 1, // as we looping this function, so to access individualBatch
                 refinaceData.txArray.length > 0 ? refinaceData.txArray : [],
@@ -1043,6 +1050,7 @@ const TradeContainer: React.FC<any> = () => {
                 },
                 simulation
             );
+
             setAddToBatchLoading(false);
             setShowBatchList(true);
         } catch (error: any) {
@@ -1057,6 +1065,20 @@ const TradeContainer: React.FC<any> = () => {
             return;
         }
     };
+
+    async function processRebalancing() {
+        // Delay for 100ms to allow the first item to be processed first
+        await delay(100);
+
+        for (let i = 0; i < rebalanceData.length; i++) {
+            const { network, protocol, token, percentage, amount } = rebalanceData[i];
+            await addRebalancedBatches(true, network, protocol, token, percentage, amount, i);
+        }
+    }
+
+    function delay(ms) {
+        return new Promise((resolve) => setTimeout(resolve, ms));
+    }
 
     return (
         <Trade
@@ -1079,7 +1101,7 @@ const TradeContainer: React.FC<any> = () => {
             closeFromSelectionMenu={closeFromSelectionMenu}
             closeToSelectionMenu={closeToSelectionMenu}
             totalfees={totalfees}
-            addRebalancedBatches={addRebalancedBatches}
+            processRebalancing={processRebalancing}
         />
     );
 };
