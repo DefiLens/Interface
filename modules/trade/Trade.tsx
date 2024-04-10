@@ -27,7 +27,7 @@ const Trade: React.FC<any> = ({
     ExecuteAllBatches,
     closeFromSelectionMenu,
     closeToSelectionMenu,
-    addRebalancedBatches
+    processRebalancing
 }: tTrade) => {
     const {
         selectedFromNetwork,
@@ -62,49 +62,49 @@ const Trade: React.FC<any> = ({
                 } h-full flex flex-col lg:flex-row justify-start lg:justify-center items-center lg:items-start gap-4`}
             >
                 <div className="w-full md:max-w-xl h-full flex flex-col justify-start items-center">
-                    {showFromSelectionMenu || showToSelectionMenu ? (
-                        <>
-                            <TokenSelectionMenu
-                                showMenu={showFromSelectionMenu}
-                                closeMenu={closeFromSelectionMenu}
-                                handleSelectNetwork={handleSelectFromNetwork}
-                                selectedNetwork={selectedFromNetwork}
-                                filterToken={filterFromToken}
-                                setFilterToken={setFilterFromToken}
-                                filterAddress={filterFromAddress}
-                                setFilterAddress={setFilterFromAddress}
-                                tokensData={fromTokensData}
-                                selectedProtocol={selectedFromProtocol}
-                                onChangeToken={onChangeFromToken}
-                                onChangeProtocol={onChangeFromProtocol}
-                                protocolNames={protocolNames}
-                            />
+                    <TokenSelectionMenu
+                        showMenu={showFromSelectionMenu}
+                        closeMenu={closeFromSelectionMenu}
+                        handleSelectNetwork={handleSelectFromNetwork}
+                        selectedNetwork={selectedFromNetwork}
+                        filterToken={filterFromToken}
+                        setFilterToken={setFilterFromToken}
+                        filterAddress={filterFromAddress}
+                        setFilterAddress={setFilterFromAddress}
+                        tokensData={fromTokensData}
+                        selectedProtocol={selectedFromProtocol}
+                        onChangeToken={onChangeFromToken}
+                        onChangeProtocol={onChangeFromProtocol}
+                        protocolNames={protocolNames}
+                    />
 
-                            <TokenSelectionMenu
-                                showMenu={showToSelectionMenu}
-                                closeMenu={closeToSelectionMenu}
-                                handleSelectNetwork={handleSelectToNetwork}
-                                selectedNetwork={selectedToNetwork}
-                                filterToken={filterToToken}
-                                setFilterToken={setFilterToToken}
-                                filterAddress={filterToAddress}
-                                setFilterAddress={setFilterToAddress}
-                                tokensData={toTokensData}
-                                selectedProtocol={selectedToProtocol}
-                                onChangeToken={onChangeToToken}
-                                onChangeProtocol={onChangeToProtocol}
-                                protocolNames={protocolNames}
-                            />
+                    <TokenSelectionMenu
+                        showMenu={showToSelectionMenu}
+                        closeMenu={closeToSelectionMenu}
+                        handleSelectNetwork={handleSelectToNetwork}
+                        selectedNetwork={selectedToNetwork}
+                        filterToken={filterToToken}
+                        setFilterToken={setFilterToToken}
+                        filterAddress={filterToAddress}
+                        setFilterAddress={setFilterToAddress}
+                        tokensData={toTokensData}
+                        selectedProtocol={selectedToProtocol}
+                        onChangeToken={onChangeToToken}
+                        onChangeProtocol={onChangeToProtocol}
+                        protocolNames={protocolNames}
+                    />
+                    {/* {showFromSelectionMenu || showToSelectionMenu ? (
+                        <>
                         </>
                     ) : (
+                        )} */}
                         <BatchSelectionSection
                             handleSwap={handleSwap}
                             onChangeAmountIn={onChangeAmountIn}
                             sendSingleBatchToList={sendSingleBatchToList}
                             handleExecuteMethod={handleExecuteMethod}
-                            addRebalancedBatches={addRebalancedBatches}
+                            processRebalancing={processRebalancing}
                         />
-                    )}
                 </div>
 
                 {/* Modal - Select Execution Method */}

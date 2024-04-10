@@ -14,6 +14,21 @@ const BatchingListSection: React.FC<tTrade> = ({ removeBatch, toggleShowBatchLis
     const { selectedFromNetwork, showIndividualBatchList, txhash, individualBatch, totalfees }: iTrading =
         useTradingStore((state) => state);
 
+    // Calculate total fees
+    console.log("individualBatch", individualBatch);
+    function calculateTotalFees() {
+        let totalFees = 0;
+
+        individualBatch?.forEach((batch) => {
+            if (batch?.data && batch?.data?.fees) {
+                totalFees += parseFloat(batch?.data?.fees);
+            }
+        });
+
+        return totalFees;
+    }
+    const totalFees = calculateTotalFees();
+
     return (
         <div className="w-full md:max-w-2xl max-h-full bg-W100 flex flex-col justify-start items-center gap-1 rounded-2xl cursor-pointer shadow-2xl">
             {/* Batching List Title */}
@@ -36,7 +51,7 @@ const BatchingListSection: React.FC<tTrade> = ({ removeBatch, toggleShowBatchLis
                                 alt="gas"
                                 className="h-5 w-5 rounded-full"
                             />
-                            <h6 className="font-semibold text-sm">{Number(totalfees).toPrecision(4).toString()}</h6>
+                            <h6 className="font-semibold text-sm">{Number(totalFees).toPrecision(4).toString()}</h6>
                         </div>
                     </div>
                 )}
