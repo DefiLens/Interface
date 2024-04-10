@@ -14,13 +14,14 @@ bg.config({ DECIMAL_PLACES: 10 });
 
 import CustomCheckbox from "../common/CustomCheckbox";
 import { Rebalance } from "./Rebalance";
+import toast from "react-hot-toast";
 
 const BatchSelectionSection: React.FC<tTrade> = ({
     handleSwap,
     onChangeAmountIn,
     sendSingleBatchToList,
     handleExecuteMethod,
-    addRebalancedBatches
+    processRebalancing,
 }) => {
     const {
         maxBalance,
@@ -43,6 +44,10 @@ const BatchSelectionSection: React.FC<tTrade> = ({
     const { isRebalance, setIsRebalance }: iRebalance = useRebalanceStore((state) => state);
 
     const handleCheckboxChange = (event: any) => {
+        if (addToBatchLoading) {
+            toast.error("wait, tx loading");
+            return;
+        }
         setIsRebalance(event.target.checked);
         setSelectedToProtocol("erc20");
     };
@@ -122,11 +127,10 @@ const BatchSelectionSection: React.FC<tTrade> = ({
                                     secondSubValue={selectedToToken}
                                 />
                             ) : (
-                                <Rebalance addRebalancedBatches={addRebalancedBatches}/>
+                                <Rebalance />
                             )}
                         </div>
-                        <div className="flex justify-between items-center w-full mt-2">
-                            <div></div>
+                        <div className="flex items-center w-full">
                             <div className="inline-flex items-center relative">
                                 <CustomCheckbox checked={isRebalance} onChange={handleCheckboxChange} />
                                 <span className="ml-2 text-N0 ">Rebalance</span>
@@ -232,9 +236,10 @@ const BatchSelectionSection: React.FC<tTrade> = ({
                     <div className="w-full flex flex-col justify-center items-center gap-3">
                         {isRebalance ? (
                             <Button
-                                handleClick={() => sendSingleBatchToList(true)}
+                                handleClick={() => processRebalancing()}
                                 isLoading={addToBatchLoading}
                                 customStyle=""
+                                disabled={addToBatchLoading}
                                 innerText="Rebalance"
                             />
                         ) : (
