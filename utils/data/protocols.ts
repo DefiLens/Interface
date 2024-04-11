@@ -28,9 +28,14 @@ import {
 
 interface iProtocolKey {
     name: string;
-    icon: string | any;
-    tokenList: any;
-    tokenAddresses: any;
+    icon: any;
+    tokenList: {
+        name: string;
+        icon: any;
+    }[] | string;
+    tokenAddresses: {
+        [key: string]: string;
+    } | string;
 }
 
 export interface iProtocolNames {
