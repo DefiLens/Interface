@@ -8,7 +8,7 @@ import { NODE_JWT_TOKEN, NODE_ONEINCH_URL } from "../../utils/keys";
 import toast from "react-hot-toast";
 
 export function useOneInch() {
-    async function oneInchSwap({ tokenIn, tokenOut, amountIn, address, type, chainId }: tOneInch): Promise<tOneInchSwapResponse | undefined> {
+    async function oneInchSwap({ tokenIn, tokenOut, amountIn, address, type, chainId, selectedToken }: tOneInch): Promise<tOneInchSwapResponse | undefined> {
         try {
             axios.defaults.headers.common['Authorization'] = `Bearer ${NODE_JWT_TOKEN}`;
             const params: tOneInchParams = {
@@ -44,9 +44,9 @@ export function useOneInch() {
                 tokenOutDecimals: parseSwapData.dstToken.decimals,
             };
         } catch (error) {
-            console.log("oneInchSwap-error", error);
-            toast.error("Swap failed, This token is not supported by 1inch. Please try another token.");
-        }
+            console.log("oneInchSwap-error", tokenOut);
+            toast.error(`${selectedToken} is not supported.`);
     }
-    return useMutation(oneInchSwap);
+}
+return useMutation(oneInchSwap);
 }

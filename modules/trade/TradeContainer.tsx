@@ -28,7 +28,14 @@ import { useCCRefinance } from "../../hooks/Batching/useCCRefinance";
 import { useEoaProvider } from "../../hooks/aaProvider/useEoaProvider";
 import { useSwitchOnSpecificChain } from "../../hooks/useSwitchOnSpecificChain";
 import { useBiconomyProvider } from "../../hooks/aaProvider/useBiconomyProvider";
-import { iRebalance, iSelectedNetwork, iTokenData, iTrading, useRebalanceStore, useTradingStore } from "../../store/TradingStore";
+import {
+    iIndividualBatch,
+    iRebalance,
+    iSelectedNetwork,
+    iTrading,
+    useRebalanceStore,
+    useTradingStore,
+} from "../../store/TradingStore";
 import { useBiconomyERC20Provider } from "../../hooks/aaProvider/useBiconomyERC20Provider";
 import { useBiconomyGasLessProvider } from "../../hooks/aaProvider/useBiconomyGasLessProvider";
 import { useBiconomySessionKeyProvider } from "../../hooks/aaProvider/useBiconomySessionKeyProvider";
@@ -102,7 +109,9 @@ const TradeContainer: React.FC<any> = () => {
         setTxHash,
         setSendTxLoading,
         individualBatch,
-        setIndividualBatch,
+        // setIndividualBatch,
+        removeBatchItem,
+        addBatchItem,
         setShowExecuteBatchModel,
         setHasExecutionError,
         totalfees,
@@ -504,37 +513,35 @@ const TradeContainer: React.FC<any> = () => {
     };
 
     const addBatch = () => {
-        setIndividualBatch([
-            {
-                id: 0,
-                txArray: [],
-                data: {
-                    fromNetwork: "",
-                    toNetwork: "",
-                    fromChainId: "",
-                    toChainId: "",
-                    fromProtocol: "",
-                    toProtocol: "",
-                    fromToken: "",
-                    toToken: "",
-                    amountIn: "",
-                    fees: "",
-                    extraValue: "",
-                },
-                simulation: {
-                    isSuccess: false,
-                    isError: false,
-                },
+        addBatchItem({
+            id: 0,
+            txArray: [],
+            data: {
+                fromNetwork: "",
+                toNetwork: "",
+                fromChainId: "",
+                toChainId: "",
+                fromProtocol: "",
+                toProtocol: "",
+                fromToken: "",
+                toToken: "",
+                amountIn: "",
+                fees: "",
+                extraValue: "",
             },
-        ]);
+            simulation: {
+                isSuccess: false,
+                isError: false,
+            },
+        });
     };
 
     const removeBatch = (index: number) => {
         // console.log(individualBatch)
-        const updatedBatch = [...individualBatch];
-        setMaxTokenBalance(updatedBatch[index].data.fromToken, Number(updatedBatch[index].data.amountIn), true, getTokenBalance(updatedBatch[index].data.fromToken))
-        updatedBatch.splice(index, 1); // Remove the InputBar at the specified index
-        setIndividualBatch(updatedBatch);
+        // const updatedBatch = [...individualBatch];
+        // updatedBatch.splice(index, 1); // Remove the InputBar at the specified index
+        // setIndividualBatch(updatedBatch);
+        removeBatchItem(index);
     };
 
     const clearSelectedBatchData = () => {
@@ -554,66 +561,17 @@ const TradeContainer: React.FC<any> = () => {
 
     const updateInputValues = (index: number, txArray: Array<tTx>, batchesFlow: any, data: any, simulation: any) => {
         if (txArray.length < 1) return toast.error("Please complete the last input before adding a new one.");
-        if (individualBatch.length == 0) {
-            setTotalFees(bg(0));
-            setIndividualBatch([
-                ...individualBatch,
-                {
-                    id: 0,
-                    txArray: [],
-                    batchesFlow: [],
-                    data: {
-                        fromNetwork: "",
-                        toNetwork: "",
-                        fromChainId: "",
-                        toChainId: "",
-                        fromProtocol: "",
-                        toProtocol: "",
-                        fromToken: "",
-                        toToken: "",
-                        amountIn: "",
-                        fees: "",
-                        extraValue: "",
-                    },
-                    simulation: {
-                        isSuccess: false,
-                        isError: false,
-                    },
-                },
-            ]);
-        }
+        const newItem: any = {
+            id: index,
+            txArray,
+            batchesFlow,
+            data: data,
+            simulation,
+        };
+        // console.log("-------------------INDIVIDUAL", individualBatch);
+        // console.log("-------------------NEW ITEM", newItem);
 
-        const updatedBatch: any = [...individualBatch];
-        updatedBatch[index].txArray = txArray;
-        updatedBatch[index].batchesFlow = batchesFlow;
-        updatedBatch[index].data = data;
-        updatedBatch[index].simulation = simulation;
-
-        setIndividualBatch([
-            ...updatedBatch,
-            {
-                id: updatedBatch.length,
-                txArray: [],
-                batchesFlow: [],
-                data: {
-                    fromNetwork: "",
-                    toNetwork: "",
-                    fromChainId: "",
-                    toChainId: "",
-                    fromProtocol: "",
-                    toProtocol: "",
-                    fromToken: "",
-                    toToken: "",
-                    amountIn: "",
-                    fees: "",
-                    extraValue: "",
-                },
-                simulation: {
-                    isSuccess: false,
-                    isError: false,
-                },
-            },
-        ]);
+        addBatchItem(newItem);
         {
             !isRebalance && clearSelectedBatchData();
         }
@@ -626,75 +584,25 @@ const TradeContainer: React.FC<any> = () => {
         data: any,
         simulation: any
     ) => {
+        console.log("txArray------------",txArray)
         if (txArray.length < 1) return toast.error("Please complete the last input before adding a new one.");
-        let updatedBatch: any = [...individualBatch];
 
-        if (individualBatch.length == 0) {
-            setTotalFees(bg(0));
-            updatedBatch.push({
-                id: 0,
-                txArray: [],
-                batchesFlow: [],
-                data: {
-                    fromNetwork: "",
-                    toNetwork: "",
-                    fromChainId: "",
-                    toChainId: "",
-                    fromProtocol: "",
-                    toProtocol: "",
-                    fromToken: "",
-                    toToken: "",
-                    amountIn: "",
-                    fees: "",
-                    extraValue: "",
-                },
-                simulation: {
-                    isSuccess: false,
-                    isError: false,
-                },
-            });
-        }
+        const newItem: any = {
+            id: index,
+            txArray,
+            batchesFlow,
+            data: data,
+            simulation,
+        };
+        // console.log("-------------------INDIVIDUAL", individualBatch);
+        // console.log("-------------------NEW ITEM", newItem);
 
-        if (index < updatedBatch.length) {
-            updatedBatch[index].txArray = txArray;
-            updatedBatch[index].batchesFlow = batchesFlow;
-            updatedBatch[index].data = data;
-            updatedBatch[index].simulation = simulation;
-        } else {
-            updatedBatch.push({
-                id: index,
-                txArray,
-                batchesFlow,
-                data,
-                simulation,
-            });
-            updatedBatch.push({
-                id: updatedBatch.length,
-                txArray: [],
-                batchesFlow: [],
-                data: {
-                    fromNetwork: "",
-                    toNetwork: "",
-                    fromChainId: "",
-                    toChainId: "",
-                    fromProtocol: "",
-                    toProtocol: "",
-                    fromToken: "",
-                    toToken: "",
-                    amountIn: "",
-                    fees: "",
-                    extraValue: "",
-                },
-                simulation: {
-                    isSuccess: false,
-                    isError: false,
-                },
-            });
-        }
-        setIndividualBatch(updatedBatch);
-        {
-            !isRebalance && clearSelectedBatchData();
-        }
+        addBatchItem(newItem);
+
+
+        // {
+        //     !isRebalance && clearSelectedBatchData();
+        // }
     };
 
     const toggleShowBatchList = (id: number): void => {
@@ -781,6 +689,9 @@ const TradeContainer: React.FC<any> = () => {
                     amount: _tempAmount,
                     address: isSCW ? smartAccountAddress : address,
                     provider,
+                    selectedToNetwork: selectedToNetwork,
+                    selectedToProtocol: selectedToProtocol,
+                    selectedToToken: selectedToToken,
                 } as tRefinance);
             } else {
                 refinaceData = await refinanceForCC({
@@ -794,6 +705,9 @@ const TradeContainer: React.FC<any> = () => {
                     amount: _tempAmount,
                     address: isSCW ? smartAccountAddress : address,
                     provider,
+                    selectedToNetwork: selectedToNetwork,
+                    selectedToProtocol: selectedToProtocol,
+                    selectedToToken: selectedToToken,
                 } as tRefinance);
             }
 
@@ -913,7 +827,7 @@ const TradeContainer: React.FC<any> = () => {
         }
     };
 
-    console.log("reba", rebalanceData);
+    // console.log("reba", rebalanceData);
     const addRebalancedBatches = async (
         isSCW: boolean,
         selectedToNetwork: iSelectedNetwork,
@@ -923,15 +837,15 @@ const TradeContainer: React.FC<any> = () => {
         amount: number,
         index: number
     ) => {
-        console.log(
-            "addRebalancedBatches",
-            isSCW,
-            selectedToNetwork,
-            selectedToProtocol,
-            selectedToToken,
-            rePercentage,
-            amount
-        );
+        // console.log(
+        //     "addRebalancedBatches",
+        //     isSCW,
+        //     selectedToNetwork,
+        //     selectedToProtocol,
+        //     selectedToToken,
+        //     rePercentage,
+        //     amount
+        // );
         try {
             // onChangeselectedToProtocol(selectedToProtocol, selectedToNetwork, setToTokensData);
             // const validateTotalPercentage = () => {
@@ -1029,6 +943,9 @@ const TradeContainer: React.FC<any> = () => {
                     amount: _tempAmount,
                     address: isSCW ? smartAccountAddress : address,
                     provider,
+                    selectedToNetwork: selectedToNetwork,
+                    selectedToProtocol: selectedToProtocol,
+                    selectedToToken: selectedToToken,
                 } as tRefinance);
             } else {
                 refinaceData = await refinanceForCC({
@@ -1042,6 +959,9 @@ const TradeContainer: React.FC<any> = () => {
                     amount: _tempAmount,
                     address: isSCW ? smartAccountAddress : address,
                     provider,
+                    selectedToNetwork: selectedToNetwork,
+                    selectedToProtocol: selectedToProtocol,
+                    selectedToToken: selectedToToken,
                 } as tRefinance);
             }
 
@@ -1056,6 +976,7 @@ const TradeContainer: React.FC<any> = () => {
                 isError: false,
             };
 
+            // console.log(refinaceData, "refinanceData.txArray");
             const userOp = await smartAccount.buildUserOp(refinaceData.txArray);
 
             const fees = bg(userOp.callGasLimit.toString())
@@ -1073,6 +994,9 @@ const TradeContainer: React.FC<any> = () => {
             }
             setTotalFees(bg(_totalfees));
 
+            // console.log("individualBatch ------ Before", individualBatch);
+            // console.log("index", index);
+            // console.log("batch Data length", individualBatch.length);
 
             updateInputValuesForRebalance(
                 individualBatch.length + index - 1, // as we looping this function, so to access individualBatch

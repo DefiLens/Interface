@@ -1,11 +1,11 @@
-import React from 'react'
-import { tTradeProtocol } from '../../modules/trade/types';
-import { CiCircleChevDown } from 'react-icons/ci';
-import TokenList from './TokenList';
-import Image from 'next/image';
-import { iSelectedNetwork } from '../../store/GlobalStore';
-import { iRebalance, iTokenData, iTrading, useRebalanceStore, useTradingStore } from '../../store/TradingStore';
-import { iProtocolNames } from '../../utils/data/protocols';
+import React from "react";
+import { tTradeProtocol } from "../../modules/trade/types";
+import { CiCircleChevDown } from "react-icons/ci";
+import TokenList from "./TokenList";
+import Image from "next/image";
+import { iSelectedNetwork } from "../../store/GlobalStore";
+import { iRebalance, iTokenData, iTrading, useRebalanceStore, useTradingStore } from "../../store/TradingStore";
+import { iProtocolNames } from "../../utils/data/protocols";
 
 interface iProtocolSelectionProps {
     showMenu: any;
@@ -32,9 +32,8 @@ const ProtocolSelection: React.FC<iProtocolSelectionProps> = ({
     onChangeToken,
     protocolNames,
 }) => {
-    const {
-        isRebalance,
-    }: iRebalance = useRebalanceStore((state) => state);
+    const { showFromSelectionMenu }: iTrading = useTradingStore((state) => state);
+    const { isRebalance }: iRebalance = useRebalanceStore((state) => state);
 
     return (
         showMenu &&
@@ -46,21 +45,25 @@ const ProtocolSelection: React.FC<iProtocolSelectionProps> = ({
                         .includes(filterToken.toLowerCase()) ? (
                         <div key={item.name} className="w-full py-0.5">
                             {/* Protocol Name and Image */}
-                            <div
-                                key={item.name}
-                                onClick={() => onChangeProtocol(item.name)}
-                                className="w-full flex justify-between items-center gap-3 text-B300 bg-[rgba(132,144,251,.0.9) border border-[rgba(132,144,251)] hover:bg-[rgba(132,144,251,.1)] py-2 px-3 my-1 rounded-lg cursor-pointer"
-                            >
-                                <div className="w-full flex justify-start items-center gap-3">
-                                    <Image
-                                        src={item.icon}
-                                        alt=""
-                                        className="h-8 w-8 bg-N40 rounded-full cursor-pointer"
-                                    />
-                                    <div>{protocolNames[selectedNetwork.chainId].value[protocolIndex]}</div>
+                            {(isRebalance &&
+                                showFromSelectionMenu &&
+                                protocolNames[selectedNetwork.chainId].value[protocolIndex] != "ERC20") || (
+                                <div
+                                    key={item.name}
+                                    onClick={() => onChangeProtocol(item.name)}
+                                    className="w-full flex justify-between items-center gap-3 text-B300 bg-[rgba(132,144,251,.0.9) border border-[rgba(132,144,251)] hover:bg-[rgba(132,144,251,.1)] py-2 px-3 my-1 rounded-lg cursor-pointer"
+                                >
+                                    <div className="w-full flex justify-start items-center gap-3">
+                                        <Image
+                                            src={item.icon}
+                                            alt=""
+                                            className="h-8 w-8 bg-N40 rounded-full cursor-pointer"
+                                        />
+                                        <div>{protocolNames[selectedNetwork.chainId].value[protocolIndex]}</div>
+                                    </div>
+                                    <CiCircleChevDown size="30px" className="text-[rgba(132,144,251)] h-7 w-7" />
                                 </div>
-                                <CiCircleChevDown size="30px" className="text-[rgba(132,144,251)] h-7 w-7" />
-                            </div>
+                            )}
 
                             {/* Tokens */}
                             {selectedProtocol === item.name && selectedProtocol !== "erc20" && (
@@ -72,7 +75,7 @@ const ProtocolSelection: React.FC<iProtocolSelectionProps> = ({
                                     onItemClick={onChangeToken}
                                 />
                             )}
-                            
+
                             {/* ERC20 Tokens */}
                             {item.name === "erc20" && selectedProtocol === "erc20" && tokensData && (
                                 <TokenList
@@ -91,4 +94,4 @@ const ProtocolSelection: React.FC<iProtocolSelectionProps> = ({
     );
 };
 
-export default ProtocolSelection
+export default ProtocolSelection;

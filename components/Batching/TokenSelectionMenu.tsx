@@ -39,6 +39,8 @@ const TokenSelectionMenu: React.FC<TokenSelectionMenuProps> = ({
     protocolNames,
 }) => {
     const { isRebalance }: iRebalance = useRebalanceStore((state) => state);
+    const { showFromSelectionMenu }: iTrading = useTradingStore((state) => state);
+
 
     return (
         <div
@@ -79,7 +81,7 @@ const TokenSelectionMenu: React.FC<TokenSelectionMenuProps> = ({
                         </div>
 
                         {/* Search by protocol */}
-                        {!isRebalance && (
+                        {showFromSelectionMenu && isRebalance || (
                             <SearchInput
                                 value={filterToken}
                                 onChange={setFilterToken}

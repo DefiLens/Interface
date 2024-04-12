@@ -95,11 +95,11 @@ export const Rebalance: React.FC<iRebalanceProps> = ({ addRebalancedBatches }) =
         const remainingPercentage = 100 - calculateTotalPercentage() + percentages[index];
         if (newPercentage > remainingPercentage) {
             // Prevent entering percentage more than available
-            toast.error(`You can't enter more than ${remainingPercentage}%`);
+            toast.error(`You can't enter more than ${remainingPercentage.toFixed(2)}%`);
             return;
         }
         const updatedPercentages = [...percentages];
-        updatedPercentages[index] = newPercentage;
+        updatedPercentages[index] = parseFloat(newPercentage.toFixed(2));
         setPercentages(updatedPercentages);
     };
 
@@ -107,20 +107,24 @@ export const Rebalance: React.FC<iRebalanceProps> = ({ addRebalancedBatches }) =
         return percentages.reduce((total, percentage) => total + percentage, 0);
     };
 
+
     return (
         <div className="w-full flex flex-col justify-center items-center">
             <div className="flex flex-col gap-4 w-full">
                 <div className="flex flex-col gap-3">
-                    {Array.isArray(rebalanceData) &&
-                        rebalanceData.map((item, index) => (
+                    {rebalanceData?.map((item, index) => (
                             <div key={index} className="w-full relative rounded-lg bg-[rgba(132,144,251,.4)]">
                                 <RebalanceTokenSelection
                                     onTokenSelect={(network, protocol, token, percentage, amount) =>
                                         handleTokenSelect(index, network, protocol, token, percentage, amount)
                                     }
+                                    network={item.network}
                                     index={index}
-                                    splitEqually={splitEqually}
+                                    protocol={item.protocol}
+                                    token={item.token}
+                                    amount={item.amount}
                                     percentages={percentages}
+                                    splitEqually={splitEqually}
                                     handlePercentageChange={handlePercentageChange}
                                 />
                                 {index !== 0 && (

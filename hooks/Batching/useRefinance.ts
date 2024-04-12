@@ -6,19 +6,29 @@ import { useMutation } from "@tanstack/react-query";
 import { tApprove, tOneInch, tOneInchSwapResponse, tRefinance, tRefinanceResponse } from "../types";
 import { useOneInch } from "../swaphooks/useOneInch";
 import { useApprove } from "../utilsHooks/useApprove";
-import { decreasePowerByDecimals } from "../../utils/helper";
+import { decreasePowerByDecimals, getTokenListByChainId } from "../../utils/helper";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import { useCalculateGasCost } from "../utilsHooks/useCalculateGasCost";
-import { iBatchFlowData, iTrading, useTradingStore } from "../../store/TradingStore";
+import { iBatchFlowData, iSelectedNetwork, iTokenData, iTrading, useTradingStore } from "../../store/TradingStore";
 import { abiFetcher, abiFetcherNum, buildParams, nativeTokenFetcher, nativeTokenNum, OneInchRouter, uniswapSwapRouterByChainId } from "../../utils/data/protocols";
-import { ETH_ADDRESS } from "../../utils/data/constants";
+import { useState } from "react";
+import UNISWAP_TOKENS from "../../abis/tokens/Uniswap.json";
+
 
 export function useRefinance() {
     const { mutateAsync: oneInchSwap } = useOneInch();
     const { mutateAsync: approve } = useApprove();
     const { selectedNetwork }: iGlobal = useGlobalStore((state) => state);
 
-    const { selectedFromNetwork, selectedFromProtocol, selectedToProtocol, amountIn, fromTokensData, toTokensData }: iTrading =
+    const [toTokensData, setToTokensData] = useState<iTokenData[]>();
+
+
+    async function onChangeselectedToProtocol(network: iSelectedNetwork) {
+        const tokens = getTokenListByChainId(network.chainId, UNISWAP_TOKENS);
+        setToTokensData(tokens);
+    }
+
+    const { selectedFromNetwork, selectedFromProtocol, amountIn, fromTokensData }: iTrading =
         useTradingStore((state) => state);
 
     async function refinance({
@@ -32,19 +42,14 @@ export function useRefinance() {
         amount,
         address,
         provider,
+        selectedToNetwork,
+        selectedToProtocol,
+        selectedToToken,
     }: tRefinance): Promise<tRefinanceResponse | undefined> {
 
-
-        // console.log("refinance: Called")
-        // console.log("refinanceFor: isSCW", isSCW)
-        // console.log("refinanceFor: fromProtocol", fromProtocol)
-        // console.log("refinanceFor: toProtocol", toProtocol)
-        // console.log("refinanceFor: tokenIn", tokenIn)
-        // console.log("refinanceFor: tokenInName", tokenInName)
-        // console.log("refinanceFor: tokenOut", tokenOut)
-        // console.log("refinanceFor: tokenOutName", tokenOutName)
-        // console.log("refinanceFor: amount", amount)
-        // console.log("refinance: address", address)
+        console.log(">>>>>>>>>>", selectedFromNetwork.chainName, "- To -", selectedToNetwork.chainName);
+        await onChangeselectedToProtocol(selectedToNetwork);
+        // console.log("--------------useRefinance", toTokensData)
 
         try {
             if (!selectedFromNetwork.chainName) {
@@ -156,7 +161,8 @@ export function useRefinance() {
                     amountIn: amount,
                     address,
                     type: "exactIn",
-                    chainId: Number(selectedNetwork.chainId)
+                    chainId: Number(selectedNetwork.chainId),
+                    selectedToken: selectedToToken
                 } as tOneInch);
 
                 if (!swapData) return
@@ -213,7 +219,7 @@ export function useRefinance() {
                     address,
                     paramDetailsMethod,
                 });
-                console.log('params', params)
+                // console.log('params', params)
                 txData = abiInterface.encodeFunctionData(methodName, params);
                 const tx2 = { to: tokenOutContractAddress, data: txData };
                 tempTxs.push(tx2);
