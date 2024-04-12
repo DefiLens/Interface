@@ -9,10 +9,12 @@ import { tApprove, tCCSendTx, tOneInch, tOneInchSwapResponse, tRefinance, tRefin
 import { useOneInch } from "../swaphooks/useOneInch";
 import { useApprove } from "../utilsHooks/useApprove";
 import { ChainIdDetails } from "../../utils/data/network";
-import { incresePowerByDecimals } from "../../utils/helper";
+import { getTokenListByChainId, incresePowerByDecimals } from "../../utils/helper";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
-import { iBatchFlowData, iTrading, useTradingStore } from "../../store/TradingStore";
+import { iBatchFlowData, iSelectedNetwork, iTokenData, iTrading, useTradingStore } from "../../store/TradingStore";
 import { abiFetcher, abiFetcherNum, buildParams, nativeTokenFetcher, nativeTokenNum, OneInchRouter, tokensByNetworkForCC, uniswapSwapRouterByChainId } from "../../utils/data/protocols";
+import { useState } from "react";
+import UNISWAP_TOKENS from "../../abis/tokens/Uniswap.json";
 
 export function useCCRefinance() {
     const { mutateAsync: approve } = useApprove();
@@ -20,14 +22,19 @@ export function useCCRefinance() {
     const { mutateAsync: oneInchSwap } = useOneInch();
     const { selectedNetwork }: iGlobal = useGlobalStore((state) => state);
 
+    const [toTokensData, setToTokensData] = useState<iTokenData[]>();
+
+
+    async function onChangeselectedToProtocol(network: iSelectedNetwork) {
+        const tokens = getTokenListByChainId(network.chainId, UNISWAP_TOKENS);
+        setToTokensData(tokens);
+    }
+
     const {
         selectedFromNetwork,
-        selectedToNetwork,
         selectedFromProtocol,
-        selectedToProtocol,
         amountIn,
         fromTokensData,
-        toTokensData,
     }: iTrading = useTradingStore((state) => state);
 
     async function refinanceForCC({
@@ -41,10 +48,14 @@ export function useCCRefinance() {
         amount,
         address,
         provider,
+        selectedToNetwork,
+        selectedToProtocol,
+        selectedToToken
     }: tRefinance): Promise<tRefinanceResponse | undefined> {
 
-        // console.log("refinanceForCC: Called")
-        // console.log("refinanceForCC: address", address)
+        console.log(">>>>>>>>>>",selectedFromNetwork.chainName, "- To -", selectedToNetwork.chainName);
+        await onChangeselectedToProtocol(selectedToNetwork)
+        // console.log("--------------useCCRefinance", toTokensData)
 
 
         try {
@@ -152,6 +163,7 @@ export function useCCRefinance() {
                     address,
                     type: "exactIn",
                     chainId: Number(selectedNetwork.chainId),
+                    selectedToken: selectedToToken
                 } as tOneInch);
                 if (!swapData) return
                 tempTxs.push(swapData.swapTx);
@@ -188,6 +200,10 @@ export function useCCRefinance() {
                         contractAddress: "",
                         extraOrShareToken: "0x0000000000000000000000000000000000000000",
                         tokenOutNum: "",
+                        selectedToNetwork: selectedToNetwork,
+                        selectedToProtocol: selectedToProtocol,
+                        selectedToToken: selectedToToken,
+                        toTokensData: toTokensData
                     } as tCCSendTx);
 
                     if (!data) return;
@@ -249,6 +265,7 @@ export function useCCRefinance() {
                     }
 
                     const _tempAmount = BigNumber.from(await incresePowerByDecimals(amountIn, 6).toString());
+                    // console.log("_tempAmount.", _tempAmount);
                     let data: tStargateData | undefined = await sendTxToChain({
                         tokenIn: tokensByNetworkForCC[selectedFromNetwork.chainId].usdc,
                         _amountIn: isSwap && swapData ? swapData.amountOutprice : _tempAmount,
@@ -265,6 +282,10 @@ export function useCCRefinance() {
                         contractAddress: tokenOutContractAddress,
                         extraOrShareToken: "0x0000000000000000000000000000000000000000",
                         tokenOutNum: tokenOutNum,
+                        selectedToNetwork: selectedToNetwork,
+                        selectedToProtocol: selectedToProtocol,
+                        selectedToToken: selectedToToken,
+                        toTokensData: toTokensData
                     } as tCCSendTx);
 
                     if (!data) return;

@@ -15,7 +15,6 @@ const BatchingListSection: React.FC<tTrade> = ({ removeBatch, toggleShowBatchLis
         useTradingStore((state) => state);
 
     // Calculate total fees
-    console.log("individualBatch", individualBatch);
     function calculateTotalFees() {
         let totalFees = 0;
 
@@ -59,7 +58,7 @@ const BatchingListSection: React.FC<tTrade> = ({ removeBatch, toggleShowBatchLis
 
             {/* Batching List Content */}
             <div className="w-full max-h-full overflow-auto flex flex-col gap-5 px-5 py-7">
-                {selectedFromNetwork.chainId && individualBatch.length > 0 && individualBatch[0].txArray.length > 0 ? (
+                {selectedFromNetwork?.chainId && individualBatch?.length > 0 && individualBatch[0]?.txArray?.length > 0 ? (
                     individualBatch.map((bar: any, inputBarIndex: number) => (
                         <div key={inputBarIndex}>
                             {/* Display individual batch */}

@@ -1,5 +1,5 @@
 import { BigNumberish, ethers } from "ethers";
-import { iBatchFlowData } from "../store/TradingStore";
+import { iBatchFlowData, iSelectedNetwork, iTokenData } from "../store/TradingStore";
 
 export type tOneInch = {
     tokenIn: string;
@@ -8,6 +8,7 @@ export type tOneInch = {
     address: string;
     type: string;
     chainId: number;
+    selectedToken: string;
 };
 
 export type tOneInchParams = {
@@ -81,6 +82,10 @@ export type tCCSendTx = {
     contractAddress: string;
     extraOrShareToken: string;
     tokenOutNum: string;
+    selectedToNetwork: iSelectedNetwork;
+    selectedToProtocol: string;
+    selectedToToken: string;
+    toTokensData: iTokenData[];
 };
 
 export type tTx = {
@@ -105,6 +110,9 @@ export type tRefinance = {
     amount: BigNumberish,
     address: string,
     provider: ethers.providers.JsonRpcProvider | undefined,
+    selectedToNetwork: iSelectedNetwork
+    selectedToProtocol: string,
+    selectedToToken: string,
 }
 
 export type tRefinanceResponse = {
