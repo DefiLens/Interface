@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { BigNumber as bg } from "bignumber.js";
+import { Indexed } from "ethers/lib/utils";
 
 export interface iSelectedNetwork {
     key: string;
@@ -121,7 +122,6 @@ export interface iTrading {
     txhash: string;
     sendTxLoading: boolean;
 
-    individualBatch: iIndividualBatch[];
     showIndividualBatchList: number | null;
 
     srcPoolId: number;
@@ -163,7 +163,6 @@ export interface iTrading {
     setTxHash: (txhash: string) => void;
     setSendTxLoading: (sendTxLoading: boolean) => void;
 
-    setIndividualBatch: (individualBatch: iIndividualBatch[]) => void;
     setShowIndividualBatchList: (showIndividualBatchList: number | null) => void;
 
     setSrcPoolId: (srcPoolId: number) => void;
@@ -173,9 +172,30 @@ export interface iTrading {
     setHasExecutionSuccess: (hasExecutionSuccess: string) => void;
     setHasExecutionError: (hasExecutionError: string) => void;
     setShowExecuteMethodModel: (showExecuteMethodModel: boolean) => void;
+
+    // individualBatch: iIndividualBatch[];
+    // setIndividualBatch: (individualBatch: iIndividualBatch[]) => void;
+
+
+    individualBatch: iIndividualBatch[];
+    addBatchItem: (item: iIndividualBatch) => void;
+    removeBatchItem: (id: number) => void;
 }
 
+
 export const useTradingStore = create<iTrading>((set) => ({
+
+    individualBatch: [],
+    addBatchItem: (item) =>
+        set((state) => ({
+            individualBatch: [...state.individualBatch, item],
+        })),
+    removeBatchItem: (index) =>
+        set((state) => ({
+            individualBatch: state.individualBatch.filter((_, i) => i !== index),
+        })),
+
+
     totalfees: bg(0),
     maxBalance: "",
     ismaxBalanceLoading: false,
@@ -217,29 +237,29 @@ export const useTradingStore = create<iTrading>((set) => ({
     txhash: "",
     sendTxLoading: false,
 
-    individualBatch: [
-        {
-            id: 0,
-            txArray: [],
-            data: {
-                fromNetwork: "",
-                toNetwork: "",
-                fromChainId: "",
-                toChainId: "",
-                fromProtocol: "",
-                toProtocol: "",
-                fromToken: "",
-                toToken: "",
-                amountIn: "",
-                fees: "",
-                extraValue: ""
-            },
-            simulation: {
-                isSuccess: false,
-                isError: false,
-            },
-        },
-    ],
+    // individualBatch: [
+    //     {
+    //         id: 0,
+    //         txArray: [],
+    //         data: {
+    //             fromNetwork: "",
+    //             toNetwork: "",
+    //             fromChainId: "",
+    //             toChainId: "",
+    //             fromProtocol: "",
+    //             toProtocol: "",
+    //             fromToken: "",
+    //             toToken: "",
+    //             amountIn: "",
+    //             fees: "",
+    //             extraValue: ""
+    //         },
+    //         simulation: {
+    //             isSuccess: false,
+    //             isError: false,
+    //         },
+    //     },
+    // ],
     showIndividualBatchList: null,
 
     srcPoolId: 1,
@@ -283,7 +303,7 @@ export const useTradingStore = create<iTrading>((set) => ({
     setTxHash: (txhash) => set(() => ({ txhash })),
     setSendTxLoading: (sendTxLoading) => set(() => ({ sendTxLoading })),
 
-    setIndividualBatch: (individualBatch) => set(() => ({ individualBatch })),
+    // setIndividualBatch: (individualBatch) => set(() => ({ individualBatch })),
     setShowIndividualBatchList: (showIndividualBatchList) => set(() => ({ showIndividualBatchList })),
 
     setSrcPoolId: (srcPoolId) => set(() => ({ srcPoolId })),
@@ -361,7 +381,7 @@ export const useRebalanceStore = create<iRebalance>((set) => ({
         set((state) => {
             let updatedData: iRebalanceData[];
             console.log("index", index);
-    
+
             if (newData) {
                 // Add or update the data
                 if (index !== null && index >= 0 && index < state.rebalanceData.length) {
@@ -375,17 +395,21 @@ export const useRebalanceStore = create<iRebalance>((set) => ({
             } else {
                 updatedData = state.rebalanceData;
             }
-    
+
             return { rebalanceData: updatedData };
         });
     },
-    
+
     addNewEmptyData: () => {
-        set((state) => ({ rebalanceData: [...state.rebalanceData, createEmptyData()] }));
+        set((state) => (
+            { rebalanceData: [...state.rebalanceData, createEmptyData()] }
+        ));
     },
 
     removeDataAtIndex: (index) => {
-        set((state) => ({ rebalanceData: state.rebalanceData.filter((_, i) => i !== index) }));
+        set((state) => ({
+            rebalanceData: state.rebalanceData.filter((_, i) => i !== index)
+        }));
     },
 }));
 

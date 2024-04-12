@@ -17,6 +17,10 @@ export interface iRebalanceTokenSelection {
         amount: number
     ) => void;
     index: number;
+    network: iSelectedNetwork;
+    protocol: string;
+    token: string;
+    amount: number;
     splitEqually: boolean;
     percentages: number[];
     handlePercentageChange: (index: number, event: any) => void;
@@ -26,10 +30,14 @@ export const RebalanceTokenSelection: React.FC<iRebalanceTokenSelection> = ({
     percentages,
     handlePercentageChange,
     index,
+    network,
+    protocol,
+    token,
     splitEqually,
     onTokenSelect,
 }) => {
     const { amountIn, toTokensData, setToTokensData, addToBatchLoading }: iTrading = useTradingStore((state) => state);
+    const { rebalanceData }: iRebalance = useRebalanceStore((state) => state);
     const [selectedNetwork, setSelectedNetwork] = useState<iSelectedNetwork>({
         key: "",
         chainName: "",
@@ -42,6 +50,14 @@ export const RebalanceTokenSelection: React.FC<iRebalanceTokenSelection> = ({
     const [showSelectionMenu, setShowSelectionMenu] = useState<number | null>(null);
     const [filterToToken, setFilterToToken] = useState("");
     const [filterToAddress, setFilterToAddress] = useState("");
+
+    useEffect(() => {
+        //update states selectedNetwork, selectedProtocol, selectedToken, amount
+        setSelectedNetwork(network);
+        setSelectedProtocol(protocol);
+        setSelectedToken(token);
+        setAmount(amount);
+    }, [network, protocol, token, amount]);
 
     const handleNetworkSelect = (network: iSelectedNetwork) => {
         setSelectedNetwork(network);
@@ -83,10 +99,9 @@ export const RebalanceTokenSelection: React.FC<iRebalanceTokenSelection> = ({
             toast.error("Please wait, transaction loading.");
             return;
         }
-    
-        setShowSelectionMenu(prevIndex => (prevIndex === index ? null : index));
+
+        setShowSelectionMenu((prevIndex) => (prevIndex === index ? null : index));
     };
-    
 
     useEffect(() => {
         onChangeselectedToProtocol(selectedProtocol, selectedNetwork, setToTokensData);
