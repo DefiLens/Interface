@@ -12,6 +12,7 @@ import FooterContainer from "../modules/footer/FooterContainer";
 
 import "@biconomy/web3-auth/dist/src/style.css";
 import "../assets/styles/index.css";
+import Head from "next/head";
 
 export default function App({ Component, pageProps }: AppProps) {
     const { selectedNetwork }: iGlobal = useGlobalStore((state) => state);
@@ -26,6 +27,9 @@ export default function App({ Component, pageProps }: AppProps) {
 
     return (
         <>
+            <Head>
+                <title>DefiLens</title> 
+            </Head>
             {/* @ts-ignore */}
             <ThirdwebProvider
                 supportedChains={[Polygon, Base, Optimism, Arbitrum]}
@@ -34,7 +38,7 @@ export default function App({ Component, pageProps }: AppProps) {
                 supportedWallets={[metamaskWallet({ recommended: true })]}
             >
                 <QueryClientProvider client={queryClient}>
-                    <Toaster
+                    {/* <Toaster
                         position="bottom-right"
                         toastOptions={{
                             style: {
@@ -47,7 +51,7 @@ export default function App({ Component, pageProps }: AppProps) {
                                 textAlign: "center",
                             },
                         }}
-                    />
+                    /> */}
 
                     <Suspense fallback={<div>Loading...</div>}>
                         <div className="main-bg h-screen w-screen">

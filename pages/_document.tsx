@@ -16,7 +16,6 @@ export default function Document() {
                 rel="stylesheet"
             />
             <Head>
-                <title>DefiLens</title>
                 <meta
                     name="DefiLens"
                     content="DefiLens is pioneering a platform that streamlines trading activities. To offering the ease of trading experience and swift portfolio management to users, Defilens provide a solutions like cross-chain trading and efficiently refinancing defi positions using smart batching strategies."
