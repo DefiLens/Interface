@@ -352,7 +352,7 @@ export interface iRebalance {
     setRebalanceData: (index: number | null, newData?: iRebalanceData, remove?: boolean) => void;
     addNewEmptyData: () => void;
     removeDataAtIndex: (index: number) => void;
-
+    removeAllData: () => void;
 }
 // Create global state
 export const useRebalanceStore = create<iRebalance>((set) => ({
@@ -411,6 +411,10 @@ export const useRebalanceStore = create<iRebalance>((set) => ({
             rebalanceData: state.rebalanceData.filter((_, i) => i !== index)
         }));
     },
+
+    removeAllData: () => {
+        set(() => ({ rebalanceData: [] }));
+    }
 }));
 
 const createEmptyData = (): iRebalanceData => ({

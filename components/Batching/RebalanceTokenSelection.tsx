@@ -78,12 +78,6 @@ export const RebalanceTokenSelection: React.FC<iRebalanceTokenSelection> = ({
         }
     };
 
-    const closeSelectionMenu = () => {
-        setShowSelectionMenu(null);
-        setSelectedToken("");
-        setFilterToAddress("");
-    };
-
     const handleTokenSelect = (token: string) => {
         setSelectedToken(token);
         if (selectedNetwork) {
@@ -114,7 +108,7 @@ export const RebalanceTokenSelection: React.FC<iRebalanceTokenSelection> = ({
         // Update state with the new amount and percentage
         setAmount(updatedAmount);
         onTokenSelect(selectedNetwork, selectedProtocol, selectedToken, percentages[index], updatedAmount);
-    }, [percentages[index], amountIn, selectedToken]);
+    }, [percentages[index], amountIn, selectedToken, rebalanceData.length]);
 
     return (
         <div>
@@ -144,7 +138,7 @@ export const RebalanceTokenSelection: React.FC<iRebalanceTokenSelection> = ({
                         type="number"
                         className={`flex-1 w-32 bg-transparent outline-none placeholder-N80`}
                         placeholder="Percentage"
-                        value={percentages[index]}
+                        value={parseFloat(percentages[index]?.toFixed(2))}
                         onChange={(event) => handlePercentageChange(index, event)}
                         disabled={splitEqually}
                     />
@@ -152,17 +146,6 @@ export const RebalanceTokenSelection: React.FC<iRebalanceTokenSelection> = ({
                 </div>
                 <span className="text-N0">${calculateAmount(percentages[index]).toFixed(2)}</span>
             </div>
-            {/* 
-            <SelectErc20
-                index={index}
-                isOpen={isModalOpen === index}
-                onClose={() => setIsModalOpen(null)}
-                onNetworkSelect={handleNetworkSelect}
-                onProtocolSelect={handleProtocolSelect}
-                onTokenSelect={handleTokenSelect}
-                selectedProtocol={selectedProtocol}
-                selectedNetwork={selectedNetwork}
-            /> */}
             <TokenSelectionMenu
                 showMenu={showSelectionMenu === index}
                 closeMenu={handleShowSelectionMenu}

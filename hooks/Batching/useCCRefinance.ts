@@ -34,7 +34,7 @@ export function useCCRefinance() {
     const {
         selectedFromNetwork,
         selectedFromProtocol,
-        amountIn,
+        // amountIn,
         fromTokensData,
     }: iTrading = useTradingStore((state) => state);
 
@@ -51,7 +51,8 @@ export function useCCRefinance() {
         provider,
         selectedToNetwork,
         selectedToProtocol,
-        selectedToToken
+        selectedToToken,
+        amountIn
     }: tRefinance): Promise<tRefinanceResponse | undefined> {
 
         console.log(">>>>>>>>>>",selectedFromNetwork.chainName, "- To -", selectedToNetwork.chainName);
