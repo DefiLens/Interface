@@ -113,6 +113,7 @@ export type tRefinance = {
     selectedToNetwork: iSelectedNetwork
     selectedToProtocol: string,
     selectedToToken: string,
+    amountIn: number
 }
 
 export type tRefinanceResponse = {

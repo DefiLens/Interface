@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { iRebalance, iSelectedNetwork, iTrading, useRebalanceStore, useTradingStore } from "../../store/TradingStore";
 import { IoIosAdd } from "react-icons/io";
 import { RxCross2 } from "react-icons/rx";
@@ -31,6 +31,8 @@ export const Rebalance: React.FC<iRebalanceProps> = ({ addRebalancedBatches }) =
         setSplitEqually,
         percentages,
         setPercentages,
+        isRebalance,
+        removeAllData,
     }: iRebalance = useRebalanceStore((state) => state);
 
     const { addToBatchLoading }: iTrading = useTradingStore((state) => state);
@@ -107,36 +109,40 @@ export const Rebalance: React.FC<iRebalanceProps> = ({ addRebalancedBatches }) =
         return percentages.reduce((total, percentage) => total + percentage, 0);
     };
 
+    useEffect(() => {
+        removeAllData()
+        addNewEmptyData()
+    }, [isRebalance]);
 
     return (
         <div className="w-full flex flex-col justify-center items-center">
             <div className="flex flex-col gap-4 w-full">
                 <div className="flex flex-col gap-3">
                     {rebalanceData?.map((item, index) => (
-                            <div key={index} className="w-full relative rounded-lg bg-[rgba(132,144,251,.4)]">
-                                <RebalanceTokenSelection
-                                    onTokenSelect={(network, protocol, token, percentage, amount) =>
-                                        handleTokenSelect(index, network, protocol, token, percentage, amount)
-                                    }
-                                    network={item.network}
-                                    index={index}
-                                    protocol={item.protocol}
-                                    token={item.token}
-                                    amount={item.amount}
-                                    percentages={percentages}
-                                    splitEqually={splitEqually}
-                                    handlePercentageChange={handlePercentageChange}
-                                />
-                                {index !== 0 && (
-                                    <button
-                                        className="text-N0 absolute top-3 right-3"
-                                        onClick={() => handleRemoveDiv(index)}
-                                    >
-                                        <RxCross2 size="20px" />
-                                    </button>
-                                )}
-                            </div>
-                        ))}
+                        <div key={index} className="w-full relative rounded-lg bg-[rgba(132,144,251,.4)]">
+                            <RebalanceTokenSelection
+                                onTokenSelect={(network, protocol, token, percentage, amount) =>
+                                    handleTokenSelect(index, network, protocol, token, percentage, amount)
+                                }
+                                network={item.network}
+                                index={index}
+                                protocol={item.protocol}
+                                token={item.token}
+                                amount={item.amount}
+                                percentages={percentages}
+                                splitEqually={splitEqually}
+                                handlePercentageChange={handlePercentageChange}
+                            />
+                            {index !== 0 && (
+                                <button
+                                    className="text-N0 absolute top-3 right-3"
+                                    onClick={() => handleRemoveDiv(index)}
+                                >
+                                    <RxCross2 size="20px" />
+                                </button>
+                            )}
+                        </div>
+                    ))}
 
                     <div className="flex justify-between items-center w-full mt-2">
                         <div className="inline-flex items-center relative">

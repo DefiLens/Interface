@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import gas from "../../assets/images/gas.png";
 import { protocolNames } from "../../utils/data/protocols";
 import { ChainIdDetails } from "../../utils/data/network";
@@ -11,22 +11,30 @@ import { defaultBlue } from "../../assets/images";
 import { tTrade } from "../../modules/trade/types";
 
 const BatchingListSection: React.FC<tTrade> = ({ removeBatch, toggleShowBatchList }) => {
-    const { selectedFromNetwork, showIndividualBatchList, txhash, individualBatch, totalfees }: iTrading =
-        useTradingStore((state) => state);
+    const { selectedFromNetwork, showIndividualBatchList, txhash, individualBatch }: iTrading = useTradingStore(
+        (state) => state
+    );
 
+    const [totalFees, setTotalFees] = useState<number>(0);
     // Calculate total fees
     function calculateTotalFees() {
         let totalFees = 0;
+        let totalExtraFees = 0;
+        console.log("individualBatch", individualBatch);    
 
         individualBatch?.forEach((batch) => {
             if (batch?.data && batch?.data?.fees) {
                 totalFees += parseFloat(batch?.data?.fees);
+                totalExtraFees += parseFloat(batch?.data?.extraValue);
             }
         });
 
-        return totalFees;
+        return totalFees + totalExtraFees;
     }
-    const totalFees = calculateTotalFees();
+    useEffect(() => {
+        const totalFees = calculateTotalFees();
+        setTotalFees(totalFees);
+    }, [individualBatch]);
 
     return (
         <div className="w-full md:max-w-2xl max-h-full bg-W100 flex flex-col justify-start items-center gap-1 rounded-2xl cursor-pointer shadow-2xl">
@@ -37,7 +45,7 @@ const BatchingListSection: React.FC<tTrade> = ({ removeBatch, toggleShowBatchLis
                 </h1>
 
                 {/* Display Total Gas if available */}
-                {selectedFromNetwork.chainId && totalfees.gt(0) && (
+                {selectedFromNetwork.chainId && totalFees != 0 && (
                     <div className="w-auto flex justify-between items-center text-green-400 gap-4 md:gap-6 bg-[rgba(109,223,255,.2)] border border-green-400 rounded-xl px-4 py-2">
                         <h3 className="flex justify-start items-center gap-1 font-bold text-xs md:text-sm">
                             <Image src={gas} alt="gas" className="h-5 w-5 mr-1 sm:mr-2" />
@@ -58,7 +66,9 @@ const BatchingListSection: React.FC<tTrade> = ({ removeBatch, toggleShowBatchLis
 
             {/* Batching List Content */}
             <div className="w-full max-h-full overflow-auto flex flex-col gap-5 px-5 py-7">
-                {selectedFromNetwork?.chainId && individualBatch?.length > 0 && individualBatch[0]?.txArray?.length > 0 ? (
+                {selectedFromNetwork?.chainId &&
+                individualBatch?.length > 0 &&
+                individualBatch[0]?.txArray?.length > 0 ? (
                     individualBatch.map((bar: any, inputBarIndex: number) => (
                         <div key={inputBarIndex}>
                             {/* Display individual batch */}
