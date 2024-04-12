@@ -119,7 +119,9 @@ const TradeContainer: React.FC<any> = () => {
         setShowExecuteMethodModel,
     }: iTrading = useTradingStore((state) => state);
 
-    const { isModalOpen, isRebalance, rebalanceData }: iRebalance = useRebalanceStore((state) => state);
+    const { isModalOpen, isRebalance, rebalanceData, removeAllData, addNewEmptyData, removeDataAtIndex }: iRebalance = useRebalanceStore(
+        (state) => state
+    );
 
     // console.log("individial", individualBatch);
 
@@ -134,10 +136,12 @@ const TradeContainer: React.FC<any> = () => {
         setLoading(true);
         if (selectedFromNetwork.chainName !== _fromNetwork.chainName) {
             await switchOnSpecificChain(_fromNetwork.chainName);
+            return;
             setSelectedFromNetwork(_fromNetwork);
+        } else {
+            setSelectedFromNetwork(_fromNetwork);
+            setLoading(false);
         }
-        setSelectedFromNetwork(_fromNetwork);
-        setLoading(false);
     };
 
     const handleSelectToNetwork = async (_toNetwork: iSelectedNetwork) => {
@@ -537,10 +541,6 @@ const TradeContainer: React.FC<any> = () => {
     };
 
     const removeBatch = (index: number) => {
-        // console.log(individualBatch)
-        // const updatedBatch = [...individualBatch];
-        // updatedBatch.splice(index, 1); // Remove the InputBar at the specified index
-        // setIndividualBatch(updatedBatch);
         removeBatchItem(index);
     };
 
@@ -568,41 +568,12 @@ const TradeContainer: React.FC<any> = () => {
             data: data,
             simulation,
         };
-        // console.log("-------------------INDIVIDUAL", individualBatch);
-        // console.log("-------------------NEW ITEM", newItem);
 
         addBatchItem(newItem);
         {
             !isRebalance && clearSelectedBatchData();
         }
-    };
-
-    const updateInputValuesForRebalance = (
-        index: number,
-        txArray: Array<tTx>,
-        batchesFlow: any,
-        data: any,
-        simulation: any
-    ) => {
-        console.log("txArray------------",txArray)
-        if (txArray.length < 1) return toast.error("Please complete the last input before adding a new one.");
-
-        const newItem: any = {
-            id: index,
-            txArray,
-            batchesFlow,
-            data: data,
-            simulation,
-        };
-        // console.log("-------------------INDIVIDUAL", individualBatch);
-        // console.log("-------------------NEW ITEM", newItem);
-
-        addBatchItem(newItem);
-
-
-        // {
-        //     !isRebalance && clearSelectedBatchData();
-        // }
+        removeDataAtIndex(index)
     };
 
     const toggleShowBatchList = (id: number): void => {
@@ -619,7 +590,7 @@ const TradeContainer: React.FC<any> = () => {
                 setAddToBatchLoading(true);
             }
             if (selectedFromToken == selectedToToken && selectedFromNetwork.chainName === selectedToNetwork.chainName) {
-                toast.error("fromToken and toToken should not same");
+                toast.error("Transaction to same protocol is not allowed");
                 setAddToBatchLoading(false);
                 return;
             }
@@ -692,6 +663,7 @@ const TradeContainer: React.FC<any> = () => {
                     selectedToNetwork: selectedToNetwork,
                     selectedToProtocol: selectedToProtocol,
                     selectedToToken: selectedToToken,
+                    amountIn: amountIn,
                 } as tRefinance);
             } else {
                 refinaceData = await refinanceForCC({
@@ -708,6 +680,7 @@ const TradeContainer: React.FC<any> = () => {
                     selectedToNetwork: selectedToNetwork,
                     selectedToProtocol: selectedToProtocol,
                     selectedToToken: selectedToToken,
+                    amountIn: amountIn,
                 } as tRefinance);
             }
 
@@ -827,7 +800,6 @@ const TradeContainer: React.FC<any> = () => {
         }
     };
 
-    // console.log("reba", rebalanceData);
     const addRebalancedBatches = async (
         isSCW: boolean,
         selectedToNetwork: iSelectedNetwork,
@@ -837,33 +809,12 @@ const TradeContainer: React.FC<any> = () => {
         amount: number,
         index: number
     ) => {
-        // console.log(
-        //     "addRebalancedBatches",
-        //     isSCW,
-        //     selectedToNetwork,
-        //     selectedToProtocol,
-        //     selectedToToken,
-        //     rePercentage,
-        //     amount
-        // );
         try {
-            // onChangeselectedToProtocol(selectedToProtocol, selectedToNetwork, setToTokensData);
-            // const validateTotalPercentage = () => {
-            //     const totalPercentage = rebalanceData.reduce((acc, curr) => acc + Math.floor(curr.percentage), 0);
-            //     return totalPercentage === 98;
-            // };
-
-            // const isValid = validateTotalPercentage();
-            // if (!isValid) {
-            //     toast.error("Total Percentage should be 100%");
-            //     setAddToBatchLoading(false);
-            //     return;
-            // }
             if (isSCW) {
                 setAddToBatchLoading(true);
             }
             if (selectedFromToken == selectedToToken && selectedFromNetwork.chainName === selectedToNetwork.chainName) {
-                toast.error("fromToken and toToken should not same");
+                toast.error("Transaction to same protocol is not allowed");
                 setAddToBatchLoading(false);
                 return;
             }
@@ -930,7 +881,6 @@ const TradeContainer: React.FC<any> = () => {
             let refinaceData: tRefinanceResponse | undefined;
             let txArray;
 
-            // console.log("--------------In start of refinance-----------");
             if (selectedFromNetwork.chainName == selectedToNetwork.chainName) {
                 refinaceData = await refinance({
                     isSCW: isSCW,
@@ -946,6 +896,7 @@ const TradeContainer: React.FC<any> = () => {
                     selectedToNetwork: selectedToNetwork,
                     selectedToProtocol: selectedToProtocol,
                     selectedToToken: selectedToToken,
+                    amountIn: amount,
                 } as tRefinance);
             } else {
                 refinaceData = await refinanceForCC({
@@ -962,6 +913,7 @@ const TradeContainer: React.FC<any> = () => {
                     selectedToNetwork: selectedToNetwork,
                     selectedToProtocol: selectedToProtocol,
                     selectedToToken: selectedToToken,
+                    amountIn: amount,
                 } as tRefinance);
             }
 
@@ -976,7 +928,6 @@ const TradeContainer: React.FC<any> = () => {
                 isError: false,
             };
 
-            // console.log(refinaceData, "refinanceData.txArray");
             const userOp = await smartAccount.buildUserOp(refinaceData.txArray);
 
             const fees = bg(userOp.callGasLimit.toString())
@@ -994,12 +945,8 @@ const TradeContainer: React.FC<any> = () => {
             }
             setTotalFees(bg(_totalfees));
 
-            // console.log("individualBatch ------ Before", individualBatch);
-            // console.log("index", index);
-            // console.log("batch Data length", individualBatch.length);
-
-            updateInputValuesForRebalance(
-                individualBatch.length + index - 1, // as we looping this function, so to access individualBatch
+            updateInputValues(
+                individualBatch.length + index - 1,
                 refinaceData.txArray.length > 0 ? refinaceData.txArray : [],
                 refinaceData.batchFlow,
                 {
@@ -1041,12 +988,20 @@ const TradeContainer: React.FC<any> = () => {
             const { network, protocol, token, percentage, amount } = rebalanceData[i];
             await addRebalancedBatches(true, network, protocol, token, percentage, amount, i);
         }
+
+        // Clear the rebalance data
+        // if(!addToBatchLoading){
+        //     removeAllData();
+        //     addNewEmptyData();
+        //     clearSelectedBatchData();
+        // }
     }
 
     function delay(ms) {
         return new Promise((resolve) => setTimeout(resolve, ms));
     }
 
+    console.log(rebalanceData)
     return (
         <Trade
             handleSelectFromNetwork={handleSelectFromNetwork}
