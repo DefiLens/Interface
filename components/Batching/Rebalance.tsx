@@ -33,6 +33,7 @@ export const Rebalance: React.FC<iRebalanceProps> = ({ addRebalancedBatches }) =
         setPercentages,
         isRebalance,
         removeAllData,
+        clearRebalanceData,
     }: iRebalance = useRebalanceStore((state) => state);
 
     const { addToBatchLoading }: iTrading = useTradingStore((state) => state);
@@ -110,9 +111,11 @@ export const Rebalance: React.FC<iRebalanceProps> = ({ addRebalancedBatches }) =
     };
 
     useEffect(() => {
-        removeAllData()
-        addNewEmptyData()
-    }, [isRebalance]);
+        if (clearRebalanceData) {
+            removeAllData();
+            addNewEmptyData();
+        }
+    }, [isRebalance, clearRebalanceData]);
 
     return (
         <div className="w-full flex flex-col justify-center items-center">

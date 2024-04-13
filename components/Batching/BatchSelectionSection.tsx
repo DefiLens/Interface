@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 
 import { BigNumber as bg } from "bignumber.js";
@@ -39,9 +39,10 @@ const BatchSelectionSection: React.FC<tTrade> = ({
         addToBatchLoading,
         sendTxLoading,
         setSelectedToProtocol,
+        individualBatch,
     }: iTrading = useTradingStore((state) => state);
 
-    const { isRebalance, setIsRebalance }: iRebalance = useRebalanceStore((state) => state);
+    const { isRebalance, setIsRebalance, rebalanceData }: iRebalance = useRebalanceStore((state) => state);
 
     const handleCheckboxChange = (event: any) => {
         if (addToBatchLoading) {
@@ -51,6 +52,45 @@ const BatchSelectionSection: React.FC<tTrade> = ({
         setIsRebalance(event.target.checked);
         setSelectedToProtocol("erc20");
     };
+
+    const [isRebalanceBtnClickable, setIsRebalanceBtnClickable] = useState(false);
+    const [isOneBatchBtnClickable, setIsOneBatchBtnClickable] = useState(false);
+    const [isExecuteBtnClickable, setIsExecuteBtnClickable] = useState(false);
+
+    useEffect(() => {
+        const areAllObjectsFilled =
+            rebalanceData.length > 0 &&
+            rebalanceData.every((object) => Object.values(object).every((value) => value !== ""));
+
+        const isButtonClickable: any =
+            selectedFromProtocol != "" && selectedFromToken != "" && amountIn != 0 && areAllObjectsFilled;
+        setIsRebalanceBtnClickable(isButtonClickable);
+    }, [selectedFromProtocol, selectedFromToken, amountIn, rebalanceData]);
+
+    useEffect(() => {
+        const isButtonClickable: any =
+            selectedFromProtocol != "" &&
+            selectedFromToken != "" &&
+            amountIn != 0 &&
+            selectedToProtocol != "" &&
+            selectedToToken != "";
+        setIsOneBatchBtnClickable(isButtonClickable);
+    }, [selectedFromProtocol, selectedFromToken, amountIn, selectedToProtocol, selectedToToken]);
+
+    useEffect(() => {
+        const areAllObjectsFilled =
+            individualBatch.length > 0 &&
+            individualBatch.every((object) => Object.values(object).every((value) => value !== ""));
+        setIsExecuteBtnClickable(areAllObjectsFilled);
+    }, [individualBatch]);
+
+    const handleShowSelectionMenu = () => {
+        if (addToBatchLoading) {
+            toast.error("wait, tx loading");
+            return;
+        }
+        setShowFromSelectionMenu(true);
+    }
 
     return (
         <div className="w-full bg-gradient-to-br from-[#7339FD] via-[#56B0F6] to-[#4DD4F4] flex flex-col gap-1 rounded-2xl cursor-pointer shadow-2xl">
@@ -73,7 +113,7 @@ const BatchSelectionSection: React.FC<tTrade> = ({
                         >
                             {/* Selection Bar - FROM */}
                             <SelectionBar
-                                handleSelectionMenu={() => setShowFromSelectionMenu(true)}
+                                handleSelectionMenu={handleShowSelectionMenu}
                                 titlePlaceholder="From"
                                 iconCondition={selectedFromNetwork.chainName && selectedFromProtocol}
                                 mainIcon={selectedFromNetwork?.icon}
@@ -111,7 +151,7 @@ const BatchSelectionSection: React.FC<tTrade> = ({
                             {/* Selection Bar - TO */}
                             {!isRebalance ? (
                                 <SelectionBar
-                                    handleSelectionMenu={() => setShowToSelectionMenu(true)}
+                                    handleSelectionMenu={handleShowSelectionMenu}
                                     titlePlaceholder="To"
                                     iconCondition={selectedToNetwork.chainName}
                                     mainIcon={selectedToNetwork?.icon}
@@ -239,13 +279,14 @@ const BatchSelectionSection: React.FC<tTrade> = ({
                                 handleClick={() => processRebalancing()}
                                 isLoading={addToBatchLoading}
                                 customStyle=""
-                                disabled={addToBatchLoading}
+                                disabled={!isRebalanceBtnClickable || addToBatchLoading}
                                 innerText="Rebalance"
                             />
                         ) : (
                             <Button
                                 handleClick={() => sendSingleBatchToList(true)}
                                 isLoading={addToBatchLoading}
+                                disabled={!isOneBatchBtnClickable || addToBatchLoading}
                                 customStyle=""
                                 innerText="Add Batch to List"
                             />
@@ -254,6 +295,7 @@ const BatchSelectionSection: React.FC<tTrade> = ({
                         <Button
                             handleClick={() => handleExecuteMethod()}
                             isLoading={sendTxLoading}
+                            disabled={!isExecuteBtnClickable || addToBatchLoading}
                             customStyle=""
                             innerText="Execute Batch"
                         />

@@ -117,9 +117,15 @@ const TradeContainer: React.FC<any> = () => {
         setShowExecuteMethodModel,
     }: iTrading = useTradingStore((state) => state);
 
-    const { isModalOpen, isRebalance, rebalanceData, removeAllData, addNewEmptyData, removeDataAtIndex }: iRebalance = useRebalanceStore(
-        (state) => state
-    );
+    const {
+        isModalOpen,
+        isRebalance,
+        rebalanceData,
+        removeAllData,
+        addNewEmptyData,
+        removeDataAtIndex,
+        setClearRebalanceData,
+    }: iRebalance = useRebalanceStore((state) => state);
 
     // console.log("individial", individualBatch);
 
@@ -151,6 +157,10 @@ const TradeContainer: React.FC<any> = () => {
     };
 
     const closeFromSelectionMenu = () => {
+        if (addToBatchLoading) {
+            toast.error("wait, tx loading");
+            return;
+        }
         setShowFromSelectionMenu(false);
         setFilterFromToken("");
         setFilterFromAddress("");
@@ -538,7 +548,7 @@ const TradeContainer: React.FC<any> = () => {
         {
             !isRebalance && clearSelectedBatchData();
         }
-        removeDataAtIndex(index)
+        removeDataAtIndex(index);
     };
 
     const toggleShowBatchList = (id: number): void => {
@@ -942,24 +952,23 @@ const TradeContainer: React.FC<any> = () => {
         // Delay for 100ms to allow the first item to be processed first
         await delay(100);
 
+        setClearRebalanceData(false);
         for (let i = 0; i < rebalanceData.length; i++) {
             const { network, protocol, token, percentage, amount } = rebalanceData[i];
             await addRebalancedBatches(true, network, protocol, token, percentage, amount, i);
         }
 
         // Clear the rebalance data
-        // if(!addToBatchLoading){
-        //     removeAllData();
-        //     addNewEmptyData();
-        //     clearSelectedBatchData();
-        // }
+        setClearRebalanceData(true);
+        removeAllData();
+        addNewEmptyData();
+        clearSelectedBatchData();
     }
 
-    function delay(ms) {
+    function delay(ms: number) {
         return new Promise((resolve) => setTimeout(resolve, ms));
     }
 
-    console.log(rebalanceData)
     return (
         <Trade
             handleSelectFromNetwork={handleSelectFromNetwork}
