@@ -173,10 +173,6 @@ export interface iTrading {
     setHasExecutionError: (hasExecutionError: string) => void;
     setShowExecuteMethodModel: (showExecuteMethodModel: boolean) => void;
 
-    // individualBatch: iIndividualBatch[];
-    // setIndividualBatch: (individualBatch: iIndividualBatch[]) => void;
-
-
     individualBatch: iIndividualBatch[];
     addBatchItem: (item: iIndividualBatch) => void;
     removeBatchItem: (id: number) => void;
@@ -237,29 +233,6 @@ export const useTradingStore = create<iTrading>((set) => ({
     txhash: "",
     sendTxLoading: false,
 
-    // individualBatch: [
-    //     {
-    //         id: 0,
-    //         txArray: [],
-    //         data: {
-    //             fromNetwork: "",
-    //             toNetwork: "",
-    //             fromChainId: "",
-    //             toChainId: "",
-    //             fromProtocol: "",
-    //             toProtocol: "",
-    //             fromToken: "",
-    //             toToken: "",
-    //             amountIn: "",
-    //             fees: "",
-    //             extraValue: ""
-    //         },
-    //         simulation: {
-    //             isSuccess: false,
-    //             isError: false,
-    //         },
-    //     },
-    // ],
     showIndividualBatchList: null,
 
     srcPoolId: 1,
@@ -303,7 +276,6 @@ export const useTradingStore = create<iTrading>((set) => ({
     setTxHash: (txhash) => set(() => ({ txhash })),
     setSendTxLoading: (sendTxLoading) => set(() => ({ sendTxLoading })),
 
-    // setIndividualBatch: (individualBatch) => set(() => ({ individualBatch })),
     setShowIndividualBatchList: (showIndividualBatchList) => set(() => ({ showIndividualBatchList })),
 
     setSrcPoolId: (srcPoolId) => set(() => ({ srcPoolId })),
@@ -339,6 +311,9 @@ export interface iRebalance {
     isRebalance: boolean;
     setIsRebalance: (isRebalance: boolean) => void;
 
+    clearRebalanceData: boolean;
+    setClearRebalanceData: (clearRebalanceData: boolean) => void;
+
     splitEqually: boolean;
     setSplitEqually: (splitEqually: boolean) => void;
 
@@ -358,6 +333,9 @@ export interface iRebalance {
 export const useRebalanceStore = create<iRebalance>((set) => ({
     isRebalance: false,
     setIsRebalance: (isRebalance) => set(() => ({ isRebalance })),
+
+    clearRebalanceData: false,
+    setClearRebalanceData: (clearRebalanceData) => set(() => ({ clearRebalanceData })),
 
     splitEqually: true,
     setSplitEqually: (splitEqually) => set(() => ({ splitEqually })),
