@@ -37,7 +37,7 @@ export const RebalanceTokenSelection: React.FC<iRebalanceTokenSelection> = ({
     onTokenSelect,
 }) => {
     const { amountIn, toTokensData, setToTokensData, addToBatchLoading }: iTrading = useTradingStore((state) => state);
-    const { rebalanceData }: iRebalance = useRebalanceStore((state) => state);
+    const { rebalanceData, clearRebalanceData }: iRebalance = useRebalanceStore((state) => state);
     const [selectedNetwork, setSelectedNetwork] = useState<iSelectedNetwork>({
         key: "",
         chainName: "",
@@ -58,6 +58,16 @@ export const RebalanceTokenSelection: React.FC<iRebalanceTokenSelection> = ({
         setSelectedToken(token);
         setAmount(amount);
     }, [network, protocol, token, amount]);
+
+    useEffect(() => {
+        if (clearRebalanceData) {
+            console.log("clearRebalanceData", clearRebalanceData);
+            setSelectedNetwork({ key: "", chainName: "", chainId: "", icon: "" });
+            setSelectedProtocol("")
+            setSelectedToken("")
+            setAmount(0)
+        }
+    }, [clearRebalanceData]);
 
     const handleNetworkSelect = (network: iSelectedNetwork) => {
         setSelectedNetwork(network);

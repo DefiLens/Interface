@@ -20,7 +20,6 @@ const BatchingListSection: React.FC<tTrade> = ({ removeBatch, toggleShowBatchLis
     function calculateTotalFees() {
         let totalFees = 0;
         let totalExtraFees = 0;
-        console.log("individualBatch", individualBatch);    
 
         individualBatch?.forEach((batch) => {
             if (batch?.data && batch?.data?.fees) {
