@@ -1,20 +1,20 @@
+// Library Imports
+import { useState } from "react";
+import Image from "next/image";
+import { startCase } from "lodash";
+import { BigNumber } from "ethers";
+import { FiCopy } from "react-icons/fi";
+import { useChainId } from "@thirdweb-dev/react";
+import { BiDotsVerticalRounded } from "react-icons/bi";
+import { RxCross2 } from "react-icons/rx";
+import { BsArrowRight } from "react-icons/bs";
+// Store, Components, Util, Type Imports
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import { iPortfolio, usePortfolioStore } from "../../store/Portfolio";
 import Button from "../../components/Button/Button";
 import { copyToClipboard, decreasePowerByDecimals, shorten } from "../../utils/helper";
-import { useChainId } from "@thirdweb-dev/react";
-
-import { BiDotsVerticalRounded } from "react-icons/bi";
-import { RxCross2 } from "react-icons/rx";
-import { BsArrowRight } from "react-icons/bs";
-import { useState } from "react";
-import Image from "next/image";
 import { defaultBlue } from "../../assets/images";
-import { BigNumber } from "ethers";
-import { BigNumber as bg } from "bignumber.js";
 import { tOneAsset } from "./types";
-import { FiCopy } from "react-icons/fi";
-import { startCase } from "lodash";
 
 const OneAsset: React.FC<tOneAsset> = ({ positions, send, handleAmountIn, currentChainId }) => {
     const { isSCW, selectOneAsset, setSelectOneAsset, amountInDecimals, sendTxLoading, txhash }: iPortfolio =
