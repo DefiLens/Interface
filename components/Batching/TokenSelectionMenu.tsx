@@ -9,7 +9,7 @@ import { iRebalance, iTokenData, iTrading, useRebalanceStore, useTradingStore } 
 
 interface TokenSelectionMenuProps {
     showMenu: boolean;
-    closeMenu: () => void;
+    closeMenu: (index?: number) => void;
     handleSelectNetwork: (item: any) => void;
     selectedNetwork: iSelectedNetwork;
     filterToken: string;
@@ -41,27 +41,24 @@ const TokenSelectionMenu: React.FC<TokenSelectionMenuProps> = ({
     const { isRebalance }: iRebalance = useRebalanceStore((state) => state);
     const { showFromSelectionMenu }: iTrading = useTradingStore((state) => state);
 
-
     return (
         <div
             className={`fixed inset-0 z-50 overflow-auto bg-gray-500 bg-opacity-75 flex justify-center items-center ${
                 showMenu ? "" : "hidden"
             }`}
         >
-            <div className="relative bg-white w-full max-h-[80%] max-w-md mx-auto rounded-lg shadow-lg z-50 overflow-scroll">
+            <div className="relative w-full max-h-[80%] max-w-md mx-auto rounded-lg shadow-lg z-50 overflow-auto">
                 <div
                     className={`w-full max-h-full bg-W100 flex flex-col gap-2 rounded-lg cursor-pointer p-3 shadow-2xl ${
                         showMenu ? "block" : "hidden"
                     }`}
                 >
-                    {/* Back Btn */}
                     <MdOutlineArrowBack
-                        onClick={closeMenu}
+                        onClick={() => closeMenu()}
                         className="rounded-full h-10 w-10 p-2 hover:bg-N40 active:bg-N60 text-B200"
                     />
 
                     <div className="flex flex-col justify-center items-center gap-5 px-4">
-                        {/* Networks List */}
                         <div className="flex flex-wrap justify-center items-center gap-2">
                             {NETWORK_LIST?.map((item) => {
                                 return (
@@ -74,13 +71,12 @@ const TokenSelectionMenu: React.FC<TokenSelectionMenuProps> = ({
                                                 : ""
                                         }`}
                                     >
-                                        <Image src={item.icon} alt="" className="h-10 w-10 rounded-full" />
+                                        <Image src={item.icon} alt="Network Icons" className="h-10 w-10 rounded-full" />
                                     </div>
                                 );
                             })}
                         </div>
 
-                        {/* Search by protocol */}
                         {showFromSelectionMenu && isRebalance || (
                             <SearchInput
                                 value={filterToken}
@@ -89,8 +85,7 @@ const TokenSelectionMenu: React.FC<TokenSelectionMenuProps> = ({
                             />
                         )}
 
-                        {/* Select Protocol */}
-                        <div className="w-full overflow-auto flex flex-col justify-center items-center py-1">
+                        <div className="w-full overflow-auto flex flex-col justify-center items-center">
                             <ProtocolSelection
                                 showMenu={showMenu}
                                 onChangeProtocol={onChangeProtocol}
@@ -103,7 +98,6 @@ const TokenSelectionMenu: React.FC<TokenSelectionMenuProps> = ({
                                 tokensData={tokensData}
                                 protocolNames={protocolNames}
                             />
-                            
                         </div>
                     </div>
                 </div>

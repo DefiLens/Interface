@@ -11,7 +11,7 @@ import CustomCheckbox from "../../components/common/CustomCheckbox";
 
 bg.config({ DECIMAL_PLACES: 10 });
 
-const Trade: React.FC<any> = ({
+const Trade: React.FC<tTrade> = ({
     handleSelectFromNetwork,
     handleSelectToNetwork,
     onChangeFromProtocol,
@@ -28,7 +28,7 @@ const Trade: React.FC<any> = ({
     closeFromSelectionMenu,
     closeToSelectionMenu,
     processRebalancing
-}: tTrade) => {
+}) => {
     const {
         selectedFromNetwork,
         selectedFromProtocol,
@@ -62,6 +62,7 @@ const Trade: React.FC<any> = ({
                 } h-full flex flex-col lg:flex-row justify-start lg:justify-center items-center lg:items-start gap-4`}
             >
                 <div className="w-full md:max-w-xl h-full flex flex-col justify-start items-center">
+                    {/* FROM_TOKEN SELECTION MENU */}
                     <TokenSelectionMenu
                         showMenu={showFromSelectionMenu}
                         closeMenu={closeFromSelectionMenu}
@@ -77,7 +78,7 @@ const Trade: React.FC<any> = ({
                         onChangeProtocol={onChangeFromProtocol}
                         protocolNames={protocolNames}
                     />
-
+                    {/* TO_TOKEN SELECTION MENU */}
                     <TokenSelectionMenu
                         showMenu={showToSelectionMenu}
                         closeMenu={closeToSelectionMenu}
@@ -98,13 +99,14 @@ const Trade: React.FC<any> = ({
                         </>
                     ) : (
                         )} */}
-                        <BatchSelectionSection
-                            handleSwap={handleSwap}
-                            onChangeAmountIn={onChangeAmountIn}
-                            sendSingleBatchToList={sendSingleBatchToList}
-                            handleExecuteMethod={handleExecuteMethod}
-                            processRebalancing={processRebalancing}
-                        />
+                    {/* Batching Component */}
+                    <BatchSelectionSection
+                        handleSwap={handleSwap}
+                        onChangeAmountIn={onChangeAmountIn}
+                        sendSingleBatchToList={sendSingleBatchToList}
+                        handleExecuteMethod={handleExecuteMethod}
+                        processRebalancing={processRebalancing}
+                    />
                 </div>
 
                 {/* Modal - Select Execution Method */}
