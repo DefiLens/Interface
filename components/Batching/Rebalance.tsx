@@ -93,7 +93,7 @@ export const Rebalance: React.FC<iRebalanceProps> = ({ addRebalancedBatches }) =
         }
     };
 
-    const handlePercentageChange = (index, event) => {
+    const handlePercentageChange = (index: number, event: React.ChangeEvent<HTMLInputElement>) => {
         const newPercentage = parseFloat(event.target.value);
         const remainingPercentage = 100 - calculateTotalPercentage() + percentages[index];
         if (newPercentage > remainingPercentage) {

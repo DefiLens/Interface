@@ -91,6 +91,19 @@ export type tPosition = {
     };
 };
 
+export type tTxnHistory = {
+    transactions: {
+        amountIn: string;
+        fromNetwork: string;
+        toNetwork: string;
+        fromProtocol: string;
+        toProtocol: string;
+        fromToken: string;
+        toToken: string;
+        txHash: string;
+    }[];
+    smartAccount: any;
+}
 
 export interface iBatchHistory {
     _id?: string;
