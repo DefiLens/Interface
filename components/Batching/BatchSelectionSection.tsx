@@ -84,12 +84,19 @@ const BatchSelectionSection: React.FC<tTrade> = ({
         setIsExecuteBtnClickable(areAllObjectsFilled);
     }, [individualBatch]);
 
-    const handleShowSelectionMenu = () => {
+    const handleShowFromSelectionMenu = () => {
         if (addToBatchLoading) {
             toast.error("wait, tx loading");
             return;
         }
         setShowFromSelectionMenu(true);
+    }
+    const handleShowToSelectionMenu = () => {
+        if (addToBatchLoading) {
+            toast.error("wait, tx loading");
+            return;
+        }
+        setShowToSelectionMenu(true);
     }
 
     return (
@@ -113,7 +120,7 @@ const BatchSelectionSection: React.FC<tTrade> = ({
                         >
                             {/* Selection Bar - FROM */}
                             <SelectionBar
-                                handleSelectionMenu={handleShowSelectionMenu}
+                                handleSelectionMenu={handleShowFromSelectionMenu}
                                 titlePlaceholder="From"
                                 iconCondition={selectedFromNetwork.chainName && selectedFromProtocol}
                                 mainIcon={selectedFromNetwork?.icon}
@@ -151,7 +158,7 @@ const BatchSelectionSection: React.FC<tTrade> = ({
                             {/* Selection Bar - TO */}
                             {!isRebalance ? (
                                 <SelectionBar
-                                    handleSelectionMenu={handleShowSelectionMenu}
+                                    handleSelectionMenu={handleShowToSelectionMenu}
                                     titlePlaceholder="To"
                                     iconCondition={selectedToNetwork.chainName}
                                     mainIcon={selectedToNetwork?.icon}

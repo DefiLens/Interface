@@ -349,7 +349,7 @@ export const useRebalanceStore = create<iRebalance>((set) => ({
     rebalanceData: [
         {
             network: { key: "", chainName: "", chainId: "", icon: "" },
-            protocol: "erc20",
+            protocol: "",
             token: "",
             percentage: 0,
             amount: 0,
@@ -397,7 +397,7 @@ export const useRebalanceStore = create<iRebalance>((set) => ({
 
 const createEmptyData = (): iRebalanceData => ({
     network: { key: "", chainName: "", chainId: "", icon: "" },
-    protocol: "erc20",
+    protocol: "",
     token: "",
     percentage: 0,
     amount: 0,
