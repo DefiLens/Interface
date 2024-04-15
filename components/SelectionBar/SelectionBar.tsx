@@ -34,7 +34,7 @@ const SelectionBar: React.FC<tSelectionBar> = ({
                             <Image
                                 src={mainIcon}
                                 alt=""
-                                className="h-12 w-12 full w-full bg-N60 rounded-full cursor-pointer"
+                                className="h-12 w-12 full bg-N60 rounded-full cursor-pointer"
                             />
                         </div>
                         <div className="absolute -bottom-1 -right-1 bg-N60 h-6 w-6 flex justify-center items-center rounded-full p-1">
