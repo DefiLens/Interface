@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -6,15 +7,13 @@ import { useAddress } from "@thirdweb-dev/react";
 import { iPortfolio, usePortfolioStore } from "../../store/Portfolio";
 import { ChainIdDetails } from "../../utils/data/network";
 import { defaultBlue, metamask } from "../../assets/images";
-import { tPortfolio } from "./types";
+import { tPortfolio, tTxnHistory } from "./types";
 
 import OneAsset from "./OneAsset";
 import ChainSelection from "../../components/ChainSelection/ChainSelection";
 import OneAssetSkeleton from "../../components/skeleton/OneAssetSkeleton";
 import CopyButton from "../../components/common/CopyButton";
 
-import { useState } from "react";
-import axios from "axios";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import axiosInstance from "../../axiosInstance/axiosInstance";
 
@@ -79,7 +78,8 @@ const SampleDataGenerator = () => {
         }
     };
 
-    const handleTxnHistory = async (txHistory: any) => {
+    // Saving txnHistory to dB
+    const handleTxnHistory = async (txHistory: tTxnHistory) => {
         try {
             await axiosInstance.post("/transactions", txHistory);
         } catch (error) {

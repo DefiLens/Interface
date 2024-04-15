@@ -19,7 +19,7 @@ const TokenList: React.FC<TokenListProps> = ({ erc20, filterValue, setFilterValu
                 <SearchInput value={filterValue} onChange={setFilterValue} placeholder="Search by Token" />
 
                 <ul className="flex flex-col divide-y divide-gray-200">
-                    {tokens.map((token: any, index: number) => {
+                    {tokens.map((token, index) => {
                         // Check if the token matches the filter value
                         const isErc20 = erc20
                             ? token.symbol.toLowerCase().includes(filterValue.toLowerCase())

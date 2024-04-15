@@ -126,7 +126,7 @@ const BatchSelectionSection: React.FC<tTrade> = ({
                                 mainIcon={selectedFromNetwork?.icon}
                                 subIcon={
                                     protocolNames[selectedFromNetwork.chainId]?.key.find(
-                                        (entry: any) => entry.name == selectedFromProtocol
+                                        (entry) => entry.name == selectedFromProtocol
                                     )?.icon
                                 }
                                 valueCondition={selectedFromNetwork.chainName}
@@ -155,7 +155,7 @@ const BatchSelectionSection: React.FC<tTrade> = ({
                                     </div>
                                 )}
 
-                            {/* Selection Bar - TO */}
+                            {/* Selection Bar variants based on rebalancing state */}
                             {!isRebalance ? (
                                 <SelectionBar
                                     handleSelectionMenu={handleShowToSelectionMenu}
@@ -177,11 +177,10 @@ const BatchSelectionSection: React.FC<tTrade> = ({
                                 <Rebalance />
                             )}
                         </div>
+                        {/* Rebalance Checkbox */}
                         <div className="flex items-center w-full">
-                            <div className="inline-flex items-center relative">
-                                <CustomCheckbox checked={isRebalance} onChange={handleCheckboxChange} />
-                                <span className="ml-2 text-N0 ">Rebalance</span>
-                            </div>
+                            <CustomCheckbox checked={isRebalance} onChange={handleCheckboxChange} />
+                            <span className="ml-2 text-N0">Rebalance</span>
                         </div>
                     </div>
                 </div>

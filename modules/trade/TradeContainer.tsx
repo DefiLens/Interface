@@ -1,10 +1,8 @@
-import { useEffect, useState } from "react";
-
-import { ethers } from "ethers";
-import { BigNumber } from "ethers";
+// Library Imports
+import { useEffect } from "react";
+import { ethers, BigNumber, Signer } from "ethers";
 import { toast } from "react-hot-toast";
 import { BigNumber as bg } from "bignumber.js";
-
 import { Bundler, IBundler } from "@biconomy/bundler";
 import { useAddress, useSigner } from "@thirdweb-dev/react";
 import { BiconomyPaymaster, IPaymaster } from "@biconomy/paymaster";
@@ -16,18 +14,28 @@ import {
     SessionKeyManagerModule,
 } from "@biconomy/modules";
 
+// Component, Util Imports
 import Trade from "./Trade";
-import IERC20 from "../../abis/IERC20.json";
 import { setSafeState } from "../../utils/helper";
 import { ChainIdDetails } from "../../utils/data/network";
 import { protocolNames } from "../../utils/data/protocols";
+import { decreasePowerByDecimals, getTokenListByChainId, incresePowerByDecimals } from "../../utils/helper";
+import { getContractInstance, getErc20Balanceof, getErc20Decimals, getProvider } from "../../utils/web3Libs/ethers";
 import UNISWAP_TOKENS from "../../abis/tokens/Uniswap.json";
+import IERC20 from "../../abis/IERC20.json";
+
+// Hook Imports
 import { useRefinance } from "../../hooks/Batching/useRefinance";
-import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import { useCCRefinance } from "../../hooks/Batching/useCCRefinance";
 import { useEoaProvider } from "../../hooks/aaProvider/useEoaProvider";
 import { useSwitchOnSpecificChain } from "../../hooks/useSwitchOnSpecificChain";
 import { useBiconomyProvider } from "../../hooks/aaProvider/useBiconomyProvider";
+import { useBiconomyERC20Provider } from "../../hooks/aaProvider/useBiconomyERC20Provider";
+import { useBiconomyGasLessProvider } from "../../hooks/aaProvider/useBiconomyGasLessProvider";
+import { useBiconomySessionKeyProvider } from "../../hooks/aaProvider/useBiconomySessionKeyProvider";
+import { tRefinance, tRefinanceResponse, tTx } from "../../hooks/types";
+// Store Imports
+import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import {
     iIndividualBatch,
     iRebalance,
@@ -36,17 +44,12 @@ import {
     useRebalanceStore,
     useTradingStore,
 } from "../../store/TradingStore";
-import { useBiconomyERC20Provider } from "../../hooks/aaProvider/useBiconomyERC20Provider";
-import { useBiconomyGasLessProvider } from "../../hooks/aaProvider/useBiconomyGasLessProvider";
-import { useBiconomySessionKeyProvider } from "../../hooks/aaProvider/useBiconomySessionKeyProvider";
-import { decreasePowerByDecimals, getTokenListByChainId, incresePowerByDecimals } from "../../utils/helper";
-import { getContractInstance, getErc20Balanceof, getErc20Decimals, getProvider } from "../../utils/web3Libs/ethers";
-import { tRefinance, tRefinanceResponse, tTx } from "../../hooks/types";
+
 bg.config({ DECIMAL_PLACES: 10 });
 
-const TradeContainer: React.FC<any> = () => {
+const TradeContainer: React.FC = () => {
     const address = useAddress(); // Detect the connected address
-    const signer: any = useSigner(); // Detect the connected address
+    const signer = useSigner(); // Detect the connected address
 
     const { mutateAsync: sendToBiconomy } = useBiconomyProvider();
     const { mutateAsync: sendToGasLessBiconomy } = useBiconomyGasLessProvider();
@@ -342,7 +345,7 @@ const TradeContainer: React.FC<any> = () => {
                     // biconomySmartAccount = await biconomySmartAccount.init();
 
                     const ownerShipModule: any = await ECDSAOwnershipValidationModule.create({
-                        signer: signer,
+                        signer: signer as Signer,
                         moduleAddress: DEFAULT_ECDSA_OWNERSHIP_MODULE,
                     });
                     //   setProvider(provider)
@@ -388,7 +391,7 @@ const TradeContainer: React.FC<any> = () => {
                 selectedFromNetwork.chainName == "optimism"
             )
         ) {
-            toast.error("Batching is only supported on polygon and base as of now");
+            toast.error("Batching is only supported on Polygon and Base Network as of now.");
             return;
         }
         if (selectedToProtocol === _toProtocol) {
@@ -964,7 +967,7 @@ const TradeContainer: React.FC<any> = () => {
         clearSelectedBatchData();
     }
 
-    function delay(ms: number) {
+    function delay(ms: number): Promise<void> {
         return new Promise((resolve) => setTimeout(resolve, ms));
     }
 

@@ -1,18 +1,20 @@
+// Library Imports
 import React, { useEffect, useState } from "react";
-import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
-import { MdOutlineArrowBack } from "react-icons/md";
-import { NETWORK_LIST } from "../../utils/data/network";
 import Image from "next/image";
-import { protocolNames } from "../../utils/data/protocols";
+import { MdOutlineArrowBack } from "react-icons/md";
 import { CiCircleChevDown } from "react-icons/ci";
+// Util, Store, Component Imports
+// import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
+import { NETWORK_LIST } from "../../utils/data/network";
+import { protocolNames } from "../../utils/data/protocols";
 import SearchInput from "../common/SearchInput";
 import { iRebalance, iTrading, useRebalanceStore, useTradingStore } from "../../store/TradingStore";
 import { getTokenListByChainId } from "../../utils/helper";
 import UNISWAP_TOKENS from "../../abis/tokens/Uniswap.json";
 import ProtocolSelection from "./ProtocolSelection";
-import { on } from "events";
+// import { on } from "events";
 
-interface TokenModalProps {
+interface TokenModalProps { 
     tokens: any[];
     isOpen: boolean | null;
     index: number;

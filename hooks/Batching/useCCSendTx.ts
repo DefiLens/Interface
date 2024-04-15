@@ -17,8 +17,6 @@ import { getContractInstance, getErc20Allownace } from "../../utils/web3Libs/eth
 import { calculateFees, chooseChianId, findGasUsedBySimulation } from "../../utils/helper";
 import { _functionType, _nonce, BYTES_ZERO, ZERO_ADDRESS } from "../../utils/data/constants";
 import { nativeTokenFetcher, newChainPingByNetwork, starGateRouterByNetwork, tokensByNetworkForCC } from "../../utils/data/protocols";
-import { useState } from "react";
-import UNISWAP_TOKENS from "../../abis/tokens/Uniswap.json";
 
 export function useCCSendTx() {
     const { mutateAsync: oneInchSwap } = useOneInch();
