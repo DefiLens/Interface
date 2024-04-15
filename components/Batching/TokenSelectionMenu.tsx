@@ -38,6 +38,7 @@ const TokenSelectionMenu: React.FC<TokenSelectionMenuProps> = ({
     onChangeProtocol,
     protocolNames,
 }) => {
+    
     const { isRebalance }: iRebalance = useRebalanceStore((state) => state);
     const { showFromSelectionMenu }: iTrading = useTradingStore((state) => state);
 

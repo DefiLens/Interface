@@ -140,7 +140,6 @@ const TradeContainer: React.FC<any> = () => {
         setLoading(true);
         if (selectedFromNetwork.chainName !== _fromNetwork.chainName) {
             await switchOnSpecificChain(_fromNetwork.chainName);
-            return;
             setSelectedFromNetwork(_fromNetwork);
         } else {
             setSelectedFromNetwork(_fromNetwork);
@@ -150,6 +149,7 @@ const TradeContainer: React.FC<any> = () => {
 
     const handleSelectToNetwork = async (_toNetwork: iSelectedNetwork) => {
         try {
+            console.log("handleSelectToNetwork ~ _toNetwork", _toNetwork);
             setSelectedToNetwork(_toNetwork);
         } catch (error) {
             console.error("API Error:", error);
@@ -532,6 +532,7 @@ const TradeContainer: React.FC<any> = () => {
         setSelectedToToken("");
         setAmountIn("");
         setFromTokenDecimal(0);
+        setMaxBalance("");
     };
 
     const updateInputValues = (index: number, txArray: Array<tTx>, batchesFlow: any, data: any, simulation: any) => {
@@ -548,7 +549,6 @@ const TradeContainer: React.FC<any> = () => {
         {
             !isRebalance && clearSelectedBatchData();
         }
-        removeDataAtIndex(index);
     };
 
     const toggleShowBatchList = (id: number): void => {
@@ -961,7 +961,6 @@ const TradeContainer: React.FC<any> = () => {
         // Clear the rebalance data
         setClearRebalanceData(true);
         removeAllData();
-        addNewEmptyData();
         clearSelectedBatchData();
     }
 
