@@ -27,7 +27,7 @@ const Trade: React.FC<any> = ({
     ExecuteAllBatches,
     closeFromSelectionMenu,
     closeToSelectionMenu,
-    processRebalancing
+    processRebalancing,
 }: tTrade) => {
     const {
         selectedFromNetwork,
@@ -51,8 +51,6 @@ const Trade: React.FC<any> = ({
         showExecuteMethodModel,
         setSelectedToProtocol,
     }: iTrading = useTradingStore((state) => state);
-
-    const { isRebalance }: iRebalance = useRebalanceStore((state) => state);
 
     return (
         <div className="w-full h-full flex flex-col justify-center items-center py-5">
@@ -93,18 +91,14 @@ const Trade: React.FC<any> = ({
                         onChangeProtocol={onChangeToProtocol}
                         protocolNames={protocolNames}
                     />
-                    {/* {showFromSelectionMenu || showToSelectionMenu ? (
-                        <>
-                        </>
-                    ) : (
-                        )} */}
-                        <BatchSelectionSection
-                            handleSwap={handleSwap}
-                            onChangeAmountIn={onChangeAmountIn}
-                            sendSingleBatchToList={sendSingleBatchToList}
-                            handleExecuteMethod={handleExecuteMethod}
-                            processRebalancing={processRebalancing}
-                        />
+
+                    <BatchSelectionSection
+                        handleSwap={handleSwap}
+                        onChangeAmountIn={onChangeAmountIn}
+                        sendSingleBatchToList={sendSingleBatchToList}
+                        handleExecuteMethod={handleExecuteMethod}
+                        processRebalancing={processRebalancing}
+                    />
                 </div>
 
                 {/* Modal - Select Execution Method */}
