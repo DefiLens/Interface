@@ -225,17 +225,7 @@ const TradeContainer: React.FC = () => {
                     setSafeState(setFromTokenDecimal, fromTokendecimal, 0);
                 } else {
                     const filteredTokens = getTokenListByChainId(selectedFromNetwork.chainId, UNISWAP_TOKENS);
-                    console.log('filteredTokens: ', filteredTokens)
-                    const newToken: iTokenData = {
-                        "chainId": Number(selectedFromNetwork.chainId),
-                        "address": ETH_ADDRESS,
-                        "name": selectedFromNetwork.chainId === "137" ? "MATIC" : "ETH",
-                        "symbol": selectedFromNetwork.chainId === "137" ? "MATIC" : "ETH",
-                        "decimals": 18,
-                        "logoURI":  selectedFromNetwork.chainId === "137" ? "https://token-icons.s3.amazonaws.com/0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0.png" : "https://token-icons.s3.amazonaws.com/eth.png"
-                    };
-                    const updatedTokens: iTokenData[] | undefined = [newToken, ...filteredTokens]; // Add the new token at index 0
-                    setFromTokensData(updatedTokens);
+                    setFromTokensData(filteredTokens);
                 }
             }
         }
@@ -334,7 +324,7 @@ const TradeContainer: React.FC = () => {
             setSafeState(setFromTokenDecimal, fromTokendecimal, 0);
 
             let scwAddress: any;
-            let biconomySmartAccount
+            let biconomySmartAccount;
             if (!smartAccountAddress) {
                 const createAccount = async (chainId: any) => {
                     const bundler: IBundler = new Bundler({
@@ -386,28 +376,6 @@ const TradeContainer: React.FC = () => {
             setIsmaxBalanceLoading(false);
             console.log("onChangeFromToken ~ error:", error);
         }
-    };
-
-    const hasTokenBalance = (token: string) => {
-        return tokenBalances[token] !== undefined && tokenBalances[token] > 0;
-    };
-
-    const setMaxTokenBalance = (token: string, amount: number, isRemove: boolean, maxbal?: number) => {
-        if (isRemove) {
-            setTokenBalances(prevBalances => ({
-                ...prevBalances,
-                [token]: (Number(maxbal) || 0) + amount,
-            }));
-        } else {
-            setTokenBalances(prevBalances => ({
-                ...prevBalances,
-                [token]: (Number(maxBalance) || 0) - amount,
-            }));
-        }
-    };
-
-    const getTokenBalance = (token: string) => {
-        return tokenBalances[token] || 0;
     };
 
     const onChangeToProtocol = async (_toProtocol: string) => {
@@ -693,13 +661,6 @@ const TradeContainer: React.FC = () => {
                     selectedToToken: selectedToToken,
                     amountIn: amountIn,
                 } as tRefinance);
-            }
-
-            const _amt = await decreasePowerByDecimals(_tempAmount?.toString(), fromTokenDecimal);
-            if (hasTokenBalance(selectedFromToken)) {
-                setMaxTokenBalance(selectedFromToken, Number(_amt), false);
-            } else {
-                setMaxTokenBalance(selectedFromToken, Number(_amt), false);
             }
 
             if (!refinaceData) {

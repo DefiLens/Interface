@@ -38,7 +38,7 @@ export default function App({ Component, pageProps }: AppProps) {
                 supportedWallets={[metamaskWallet({ recommended: true })]}
             >
                 <QueryClientProvider client={queryClient}>
-                    {/* <Toaster
+                    <Toaster
                         position="bottom-right"
                         toastOptions={{
                             style: {
@@ -51,7 +51,7 @@ export default function App({ Component, pageProps }: AppProps) {
                                 textAlign: "center",
                             },
                         }}
-                    /> */}
+                    />
 
                     <Suspense fallback={<div>Loading...</div>}>
                         <div className="main-bg h-screen w-screen">

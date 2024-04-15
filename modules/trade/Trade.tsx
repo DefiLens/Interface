@@ -3,11 +3,10 @@ import { tTrade } from "./types";
 import { protocolNames } from "../../utils/data/protocols";
 import ExecuteBatch from "../../components/Models/ExecuteBatch/ExecuteBatch";
 import ExecuteMethod from "../../components/Models/ExecuteMethod/ExecuteMethod";
-import { iRebalance, iTrading, useRebalanceStore, useTradingStore } from "../../store/TradingStore";
+import { iTrading, useTradingStore } from "../../store/TradingStore";
 import TokenSelectionMenu from "../../components/Batching/TokenSelectionMenu";
 import BatchSelectionSection from "../../components/Batching/BatchSelectionSection";
 import BatchingListSection from "../../components/Batching/BatchingListSection";
-import CustomCheckbox from "../../components/common/CustomCheckbox";
 
 bg.config({ DECIMAL_PLACES: 10 });
 

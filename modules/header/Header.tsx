@@ -138,7 +138,6 @@ const Header: React.FC<any> = ({ switchOnSpecificChain }: tHeader) => {
                                         onClick={() => setShowWalletAddress(!showWalletAddress)}
                                         className="relative wallet-container bg-N0 px-3 py-2.5 rounded-3xl flex justify-center items-center gap-3 text-B100 shadow-lg font-medium transition duration-300 hover:bg-N20"
                                     >
-
                                         {/* Smart account address and copy btn */}
                                         <span className="text-sm font-medium">
                                             {smartAccount &&
