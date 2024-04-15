@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -150,25 +150,7 @@ const Portfolio: React.FC<tPortfolio> = ({ smartAccountAddress, handleFetchPorfo
                                         <div className="animate-pulse bg-gray-300 h-6 w-full rounded-md"></div>
                                     ) : (
                                         <h1 className="text-4xl font-bold">
-                                            $
-                                            {chainData
-                                                ?.reduce(
-                                                    (acc: number, val?: { data?: { items?: { quote: number }[] } }) => {
-                                                        if (val && val.data && val.data.items) {
-                                                            return (
-                                                                acc +
-                                                                val.data.items.reduce(
-                                                                    (subAcc: number, currentItem: { quote: number }) =>
-                                                                        subAcc + currentItem.quote,
-                                                                    0
-                                                                )
-                                                            );
-                                                        }
-                                                        return acc;
-                                                    },
-                                                    0
-                                                )
-                                                ?.toFixed(4)}
+                                            ${getTotalNetworth}
                                         </h1>
                                     )}
                                     <Link href="/portfolio/batch-history" className="">
