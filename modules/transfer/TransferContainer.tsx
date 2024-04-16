@@ -21,7 +21,7 @@ import { getErc20Balanceof, getErc20Decimals } from "../../utils/web3Libs/ethers
 
 bg.config({ DECIMAL_PLACES: 5 });
 
-const TransferContainer: React.FC<any> = () => {
+const TransferContainer: React.FC = () => {
     const { mutateAsync: calculategasCost } = useCalculateGasCost();
 
     const { smartAccount, smartAccountAddress, showTransferFundToggle, selectedNetwork }: iGlobal = useGlobalStore((state) => state);
@@ -54,7 +54,7 @@ const TransferContainer: React.FC<any> = () => {
     }: iTransfer = useTransferStore((state) => state);
 
     const address = useAddress(); // Detect the connected address
-    const signer: any = useSigner(); // Detect the connected address
+    const signer = useSigner(); // Detect the connected address
     const chain = useChain();
 
     useEffect(() => {

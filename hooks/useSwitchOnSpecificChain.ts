@@ -15,6 +15,7 @@ import { iTrading, useTradingStore } from "../store/TradingStore";
 import { useCalculatebalance } from "../hooks/utilsHooks/useCalculateBalance";
 import { arbitrum, avalanche, base, ethereum, optimism, polygon } from "../assets/images";
 import { DEFAULT_ECDSA_OWNERSHIP_MODULE, DEFAULT_MULTICHAIN_MODULE, ECDSAOwnershipValidationModule, MultiChainValidationModule } from "@biconomy/modules";
+import { Signer } from "ethers";
 
 bg.config({ DECIMAL_PLACES: 5 });
 
@@ -35,8 +36,8 @@ export function useSwitchOnSpecificChain() {
     const switchChain = useSwitchChain();
     const metamaskConfig = metamaskWallet();
     const connect = useConnect();
-    const address: any = useAddress(); // Detect the connected address
-    const signer: any = useSigner(); // Detect the connected address
+    const address = useAddress(); // Detect the connected address
+    const signer = useSigner(); // Detect the connected address
     const chain = useChain();
 
     useEffect(() => {
@@ -97,7 +98,7 @@ export function useSwitchOnSpecificChain() {
             });
     };
 
-    const createAccount = async (chainId: any) => {
+    const createAccount = async (chainId: number) => {
         const bundler: IBundler = new Bundler({
             bundlerUrl: ChainIdDetails[chainId].bundlerURL,
             chainId: chainId,
@@ -114,12 +115,13 @@ export function useSwitchOnSpecificChain() {
         // };
         // let biconomySmartAccount = new BiconomySmartAccount(biconomySmartAccountConfig);
         // biconomySmartAccount = await biconomySmartAccount.init();
-        const ownerShipModule: any = await ECDSAOwnershipValidationModule.create({
-            signer: signer,
-            moduleAddress: DEFAULT_ECDSA_OWNERSHIP_MODULE,
-        });
+        
+        // const ownerShipModule: any = await ECDSAOwnershipValidationModule.create({
+        //     signer: signer as Signer,
+        //     moduleAddress: DEFAULT_ECDSA_OWNERSHIP_MODULE,
+        // });
         const multiChainModule = await MultiChainValidationModule.create({
-            signer: signer,
+            signer: signer as Signer,
             moduleAddress: DEFAULT_MULTICHAIN_MODULE,
           });
         //   setProvider(provider)
@@ -137,7 +139,7 @@ export function useSwitchOnSpecificChain() {
         return biconomySmartAccount;
     };
 
-    const isNetworkCorrect = async (chainId: any, smartAccountAddress: any) => {
+    const isNetworkCorrect = async (chainId: number, smartAccountAddress: any) => {
         try {
             const chainIds = [137, 42161, 10, 1, 43114, 8453];
             if (chainIds.includes(chainId)) {
@@ -190,8 +192,8 @@ export function useSwitchOnSpecificChain() {
                 // await logout()
                 if (chainName == "polygon") {
                     await switchChain(137);
-                    const _smartAccount: any = await login(137);
-                    const _smartAccountAddress = await _smartAccount.getAccountAddress()
+                    const _smartAccount = await login(137);
+                    const _smartAccountAddress = await _smartAccount?.getAccountAddress()
                     console.log('_smartAccountAddress: ', _smartAccountAddress)
                     // @ts-ignore
                     await isNetworkCorrect(137, _smartAccountAddress);
@@ -210,8 +212,8 @@ export function useSwitchOnSpecificChain() {
                     });
                 } else if (chainName == "arbitrum") {
                     await switchChain?.(42161);
-                    const _smartAccount: any = await login(42161);
-                    const _smartAccountAddress = await _smartAccount.getAccountAddress()
+                    const _smartAccount = await login(42161);
+                    const _smartAccountAddress = await _smartAccount?.getAccountAddress()
                     console.log('_smartAccountAddress: ', _smartAccountAddress)
                     // @ts-ignore
                     await isNetworkCorrect(42161, _smartAccountAddress);
@@ -231,8 +233,8 @@ export function useSwitchOnSpecificChain() {
                 } else if (chainName == "avalanche") {
                     await switchChain(43114);
 
-                    const _smartAccount: any = await login(43114);
-                    const _smartAccountAddress = await _smartAccount.getAccountAddress()
+                    const _smartAccount = await login(43114);
+                    const _smartAccountAddress = await _smartAccount?.getAccountAddress()
                     console.log('_smartAccountAddress: ', _smartAccountAddress)
                     // @ts-ignore
                     await isNetworkCorrect(43114, _smartAccountAddress);
@@ -252,8 +254,8 @@ export function useSwitchOnSpecificChain() {
                 } else if (chainName == "optimism") {
                     await switchChain?.(10);
 
-                    const _smartAccount: any = await login(10);
-                    const _smartAccountAddress = await _smartAccount.getAccountAddress()
+                    const _smartAccount = await login(10);
+                    const _smartAccountAddress = await _smartAccount?.getAccountAddress()
                     console.log('_smartAccountAddress: ', _smartAccountAddress)
                     // @ts-ignore
                     await isNetworkCorrect(10, _smartAccountAddress);
@@ -274,8 +276,8 @@ export function useSwitchOnSpecificChain() {
                 } else if (chainName == "ethereum") {
                     await switchChain(1);
 
-                    const _smartAccount: any = await login(1);
-                    const _smartAccountAddress = await _smartAccount.getAccountAddress()
+                    const _smartAccount = await login(1);
+                    const _smartAccountAddress = await _smartAccount?.getAccountAddress()
                     console.log('_smartAccountAddress: ', _smartAccountAddress)
                     // @ts-ignore
                     await isNetworkCorrect(1, _smartAccountAddress);
@@ -295,8 +297,8 @@ export function useSwitchOnSpecificChain() {
                 } else if (chainName == "base") {
                     await switchChain?.(8453);
 
-                    const _smartAccount: any = await login(8453);
-                    const _smartAccountAddress = await _smartAccount.getAccountAddress()
+                    const _smartAccount = await login(8453);
+                    const _smartAccountAddress = await _smartAccount?.getAccountAddress()
                     console.log('_smartAccountAddress: ', _smartAccountAddress)
                     // @ts-ignore
                     await isNetworkCorrect(8453, _smartAccountAddress);
@@ -317,8 +319,8 @@ export function useSwitchOnSpecificChain() {
             } else {
                 if (chain) {
                     console.log("Already on that chain")
-                    const _smartAccount: any = await login(chain?.chainId);
-                    const _smartAccountAddress = await _smartAccount.getAccountAddress()
+                    const _smartAccount = await login(chain?.chainId);
+                    const _smartAccountAddress = await _smartAccount?.getAccountAddress()
                     console.log('_smartAccountAddress: ', _smartAccountAddress)
 
                     setSelectedNetwork({

@@ -6,11 +6,12 @@ import SearchInput from "../common/SearchInput";
 import ProtocolSelection from "./ProtocolSelection";
 import { iSelectedNetwork } from "../../store/GlobalStore";
 import { iRebalance, iTokenData, iTrading, useRebalanceStore, useTradingStore } from "../../store/TradingStore";
+import { iProtocolNames } from "../../utils/data/protocols";
 
 interface TokenSelectionMenuProps {
     showMenu: boolean;
-    closeMenu: (index?: number) => void;
-    handleSelectNetwork: (item: any) => void;
+    closeMenu: (index: number) => void;
+    handleSelectNetwork: (item: iSelectedNetwork) => void;
     selectedNetwork: iSelectedNetwork;
     filterToken: string;
     setFilterToken: (filterToken: string) => void;
@@ -18,9 +19,9 @@ interface TokenSelectionMenuProps {
     setFilterAddress: (filterAddress: string) => void;
     tokensData: iTokenData[];
     selectedProtocol: string;
-    onChangeToken: (item: any) => void;
+    onChangeToken: (item: string) => void;
     onChangeProtocol: (protocol: string) => void;
-    protocolNames: {};
+    protocolNames: iProtocolNames;
 }
 
 const TokenSelectionMenu: React.FC<TokenSelectionMenuProps> = ({

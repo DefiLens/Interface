@@ -191,7 +191,7 @@ const OneAsset: React.FC<tOneAsset> = ({ positions, send, handleAmountIn, curren
                                                             placeholder="Amount"
                                                             className="w-full bg-transparent text-B100 font-extrabold text-xl outline-none shadow-outline p-3 pr-5 block appearance-none leading-normal"
                                                             value={amountInDecimals}
-                                                            onChange={(e: any) => handleAmountIn(e.target.value)}
+                                                            onChange={(e) => handleAmountIn(e.target.value)}
                                                         />
 
                                                         {/* Btn to take input max balance */}

@@ -1,3 +1,3 @@
 export type tExecuteMethod = {
-    ExecuteAllBatches: (isSCW: any, whichProvider: string) => void;
+    ExecuteAllBatches: (isSCW: boolean, whichProvider: string) => void;
 };

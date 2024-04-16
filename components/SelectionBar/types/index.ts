@@ -9,5 +9,5 @@ export type tSelectionBar = {
     mainValue: string;
     firstSubValue: string;
     secondSubValue: string;
-    showBg: boolean;
+    showBg?: boolean;
 };

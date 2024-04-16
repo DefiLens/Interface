@@ -15,7 +15,7 @@ const PortfolioContainer: React.FC = () => {
     const { mutateAsync: fetchPortfolio } = usePortfolio();
     const { smartAccount, smartAccountAddress }: iGlobal = useGlobalStore((state) => state);
     const address = useAddress();
-    const signer: any = useSigner();
+    const signer = useSigner();
 
     const {
         isSCW,

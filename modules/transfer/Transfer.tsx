@@ -19,13 +19,13 @@ import { HiOutlineArrowsRightLeft } from "react-icons/hi2";
 import { HiOutlineInformationCircle } from "react-icons/hi2";
 import CopyButton from "../../components/common/CopyButton";
 
-const Transfer: React.FC<any> = ({
+const Transfer: React.FC<tTransfer> = ({
     onOptionChangeForWallet,
     onOptionChange,
     setBalance,
     handleAmountIn,
     send,
-}: tTransfer) => {
+}) => {
     const { smartAccount, smartAccountAddress }: iGlobal = useGlobalStore((state) => state);
 
     const {
@@ -191,7 +191,7 @@ const Transfer: React.FC<any> = ({
                                         placeholder="Amount"
                                         className="w-full bg-N20 text-B100 font-extrabold text-xl outline-none shadow-outline p-3 pr-5 block appearance-none leading-normal"
                                         value={amountInDecimals}
-                                        onChange={(e: any) => handleAmountIn(e.target.value)}
+                                        onChange={(e) => handleAmountIn(e.target.value)}
                                     />
                                     <button
                                         type="button"

@@ -306,10 +306,8 @@ const TradeContainer: React.FC = () => {
             const provider: ethers.providers.JsonRpcProvider | undefined = await getProvider(
                 selectedFromNetwork.chainId
             );
-            const erc20Address: any =
-                selectedFromProtocol == "erc20"
-                    ? fromTokensData.filter((token: any) => token.symbol === _fromToken)
-                    : "";
+            const erc20Address =
+                selectedFromProtocol == "erc20" ? fromTokensData.filter((token) => token.symbol === _fromToken) : [];
 
             const tokenAddress =
                 selectedFromProtocol != "erc20"
@@ -320,7 +318,7 @@ const TradeContainer: React.FC = () => {
             console.log(_fromToken, tokenAddress);
 
             const erc20 = await getContractInstance(tokenAddress, IERC20, provider);
-            const fromTokendecimal: any = await getErc20Decimals(erc20);
+            const fromTokendecimal: number = await getErc20Decimals(erc20) ?? 0;
             setSafeState(setFromTokenDecimal, fromTokendecimal, 0);
 
             let scwAddress: any;
@@ -748,7 +746,7 @@ const TradeContainer: React.FC = () => {
             } else {
                 // setSendTxLoadingForEoa(true);
             }
-            const mergeArray: any = [];
+            const mergeArray = Array<string>();
             await individualBatch.map((bar) => bar.txArray.map((hash) => mergeArray.push(hash)));
             let tempTxhash = "";
             if (isSCW) {

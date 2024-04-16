@@ -9,7 +9,7 @@ const useClickOutside = (refs: any, callback: any) => {
 
     useEffect(() => {
         function handleClickOutside(event) {
-            const isOutside = refs.every((ref: any) => ref.current && !ref.current.contains(event.target));
+            const isOutside = refs.every((ref) => ref.current && !ref.current.contains(event.target));
             if (isOutside) {
                 callbackRef.current();
             }

@@ -11,5 +11,5 @@ export type tMigrateAsset = {
     handleExecuteMgrateAsset: () => void;
     isAllErc20Selected: boolean;
     isAllDefiSelected: boolean;
-    selectAllTokens: (type: string, userTokensData: any) => void;
+    selectAllTokens: (type: string, userTokensData: iUserTokenInfo) => void;
 };

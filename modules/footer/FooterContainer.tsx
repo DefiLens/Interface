@@ -2,8 +2,7 @@ import { email, github, telegram, twitter, web } from "../../assets/images";
 import Footer from "./Footer";
 import { tSocialHandle } from "./types";
 
-const FooterContainer: React.FC<any> = () => {
-
+const FooterContainer: React.FC = () => {
   const SocialHandles: tSocialHandle[] = [
     {
       icon: telegram,

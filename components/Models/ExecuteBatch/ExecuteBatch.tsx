@@ -39,7 +39,7 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
         const txn =
             individualBatch.length > 0 &&
             individualBatch.filter(
-                (item: iIndividualBatch, index: number) => item.data.fromNetwork !== item.data.toNetwork
+                (item: iIndividualBatch, index) => item.data.fromNetwork !== item.data.toNetwork
             );
         setHasCrossChainTxs(txn);
     };
@@ -65,7 +65,7 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
     useEffect(() => {
         console.log("individualBatch", individualBatch)
         if (individualBatch.length > 0 && txhash) {
-            const txHistory: iSingleTransaction[] = individualBatch.slice(0, -1).map((item: any) => ({
+            const txHistory: iSingleTransaction[] = individualBatch.slice(0, -1).map((item) => ({
                 amountIn: item.data.amountIn,
                 fromNetwork: item.data.fromNetwork,
                 toNetwork: item.data.toNetwork,
@@ -116,7 +116,7 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
                             (individualBatch.length > 0 && individualBatch[0].txArray.length > 0 ? (
                                 <div className="w-full max-h-60 flex flex-col justify-start items-center text-sm md:text-base py-5">
                                     {individualBatch.map(
-                                        (bar: iIndividualBatch, index: number) =>
+                                        (bar: iIndividualBatch, index) =>
                                             bar.txArray.length > 0 && (
                                                 <div
                                                     key={bar.id}
@@ -142,7 +142,7 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
                                                                         protocolNames[
                                                                             selectedFromNetwork.chainId
                                                                         ].key.find(
-                                                                            (entry: any) =>
+                                                                            (entry) =>
                                                                                 entry.name == bar.data.fromProtocol
                                                                         )?.icon
                                                                     }
@@ -177,7 +177,7 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
                                                                 <Image
                                                                     src={
                                                                         protocolNames[bar.data.toChainId].key.find(
-                                                                            (entry: any) =>
+                                                                            (entry) =>
                                                                                 entry.name == bar.data.toProtocol
                                                                         )?.icon
                                                                     }

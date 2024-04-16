@@ -14,7 +14,7 @@ import UNISWAP_TOKENS from "../../abis/tokens/Uniswap.json";
 import ProtocolSelection from "./ProtocolSelection";
 // import { on } from "events";
 
-interface TokenModalProps { 
+interface TokenModalProps {
     tokens: any[];
     isOpen: boolean | null;
     index: number;

@@ -1,6 +1,6 @@
 export type tSelectInput = {
     inputSearch: string;
-    setInputSearch: (inputSearch: any) => void;
+    setInputSearch: (inputSearch: string) => void;
     inputPlaceholder: string;
     inputClassName: string;
     selectOptions: any[];
