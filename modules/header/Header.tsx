@@ -43,12 +43,7 @@ const Header: React.FC<tHeader> = ({ switchOnSpecificChain }) => {
     });
 
     // To Set network
-    const handleSelectNetwork = (data: {
-        key: string;
-        chainName: string;
-        chainId: string;
-        icon: any;
-    }) => {
+    const handleSelectNetwork = (data: { key: string; chainName: string; chainId: string; icon: any }) => {
         if (data.chainName) {
             switchOnSpecificChain(data.chainName);
         }
@@ -201,9 +196,11 @@ const Header: React.FC<tHeader> = ({ switchOnSpecificChain }) => {
                                 {/* Third web auth btn */}
                                 <ConnectWallet
                                     theme={"light"}
-                                    modalSize={"wide"}
+                                    modalSize={"compact"}
                                     btnTitle="Login"
                                     className="Custom-btn"
+                                    modalTitle="Connect Wallet"
+                                    modalTitleIconUrl=""
                                     detailsBtn={() => {
                                         return (
                                             <div className="flex justify-between items-center shadow-lg rounded-full cursor-pointer">
