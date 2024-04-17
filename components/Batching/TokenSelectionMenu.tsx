@@ -10,7 +10,7 @@ import { iProtocolNames } from "../../utils/data/protocols";
 
 interface TokenSelectionMenuProps {
     showMenu: boolean;
-    closeMenu: (index: number) => void;
+    closeMenu: () => void;
     handleSelectNetwork: (item: iSelectedNetwork) => void;
     selectedNetwork: iSelectedNetwork;
     filterToken: string;
@@ -39,7 +39,6 @@ const TokenSelectionMenu: React.FC<TokenSelectionMenuProps> = ({
     onChangeProtocol,
     protocolNames,
 }) => {
-    
     const { isRebalance }: iRebalance = useRebalanceStore((state) => state);
     const { showFromSelectionMenu }: iTrading = useTradingStore((state) => state);
 
@@ -51,7 +50,7 @@ const TokenSelectionMenu: React.FC<TokenSelectionMenuProps> = ({
         >
             <div className="relative w-full max-h-[80%] max-w-md mx-auto rounded-lg shadow-lg z-50 overflow-auto">
                 <div
-                    className={`w-full max-h-full bg-W100 flex flex-col gap-2 rounded-lg cursor-pointer p-3 shadow-2xl ${
+                    className={`w-full max-h-full bg-W100 flex flex-col gap-2 rounded-lg p-3 shadow-2xl ${
                         showMenu ? "block" : "hidden"
                     }`}
                 >
@@ -59,8 +58,9 @@ const TokenSelectionMenu: React.FC<TokenSelectionMenuProps> = ({
                         onClick={() => closeMenu()}
                         className="rounded-full h-10 w-10 p-2 hover:bg-N40 active:bg-N60 text-B200"
                     />
-
+                    {/* Modal Cotent -- Networks Row, Search input, List of Protocols  */}
                     <div className="flex flex-col justify-center items-center gap-5 px-4">
+                        {/* Networks Row -- Polygon, Arbitrum, Optimisum, Base */}
                         <div className="flex flex-wrap justify-center items-center gap-2">
                             {NETWORK_LIST?.map((item) => {
                                 return (
@@ -78,16 +78,21 @@ const TokenSelectionMenu: React.FC<TokenSelectionMenuProps> = ({
                                 );
                             })}
                         </div>
-
-                        {showFromSelectionMenu && isRebalance || (
+                        {/* Search Input Box */}
+                        {(showFromSelectionMenu && isRebalance) || selectedProtocol.length !== 0 || (
                             <SearchInput
                                 value={filterToken}
                                 onChange={setFilterToken}
                                 placeholder="Search by Protocol"
                             />
                         )}
-
+                        {/* List of Protocols on selected Network */}
                         <div className="w-full overflow-auto flex flex-col justify-center items-center">
+                            {selectedProtocol.length > 0 && (
+                                <p className="w-full text-left text-gray-400 text-xs mb-1.5">
+                                    To see other Protocols, close the selected Protocol.
+                                </p>
+                            )}
                             <ProtocolSelection
                                 showMenu={showMenu}
                                 onChangeProtocol={onChangeProtocol}

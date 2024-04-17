@@ -1,22 +1,22 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-
+import toast from "react-hot-toast";
 import { BigNumber as bg } from "bignumber.js";
-import SelectionBar from "../SelectionBar/SelectionBar";
 import { HiOutlineArrowsRightLeft } from "react-icons/hi2";
+import SelectionBar from "../SelectionBar/SelectionBar";
 import Button from "../Button/Button";
 import { iRebalance, iTrading, useRebalanceStore, useTradingStore } from "../../store/TradingStore";
 import { protocolNames } from "../../utils/data/protocols";
 import { defaultBlue } from "../../assets/images";
 import { BiLoaderAlt } from "react-icons/bi";
-import { tTrade } from "../../modules/trade/types";
-bg.config({ DECIMAL_PLACES: 10 });
-
+import { tBatchSelectionSection } from "../../modules/trade/types";
 import CustomCheckbox from "../common/CustomCheckbox";
 import { Rebalance } from "./Rebalance";
-import toast from "react-hot-toast";
+import clsx from "clsx";
 
-const BatchSelectionSection: React.FC<tTrade> = ({
+bg.config({ DECIMAL_PLACES: 10 });
+
+const BatchSelectionSection: React.FC<tBatchSelectionSection> = ({
     handleSwap,
     onChangeAmountIn,
     sendSingleBatchToList,
@@ -90,33 +90,34 @@ const BatchSelectionSection: React.FC<tTrade> = ({
             return;
         }
         setShowFromSelectionMenu(true);
-    }
+    };
     const handleShowToSelectionMenu = () => {
         if (addToBatchLoading) {
             toast.error("wait, tx loading");
             return;
         }
         setShowToSelectionMenu(true);
-    }
+    };
 
     return (
-        <div className="w-full bg-gradient-to-br from-[#7339FD] via-[#56B0F6] to-[#4DD4F4] flex flex-col gap-1 rounded-2xl cursor-pointer shadow-2xl">
+        <div className="w-full bg-gradient-to-br from-[#7339FD] via-[#56B0F6] to-[#4DD4F4] flex flex-col gap-1 rounded-2xl shadow-2xl">
             <div className="w-full flex flex-col gap-5">
                 <div className="px-5 pt-7">
                     <div className="flex flex-col gap-3 bg-[rgba(225,225,225,.4)] border rounded-xl px-5 py-3 ">
                         {/* Token Selection */}
                         <div
-                            className={`w-full relative flex justify-center items-center gap-5 ${
+                            className={clsx(
+                                "w-full relative flex justify-center items-center gap-5",
                                 !isRebalance &&
-                                selectedToNetwork.chainName &&
-                                selectedToProtocol &&
-                                selectedToToken &&
-                                selectedFromNetwork.chainName &&
-                                selectedFromProtocol &&
-                                selectedFromToken
+                                    selectedToNetwork.chainName &&
+                                    selectedToProtocol &&
+                                    selectedToToken &&
+                                    selectedFromNetwork.chainName &&
+                                    selectedFromProtocol &&
+                                    selectedFromToken
                                     ? "flex-row"
                                     : "flex-col"
-                            }`}
+                            )}
                         >
                             {/* Selection Bar - FROM */}
                             <SelectionBar
@@ -155,7 +156,7 @@ const BatchSelectionSection: React.FC<tTrade> = ({
                                     </div>
                                 )}
 
-                            {/* Selection Bar variants based on rebalancing state */}
+                            {/* Selection Bar - TO variants based on rebalancing state */}
                             {!isRebalance ? (
                                 <SelectionBar
                                     handleSelectionMenu={handleShowToSelectionMenu}

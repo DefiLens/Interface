@@ -26,18 +26,18 @@ import {
     radiant,
 } from "../../assets/images";
 
-interface iToken {
+export type tokenList = {
     name: string;
     icon: any;
-}
+};
 
 interface iProtocolKey {
     name: string;
     icon: any;
-    tokenList: iToken[]; // Update to accept only an array of iToken objects
+    tokenList: tokenList[];
     tokenAddresses: {
         [key: string]: string;
-    } | string;
+    };
 }
 
 
@@ -78,8 +78,8 @@ export const protocolNames: iProtocolNames = {
             {
                 name: "erc20",
                 icon: polygon,
-                tokenList: "tokenList",
-                tokenAddresses: "tokenAddresses",
+                tokenList: [],
+                tokenAddresses: {},
             },
         ],
         value: ["AAVE V2", "AAVE V3", "Compound V3", "dForce", "ERC20"],
@@ -101,8 +101,8 @@ export const protocolNames: iProtocolNames = {
             {
                 name: "erc20",
                 icon: avalanche,
-                tokenList: "tokenList",
-                tokenAddresses: "tokenAddresses",
+                tokenList: [],
+                tokenAddresses: {},
             },
         ],
         value: ["AAVE V3", "BENQI", "ERC20"],
@@ -130,8 +130,8 @@ export const protocolNames: iProtocolNames = {
             {
                 name: "erc20",
                 icon: arbitrum,
-                tokenList: "tokenList",
-                tokenAddresses: "tokenAddresses",
+                tokenList: [],
+                tokenAddresses: {},
             },
         ],
         value: ["AAVE V3", "Compound V3", "Radiant", "ERC20"],
@@ -165,8 +165,8 @@ export const protocolNames: iProtocolNames = {
             {
                 name: "erc20",
                 icon: optimism,
-                tokenList: "tokenList",
-                tokenAddresses: "tokenAddresses",
+                tokenList: [],
+                tokenAddresses: {},
             },
         ],
         value: ["AAVE V3", "Sonne Finance", "Exactly Finance", "Granary Finance", "ERC20"],
@@ -201,13 +201,13 @@ export const protocolNames: iProtocolNames = {
                 name: "sonne",
                 icon: sonne,
                 tokenList: tokensByProtocol.base.sonne,
-                tokenAddresses: "tokenAddresses",
+                tokenAddresses: {},
             },
             {
                 name: "erc20",
                 icon: base,
-                tokenList: "tokenList",
-                tokenAddresses: "tokenAddresses",
+                tokenList: [],
+                tokenAddresses: {},
             },
         ],
         value: ["AAVE V3", "Compound V3", "Seamless", "Moonwell", "Sonne", "ERC20"],
