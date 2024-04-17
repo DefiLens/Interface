@@ -1,23 +1,19 @@
 import Image from "next/image";
-import SearchInput from "../common/SearchInput";
 import { optimism } from "../../assets/images";
 import { iTokenData } from "../../store/TradingStore";
+import { tokenList } from "../../utils/data/protocols";
 
 interface TokenListProps {
     erc20: boolean;
     filterValue: string;
-    tokens: iTokenData[];
-    setFilterValue: (value: string) => void;
+    tokens: iTokenData[] | tokenList[];
     onItemClick: (tokenName: string) => void;
 }
 
-const TokenList: React.FC<TokenListProps> = ({ erc20, filterValue, setFilterValue, tokens, onItemClick }) => {
+const TokenList: React.FC<TokenListProps> = ({ erc20, filterValue, tokens, onItemClick }) => {
     return (
         <>
-            <div className="border border-[rgba(132,144,251)] text-B200 rounded-lg p-3 my-1.5">
-                {/* Search input */}
-                <SearchInput value={filterValue} onChange={setFilterValue} placeholder="Search by Token" />
-
+            <div className="border border-[rgba(132,144,251)] text-B200 border-t-0 rounded-lg rounded-t-none max-h-[247px] p-3 overflow-auto">
                 <ul className="flex flex-col divide-y divide-gray-200">
                     {tokens.map((token, index) => {
                         // Check if the token matches the filter value

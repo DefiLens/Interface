@@ -23,6 +23,19 @@ export type tTrade = {
     processRebalancing: () => void;
 };
 
+export type tBatchSelectionSection = {
+    handleSwap: () => void;
+    onChangeAmountIn: (_amountIn: string) => void;
+    sendSingleBatchToList: (isSCW: any) => void;
+    handleExecuteMethod: () => void;
+    processRebalancing: () => void;
+};
+
+export type tBatchListSection = {
+    removeBatch: (index: number) => void;
+    toggleShowBatchList: (id: number) => void;
+};
+
 export type tTradeProtocol = {
     name: string;
     icon: any;

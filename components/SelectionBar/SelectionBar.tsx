@@ -2,6 +2,7 @@ import Image from "next/image";
 import { tSelectionBar } from "./types";
 import { defaultBlue } from "../../assets/images";
 import { useTradingStore } from "../../store/TradingStore";
+import clsx from "clsx";
 
 const SelectionBar: React.FC<tSelectionBar> = ({
     handleSelectionMenu,
@@ -22,7 +23,7 @@ const SelectionBar: React.FC<tSelectionBar> = ({
         <div
             onClick={handleSelectionMenu}
             aria-disabled={addToBatchLoading}
-            className={`w-full rounded-lg px-5 py-3 ${showBg && "bg-[rgba(132,144,251,.4)]"} transition`}
+            className={clsx("w-full rounded-lg px-5 py-3 transition cursor-pointer", showBg && "bg-[rgba(132,144,251,.4)]")}
         >
             <h5 className="text-sm md:text-base lg:text-lg font-medium md:font-semibold text-font-100">
                 {titlePlaceholder}

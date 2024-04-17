@@ -7,6 +7,7 @@ import { iTrading, useTradingStore } from "../../store/TradingStore";
 import TokenSelectionMenu from "../../components/Batching/TokenSelectionMenu";
 import BatchSelectionSection from "../../components/Batching/BatchSelectionSection";
 import BatchingListSection from "../../components/Batching/BatchingListSection";
+import clsx from "clsx";
 
 bg.config({ DECIMAL_PLACES: 10 });
 
@@ -26,7 +27,7 @@ const Trade: React.FC<tTrade> = ({
     ExecuteAllBatches,
     closeFromSelectionMenu,
     closeToSelectionMenu,
-    processRebalancing
+    processRebalancing,
 }) => {
     const {
         selectedFromNetwork,
@@ -53,9 +54,10 @@ const Trade: React.FC<tTrade> = ({
     return (
         <div className="w-full h-full flex flex-col justify-center items-center py-5">
             <div
-                className={`${
-                    showBatchList ? "!w-full" : "!w-[50%]"
-                } h-full flex flex-col lg:flex-row justify-start lg:justify-center items-center lg:items-start gap-4`}
+                className={clsx(
+                    showBatchList ? "!w-full" : "!w-[50%]",
+                    "h-full flex flex-col lg:flex-row justify-start lg:justify-center items-center lg:items-start gap-4"
+                )}
             >
                 <div className="w-full md:max-w-xl h-full flex flex-col justify-start items-center">
                     {/* FROM_TOKEN SELECTION MENU */}
@@ -90,11 +92,7 @@ const Trade: React.FC<tTrade> = ({
                         onChangeProtocol={onChangeToProtocol}
                         protocolNames={protocolNames}
                     />
-                    {/* {showFromSelectionMenu || showToSelectionMenu ? (
-                        <>
-                        </>
-                    ) : (
-                        )} */}
+
                     {/* Batching Component */}
                     <BatchSelectionSection
                         handleSwap={handleSwap}

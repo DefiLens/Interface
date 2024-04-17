@@ -6109,6 +6109,7 @@ __metadata:
     autoprefixer: "npm:^10.4.14"
     axios: "npm:^1.4.0"
     bignumber.js: "npm:^9.1.1"
+    clsx: "npm:^2.1.0"
     dotenv: "npm:^16.0.3"
     eslint: "npm:^9.0.0"
     eslint-config-next: "npm:^14.2.1"
@@ -6356,7 +6357,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"clsx@npm:^2.0.0":
+"clsx@npm:^2.0.0, clsx@npm:^2.1.0":
   version: 2.1.0
   resolution: "clsx@npm:2.1.0"
   checksum: 10c0/c09c00ad14f638366ca814097e6cab533dfa1972a358da5b557be487168acbb25b4c1395e89ffa842a8a61ba87a462d2b4885bc9d4f8410b598f3cb339599cdb
