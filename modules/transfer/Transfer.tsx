@@ -21,7 +21,7 @@ import CopyButton from "../../components/common/CopyButton";
 
 const Transfer: React.FC<tTransfer> = ({
     onOptionChangeForWallet,
-    onOptionChange,
+    // onOptionChange,
     setBalance,
     handleAmountIn,
     send,

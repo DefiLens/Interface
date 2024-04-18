@@ -46,7 +46,7 @@ export async function getErc20Data(token, address, spender, provider) {
     }
 }
 
-export const getErc20Balanceof = async (erc20, address): Promise<BigNumber | undefined> => {
+export const getErc20Balanceof = async (erc20: ethers.Contract, address: string): Promise<BigNumber | undefined> => {
     try {
         return await erc20.balanceOf(address);
     } catch (error) {

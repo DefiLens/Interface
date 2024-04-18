@@ -2,7 +2,7 @@ import { useEffect } from "react";
 
 import web3 from "web3";
 import { toast } from "react-hot-toast";
-import { BigNumber, ethers } from "ethers";
+import { BigNumber, Contract, ethers } from "ethers";
 import { BigNumber as bg } from "bignumber.js";
 
 import { useAddress, useChain, useSigner } from "@thirdweb-dev/react";
@@ -152,8 +152,8 @@ const TransferContainer: React.FC = () => {
             setAmountIn(0);
             setTokenAddress(_tokenAddress);
             const contract = await getContract(_tokenAddress);
-            const _scwBalance: BigNumber | undefined = await getErc20Balanceof(contract, smartAccountAddress);
-            const _eoaBalance: BigNumber | undefined = await getErc20Balanceof(contract, address);
+            const _scwBalance: BigNumber | undefined = await getErc20Balanceof(contract as Contract, smartAccountAddress);
+            const _eoaBalance: BigNumber | undefined = await getErc20Balanceof(contract as Contract, address ?? "");
             const decimals: number | undefined = await getErc20Decimals(contract);
             setSafeState(setTokenInDecimals, decimals, 0);
             setSafeState(setScwTokenInbalance, BigNumber.from(_scwBalance), BIG_ZERO);
@@ -301,7 +301,7 @@ const TransferContainer: React.FC = () => {
     return (
         <Transfer
             onOptionChangeForWallet={onOptionChangeForWallet}
-            onOptionChange={onOptionChange}
+            // onOptionChange={onOptionChange}
             setBalance={setBalance}
             handleAmountIn={handleAmountIn}
             send={send}
