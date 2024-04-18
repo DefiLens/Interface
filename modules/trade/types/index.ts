@@ -10,6 +10,7 @@ export type tTrade = {
     onChangeAmountIn: (_amountIn: string) => void;
     handleSwap: () => void;
     removeBatch: (index: number) => void;
+    clearSelectedBatchData: () => void;
     toggleShowBatchList: (id: number) => void;
     sendSingleBatchToList: (isSCW: any) => void;
     handleExecuteMethod: () => void;

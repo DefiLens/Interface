@@ -8,10 +8,10 @@ import IERC20 from "../../abis/IERC20.json";
 import ChainPing from "../../abis/ChainPing.json";
 import { useOneInch } from "../swaphooks/useOneInch";
 import { ChainIdDetails } from "../../utils/data/network";
-import { decreasePowerByDecimals, getTokenListByChainId } from "../../utils/helper";
+import { decreasePowerByDecimals } from "../../utils/helper";
 import IStarGateRouter from "../../abis/IStarGateRouter.json";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
-import { iSelectedNetwork, iTrading, useTradingStore } from "../../store/TradingStore";
+import { iTrading, useTradingStore } from "../../store/TradingStore";
 import { tCCSendTx, tOneInch, tOneInchSwapResponse, tStargateData } from "../types";
 import { getContractInstance, getErc20Allownace } from "../../utils/web3Libs/ethers";
 import { calculateFees, chooseChianId, findGasUsedBySimulation } from "../../utils/helper";
@@ -21,14 +21,6 @@ import { nativeTokenFetcher, newChainPingByNetwork, starGateRouterByNetwork, tok
 export function useCCSendTx() {
     const { mutateAsync: oneInchSwap } = useOneInch();
     const { smartAccount, smartAccountAddress }: iGlobal = useGlobalStore((state) => state);
-
-    // const [toTokensData, setToTokensData] = useState<any>([]);
-
-
-    // async function onChangeselectedToProtocol(network: iSelectedNetwork) {
-    //     const tokens = getTokenListByChainId(network.chainId, UNISWAP_TOKENS);
-    //     setToTokensData(tokens);
-    // }
 
     const {
         selectedFromNetwork,
@@ -57,8 +49,6 @@ export function useCCSendTx() {
         toTokensData
     }: tCCSendTx): Promise<tStargateData | undefined> {
         try {
-            // console.log(toTokensData, "TokensData  in CCSEND TXS")
-
             let nativeTokenOutAddress;
             if (selectedToProtocol == "erc20") {
                 const tokenOutName = selectedToToken;
@@ -120,7 +110,6 @@ export function useCCSendTx() {
                     chainId: Number(selectedToNetwork.chainId),
                     selectedToken: selectedToToken
                 } as tOneInch);
-                // console.log("swapData?.amountOutprice", swapData?.amountOutprice.toString(), swapData);
                 amountOutAfterSlippage = BigNumber.from(swapData?.amountOutprice).sub(
                     BigNumber.from(swapData?.amountOutprice).mul("1000").div("1000000")
                 );
@@ -135,8 +124,6 @@ export function useCCSendTx() {
             if (selectedToProtocol != "erc20") {
                 let abiInterfaceForDestDefiProtocol = new ethers.utils.Interface(currentAbi);
                 const destChainExecData = abiInterfaceForDestDefiProtocol.encodeFunctionData(currentFunc, params);
-                // const contractAddress = allNetworkData?.contracts[contractIndex].contractAddress;
-                // const extraOrShareToken = allNetworkData?.contracts[contractIndex].extraOrShareToken;
                 destChainExecTx = { to: contractAddress, data: destChainExecData };
             }
 
@@ -206,7 +193,6 @@ export function useCCSendTx() {
                 data,
                 lzParams
             );
-            // console.log("--------------------------------Debugging - 1")
 
             let stargateTx = await stargateRouter.populateTransaction.swap(
                 toChainId,
@@ -224,7 +210,6 @@ export function useCCSendTx() {
             const scwOrEoaNativeBalance = await _currentProvider.getBalance(_currentAddress);
             const currentBalance = BigNumber.from(scwOrEoaNativeBalance);
             const minimumBalanceRequired = await decreasePowerByDecimals(quoteData[0], 18);
-            // console.log("--------------------------------Debugging - 2")
 
             // Extra 1e18 should more as of now
             if (!currentBalance.gt(quoteData[0].add(parseEther("0")))) {
@@ -241,11 +226,8 @@ export function useCCSendTx() {
                 value: BigNumber.from(stargateTx.value),
             };
             if (approveTx) {
-                // console.log("--------------------------------Debugging - 3")
-                // console.log({txArray: [approveTx, sendTx], value: stargateTx.value});
                 return { txArray: [approveTx, sendTx], value: stargateTx.value };
             } else {
-                // console.log("--------------------------------Debugging - 4")
                 return { txArray: [sendTx], value: stargateTx.value };
             }
         } catch (error: unknown) {

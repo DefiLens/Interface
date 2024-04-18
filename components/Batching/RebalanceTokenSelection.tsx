@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import toast from "react-hot-toast";
 import SelectionBar from "../SelectionBar/SelectionBar";
-import { iRebalance, iSelectedNetwork, iTokenData, iTrading, useRebalanceStore, useTradingStore } from "../../store/TradingStore";
+import { iRebalance, iSelectedNetwork, iTrading, useRebalanceStore, useTradingStore } from "../../store/TradingStore";
 import { protocolNames } from "../../utils/data/protocols";
-// import SelectErc20 from "./SelectErc20";
+import SelectErc20 from "./SelectErc20";
 import TokenSelectionMenu from "./TokenSelectionMenu";
 import UNISWAP_TOKENS from "../../abis/tokens/Uniswap.json";
 import { getTokenListByChainId } from "../../utils/helper";
+import toast from "react-hot-toast";
 
 export interface iRebalanceTokenSelection {
     onTokenSelect: (
@@ -23,7 +23,7 @@ export interface iRebalanceTokenSelection {
     amount: number;
     splitEqually: boolean;
     percentages: number[];
-    handlePercentageChange: (index: number, event: React.ChangeEvent<HTMLInputElement>) => void;
+    handlePercentageChange: (index: number, event: any) => void;
 }
 
 export const RebalanceTokenSelection: React.FC<iRebalanceTokenSelection> = ({
@@ -38,7 +38,7 @@ export const RebalanceTokenSelection: React.FC<iRebalanceTokenSelection> = ({
 }) => {
     const { amountIn, toTokensData, setToTokensData, addToBatchLoading }: iTrading = useTradingStore((state) => state);
     const { rebalanceData, clearRebalanceData }: iRebalance = useRebalanceStore((state) => state);
-    const [selectedNetwork, setSelectedNetwork] = useState<iSelectedNetwork | null>({
+    const [selectedNetwork, setSelectedNetwork] = useState<iSelectedNetwork>({
         key: "",
         chainName: "",
         chainId: "",
@@ -62,7 +62,12 @@ export const RebalanceTokenSelection: React.FC<iRebalanceTokenSelection> = ({
     useEffect(() => {
         if (clearRebalanceData) {
             console.log("clearRebalanceData", clearRebalanceData);
-            setSelectedNetwork(null);
+            setSelectedNetwork({
+                key: "",
+                chainName: "",
+                chainId: "",
+                icon: "",
+            });
             setSelectedProtocol("");
             setSelectedToken("");
             setAmount(0);
@@ -78,15 +83,13 @@ export const RebalanceTokenSelection: React.FC<iRebalanceTokenSelection> = ({
         setSelectedProtocol(protocol);
     };
 
-    const calculateAmount = (percentage) => {
-        return (percentage / 100) * amountIn;
+    const calculateAmount = (percentage: number): number => {
+        const rawAmount: number = (percentage / 100) * amountIn;
+        const roundedAmount: number = Math.floor(rawAmount * 100) / 100; // Round down to two decimal places
+        return roundedAmount;
     };
 
-    const onChangeselectedToProtocol = async (
-        protocol: string,
-        network: iSelectedNetwork,
-        setTokensData: (toTokensData: iTokenData[]) => void
-    ) => {
+    const onChangeselectedToProtocol = async (protocol: string, network: iSelectedNetwork, setTokensData: any) => {
         if (protocol && protocol === "erc20") {
             const filteredTokens = getTokenListByChainId(network.chainId, UNISWAP_TOKENS);
             setTokensData(filteredTokens);
@@ -113,22 +116,16 @@ export const RebalanceTokenSelection: React.FC<iRebalanceTokenSelection> = ({
     };
 
     useEffect(() => {
-        onChangeselectedToProtocol(selectedProtocol, selectedNetwork as iSelectedNetwork, setToTokensData);
+        onChangeselectedToProtocol(selectedProtocol, selectedNetwork, setToTokensData);
     }, [selectedProtocol, selectedNetwork]);
 
     useEffect(() => {
         // Calculate new amount based on updated percentages
-        const updatedAmount = Number(calculateAmount(percentages[index]).toFixed(2));
+        const updatedAmount: number | any = calculateAmount(percentages[index]);
 
         // Update state with the new amount and percentage
         setAmount(updatedAmount);
-        onTokenSelect(
-            selectedNetwork as iSelectedNetwork,
-            selectedProtocol,
-            selectedToken,
-            percentages[index],
-            updatedAmount
-        );
+        onTokenSelect(selectedNetwork, selectedProtocol, selectedToken, percentages[index], updatedAmount);
     }, [percentages[index], amountIn, selectedToken, rebalanceData.length]);
 
     return (
@@ -136,16 +133,15 @@ export const RebalanceTokenSelection: React.FC<iRebalanceTokenSelection> = ({
             <SelectionBar
                 handleSelectionMenu={() => handleShowSelectionMenu(index)}
                 titlePlaceholder={`To Batch - ${index + 1}`}
-                iconCondition={(selectedNetwork?.chainName as string) && selectedProtocol}
+                iconCondition={selectedNetwork?.chainName && selectedProtocol}
                 mainIcon={selectedNetwork?.icon}
                 subIcon={
-                    protocolNames[selectedNetwork?.chainId ?? ""]?.key.find(
-                        (entry) => entry.name == selectedProtocol
-                    )?.icon
+                    protocolNames[selectedNetwork?.chainId]?.key.find((entry: any) => entry.name == selectedProtocol)
+                        ?.icon
                 }
-                valueCondition={selectedNetwork?.chainName ?? ""}
+                valueCondition={selectedNetwork?.chainName}
                 valuePlaceholder="Select Chain and token"
-                mainValue={selectedNetwork?.key ?? ""}
+                mainValue={selectedNetwork?.key}
                 firstSubValue={selectedProtocol}
                 secondSubValue={selectedToken}
                 showBg={false}
@@ -166,13 +162,13 @@ export const RebalanceTokenSelection: React.FC<iRebalanceTokenSelection> = ({
                     />
                     <span className={` text-lg`}>%</span>
                 </div>
-                <span className="text-N0">${calculateAmount(percentages[index]).toFixed(2)}</span>
+                <span className="text-N0">{calculateAmount(percentages[index])}</span>
             </div>
             <TokenSelectionMenu
                 showMenu={showSelectionMenu === index}
                 closeMenu={handleShowSelectionMenu}
                 handleSelectNetwork={handleNetworkSelect}
-                selectedNetwork={selectedNetwork as iSelectedNetwork}
+                selectedNetwork={selectedNetwork}
                 onChangeProtocol={handleProtocolSelect}
                 filterToken={filterToToken}
                 setFilterToken={setFilterToToken}

@@ -24,7 +24,7 @@ export interface iBatchFlowData {
     protocol: string;
     tokenIn: string;
     tokenOut: string;
-    amount: string;
+    amount: string | any;
     action: string;
 }
 
@@ -358,8 +358,6 @@ export const useRebalanceStore = create<iRebalance>((set) => ({
     setRebalanceData: (index, newData) => {
         set((state) => {
             let updatedData: iRebalanceData[];
-            console.log("index", index);
-
             if (newData) {
                 // Add or update the data
                 if (index !== null && index >= 0 && index < state.rebalanceData.length) {

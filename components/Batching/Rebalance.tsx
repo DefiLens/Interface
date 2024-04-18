@@ -9,19 +9,7 @@ import { RebalanceTokenSelection } from "./RebalanceTokenSelection";
 
 bg.config({ DECIMAL_PLACES: 10 });
 
-interface iRebalanceProps {
-    addRebalancedBatches: (
-        isSCW: boolean,
-        selectedToNetwork: iSelectedNetwork,
-        selectedToProtocol: string,
-        selectedToToken: string,
-        rePercentage: number,
-        amount: number,
-        i: number
-    ) => void;
-}
-
-export const Rebalance: React.FC<iRebalanceProps> = ({ addRebalancedBatches }) => {
+export const Rebalance: React.FC<any> = () => {
     const {
         rebalanceData,
         setRebalanceData,

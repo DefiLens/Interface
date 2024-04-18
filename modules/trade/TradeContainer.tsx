@@ -110,7 +110,6 @@ const TradeContainer: React.FC = () => {
         setTxHash,
         setSendTxLoading,
         individualBatch,
-        // setIndividualBatch,
         removeBatchItem,
         addBatchItem,
         setShowExecuteBatchModel,
@@ -217,9 +216,13 @@ const TradeContainer: React.FC = () => {
                     )?.tokenList[0].name;
 
                     const provider = await getProvider(selectedFromNetwork.chainId);
-                    const tokenAddress = protocolNames[selectedFromNetwork.chainId].key.find(
-                        (entry) => entry.name == selectedFromProtocol
-                    )?.tokenAddresses[firstFromToken];
+
+                    const tokenAddress =
+                        firstFromToken &&
+                        protocolNames[selectedFromNetwork.chainId].key.find(
+                            (entry) => entry.name === selectedFromProtocol
+                        )?.tokenAddresses[firstFromToken];
+
                     const erc20 = await getContractInstance(tokenAddress, IERC20, provider);
                     const fromTokendecimal = await getErc20Decimals(erc20);
                     setSafeState(setFromTokenDecimal, fromTokendecimal, 0);
@@ -306,23 +309,25 @@ const TradeContainer: React.FC = () => {
             const provider: ethers.providers.JsonRpcProvider | undefined = await getProvider(
                 selectedFromNetwork.chainId
             );
-            const erc20Address =
-                selectedFromProtocol == "erc20" ? fromTokensData.filter((token) => token.symbol === _fromToken) : [];
+            const erc20Address: any =
+                selectedFromProtocol == "erc20"
+                    ? fromTokensData.filter((token: any) => token.symbol === _fromToken)
+                    : "";
 
             const tokenAddress =
-                selectedFromProtocol != "erc20"
-                    ? protocolNames[selectedFromNetwork.chainId].key.find((entry) => entry.name == selectedFromProtocol)
-                          .tokenAddresses[_fromToken]
-                    : erc20Address[0].address;
+                selectedFromProtocol !== "erc20" && protocolNames[selectedFromNetwork.chainId]
+                    ? protocolNames[selectedFromNetwork.chainId].key.find(
+                          (entry) => entry.name === selectedFromProtocol
+                      )?.tokenAddresses[_fromToken]
+                    : erc20Address[0]?.address;
 
             console.log(_fromToken, tokenAddress);
 
             const erc20 = await getContractInstance(tokenAddress, IERC20, provider);
-            const fromTokendecimal: number = await getErc20Decimals(erc20) ?? 0;
+            const fromTokendecimal: any = await getErc20Decimals(erc20);
             setSafeState(setFromTokenDecimal, fromTokendecimal, 0);
 
             let scwAddress: any;
-            let biconomySmartAccount;
             if (!smartAccountAddress) {
                 const createAccount = async (chainId: any) => {
                     const bundler: IBundler = new Bundler({
@@ -348,7 +353,7 @@ const TradeContainer: React.FC = () => {
                         moduleAddress: DEFAULT_ECDSA_OWNERSHIP_MODULE,
                     });
                     //   setProvider(provider)
-                    biconomySmartAccount = await BiconomySmartAccountV2.create({
+                    let biconomySmartAccount = await BiconomySmartAccountV2.create({
                         chainId: chainId,
                         bundler: bundler,
                         paymaster: paymaster,
@@ -491,30 +496,6 @@ const TradeContainer: React.FC = () => {
         } catch (err) {
             console.log("Swap: onChangeToToken: Error:", err);
         }
-    };
-
-    const addBatch = () => {
-        addBatchItem({
-            id: 0,
-            txArray: [],
-            data: {
-                fromNetwork: "",
-                toNetwork: "",
-                fromChainId: "",
-                toChainId: "",
-                fromProtocol: "",
-                toProtocol: "",
-                fromToken: "",
-                toToken: "",
-                amountIn: "",
-                fees: "",
-                extraValue: "",
-            },
-            simulation: {
-                isSuccess: false,
-                isError: false,
-            },
-        });
     };
 
     const removeBatch = (index: number) => {
@@ -746,7 +727,7 @@ const TradeContainer: React.FC = () => {
             } else {
                 // setSendTxLoadingForEoa(true);
             }
-            const mergeArray = Array<string>();
+            const mergeArray: any = [];
             await individualBatch.map((bar) => bar.txArray.map((hash) => mergeArray.push(hash)));
             let tempTxhash = "";
             if (isSCW) {
@@ -847,6 +828,8 @@ const TradeContainer: React.FC = () => {
             const provider: ethers.providers.JsonRpcProvider | undefined = await getProvider(
                 selectedFromNetwork.chainId
             );
+
+            console.log(amount, "AMount in");
             const _tempAmount = BigNumber.from(await incresePowerByDecimals(amount, fromTokenDecimal).toString());
             let refinaceData: tRefinanceResponse | undefined;
             let txArray;
@@ -980,17 +963,14 @@ const TradeContainer: React.FC = () => {
             onChangeToToken={onChangeToToken}
             onChangeAmountIn={onChangeAmountIn}
             handleSwap={handleSwap}
-            addBatch={addBatch}
             removeBatch={removeBatch}
             clearSelectedBatchData={clearSelectedBatchData}
-            updateInputValues={updateInputValues}
             toggleShowBatchList={toggleShowBatchList}
             sendSingleBatchToList={sendSingleBatchToList}
             handleExecuteMethod={handleExecuteMethod}
             ExecuteAllBatches={ExecuteAllBatches}
             closeFromSelectionMenu={closeFromSelectionMenu}
             closeToSelectionMenu={closeToSelectionMenu}
-            totalfees={totalfees}
             processRebalancing={processRebalancing}
         />
     );

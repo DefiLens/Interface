@@ -28,7 +28,7 @@ export function useRefinance() {
         setToTokensData(tokens);
     }
 
-    const { selectedFromNetwork, selectedFromProtocol, amountIn, fromTokensData }: iTrading =
+    const { selectedFromNetwork, selectedFromProtocol, fromTokensData }: iTrading =
         useTradingStore((state) => state);
 
     async function refinance({
@@ -45,9 +45,12 @@ export function useRefinance() {
         selectedToNetwork,
         selectedToProtocol,
         selectedToToken,
+        amountIn,
     }: tRefinance): Promise<tRefinanceResponse | undefined> {
 
         console.log(">>>>>>>>>>", selectedFromNetwork.chainName, "- To -", selectedToNetwork.chainName);
+        console.log("amountIn", amountIn)
+
         await onChangeselectedToProtocol(selectedToNetwork);
         // console.log("--------------useRefinance", toTokensData)
 
@@ -131,6 +134,7 @@ export function useRefinance() {
                     protocol: selectedFromProtocol,
                     tokenIn: tokenInName,
                     tokenOut: nativeTokenInSymbol,
+                    // amount: amount,
                     amount: amountIn,
                     action: "Withdraw",
                 };
@@ -175,6 +179,7 @@ export function useRefinance() {
                     protocol: "Uniswap",
                     tokenIn: nativeTokenInSymbol,
                     tokenOut: nativeTokenOutSymbol,
+                    // amount: amount,
                     amount: amountIn,
                     action: "Swap",
                 };
