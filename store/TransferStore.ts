@@ -8,7 +8,7 @@ export interface iTransfer {
     isNative: boolean;
     isSCW: boolean;
     sendTxLoading: boolean;
-    txhash: boolean | string;
+    txhash: string;
     tokensData: object[];
     scwBalance: BigNumber;
     eoaBalance: BigNumber;
@@ -25,7 +25,7 @@ export interface iTransfer {
     setIsnative: (isNative: boolean) => void;
     setIsSCW: (isSCW: boolean) => void;
     setSendtxLoading: (sendTxLoading: boolean) => void;
-    setTxHash: (txhash: boolean | string) => void;
+    setTxHash: (txhash: string) => void;
     setTokensData: (tokensData: object[]) => void;
     setScwTokenInbalance: (scwBalance: BigNumber) => void;
     setEoaTokenInbalance: (eoaBalance: BigNumber) => void;

@@ -14,7 +14,7 @@ export interface iPortfolio {
     isSCW: boolean;
     chainId: number;
     chainName: string;
-    selectOneAsset: any;
+    selectOneAsset: tPosition;
 
 
     setChainData: (chainData: any) => void;
@@ -23,7 +23,7 @@ export interface iPortfolio {
     setIsSCW: (isSCW: boolean) => void;
     setChainId: (chainId: number) => void;
     setChainName: (chainName: string) => void;
-    setSelectOneAsset: (selectOneAsset: any) => void;
+    setSelectOneAsset: (selectOneAsset: tPosition | null) => void;
 
 
     //Migrate assets
