@@ -15,7 +15,6 @@ import { iBatchFlowData, iSelectedNetwork, iTokenData, iTrading, useTradingStore
 import { abiFetcher, abiFetcherNum, buildParams, nativeTokenFetcher, nativeTokenNum, OneInchRouter, tokensByNetworkForCC, uniswapSwapRouterByChainId } from "../../utils/data/protocols";
 import { useState } from "react";
 import UNISWAP_TOKENS from "../../abis/tokens/Uniswap.json";
-import { ETH_ADDRESS } from "../../utils/data/constants";
 
 export function useCCRefinance() {
     const { mutateAsync: approve } = useApprove();
@@ -34,7 +33,6 @@ export function useCCRefinance() {
     const {
         selectedFromNetwork,
         selectedFromProtocol,
-        // amountIn,
         fromTokensData,
     }: iTrading = useTradingStore((state) => state);
 
@@ -150,18 +148,14 @@ export function useCCRefinance() {
 
             isSwap = nativeTokenIn != tokensByNetworkForCC[selectedFromNetwork.chainId].usdc ? true : false;
             if (isSwap) {
-                let approveData
-                if (nativeTokenIn != ETH_ADDRESS) {
-                    approveData = await approve({
-                        tokenIn: nativeTokenIn,
-                        spender: OneInchRouter,
-                        amountIn: amount,
-                        address,
-                        web3JsonProvider: provider,
-                    } as tApprove);
-                    if (approveData) tempTxs.push(approveData);
-                }
-                console.log("nativeTokenIn", nativeTokenIn)
+                const approveData = await approve({
+                    tokenIn: nativeTokenIn,
+                    spender: OneInchRouter,
+                    amountIn: amount,
+                    address,
+                    web3JsonProvider: provider,
+                } as tApprove);
+                if (approveData) tempTxs.push(approveData);
                 swapData = await oneInchSwap({
                     tokenIn: nativeTokenIn,
                     tokenOut: tokensByNetworkForCC[selectedFromNetwork.chainId].usdc,

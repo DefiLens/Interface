@@ -26,17 +26,20 @@ import {
     radiant,
 } from "../../assets/images";
 
+interface iToken {
+    name: string;
+    icon: any;
+}
+
 interface iProtocolKey {
     name: string;
     icon: any;
-    tokenList: {
-        name: string;
-        icon: any;
-    }[] | string;
+    tokenList: iToken[]; // Update to accept only an array of iToken objects
     tokenAddresses: {
         [key: string]: string;
     } | string;
 }
+
 
 export interface iProtocolNames {
     [chainId: string]: {

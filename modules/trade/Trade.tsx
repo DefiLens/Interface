@@ -47,8 +47,7 @@ const Trade: React.FC<tTrade> = ({
         setFilterToAddress,
         showBatchList,
         showExecuteBatchModel,
-        showExecuteMethodModel,
-        setSelectedToProtocol,
+        showExecuteMethodModel
     }: iTrading = useTradingStore((state) => state);
 
     return (
