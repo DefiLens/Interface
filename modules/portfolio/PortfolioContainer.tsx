@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import Portfolio from "./Portfolio";
 import { usePortfolio } from "../../hooks/portfolio/usePortfolio";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
@@ -10,6 +10,7 @@ import { BigNumber as bg } from "bignumber.js";
 import web3 from "web3";
 import IERC20 from "../../abis/IERC20.json";
 import { incresePowerByDecimals } from "../../utils/helper";
+import { ChainIdDetails, NETWORK_LIST } from "../../utils/data/network";
 
 const PortfolioContainer: React.FC = () => {
     const { mutateAsync: fetchPortfolio } = usePortfolio();
@@ -20,6 +21,7 @@ const PortfolioContainer: React.FC = () => {
     const {
         isSCW,
         chainId,
+        chainData,
         setChainData,
         selectOneAsset,
         amountIn,
@@ -49,14 +51,24 @@ const PortfolioContainer: React.FC = () => {
 
     // fetches user's portfolio data when onload, or either isSCW or chainId changes
     useEffect(() => {
+        // if (chainData == null) {
         handleFetchPorfolioData();
+        // }
     }, [isSCW, chainId]);
+
+    const isNative = useMemo((): boolean => {
+        const oneAssetTokenSymbol = selectOneAsset?.attributes.fungible_info.symbol;
+        const chainName = selectOneAsset?.relationships.chain.data.id;
+        const chainId = NETWORK_LIST.find((network) => chainName === network.chainName)?.chainId;
+        return oneAssetTokenSymbol?.toLowerCase() === ChainIdDetails[chainId as string].gasFeesName.toLowerCase();
+    }, [selectOneAsset]);
 
     // To migrate assets
     const handleAmountIn = async (_amountIn) => {
         try {
             setAmountInDecimals(_amountIn);
-            if (selectOneAsset?.relationships.fungible.data.id) {
+            // if (selectOneAsset?.native_token)
+            if (isNative) {
                 let amountInByDecimals = bg(await incresePowerByDecimals(_amountIn, 18));
                 console.log("amountInByDecimals", amountInByDecimals.toString());
                 if (amountInByDecimals.eq(0)) {
@@ -68,9 +80,6 @@ const PortfolioContainer: React.FC = () => {
                 const contractAddress = selectOneAsset?.attributes.fungible_info.implementations.find(
                     (tokenImp) => tokenImp.chain_id === selectOneAsset?.relationships.chain.data.id
                 )?.address;
-                console.log({
-                    contractAddress,
-                });
                 const contract = await getContract(contractAddress);
                 if (!contract) {
                     toast.error("Not valid token address");
@@ -107,7 +116,7 @@ const PortfolioContainer: React.FC = () => {
             toast.error("Select One Token");
             return;
         }
-        console.log(amountIn);
+        // console.log(amountIn);
         if (amountIn == "") {
             toast.error("Please Enter Amount");
             return;
@@ -122,7 +131,8 @@ const PortfolioContainer: React.FC = () => {
             let tx;
             const _fromAddress = isSCW ? smartAccountAddress : address;
             const _toAdress = isSCW ? address : smartAccountAddress;
-            if (selectOneAsset?.id) {
+
+            if (isNative) {
                 let provider = await new ethers.providers.Web3Provider(web3.givenProvider);
                 if (!provider) {
                     toast.error("no provider");
@@ -138,6 +148,7 @@ const PortfolioContainer: React.FC = () => {
                 tx = { to: _toAdress, value: amountIn, data: "0x" };
                 console.log("Native token tx", tx, "isSCW", isSCW);
             } else {
+                // Token Contract Address
                 const contractAddress = selectOneAsset?.attributes.fungible_info.implementations.find(
                     (tokenImp) => tokenImp.chain_id === selectOneAsset?.relationships.chain.data.id
                 )?.address;
@@ -147,6 +158,12 @@ const PortfolioContainer: React.FC = () => {
                     return;
                 }
                 const balance = await contract.balanceOf(_fromAddress);
+                // console.log({
+                //     balance,
+                //     amountIn,
+                //     isNative,
+                //     contractAddress,
+                // });
                 if (!BigNumber.from(balance).gte(amountIn)) {
                     toast.error("Not erc20 enough balance");
                     return;

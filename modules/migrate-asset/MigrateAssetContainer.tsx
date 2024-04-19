@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
-
 import { useAddress } from "@thirdweb-dev/react";
-
 import MigrateAsset from "./MigrateAsset";
 import { usePortfolio } from "../../hooks/portfolio/usePortfolio";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";

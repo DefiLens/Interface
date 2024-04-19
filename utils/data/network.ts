@@ -56,7 +56,7 @@ export const ChainIdDetails = {
         rpcURL: `https://polygon-mainnet.infura.io/v3/${MAINNET_INFURA}`,
         networkName: "polygon",
         networkLogo: polygon,
-        gasFeesName: "polygon",
+        gasFeesName: "matic",
         stargateChainId: "109",
     },
     "43114": {
