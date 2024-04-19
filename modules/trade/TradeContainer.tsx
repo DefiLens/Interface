@@ -368,7 +368,7 @@ const TradeContainer: React.FC = () => {
             }
 
             const maxBal: BigNumber | undefined = await getErc20Balanceof(
-                erc20,
+                erc20 as ethers.Contract,
                 smartAccountAddress ? smartAccountAddress : scwAddress.address
             );
             if (!maxBal) return;

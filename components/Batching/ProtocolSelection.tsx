@@ -17,7 +17,7 @@ interface iProtocolSelectionProps {
     setFilterAddress: (filterAddress: string) => void;
     tokensData: iTokenData[];
     selectedProtocol: string;
-    onChangeToken: (item: string) => void;
+    onChangeToken: (protocol: string) => void;
     protocolNames: iProtocolNames;
 }
 
@@ -41,32 +41,32 @@ const ProtocolSelection: React.FC<iProtocolSelectionProps> = ({
         showMenu &&
         selectedNetwork?.chainName && (
             <div className="flex flex-col w-full max-h-fit overflow-hidden">
-                {selectedNetworkProtocols.key.map((item, protocolIndex) => {
+                {selectedNetworkProtocols.key.map((protocol, protocolIndex) => {
                     const isFilteredProtocol = selectedNetworkProtocols.value[protocolIndex]
                         .toLowerCase()
                         .includes(filterToken.toLowerCase());
                     // Mapping protocols
                     return (
                         isFilteredProtocol && (
-                            <div key={item.name} className="w-full">
+                            <div key={protocol.name} className="w-full">
                                 {/* Protocol Selection Bar */}
                                 {(isRebalance &&
                                     showFromSelectionMenu &&
                                     selectedNetworkProtocols.value[protocolIndex] != "ERC20") ||
-                                    (selectedProtocol && selectedProtocol !== item.name) || (
+                                    (selectedProtocol && selectedProtocol !== protocol.name) || (
                                         <div
-                                            key={item.name}
-                                            onClick={() => onChangeProtocol(item.name)}
+                                            key={protocol.name}
+                                            onClick={() => onChangeProtocol(protocol.name)}
                                             className={clsx(
-                                                "w-full flex justify-between items-center gap-3 text-B300 bg-[rgba(132,144,251,.0.9) border border-[rgba(132,144,251)] hover:bg-[rgba(132,144,251,.1)] py-2 px-3 cursor-pointer",
-                                                selectedProtocol === item.name
+                                                "w-full flex justify-between protocols-center gap-3 text-B300 bg-[rgba(132,144,251,.0.9) border border-[rgba(132,144,251)] hover:bg-[rgba(132,144,251,.1)] py-2 px-3 cursor-pointer",
+                                                selectedProtocol === protocol.name
                                                     ? "border-b-0 rounded-t-lg mb-0"
                                                     : "rounded-lg my-1.5"
                                             )}
                                         >
-                                            <div className="w-full flex justify-start items-center gap-3">
+                                            <div className="w-full flex justify-start protocols-center gap-3">
                                                 <Image
-                                                    src={item.icon}
+                                                    src={protocol.icon}
                                                     alt=""
                                                     className="h-8 w-8 bg-N40 rounded-full cursor-pointer"
                                                 />
@@ -76,13 +76,13 @@ const ProtocolSelection: React.FC<iProtocolSelectionProps> = ({
                                                 size="30px"
                                                 className={clsx(
                                                     "text-[rgba(132,144,251)] h-7 w-7",
-                                                    selectedProtocol === item.name && "transform rotate-180"
+                                                    selectedProtocol === protocol.name && "transform rotate-180"
                                                 )}
                                             />
                                         </div>
                                     )}
 
-                                {selectedProtocol && selectedProtocol === item.name && (
+                                {selectedProtocol && selectedProtocol === protocol.name && (
                                     <div className="border-x border-[rgba(132,144,251)] px-3 pt-3">
                                         <SearchInput
                                             value={filterAddress}
@@ -93,21 +93,24 @@ const ProtocolSelection: React.FC<iProtocolSelectionProps> = ({
                                 )}
 
                                 {/* Tokens */}
-                                {selectedProtocol === item.name && selectedProtocol !== "erc20" && (
+                                {selectedProtocol === protocol.name && selectedProtocol !== "erc20" && (
                                     <TokenList
                                         erc20={false}
                                         filterValue={filterAddress}
-                                        tokens={item.tokenList}
+                                        tokens={protocol.tokenList}
                                         onItemClick={onChangeToken}
+                                        selectedNetwork={selectedNetwork}
+                                        tokenAddresses={protocol.tokenAddresses}
                                     />
                                 )}
 
                                 {/* ERC20 Tokens */}
-                                {item.name === "erc20" && selectedProtocol === "erc20" && tokensData && (
+                                {protocol.name === "erc20" && selectedProtocol === "erc20" && tokensData && (
                                     <TokenList
                                         erc20={true}
                                         filterValue={filterAddress}
                                         tokens={tokensData}
+                                        selectedNetwork={selectedNetwork}
                                         onItemClick={onChangeToken}
                                     />
                                 )}
