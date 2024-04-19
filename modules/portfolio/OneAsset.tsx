@@ -63,14 +63,14 @@ const OneAsset: React.FC<tOneAsset> = ({ positions, send, handleAmountIn, curren
                         </div>
                         <div className="w-full inline-flex items-center">
                             <div className="w-1/3 text-start">
-                                {item?.attributes.price && `$${item.attributes.price.toFixed(5)}`}
+                                {item?.attributes.price && `$${Number(item.attributes.price.toFixed(4))}`}
                             </div>
                             <div className="w-1/3 text-start">
-                                {item?.attributes.quantity.float.toLocaleString("en-US")}{" "}
+                                {Number(item?.attributes.quantity.float.toFixed(4))}{" "}
                                 {item?.attributes.fungible_info.symbol}
                             </div>
                             <div className="w-1/3 text-start text-success-600">
-                                {item?.attributes.value && `$${Number(item.attributes.value).toLocaleString("en-US")}`}
+                                {item?.attributes.value && `$${Number(item.attributes.value.toFixed(4))}`}
                             </div>
                         </div>
                         <div className="w-[3%]">

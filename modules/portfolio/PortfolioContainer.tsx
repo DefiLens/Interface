@@ -57,10 +57,14 @@ const PortfolioContainer: React.FC = () => {
     }, [isSCW, chainId]);
 
     const isNative = useMemo((): boolean => {
-        const oneAssetTokenSymbol = selectOneAsset?.attributes.fungible_info.symbol;
-        const chainName = selectOneAsset?.relationships.chain.data.id;
-        const chainId = NETWORK_LIST.find((network) => chainName === network.chainName)?.chainId;
-        return oneAssetTokenSymbol?.toLowerCase() === ChainIdDetails[chainId as string].gasFeesName.toLowerCase();
+        if (selectOneAsset !== null) {
+            const oneAssetTokenSymbol = selectOneAsset?.attributes.fungible_info.symbol;
+            const chainName = selectOneAsset?.relationships.chain.data.id;
+            const chainId = NETWORK_LIST.find((network) => chainName === network.chainName)?.chainId;
+            console.log("chainId", chainId);
+            return oneAssetTokenSymbol?.toLowerCase() === ChainIdDetails[chainId as string].gasFeesName.toLowerCase();
+        }
+        return false;
     }, [selectOneAsset]);
 
     // To migrate assets

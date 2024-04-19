@@ -90,6 +90,26 @@ export interface iFuncArray {
     type: string;
 }
 
+interface iBalanceStore {
+    tokenBalances: {
+        [key: string]: string;
+    };
+    setTokenBalances: (balance: {
+        [key: string]: string;
+    }) => void;
+}
+
+export const useBalanceStore = create<iBalanceStore>((set) => ({
+    tokenBalances: {},
+    setTokenBalances: (item) =>
+        set((state) => ({
+            tokenBalances: {
+                ...state.tokenBalances,
+                ...item,
+            },
+        })),
+}));
+
 export interface iTrading {
     totalfees: bg;
     maxBalance: string;
@@ -178,9 +198,7 @@ export interface iTrading {
     removeBatchItem: (id: number) => void;
 }
 
-
 export const useTradingStore = create<iTrading>((set) => ({
-
     individualBatch: [],
     addBatchItem: (item) =>
         set((state) => ({
@@ -190,7 +208,6 @@ export const useTradingStore = create<iTrading>((set) => ({
         set((state) => ({
             individualBatch: state.individualBatch.filter((_, i) => i !== index),
         })),
-
 
     totalfees: bg(0),
     maxBalance: "",
@@ -243,7 +260,6 @@ export const useTradingStore = create<iTrading>((set) => ({
     hasExecutionError: "",
     showExecuteMethodModel: false,
 
-
     setTotalFees: (totalfees) => set(() => ({ totalfees })),
     setMaxBalance: (maxBalance) => set(() => ({ maxBalance })),
     setIsmaxBalanceLoading: (ismaxBalanceLoading) => set(() => ({ ismaxBalanceLoading })),
@@ -287,16 +303,6 @@ export const useTradingStore = create<iTrading>((set) => ({
     setShowExecuteMethodModel: (showExecuteMethodModel) => set(() => ({ showExecuteMethodModel })),
 }));
 
-
-
-
-
-
-
-
-
-
-
 //Rebalance Store
 export interface iRebalanceData {
     network: iSelectedNetwork;
@@ -305,7 +311,6 @@ export interface iRebalanceData {
     percentage: number;
     amount: number;
 }
-
 
 export interface iRebalance {
     isRebalance: boolean;
@@ -377,20 +382,18 @@ export const useRebalanceStore = create<iRebalance>((set) => ({
     },
 
     addNewEmptyData: () => {
-        set((state) => (
-            { rebalanceData: [...state.rebalanceData, createEmptyData()] }
-        ));
+        set((state) => ({ rebalanceData: [...state.rebalanceData, createEmptyData()] }));
     },
 
     removeDataAtIndex: (index) => {
         set((state) => ({
-            rebalanceData: state.rebalanceData.filter((_, i) => i !== index)
+            rebalanceData: state.rebalanceData.filter((_, i) => i !== index),
         }));
     },
 
     removeAllData: () => {
         set(() => ({ rebalanceData: [] }));
-    }
+    },
 }));
 
 const createEmptyData = (): iRebalanceData => ({

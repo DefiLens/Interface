@@ -244,7 +244,7 @@ const Portfolio: React.FC<tPortfolio> = ({ smartAccountAddress, handleFetchPorfo
                             {/* Mapping All the chains and their positions.  */}
                             {chainData?.map((portfolioData) => {
                                 const positions = portfolioData?.data?.filter(
-                                    (position) => position.attributes.value > 0.001
+                                    (position) => position.attributes.value > 0.0001
                                 );
                                 return (
                                     positions.length > 0 && (
