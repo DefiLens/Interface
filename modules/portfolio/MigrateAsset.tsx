@@ -102,7 +102,7 @@ const MigrateAsset: React.FC<MigrateAssetProps> = ({ send, handleAmountIn }) => 
                                     <button
                                         type="button"
                                         onClick={() =>
-                                            handleAmountIn(selectOneAsset?.attributes.quantity.float.toString())
+                                            handleAmountIn(selectOneAsset?.attributes.quantity.float.toString() ?? "")
                                         }
                                         className="w-20 text-center font-bold text-S600 bg-[rgba(109,223,255,.4)] rounded-lg py-1"
                                     >
