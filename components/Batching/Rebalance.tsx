@@ -9,7 +9,7 @@ import { RebalanceTokenSelection } from "./RebalanceTokenSelection";
 
 bg.config({ DECIMAL_PLACES: 10 });
 
-export const Rebalance: React.FC<any> = () => {
+export const Rebalance: React.FC = () => {
     const {
         rebalanceData,
         setRebalanceData,

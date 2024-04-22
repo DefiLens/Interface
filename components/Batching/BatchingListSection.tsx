@@ -189,7 +189,7 @@ const BatchingListSection: React.FC<tBatchListSection> = ({ removeBatch, toggleS
                                                                         </span>
                                                                     </div>
                                                                 </div>
-                                                                {bar.batchesFlow.length - 1 > index ? (
+                                                                {bar.batchesFlow !== undefined && bar.batchesFlow.length - 1 > index ? (
                                                                     <PiDotsThreeOutlineVertical
                                                                         size="32px"
                                                                         className="text-B200"
