@@ -1,20 +1,22 @@
+// Library Imports
 import { useRef, useEffect } from "react";
-
 import Link from "next/link";
 import Image from "next/image";
 import { CgSpinner } from "react-icons/cg";
 import { usePathname } from "next/navigation";
 import { useAddress, useChainId, useChain } from "@thirdweb-dev/react";
-
+// Type, Store, Components, Helper Imports
 import { tHeader } from "./types";
 import { wallet, mirgrate_asset } from "../../assets/images";
+import { HiArrowPathRoundedSquare } from "react-icons/hi2";
 import useClickOutside from "../../hooks/useClickOutside";
 import { ChainIdDetails, NETWORK_LIST } from "../../utils/data/network";
 import { NavigationList } from "../../utils/data/navigation";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
-import { ConnectWallet } from "@thirdweb-dev/react";
 import toast from "react-hot-toast";
 import CopyButton from "../../components/common/CopyButton";
+import ConnectWalletWrapper from "../../components/Button/ConnectWalletWrapper";
+import clsx from "clsx";
 
 const Header: React.FC<tHeader> = ({ switchOnSpecificChain }) => {
     const pathname = usePathname();
@@ -88,30 +90,31 @@ const Header: React.FC<tHeader> = ({ switchOnSpecificChain }) => {
                                 </Link>
                             ))}
                     </div>
-
+                    {/* Link: "/transfer-fund" */}
                     <div className="flex justify-between items-center gap-3">
                         {/* Transfer funds */}
                         <Link
                             href="/transfer-fund"
-                            className={`flex items-center justify-center gap-2 cursor-pointer px-5 py-1 text-sm md:text-base text-center rounded-full bg-N0 shadow-lg hover:bg-N20 transition duration-300 ${
+                            className={clsx(
+                                "flex h-full items-center justify-center gap-2 cursor-pointer px-5 py-3 text-sm md:text-base text-center rounded-full bg-N0 shadow-sm hover:bg-N20 border border-N40 transition duration-300",
                                 pathname === "/transfer-fund"
                                     ? "bg-gradient-to-br from-D600 via-D400 to-D100 text-N0"
-                                    : "text-B100"
-                            } `}
+                                    : "text-green-800 bg-green-100"
+                            )}
                         >
                             <span className="font-bold pl-2">Transfer Fund</span>
-                            <Image
+                            <HiArrowPathRoundedSquare className="h-5 w-5" />
+                            {/* <Image
                                 src={pathname === "/transfer-fund" ? wallet : mirgrate_asset}
                                 alt="close"
                                 className="h-10 w-10 p-1.5 rounded-lg"
-                            />
+                            /> */}
                         </Link>
 
                         {/* Loading spinner */}
                         {loading && (
                             <div className="flex flex-wrap justify-start items-center gap-3 text-base">
                                 <button
-                                    type="button"
                                     onClick={() => setShowWalletAddress(!showWalletAddress)}
                                     className="relative wallet-container flex justify-center items-center gap-5 bg-backgound-600 p-2 rounded-3xl text-font-100 font-medium transition duration-300"
                                 >
@@ -121,103 +124,77 @@ const Header: React.FC<tHeader> = ({ switchOnSpecificChain }) => {
                         )}
 
                         {/* Account Addreses */}
-                        <div className="flex flex-wrap justify-start items-center gap-3 text-base">
-                            <div className="flex justify-center items-center gap-3">
-                                {smartAccount && !loading && (
-                                    <button
-                                        type="button"
-                                        onClick={() => setShowWalletAddress(!showWalletAddress)}
-                                        className="relative wallet-container bg-N0 px-3 py-2.5 rounded-3xl flex justify-center items-center gap-3 text-B100 shadow-lg font-medium transition duration-300 hover:bg-N20"
-                                    >
-                                        {/* Smart account address and copy btn */}
-                                        <span className="text-sm font-medium">
-                                            {smartAccount &&
-                                                smartAccountAddress.slice(0, 5) + "..." + smartAccountAddress.slice(-3)}
-                                        </span>
-                                        <CopyButton copy={smartAccountAddress} />
+                        <div className="flex flex-wrap justify-center items-center gap-3 text-base">
+                            {smartAccount && !loading && (
+                                <button
+                                    onClick={() => setShowWalletAddress(!showWalletAddress)}
+                                    className="relative flex justify-center items-center gap-3 wallet-container bg-N0 border border-N40 px-5 py-1 rounded-xl text-B100 shadow-sm font-medium transition duration-300 hover:bg-N20 cursor-pointer"
+                                >
+                                    {/* Smart account address and copy btn */}
+                                    <span className="text-sm font-medium">
+                                        {smartAccount &&
+                                            smartAccountAddress.slice(0, 5) + "..." + smartAccountAddress.slice(-3)}
+                                    </span>
+                                    <CopyButton copy={smartAccountAddress} />
 
-                                        {/* Drop down see both addresses */}
-                                        {showWalletAddress && smartAccount && !loading && (
-                                            <div
-                                                ref={walletAddressRef}
-                                                className="w-80 absolute top-16 z-50 flex flex-col justify-center items-start gap-4 bg-N0 border-1 border-B75 shadow-lg p-3 rounded-lg"
-                                            >
-                                                <button className="w-full relative flex justify-between items-center gap-2">
-                                                    <div className="flex flex-col justify-center items-start">
-                                                        <span className="text-B200 text-base font-medium">
-                                                            {smartAccount &&
-                                                                smartAccountAddress.slice(0, 13) +
-                                                                    "..." +
-                                                                    smartAccountAddress.slice(-3)}
-                                                        </span>
-                                                        <span className="text-B100 text-xs">
-                                                            {smartAccount &&
-                                                                "SmartAccount : (" +
-                                                                    scwBalance +
-                                                                    " " +
-                                                                    `${
-                                                                        ChainIdDetails[
-                                                                            selectedNetwork.chainId.toString()
-                                                                        ]?.gasFeesName
-                                                                    }` +
-                                                                    ")"}
-                                                        </span>
-                                                    </div>
-
-                                                    <CopyButton copy={smartAccountAddress} />
-                                                </button>
-                                                <button className="w-full flex justify-between items-center gap-2">
-                                                    <div className="flex flex-col justify-center items-start">
-                                                        <span className="text-B200 text-base font-medium">
-                                                            {smartAccount &&
-                                                                address &&
-                                                                address.slice(0, 13) + "..." + address.slice(-3)}
-                                                        </span>
-                                                        <span className="text-B100 text-xs">
-                                                            {smartAccount &&
-                                                                "EOA : (" +
-                                                                    eoaBalance +
-                                                                    " " +
-                                                                    `${
-                                                                        ChainIdDetails[
-                                                                            selectedNetwork.chainId.toString()
-                                                                        ]?.gasFeesName
-                                                                    }` +
-                                                                    ")"}
-                                                        </span>
-                                                    </div>
-                                                    <CopyButton copy={address} />
-                                                </button>
+                                    {/* Drop down see both addresses */}
+                                    {showWalletAddress && (
+                                        <div
+                                            ref={walletAddressRef}
+                                            className="w-80 absolute top-16 right-0 z-50 flex flex-col justify-center items-start bg-N0 border-1 border-B75 shadow-xl p-3 rounded-lg"
+                                        >
+                                            {/* SCW Address and Balance */}
+                                            <div className="w-full relative flex justify-between p-2 items-center gap-2 cursor-default">
+                                                <div className="flex flex-col justify-center items-start">
+                                                    <span className="text-B200 text-base font-medium">
+                                                        {smartAccount &&
+                                                            smartAccountAddress.slice(0, 13) +
+                                                                "..." +
+                                                                smartAccountAddress.slice(-3)}
+                                                    </span>
+                                                    <span className="text-B100 text-xs">
+                                                        {smartAccount &&
+                                                            "SmartAccount : (" +
+                                                                scwBalance +
+                                                                " " +
+                                                                `${
+                                                                    ChainIdDetails[selectedNetwork.chainId.toString()]
+                                                                        ?.gasFeesName
+                                                                }` +
+                                                                ")"}
+                                                    </span>
+                                                </div>
+                                                <CopyButton copy={smartAccountAddress} />
                                             </div>
-                                        )}
-                                    </button>
-                                )}
-
-                                {/* Third web auth btn */}
-                                <ConnectWallet
-                                    theme={"light"}
-                                    modalSize={"compact"}
-                                    btnTitle="Login"
-                                    className="Custom-btn"
-                                    modalTitle="Connect Wallet"
-                                    modalTitleIconUrl=""
-                                    detailsBtn={() => {
-                                        return (
-                                            <div className="flex justify-between items-center shadow-lg rounded-full cursor-pointer">
-                                                {selectedNetwork?.chainName && (
-                                                    <div className="rounded-full p-1">
-                                                        <Image
-                                                            src={selectedNetwork.icon}
-                                                            alt=""
-                                                            className="h-8 w-8 rounded-full"
-                                                        />
-                                                    </div>
-                                                )}
+                                            {/* EOA Addrss and Balance */}
+                                            <div className="w-full flex justify-between items-center gap-2 p-2 cursor-default">
+                                                <div className="flex flex-col justify-center items-start">
+                                                    <span className="text-B200 text-base font-medium">
+                                                        {smartAccount &&
+                                                            address &&
+                                                            address.slice(0, 13) + "..." + address.slice(-3)}
+                                                    </span>
+                                                    <span className="text-B100 text-xs">
+                                                        {smartAccount &&
+                                                            "EOA : (" +
+                                                                eoaBalance +
+                                                                " " +
+                                                                `${
+                                                                    ChainIdDetails[selectedNetwork.chainId.toString()]
+                                                                        ?.gasFeesName
+                                                                }` +
+                                                                ")"}
+                                                    </span>
+                                                </div>
+                                                <CopyButton copy={address} />
                                             </div>
-                                        );
-                                    }}
-                                />
-                            </div>
+                                        </div>
+                                    )}
+                                </button>
+                            )}
+
+                            {/* Third web auth btn */}
+                            <ConnectWalletWrapper />
                         </div>
                     </div>
                 </div>
@@ -281,4 +258,5 @@ const Header: React.FC<tHeader> = ({ switchOnSpecificChain }) => {
         </>
     );
 };
+
 export default Header;

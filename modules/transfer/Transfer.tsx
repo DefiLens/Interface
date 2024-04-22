@@ -1,13 +1,13 @@
-import { BigNumber } from "ethers";
-
+// Library Imports
 import Image from "next/image";
-import { FiCopy } from "react-icons/fi";
-import { CgSpinner } from "react-icons/cg";
-import { MdKeyboardArrowUp } from "react-icons/md";
+import { BigNumber } from "ethers";
 import { useAddress, useChain } from "@thirdweb-dev/react";
-
+import { FiCopy } from "react-icons/fi";
+import { MdKeyboardArrowUp } from "react-icons/md";
+import { HiOutlineArrowsRightLeft, HiOutlineInformationCircle } from "react-icons/hi2";
+// Type, Component, Store and Helper Imports
 import { tTransfer } from "./types";
-import Button from "../../components/Button/Button";
+import { Button } from "../../components/Button";
 import { change, gas, info } from "../../assets/images";
 import { ChainIdDetails } from "../../utils/data/network";
 import { decreasePowerByDecimals } from "../../utils/helper";
@@ -15,8 +15,6 @@ import { copyToClipboard, shorten } from "../../utils/helper";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import SelectInput from "../../components/SelectInput/SelectInput";
 import { iTransfer, useTransferStore } from "../../store/TransferStore";
-import { HiOutlineArrowsRightLeft } from "react-icons/hi2";
-import { HiOutlineInformationCircle } from "react-icons/hi2";
 import CopyButton from "../../components/common/CopyButton";
 
 const Transfer: React.FC<tTransfer> = ({
@@ -29,9 +27,9 @@ const Transfer: React.FC<tTransfer> = ({
     const { smartAccount, smartAccountAddress }: iGlobal = useGlobalStore((state) => state);
 
     const {
-        tokenAddress,
+        // tokenAddress,
         amountInDecimals,
-        isNative,
+        // isNative,
         isSCW,
         sendTxLoading,
         txhash,
@@ -98,7 +96,6 @@ const Transfer: React.FC<tTransfer> = ({
                                 </div>
                             </div>
                             <button
-                                type="button"
                                 onClick={() => onOptionChangeForWallet()}
                                 className="w-10 h-10 rounded-full bg-N20 flex items-center justify-center"
                             >
