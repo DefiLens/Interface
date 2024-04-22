@@ -1,7 +1,8 @@
 import React from "react";
-import { NETWORK_LIST } from "../../utils/data/network";
-import { MdOutlineArrowBack } from "react-icons/md";
 import Image from "next/image";
+import clsx from "clsx";
+import { HiOutlineXMark } from "react-icons/hi2";
+import { NETWORK_LIST } from "../../utils/data/network";
 import SearchInput from "../common/SearchInput";
 import ProtocolSelection from "./ProtocolSelection";
 import { iSelectedNetwork } from "../../store/GlobalStore";
@@ -10,7 +11,7 @@ import { iProtocolNames } from "../../utils/data/protocols";
 
 interface TokenSelectionMenuProps {
     showMenu: boolean;
-    closeMenu: () => void;
+    closeMenu: (index?: number) => void;
     handleSelectNetwork: (item: iSelectedNetwork) => void;
     selectedNetwork: iSelectedNetwork;
     filterToken: string;
@@ -22,6 +23,7 @@ interface TokenSelectionMenuProps {
     onChangeToken: (item: string) => void;
     onChangeProtocol: (protocol: string) => void;
     protocolNames: iProtocolNames;
+    title?: string;
 }
 
 const TokenSelectionMenu: React.FC<TokenSelectionMenuProps> = ({
@@ -38,28 +40,33 @@ const TokenSelectionMenu: React.FC<TokenSelectionMenuProps> = ({
     onChangeToken,
     onChangeProtocol,
     protocolNames,
+    title = "Select Token",
 }) => {
     const { isRebalance }: iRebalance = useRebalanceStore((state) => state);
     const { showFromSelectionMenu }: iTrading = useTradingStore((state) => state);
 
     return (
         <div
-            className={`fixed inset-0 z-50 overflow-auto bg-gray-500 bg-opacity-75 flex justify-center items-center ${
+            className={clsx(
+                "fixed inset-0 z-50 overflow-auto bg-gray-500 bg-opacity-75 flex justify-center items-center",
                 showMenu ? "" : "hidden"
-            }`}
+            )}
         >
             <div className="relative w-full max-h-[80%] max-w-md mx-auto rounded-lg shadow-lg z-50 overflow-auto">
                 <div
-                    className={`w-full max-h-full bg-W100 flex flex-col gap-2 rounded-lg p-3 shadow-2xl ${
+                    className={clsx(
+                        "w-full max-h-full bg-W100 flex flex-col gap-2 rounded-lg p-5 shadow-2xl",
                         showMenu ? "block" : "hidden"
-                    }`}
+                    )}
                 >
-                    <MdOutlineArrowBack
+                    <button
+                        className="absolute top-5 right-5 rounded-full p-2 bg-N40 hover:bg-N60 transition-colors duration-200"
                         onClick={() => closeMenu()}
-                        className="rounded-full h-10 w-10 p-2 hover:bg-N40 active:bg-N60 text-B200"
-                    />
+                    >
+                        <HiOutlineXMark className="h-5 w-5 text-B200" />
+                    </button>
                     {/* Modal Cotent -- Networks Row, Search input, List of Protocols  */}
-                    <div className="flex flex-col justify-center items-center gap-5 px-4">
+                    <div className="flex flex-col justify-center items-center gap-5">
                         {/* Networks Row -- Polygon, Arbitrum, Optimisum, Base */}
                         <div className="flex flex-wrap justify-center items-center gap-2">
                             {NETWORK_LIST?.map((item) => {

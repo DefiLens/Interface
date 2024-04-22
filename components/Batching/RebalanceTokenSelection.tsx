@@ -106,7 +106,8 @@ export const RebalanceTokenSelection: React.FC<iRebalanceTokenSelection> = ({
         }
     };
 
-    const handleShowSelectionMenu = (index: number) => {
+    const handleShowSelectionMenu = (index: number | undefined) => {
+        if (index == undefined || index <= 0) return;
         if (addToBatchLoading) {
             toast.error("Please wait, transaction loading.");
             return;
