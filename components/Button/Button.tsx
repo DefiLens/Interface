@@ -1,5 +1,4 @@
-import React, { useRef } from "react";
-
+import React from "react";
 import { tButton } from "./types";
 import { CgSpinner } from "react-icons/cg";
 
@@ -14,4 +13,5 @@ const Button = ({ handleClick, isLoading = false, customStyle, innerText, disabl
         {innerText}
     </button>
 );
+
 export default Button;
