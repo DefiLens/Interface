@@ -75,6 +75,7 @@ const Trade: React.FC<tTrade> = ({
                         onChangeToken={onChangeFromToken}
                         onChangeProtocol={onChangeFromProtocol}
                         protocolNames={protocolNames}
+                        title="Select source token"
                     />
                     {/* TO_TOKEN SELECTION MENU */}
                     <TokenSelectionMenu
@@ -91,6 +92,7 @@ const Trade: React.FC<tTrade> = ({
                         onChangeToken={onChangeToToken}
                         onChangeProtocol={onChangeToProtocol}
                         protocolNames={protocolNames}
+                        title="Select destination token"
                     />
 
                     {/* Batching Component */}

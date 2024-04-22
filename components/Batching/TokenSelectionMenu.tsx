@@ -11,7 +11,7 @@ import { iProtocolNames } from "../../utils/data/protocols";
 
 interface TokenSelectionMenuProps {
     showMenu: boolean;
-    closeMenu: (index?: number) => void;
+    closeMenu: () => void;
     handleSelectNetwork: (item: iSelectedNetwork) => void;
     selectedNetwork: iSelectedNetwork;
     filterToken: string;
@@ -24,6 +24,7 @@ interface TokenSelectionMenuProps {
     onChangeProtocol: (protocol: string) => void;
     protocolNames: iProtocolNames;
     title?: string;
+    description?: string;
 }
 
 const TokenSelectionMenu: React.FC<TokenSelectionMenuProps> = ({
@@ -40,7 +41,8 @@ const TokenSelectionMenu: React.FC<TokenSelectionMenuProps> = ({
     onChangeToken,
     onChangeProtocol,
     protocolNames,
-    title = "Select Token",
+    title = "Select a token",
+    description = "To select a token, choose the Network and Protocol of your choice.",
 }) => {
     const { isRebalance }: iRebalance = useRebalanceStore((state) => state);
     const { showFromSelectionMenu }: iTrading = useTradingStore((state) => state);
@@ -60,15 +62,20 @@ const TokenSelectionMenu: React.FC<TokenSelectionMenuProps> = ({
                     )}
                 >
                     <button
-                        className="absolute top-5 right-5 rounded-full p-2 bg-N40 hover:bg-N60 transition-colors duration-200"
+                        className="absolute top-5 right-5 group rounded-full p-2 bg-N40 hover:bg-N60 transition-colors duration-200"
                         onClick={() => closeMenu()}
                     >
-                        <HiOutlineXMark className="h-5 w-5 text-B200" />
+                        <HiOutlineXMark className="h-5 w-5 group-hover:scale-110 transition-all duration-300 text-B200" />
                     </button>
                     {/* Modal Cotent -- Networks Row, Search input, List of Protocols  */}
-                    <div className="flex flex-col justify-center items-center gap-5">
+                    <div className="flex flex-col justify-center items-start gap-5">
+                        {/* Title and Description */}
+                        <div className="flex flex-col w-10/12 gap-1 align-center items-start">
+                            <h1 className="text-lg font-semibold">{title}</h1>
+                            <h3 className="text-font-600 text-sm font-normal">{description}</h3>
+                        </div>
                         {/* Networks Row -- Polygon, Arbitrum, Optimisum, Base */}
-                        <div className="flex flex-wrap justify-center items-center gap-2">
+                        <div className="w-full flex flex-wrap justify-center items-center gap-2">
                             {NETWORK_LIST?.map((item) => {
                                 return (
                                     <div
@@ -86,13 +93,15 @@ const TokenSelectionMenu: React.FC<TokenSelectionMenuProps> = ({
                             })}
                         </div>
                         {/* Search Input Box */}
-                        {(showFromSelectionMenu && isRebalance) || selectedProtocol.length !== 0 || (
-                            <SearchInput
-                                value={filterToken}
-                                onChange={setFilterToken}
-                                placeholder="Search by Protocol"
-                            />
-                        )}
+                        {(showFromSelectionMenu && isRebalance) ||
+                            selectedProtocol.length !== 0 ||
+                            !Boolean(selectedNetwork.chainName) || (
+                                <SearchInput
+                                    value={filterToken}
+                                    onChange={setFilterToken}
+                                    placeholder="Search by Protocol"
+                                />
+                            )}
                         {/* List of Protocols on selected Network */}
                         <div className="w-full overflow-auto flex flex-col justify-center items-center">
                             {selectedProtocol.length > 0 && (

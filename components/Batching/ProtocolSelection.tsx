@@ -87,7 +87,7 @@ const ProtocolSelection: React.FC<iProtocolSelectionProps> = ({
                                         <SearchInput
                                             value={filterAddress}
                                             onChange={setFilterAddress}
-                                            placeholder="Search by Token"
+                                            placeholder="Search by token symbol"
                                         />
                                     </div>
                                 )}

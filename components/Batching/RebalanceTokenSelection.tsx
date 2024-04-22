@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import SelectionBar from "../SelectionBar/SelectionBar";
 import { iRebalance, iSelectedNetwork, iTrading, useRebalanceStore, useTradingStore } from "../../store/TradingStore";
 import { protocolNames } from "../../utils/data/protocols";
-import SelectErc20 from "./SelectErc20";
+// import SelectErc20 from "./SelectErc20";
 import TokenSelectionMenu from "./TokenSelectionMenu";
 import UNISWAP_TOKENS from "../../abis/tokens/Uniswap.json";
 import { getTokenListByChainId } from "../../utils/helper";
@@ -79,8 +79,12 @@ export const RebalanceTokenSelection: React.FC<iRebalanceTokenSelection> = ({
         setSelectedNetwork(network);
     };
 
-    const handleProtocolSelect = (protocol: string) => {
-        setSelectedProtocol(protocol);
+    const handleProtocolSelect = (_protocol: string) => {
+        if (selectedProtocol === _protocol) {
+            setSelectedProtocol("");
+        } else {
+            setSelectedProtocol(_protocol);
+        }
     };
 
     const calculateAmount = (percentage: number): number => {
@@ -106,14 +110,17 @@ export const RebalanceTokenSelection: React.FC<iRebalanceTokenSelection> = ({
         }
     };
 
-    const handleShowSelectionMenu = (index: number | undefined) => {
-        if (index == undefined || index <= 0) return;
+    const handleShowSelectionMenu = (index: number | null) => {
+        if (index == undefined || index < 0) return;
         if (addToBatchLoading) {
             toast.error("Please wait, transaction loading.");
             return;
         }
 
-        setShowSelectionMenu((prevIndex) => (prevIndex === index ? null : index));
+        setShowSelectionMenu((prevIndex) => {
+            console.log("prevIndex selection menu", prevIndex);
+            return prevIndex === index ? null : index;
+        });
     };
 
     useEffect(() => {
@@ -161,13 +168,13 @@ export const RebalanceTokenSelection: React.FC<iRebalanceTokenSelection> = ({
                         onChange={(event) => handlePercentageChange(index, event)}
                         disabled={splitEqually}
                     />
-                    <span className={` text-lg`}>%</span>
+                    <span className="text-lg">%</span>
                 </div>
                 <span className="text-N0">{calculateAmount(percentages[index])}</span>
             </div>
             <TokenSelectionMenu
                 showMenu={showSelectionMenu === index}
-                closeMenu={handleShowSelectionMenu}
+                closeMenu={() => handleShowSelectionMenu(index)}
                 handleSelectNetwork={handleNetworkSelect}
                 selectedNetwork={selectedNetwork}
                 onChangeProtocol={handleProtocolSelect}
@@ -179,6 +186,7 @@ export const RebalanceTokenSelection: React.FC<iRebalanceTokenSelection> = ({
                 selectedProtocol={selectedProtocol}
                 onChangeToken={handleTokenSelect}
                 protocolNames={protocolNames}
+                title={`Select token for Rebalancing`}
             />
         </div>
     );

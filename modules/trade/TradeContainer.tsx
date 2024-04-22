@@ -381,7 +381,7 @@ const TradeContainer: React.FC = () => {
         }
     };
 
-    const onChangeToProtocol = async (_toProtocol: string) => {
+    const onChangeToProtocol = (_toProtocol: string) => {
         if (addToBatchLoading) {
             toast.error("wait, tx loading");
             return;
