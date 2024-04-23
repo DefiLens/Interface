@@ -4,6 +4,7 @@ import Link from "next/link";
 
 import { startCase } from "lodash";
 import { useAddress } from "@thirdweb-dev/react";
+import { LiaWalletSolid } from "react-icons/lia";
 import { iPortfolio, usePortfolioStore } from "../../store/Portfolio";
 import { ChainIdDetails } from "../../utils/data/network";
 import { defaultBlue, metamask } from "../../assets/images";
@@ -16,6 +17,7 @@ import CopyButton from "../../components/common/CopyButton";
 
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import axiosInstance from "../../axiosInstance/axiosInstance";
+import { ConnectWalletWrapper } from "../../components/Button";
 
 const SampleDataGenerator = () => {
     const { smartAccountAddress }: iGlobal = useGlobalStore((state) => state);
@@ -84,7 +86,7 @@ const SampleDataGenerator = () => {
             await axiosInstance.post("/transactions", txHistory);
         } catch (error) {
             console.error("Error sending data to backend:", error);
-            throw error; 
+            throw error;
         }
     };
 
@@ -149,9 +151,7 @@ const Portfolio: React.FC<tPortfolio> = ({ smartAccountAddress, handleFetchPorfo
                                     {isLoading ? (
                                         <div className="animate-pulse bg-gray-300 h-6 w-full rounded-md"></div>
                                     ) : (
-                                        <h1 className="text-4xl font-bold">
-                                            ${getTotalNetworth}
-                                        </h1>
+                                        <h1 className="text-4xl font-bold">${getTotalNetworth}</h1>
                                     )}
                                     <Link href="/portfolio/batch-history" className="">
                                         See Batch History
@@ -284,7 +284,9 @@ const Portfolio: React.FC<tPortfolio> = ({ smartAccountAddress, handleFetchPorfo
 
                                             {/* Heading  */}
                                             <div className="sticky top-[114px] z-10 w-full bg-N0 flex justify-end items-center gap-3 text-xs md:text-sm text-B75 font-bold h-7">
-                                                <div className="w-full max-w-md text-start text-B300 font-semibold">ASSET</div>
+                                                <div className="w-full max-w-md text-start text-B300 font-semibold">
+                                                    ASSET
+                                                </div>
                                                 <div className="w-full inline-flex items-center">
                                                     <div className="w-1/3 text-start">PRICE</div>
                                                     <div className="w-1/3 text-start">BALANCE</div>
@@ -327,13 +329,13 @@ const Portfolio: React.FC<tPortfolio> = ({ smartAccountAddress, handleFetchPorfo
                 </div>
             ) : (
                 !smartAccountAddress && (
-                    <div className="max-w-6xl w-full h-full flex flex-col justify-center items-center gap-5 rounded-3xl px-5 py-10 bg-N20 text-B200 shadow-xl">
-                        <h1 className="w-full text-xl md:text-2xl font-extrabold text-center">
-                            Please Conect Your Wallet
-                        </h1>
-                        <h6 className="w-full flex justify-center items-center gap-2 text-base md:text-lg font-semibold text-center">
-                            For Track Your Portfolio
-                        </h6>
+                    <div className="max-w-6xl w-full h-full flex flex-col justify-center items-center mt-5 gap-5 rounded-3xl px-5 py-20 bg-N20 text-B200 shadow-xl">
+                        <LiaWalletSolid className="w-10 h-10 text-black" />
+                        <ConnectWalletWrapper />
+                        {/* <h1 className="text-xl md:text-2xl font-extrabold text-center">
+                            Conect Wallet
+                        </h1> */}
+                        <h6 className="text-base md:text-lg font-bold text-center">To Track Portfolio</h6>
                     </div>
                 )
             )}
