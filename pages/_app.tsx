@@ -2,7 +2,7 @@ import * as React from "react";
 import { Suspense } from "react";
 import { Toaster } from "react-hot-toast";
 import { AppProps } from "next/app";
-import { ThirdwebProvider, metamaskWallet, coinbaseWallet, phantomWallet } from "@thirdweb-dev/react";
+import { ThirdwebProvider, metamaskWallet, coinbaseWallet, phantomWallet, rainbowWallet } from "@thirdweb-dev/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Base, Optimism, Polygon, Arbitrum } from "@thirdweb-dev/chains";
 import { iGlobal, useGlobalStore } from "../store/GlobalStore";
@@ -41,6 +41,7 @@ export default function App({ Component, pageProps }: AppProps) {
                     }),
                     coinbaseWallet(),
                     phantomWallet(),
+                    rainbowWallet(),
                 ]}
             >
                 <QueryClientProvider client={queryClient}>
