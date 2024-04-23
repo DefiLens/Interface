@@ -22,27 +22,26 @@ export const TENDERLY_PROJECT = process.env.NEXT_PUBLIC_TENDERLY_PROJECT;
 
 export const PIMLICO_API_KEY = process.env.NEXT_PUBLUC_PIMLICO_API_KEY;
 
-// export const NETLIFY_NODE_URL = "http://localhost:8888/.netlify/functions/server"; //process.env.NEXT_PUBLUC_NETLIFY_NODE_URL
 export const NETLIFY_NODE_URL = "https://apichainping.defilens.tech/.netlify/functions/server";
 export const STACKUP_POLYGON_MAINNET_RPC_NODE_URL: any = process.env.NEXT_PUBLIC_STACKUP_POLYGON_MAINNET_RPC_NODE_URL;
 export const BICONOMY_GAS_PRICE_URL = "https://sdk-relayer.prod.biconomy.io/api/v1/relay/feeOptions?chainId=";
 export const IPFS_FIX_URL = "https://cloudflare-ipfs.com/ipfs/";
 export const NODE_JWT_TOKEN = process.env.NEXT_PUBLIC_NODE_JWT_TOKEN
-export const NODE_ONEINCH_URL = "https://apis-95ty.onrender.com/oneInchRoueter/1inch"
+export const NODE_ONEINCH_URL = "http://localhost:8080/api/v1/general/1Inch"
 
 
 const getBaseURL = (NODE_ENV: string | undefined) => {
     switch (NODE_ENV) {
       case 'production':
-        return 'https://defilens-data.onrender.com/';
+        return 'https://server.defilens.tech/api/v1';
 
       case 'staging':
-        return 'https://defilens-data.onrender.com/';
+        return 'https://server.defilens.tech/api/v1';
 
       case 'dev':
-        return 'http://localhost:8080/';
+        return 'http://localhost:8080/api/v1';
 
-      default: return 'http://localhost:8080/';
+      default: return 'http://localhost:8080/api/v1';
     }
   };
 

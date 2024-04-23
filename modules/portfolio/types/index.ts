@@ -110,6 +110,7 @@ export interface iBatchHistory {
     txHash?: string;
     totalAmount?: number;
     smartAccount: string;
+    eoaAccount: string | undefined;
     transactions: iSingleTransaction[];
     createdAt?: Date;
     updatedAt?: Date;

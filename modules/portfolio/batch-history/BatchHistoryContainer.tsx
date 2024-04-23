@@ -13,7 +13,7 @@ const BatchHistoryContainer = () => {
 
     const fetchTransactions = async () => {
         try {
-            const response = await axiosInstance.get(`transactions/${smartAccountAddress}`, {
+            const response = await axiosInstance.get(`/transactions/batch/${smartAccountAddress}`, {
                 params: { network: chainName },
             });
             setTransactions(response.data as iBatchHistory[]);
