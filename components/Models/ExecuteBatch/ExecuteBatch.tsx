@@ -12,6 +12,7 @@ import { error, loading, success } from "../../../assets/gifs";
 import { iIndividualBatch, iTrading, useTradingStore } from "../../../store/TradingStore";
 import { iBatchHistory, iSingleTransaction } from "../../../modules/portfolio/types";
 import { iGlobal, useGlobalStore } from "../../../store/GlobalStore";
+import { useAddress } from "@thirdweb-dev/react";
 
 const ExecuteBatch = ({}: tExecuteBatch) => {
     const {
@@ -24,6 +25,7 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
         txhash,
         setTxHash,
     }: iTrading = useTradingStore((state) => state);
+    const address = useAddress();
     const { smartAccountAddress }: iGlobal = useGlobalStore((state) => state);
 
     const closeExecuteBatchModel = () => {
@@ -50,7 +52,7 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
 
     const handleTxnHistory = async (txHistory: iBatchHistory) => {
         try {
-            await axiosInstance.post("transactions", txHistory)
+            await axiosInstance.post("/transactions/batch", txHistory)
                 .then(async (res) => {
                     console.log("Thanks for Working with us");
                 })
@@ -63,9 +65,8 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
     };
 
     useEffect(() => {
-        console.log("individualBatch", individualBatch)
         if (individualBatch.length > 0 && txhash) {
-            const txHistory: iSingleTransaction[] = individualBatch.slice(0, -1).map((item) => ({
+            const txHistory: iSingleTransaction[] = individualBatch.map((item) => ({
                 amountIn: item.data.amountIn,
                 fromNetwork: item.data.fromNetwork,
                 toNetwork: item.data.toNetwork,
@@ -78,7 +79,8 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
 
             const dataToSend: iBatchHistory= {
                 transactions: txHistory,
-                smartAccount: smartAccountAddress
+                smartAccount: smartAccountAddress,
+                eoaAccount: address
             };
 
             handleTxnHistory(dataToSend);

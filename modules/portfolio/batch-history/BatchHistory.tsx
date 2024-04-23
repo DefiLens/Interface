@@ -92,7 +92,7 @@ const BatchHistory: React.FC<BatchHistoryProps> = ({ transactions, smartAccountA
 
                 <div className="flex flex-col gap-10">
                     {transactions &&
-                        transactions.length > 0 &&
+                        transactions.length > 0 ?
                         transactions.map((parentTransaction: iBatchHistory, index: number) => (
                             <div key={index}>
                                 <h2 className="text-xl font-semibold">#{index + 1} Batch</h2>
@@ -192,7 +192,10 @@ const BatchHistory: React.FC<BatchHistoryProps> = ({ transactions, smartAccountA
                                     </table>
                                 </div>
                             </div>
-                        ))}
+                        ))
+                        :
+                        <>{transactions.message}</>
+                        }
                 </div>
             </div>
         </div>
