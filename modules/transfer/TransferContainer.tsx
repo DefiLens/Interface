@@ -208,6 +208,7 @@ const TransferContainer: React.FC = () => {
             console.log("getContract-error", error);
         }
     };
+
     const send = async () => {
         if (amountIn == "") {
             toast.error("Please Enter Amount");
@@ -291,11 +292,6 @@ const TransferContainer: React.FC = () => {
             setSendtxLoading(false);
             return;
         }
-    };
-    const copyToClipboard = (id: any) => {
-        navigator.clipboard.writeText(id);
-        // Alert the copied text
-        toast.success("Transaction Hash Copied");
     };
 
     return (

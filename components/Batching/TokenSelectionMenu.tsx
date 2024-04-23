@@ -62,10 +62,10 @@ const TokenSelectionMenu: React.FC<TokenSelectionMenuProps> = ({
                     )}
                 >
                     <button
-                        className="absolute top-5 right-5 group rounded-full p-2 bg-N40 hover:bg-N60 transition-colors duration-200"
+                        className="absolute top-4 right-4 text-B200 group opacity-70 hover:opacity-100 rounded-full p-1.5 bg-N40 transition-opacity duration-200"
                         onClick={() => closeMenu()}
                     >
-                        <HiOutlineXMark className="h-5 w-5 group-hover:scale-110 transition-all duration-300 text-B200" />
+                        <HiOutlineXMark className="h-5 w-5" />
                     </button>
                     {/* Modal Cotent -- Networks Row, Search input, List of Protocols  */}
                     <div className="flex flex-col justify-center items-start gap-5">
