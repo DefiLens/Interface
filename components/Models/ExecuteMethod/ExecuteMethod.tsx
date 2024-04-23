@@ -9,13 +9,8 @@ import { ExecutionMethodsList } from "../../../utils/data/constants";
 import { closeNarrow } from "../../../assets/images";
 import { iTrading, useTradingStore } from "../../../store/TradingStore";
 
-const ExecuteMethod = ({
-    ExecuteAllBatches
-}: tExecuteMethod) => {
-    const {
-        sendTxLoading,
-        setShowExecuteMethodModel,
-    }: iTrading = useTradingStore((state) => state);
+const ExecuteMethod = ({ ExecuteAllBatches }: tExecuteMethod) => {
+    const { sendTxLoading, setShowExecuteMethodModel }: iTrading = useTradingStore((state) => state);
 
     const closeExecuteMethodModel = () => {
         setShowExecuteMethodModel(false);
@@ -29,15 +24,12 @@ const ExecuteMethod = ({
                     onClick={() => closeExecuteMethodModel()}
                     className="w-8 h-8 place-self-end p-2 bg-slate-50 hover:bg-slate-200 active:bg-slate-100 rounded-xl cursor-pointer outline-none"
                 >
-                    <Image
-                        src={closeNarrow}
-                        alt="close"
-                    />
+                    <Image src={closeNarrow} alt="close" />
                 </button>
                 <div className="h-full w-full flex flex-col justify-center items-center gap-2 p-5">
                     <Image
                         src={sendTxLoading ? loading01 : payClick}
-                        alt={sendTxLoading ? 'loading' : 'click'}
+                        alt={sendTxLoading ? "loading" : "click"}
                         className="w-14 h-14"
                     />
                     <div className="w-full text-center text-xl md:text-2xl text-black font-extrabold">
