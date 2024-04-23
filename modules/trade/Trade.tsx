@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { BigNumber as bg } from "bignumber.js";
 import { tTrade } from "./types";
 import { protocolNames } from "../../utils/data/protocols";
@@ -8,6 +9,9 @@ import TokenSelectionMenu from "../../components/Batching/TokenSelectionMenu";
 import BatchSelectionSection from "../../components/Batching/BatchSelectionSection";
 import BatchingListSection from "../../components/Batching/BatchingListSection";
 import clsx from "clsx";
+import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
+import { useAddress } from "@thirdweb-dev/react";
+import ModalWrapper from "../../components/Models/ModalWrapper";
 
 bg.config({ DECIMAL_PLACES: 10 });
 
@@ -48,8 +52,18 @@ const Trade: React.FC<tTrade> = ({
         setFilterToAddress,
         showBatchList,
         showExecuteBatchModel,
-        showExecuteMethodModel
+        showExecuteMethodModel,
     }: iTrading = useTradingStore((state) => state);
+
+    const { scwBalance }: iGlobal = useGlobalStore((state) => state);
+    const [noScwBalance, setNoScwBalance] = useState<boolean>(false);
+
+    const address = useAddress();
+
+    useEffect(() => {
+        const balance = address ? (!isNaN(parseFloat(scwBalance)) ? parseFloat(scwBalance) ?? 0 : 0) : 1;
+        setNoScwBalance(balance <= 0);
+    }, [scwBalance, useAddress]);
 
     return (
         <div className="w-full h-full flex flex-col justify-center items-center py-5">
@@ -110,6 +124,30 @@ const Trade: React.FC<tTrade> = ({
 
                 {/* Modal - While Executing Batches */}
                 {showExecuteBatchModel && <ExecuteBatch />}
+                {/* {address ? <p>Has SCW balance: {noScwBalance ? "false" : "true"}</p> : <p>Connect Wallet</p>} */}
+
+                <ModalWrapper
+                    open={noScwBalance}
+                    onOpenChange={setNoScwBalance}
+                    title="Welcome to DefiLens!"
+                    description="and to the world of Account Abstraction"
+                    footer={
+                        <p className="text-slate-400 text-sm font-medium w-full">
+                            Note: Please contact us on our{" "}
+                            <a className="underline underline-offset-2" href="https://google.com" target="_blank">
+                                telegram community
+                            </a>{" "}
+                            if you need help.
+                        </p>
+                    }
+                >
+                    <div className="flex flex-col gap-4">
+                        <p>You need balance on smart-account to be able to Batch tokens.</p>
+                        <button className="rounded-md bg-black/80 hover:bg-black/100 text-white max-w-fit px-4 py-2 hover:shadow-md transition-all">
+                            Migrate Tokens
+                        </button>
+                    </div>
+                </ModalWrapper>
 
                 {/* Batching List */}
                 {selectedFromNetwork.chainId && showBatchList && (
