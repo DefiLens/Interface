@@ -49,7 +49,7 @@ const SelectInput = ({
                                 >
                                     <Image
                                         src={option.logoURI}
-                                        alt=""
+                                        alt="logo"
                                         width={10}
                                         height={10}
                                         className="h-8 w-8 bg-font-200 rounded-full cursor-pointer"
