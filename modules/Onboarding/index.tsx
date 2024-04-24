@@ -1,25 +1,29 @@
+// Library Imports
+import { useEffect } from "react";
+import { BigNumber } from "ethers";
+import { useAddress, useChain, useSigner } from "@thirdweb-dev/react";
+import { BigNumber as bg } from "bignumber.js";
+import { MdLocalGasStation, MdKeyboardArrowUp } from "react-icons/md";
+import { FiCopy } from "react-icons/fi";
+import { HiOutlineInformationCircle } from "react-icons/hi2";
 import { LiaWalletSolid } from "react-icons/lia";
+// Type, Helper, Component Imports
 import { Button, ConnectWalletWrapper } from "../../components/Button";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import { iTransfer, useTransferStore } from "../../store/TransferStore";
-import { useAddress, useChain, useSigner } from "@thirdweb-dev/react";
-import { gas } from "../../assets/images";
-import { HiOutlineArrowsRightLeft, HiOutlineInformationCircle } from "react-icons/hi2";
 import CopyButton from "../../components/common/CopyButton";
 import SelectInput from "../../components/SelectInput/SelectInput";
-import { copyToClipboard, decreasePowerByDecimals, shorten } from "../../utils/helper";
-import { BigNumber } from "ethers";
-import Image from "next/image";
-import { MdKeyboardArrowUp } from "react-icons/md";
+import { copyToClipboard, decreasePowerByDecimals, getTokenListByChainId, shorten } from "../../utils/helper";
 import { ChainIdDetails } from "../../utils/data/network";
-import { FiCopy } from "react-icons/fi";
 import { handleAmountIn, send, setBalance } from "./utils";
-import { BigNumber as bg } from "bignumber.js";
+import UNISWAP_TOKENS from "../../abis/tokens/Uniswap.json";
+import { ethereum, polygon } from "../../assets/images";
+import { iTokenInfo } from "../trade/types";
 
 bg.config({ DECIMAL_PLACES: 5 });
 
 const OnboardingPage = () => {
-    const { smartAccount, smartAccountAddress }: iGlobal = useGlobalStore((state) => state);
+    const { smartAccount, smartAccountAddress, selectedNetwork }: iGlobal = useGlobalStore((state) => state);
     const signer = useSigner(); // Detect the connected address
 
     const {
@@ -36,6 +40,7 @@ const OnboardingPage = () => {
         tokenInDecimals,
         gasCost,
         isGasCostExpanded,
+        setTokenAddress,
         setGasCost,
         setAmountIn,
         setAmountInDecimals,
@@ -43,6 +48,7 @@ const OnboardingPage = () => {
         searchToken,
         setSearchToken,
         showTokenList,
+        setTokensData,
         setShowTokenList,
         selectedToken,
         setSelectedToken,
@@ -50,8 +56,54 @@ const OnboardingPage = () => {
         setTxHash,
     }: iTransfer = useTransferStore((state) => state);
 
-    const address = useAddress(); // Detect the connected address
-    const chain = useChain();
+    const usdcOnNetwork = (filteredTokens: iTokenInfo[]) => {
+        const chainId = selectedNetwork.chainId;
+        const usdcSymbol = {
+            "137": "USDC",
+            "42161": "USDC",
+            "8453": "USDbC",
+            "10": "USDC",
+        };
+        const filtered = filteredTokens.filter((token) => {
+            if (token.symbol === usdcSymbol[chainId]) {
+                return token;
+            }
+        });
+        console.log("filtered", filtered);
+        return filtered;
+    };
+
+    useEffect(() => {
+        async function onChangeFromProtocol() {
+            // if (true) {
+            const filteredTokens = getTokenListByChainId(selectedNetwork.chainId, UNISWAP_TOKENS);
+            if (selectedNetwork.chainId === "137") {
+                filteredTokens.unshift({
+                    chainId: 137,
+                    address: "0x0000000000000000000000000000000000001010",
+                    name: "Matic",
+                    symbol: "MATIC",
+                    decimals: 18,
+                    logoURI: polygon,
+                });
+            } else {
+                filteredTokens.unshift({
+                    chainId: 1,
+                    address: "",
+                    name: "ethereum",
+                    symbol: "Ethereum",
+                    decimals: 18,
+                    logoURI: ethereum,
+                });
+            }
+            setTokensData(usdcOnNetwork(filteredTokens));
+        }
+        setTokenAddress("");
+        onChangeFromProtocol();
+    }, [selectedNetwork.chainId]);
+
+    const address = useAddress(); // connected address
+    const chain = useChain(); // connected chain
     return (
         <div className="w-full h-full overflow-scroll flex flex-col justify-start items-center gap-5">
             {!smartAccount && (
@@ -137,7 +189,7 @@ const OnboardingPage = () => {
                         <div className="w-full lg:max-w-xl flex flex-col justify-center items-center gap-3 my-1">
                             <div className="w-full">
                                 <div className="flex justify-end items-center gap-2 text-B100 font-semibold text-xs md:text-sm p-1">
-                                    <div className="text-B200 text-sm">
+                                    {/* <div className="text-B200 text-sm">
                                         SmartAccount Balance :
                                         <span className="font-bold text-B100 text-base px-1">
                                             {!scwBalance.isZero()
@@ -147,10 +199,10 @@ const OnboardingPage = () => {
                                                   )
                                                 : "0"}
                                         </span>
-                                    </div>
+                                    </div> */}
                                     <div className="text-B200 text-sm">
-                                        EOA Balance :
-                                        <span className="font-bold text-B100 text-base px-1">
+                                        EOA Balance:
+                                        <span className="font-bold text-B100 text-sm px-1">
                                             {!eoaBalance.isZero()
                                                 ? decreasePowerByDecimals(
                                                       BigNumber.from(eoaBalance).toString(),
@@ -215,10 +267,10 @@ const OnboardingPage = () => {
                                     onClick={() => setIsGasCostExpanded(!isGasCostExpanded)}
                                     className="flex justify-between items-center gap-1"
                                 >
-                                    <h3 className="flex justify-center items-center gap-1 text-B100 font-bold text-sm md:text-base">
-                                        <Image src={gas} alt="gas icon" className="h-7 w-7 mr-2" />
+                                    <h3 className="flex justify-center items-center gap-1 text-B100 font-semibold text-sm md:text-base">
+                                        <MdLocalGasStation aria-label="gas-icon" className="h-5 w-5" />
                                         <span>Gas</span>
-                                        <span className="text-B200 font-medium text-xs">(estimated)</span>
+                                        <span className="text-B200 font-medium text-sm">(estimated)</span>
                                     </h3>
                                     <div className="flex justify-center items-center gap-3">
                                         <h6 className="text-B100 font-bold text-base md:text-lg">
