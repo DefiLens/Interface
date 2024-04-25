@@ -27,7 +27,7 @@ export const STACKUP_POLYGON_MAINNET_RPC_NODE_URL: any = process.env.NEXT_PUBLIC
 export const BICONOMY_GAS_PRICE_URL = "https://sdk-relayer.prod.biconomy.io/api/v1/relay/feeOptions?chainId=";
 export const IPFS_FIX_URL = "https://cloudflare-ipfs.com/ipfs/";
 export const NODE_JWT_TOKEN = process.env.NEXT_PUBLIC_NODE_JWT_TOKEN
-export const NODE_ONEINCH_URL = "http://localhost:8080/api/v1/general/1Inch"
+export const NODE_ONEINCH_URL = "https://server.defilens.tech/api/v1/general/1Inch"
 
 
 const getBaseURL = (NODE_ENV: string | undefined) => {
