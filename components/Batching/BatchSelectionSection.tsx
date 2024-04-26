@@ -53,6 +53,7 @@ const BatchSelectionSection: React.FC<tBatchSelectionSection> = ({
         setSelectedToProtocol("erc20");
     };
 
+    // Tip: This can be implemented using useMemo, instead of useEffect hook.
     const [isRebalanceBtnClickable, setIsRebalanceBtnClickable] = useState(false);
     const [isOneBatchBtnClickable, setIsOneBatchBtnClickable] = useState(false);
     const [isExecuteBtnClickable, setIsExecuteBtnClickable] = useState(false);
@@ -100,7 +101,7 @@ const BatchSelectionSection: React.FC<tBatchSelectionSection> = ({
     };
 
     return (
-        <div className="w-full bg-gradient-to-br from-[#7339FD] via-[#56B0F6] to-[#4DD4F4] flex flex-col gap-1 rounded-2xl shadow-2xl">
+        <div className="w-full bg-gradient-to-br from-[#7339FD] via-[#56B0F6] to-[#4DD4F4] flex flex-col gap-1 rounded-2xl shadow-2xl overflow-hidden">
             <div className="w-full flex flex-col gap-5">
                 <div className="px-5 pt-7">
                     <div className="flex flex-col gap-3 bg-[rgba(225,225,225,.4)] border rounded-xl px-5 py-3 ">

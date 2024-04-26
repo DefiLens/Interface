@@ -119,7 +119,7 @@ export const RebalanceTokenSelection: FC<iRebalanceTokenSelection> = memo(({
         }
 
         setShowSelectionMenu((prevIndex) => {
-            console.log("prevIndex selection menu", prevIndex);
+            // console.log("prevIndex selection menu", prevIndex);
             return prevIndex === index ? null : index;
         });
     };
