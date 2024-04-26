@@ -1,20 +1,21 @@
+// Library Imports
 import { useEffect, useState } from "react";
+import Link from "next/link";
+import { useAddress } from "@thirdweb-dev/react";
 import { BigNumber as bg } from "bignumber.js";
+import { HiMiniExclamationCircle } from "react-icons/hi2";
+// Type, Component, Store, Util Imports 
 import { tTrade } from "./types";
-import { protocolNames } from "../../utils/data/protocols";
 import ExecuteBatch from "../../components/Models/ExecuteBatch/ExecuteBatch";
 import ExecuteMethod from "../../components/Models/ExecuteMethod/ExecuteMethod";
-import { iTrading, useTradingStore } from "../../store/TradingStore";
+import ModalWrapper from "../../components/Models/ModalWrapper";
 import TokenSelectionMenu from "../../components/Batching/TokenSelectionMenu";
 import BatchSelectionSection from "../../components/Batching/BatchSelectionSection";
 import BatchingListSection from "../../components/Batching/BatchingListSection";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
+import { iTrading, useTradingStore } from "../../store/TradingStore";
+import { protocolNames } from "../../utils/data/protocols";
 import { cn } from "../../lib/utils";
-import { useAddress } from "@thirdweb-dev/react";
-import ModalWrapper from "../../components/Models/ModalWrapper";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../../components/Card";
-import Link from "next/link";
-import { HiExclamationCircle, HiMiniExclamationCircle } from "react-icons/hi2";
 
 bg.config({ DECIMAL_PLACES: 10 });
 
@@ -79,7 +80,7 @@ const Trade: React.FC<tTrade> = ({
                 )}
             >
                 <div className="w-full md:max-w-xl h-full flex flex-col justify-center items-center">
-                    {/* FROM_TOKEN SELECTION MENU */}
+                    {/* FROM_TOKEN SELECTION MODAL */}
                     <TokenSelectionMenu
                         showMenu={showFromSelectionMenu}
                         closeMenu={closeFromSelectionMenu}
@@ -96,7 +97,7 @@ const Trade: React.FC<tTrade> = ({
                         protocolNames={protocolNames}
                         title="Select source token"
                     />
-                    {/* TO_TOKEN SELECTION MENU */}
+                    {/* TO_TOKEN SELECTION MODAL */}
                     <TokenSelectionMenu
                         showMenu={showToSelectionMenu}
                         closeMenu={closeToSelectionMenu}
@@ -114,7 +115,7 @@ const Trade: React.FC<tTrade> = ({
                         title="Select destination token"
                     />
 
-                    {/* Batching Component */}
+                    {/* BATCHING TOKEN SELECTION --> TO AND FROM */}
                     <div className="relative w-full">
                         <BatchSelectionSection
                             handleSwap={handleSwap}
@@ -138,43 +139,7 @@ const Trade: React.FC<tTrade> = ({
                 {/* Modal - While Executing Batches */}
                 {showExecuteBatchModel && <ExecuteBatch />}
 
-                {/* No SCW Balance Card */}
-                {/* <Card className="absolute right-10 top-20 max-w-md bg-white text-black-600 shadow-lg">
-                    <CardHeader>
-                        <CardTitle>Welcome to DefiLens!</CardTitle>
-                        <CardDescription>
-                            and to the world of Account Abstraction
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="flex flex-col gap-4">
-                            <p>
-                                🚨 You need balance on smart-account to be able
-                                to Batch tokens.
-                            </p>
-                            <Link
-                                href="/onboarding"
-                                className="rounded-md bg-black/80 hover:bg-black/100 text-white max-w-fit px-4 py-2 hover:shadow-md transition-all"
-                            >
-                                Migrate Tokens
-                            </Link>
-                        </div>
-                    </CardContent>
-                    <CardFooter>
-                        <p className="text-slate-400 text-sm font-medium w-full">
-                            Note: Please contact us on our{" "}
-                            <a
-                                className="underline underline-offset-2"
-                                href="https://google.com"
-                                target="_blank"
-                            >
-                                telegram community
-                            </a>{" "}
-                            if you need help.
-                        </p>
-                    </CardFooter>
-                </Card> */}
-
+                {/* Modal that appears if user have no balance in smart-account */}
                 <ModalWrapper
                     open={isOnboardOpen}
                     onOpenChange={setIsOnboardOpen}

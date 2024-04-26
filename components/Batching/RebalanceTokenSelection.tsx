@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { FC, useEffect, memo, useState } from "react";
 import SelectionBar from "../SelectionBar/SelectionBar";
 import { iRebalance, iSelectedNetwork, iTrading, useRebalanceStore, useTradingStore } from "../../store/TradingStore";
 import { protocolNames } from "../../utils/data/protocols";
@@ -7,6 +7,7 @@ import TokenSelectionMenu from "./TokenSelectionMenu";
 import UNISWAP_TOKENS from "../../abis/tokens/Uniswap.json";
 import { getTokenListByChainId } from "../../utils/helper";
 import toast from "react-hot-toast";
+import { cn } from "../../lib/utils";
 
 export interface iRebalanceTokenSelection {
     onTokenSelect: (
@@ -26,7 +27,7 @@ export interface iRebalanceTokenSelection {
     handlePercentageChange: (index: number, event: any) => void;
 }
 
-export const RebalanceTokenSelection: React.FC<iRebalanceTokenSelection> = ({
+export const RebalanceTokenSelection: FC<iRebalanceTokenSelection> = memo(({
     percentages,
     handlePercentageChange,
     index,
@@ -88,7 +89,7 @@ export const RebalanceTokenSelection: React.FC<iRebalanceTokenSelection> = ({
     };
 
     const calculateAmount = (percentage: number): number => {
-        const rawAmount: number = (percentage / 100) * amountIn;
+        const rawAmount: number = isNaN(percentage) ? 0 : (percentage / 100) * amountIn;
         const roundedAmount: number = Math.floor(rawAmount * 100) / 100; // Round down to two decimal places
         return roundedAmount;
     };
@@ -137,7 +138,7 @@ export const RebalanceTokenSelection: React.FC<iRebalanceTokenSelection> = ({
     }, [percentages[index], amountIn, selectedToken, rebalanceData.length]);
 
     return (
-        <div>
+        <>
             <SelectionBar
                 handleSelectionMenu={() => handleShowSelectionMenu(index)}
                 titlePlaceholder={`To Batch - ${index + 1}`}
@@ -156,15 +157,16 @@ export const RebalanceTokenSelection: React.FC<iRebalanceTokenSelection> = ({
             />
             <div className="flex justify-between items-center mt-2  px-5 pt-1 pb-3">
                 <div
-                    className={`flex items-center gap-1 relative text-N0 ${
-                        !splitEqually && "bg-[rgba(225,225,225,.3)]"
-                    } border-b border-gray-300 py-1 px-1 w-30`}
+                    className={cn(
+                        "flex items-center gap-1 relative text-N0 border-b border-gray-300 rounded-md py-1 px-2 max-w-30",
+                        !splitEqually && "bg-[rgba(225,225,225,.3)]",
+                    )}
                 >
                     <input
                         type="number"
-                        className={`flex-1 w-32 bg-transparent outline-none placeholder-N80`}
+                        className="flex-1 w-32 bg-transparent rounded-lg outline-none placeholder-N80"
                         placeholder="Percentage"
-                        value={parseFloat(percentages[index]?.toFixed(2))}
+                        value={isNaN(percentages[index]) ? "" : percentages[index]}
                         onChange={(event) => handlePercentageChange(index, event)}
                         disabled={splitEqually}
                     />
@@ -188,6 +190,6 @@ export const RebalanceTokenSelection: React.FC<iRebalanceTokenSelection> = ({
                 protocolNames={protocolNames}
                 title={`Select token for Rebalancing`}
             />
-        </div>
+        </>
     );
-};
+});
