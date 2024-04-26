@@ -2,8 +2,9 @@ import React from "react";
 import { iSelectedNetwork, iTokenData } from "../../store/TradingStore";
 import { tokenList } from "../../utils/data/protocols";
 import Token from "./Token";
+
 interface TokenListProps {
-    erc20: boolean;
+    isErc20: boolean;
     filterValue: string;
     tokens: iTokenData[] | tokenList[];
     onItemClick: (tokenName: string) => void;
@@ -12,7 +13,7 @@ interface TokenListProps {
 }
 
 const TokenList: React.FC<TokenListProps> = ({
-    erc20,
+    isErc20,
     filterValue,
     tokens,
     onItemClick,
@@ -25,15 +26,15 @@ const TokenList: React.FC<TokenListProps> = ({
                 <ul className="flex flex-col divide-y divide-gray-200">
                     {tokens.map((token) => {
                         // Check if the token matches the filter value
-                        const filteredTokens = erc20
+                        const filteredTokens = isErc20
                             ? token.symbol.toLowerCase().includes(filterValue.toLowerCase())
                             : token.name.toLowerCase().includes(filterValue.toLowerCase());
                         return (
                             filteredTokens && (
                                 <Token
-                                    key={erc20 ? token.symbol : token.name}
+                                    key={isErc20 ? token.symbol : token.name}
                                     network={selectedNetwork}
-                                    isErc20={erc20}
+                                    isErc20={isErc20}
                                     tokenAddresses={tokenAddresses}
                                     token={token}
                                     onItemClick={onItemClick}

@@ -12,7 +12,7 @@ import { BiLoaderAlt } from "react-icons/bi";
 import { tBatchSelectionSection } from "../../modules/trade/types";
 import CustomCheckbox from "../common/CustomCheckbox";
 import { Rebalance } from "./Rebalance";
-import clsx from "clsx";
+import { cn } from "../../lib/utils";
 
 bg.config({ DECIMAL_PLACES: 10 });
 
@@ -38,7 +38,7 @@ const BatchSelectionSection: React.FC<tBatchSelectionSection> = ({
         fromTokenDecimal,
         addToBatchLoading,
         sendTxLoading,
-        setSelectedToProtocol,
+        setSelectedFromProtocol,
         individualBatch,
     }: iTrading = useTradingStore((state) => state);
 
@@ -49,8 +49,12 @@ const BatchSelectionSection: React.FC<tBatchSelectionSection> = ({
             toast.error("wait, tx loading");
             return;
         }
-        setIsRebalance(event.target.checked);
-        setSelectedToProtocol("erc20");
+        setIsRebalance(event.target.checked); // isRebalance is a function of checkbox
+        if (event.target.checked) {
+            setSelectedFromProtocol("erc20");
+        } else {
+            setSelectedFromProtocol("");
+        }
     };
 
     // Tip: This can be implemented using useMemo, instead of useEffect hook.
@@ -107,7 +111,7 @@ const BatchSelectionSection: React.FC<tBatchSelectionSection> = ({
                     <div className="flex flex-col gap-3 bg-[rgba(225,225,225,.4)] border rounded-xl px-5 py-3 ">
                         {/* Token Selection */}
                         <div
-                            className={clsx(
+                            className={cn(
                                 "w-full relative flex justify-center items-center gap-5",
                                 !isRebalance &&
                                     selectedToNetwork.chainName &&
