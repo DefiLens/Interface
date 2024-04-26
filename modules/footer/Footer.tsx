@@ -3,11 +3,12 @@ import { tFooter } from "./types";
 
 const Footer: React.FC<tFooter> = ({ SocialHandles }) => {
     return (
-        <div className="w-full flex justify-center">
-            <div className="inline-flex justify-center gap-5 h-full items-center">
+        <div className="w-full flex justify-center items-center min-h-10">
+            <div className="inline-flex items-center gap-5 h-full">
                 {SocialHandles.length > 0 &&
                     SocialHandles.map((item) => (
                         <a
+                            key={item.key}
                             href={item.href}
                             target="_blank"
                             rel="noreferrer"
