@@ -3,9 +3,11 @@ import { useMutation } from "@tanstack/react-query";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import { iTrading, useTradingStore } from "../../store/TradingStore";
 import { IHybridPaymaster, SponsorUserOperationDto, PaymasterMode, PaymasterFeeQuote } from "@biconomy/paymaster";
+import { ChainIdDetails } from "../../utils/data/network";
+import { tokensByNetworkForCC } from "../../utils/data/protocols";
 
 export function useBiconomyERC20Provider() {
-    const { smartAccount }: iGlobal = useGlobalStore((state) => state);
+    const { smartAccount, selectedNetwork }: iGlobal = useGlobalStore((state) => state);
     const { setHasExecutionError }: iTrading = useTradingStore((state) => state);
     async function sendToERC20Biconomy(txs) {
         try {
@@ -20,12 +22,13 @@ export function useBiconomyERC20Provider() {
                 // here we are explicitly telling by mode ERC20 that we want to pay in ERC20 tokens and expect fee quotes
                 mode: PaymasterMode.ERC20,
                 // one can pass tokenList empty array. and it would return fee quotes for all tokens supported by the Biconomy paymaster
-                tokenList: ["0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174"],
+                tokenList: [tokensByNetworkForCC[selectedNetwork.chainId].usdc],
                 // preferredToken is optional. If you want to pay in a specific token, you can pass its address here and get fee quotes for that token only
                 // preferredToken: config.preferredToken,
             });
             const feeQuotes = feeQuotesResponse.feeQuotes as PaymasterFeeQuote[];
             const usdcFeeQuotes = feeQuotes[0];
+            console.log('usdcFeeQuotes', usdcFeeQuotes)
 
             const finalUserOp = await smartAccount.buildTokenPaymasterUserOp(partialUserOp, {
                 feeQuote: usdcFeeQuotes,

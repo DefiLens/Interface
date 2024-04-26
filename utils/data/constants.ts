@@ -12,6 +12,7 @@ export const ETH_ADDRESS = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
 
 export const ExecutionMethodsList = [
     {
+        isEnable: true,
         title: 'Pay via Native Tokens',
         providerName: 'isAA',
         icons: [
@@ -28,6 +29,7 @@ export const ExecutionMethodsList = [
         ],
     },
     {
+        isEnable: false,
         title: 'Pay via ERC20',
         providerName: 'isERC20',
         icons: [
