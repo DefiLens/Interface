@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useAddress } from "@thirdweb-dev/react";
 import { BigNumber as bg } from "bignumber.js";
 import { HiMiniExclamationCircle } from "react-icons/hi2";
-// Type, Component, Store, Util Imports 
+// Type, Component, Store, Util Imports
 import { tTrade } from "./types";
 import ExecuteBatch from "../../components/Models/ExecuteBatch/ExecuteBatch";
 import ExecuteMethod from "../../components/Models/ExecuteMethod/ExecuteMethod";
@@ -76,61 +76,61 @@ const Trade: React.FC<tTrade> = ({
             <div
                 className={cn(
                     showBatchList ? "!w-full" : "!w-[50%]",
-                    "h-full flex flex-col lg:flex-row justify-start lg:justify-center items-center lg:items-start gap-4"
+                    "h-full md:max-w-xl flex flex-col lg:flex-row justify-start lg:justify-center items-center lg:items-start gap-4"
                 )}
             >
-                <div className="w-full md:max-w-xl h-full flex flex-col justify-center items-center">
-                    {/* FROM_TOKEN SELECTION MODAL */}
-                    <TokenSelectionMenu
-                        showMenu={showFromSelectionMenu}
-                        closeMenu={closeFromSelectionMenu}
-                        handleSelectNetwork={handleSelectFromNetwork}
-                        selectedNetwork={selectedFromNetwork}
-                        filterToken={filterFromToken}
-                        setFilterToken={setFilterFromToken}
-                        filterAddress={filterFromAddress}
-                        setFilterAddress={setFilterFromAddress}
-                        tokensData={fromTokensData}
-                        selectedProtocol={selectedFromProtocol}
-                        onChangeToken={onChangeFromToken}
-                        onChangeProtocol={onChangeFromProtocol}
-                        protocolNames={protocolNames}
-                        title="Select source token"
-                    />
-                    {/* TO_TOKEN SELECTION MODAL */}
-                    <TokenSelectionMenu
-                        showMenu={showToSelectionMenu}
-                        closeMenu={closeToSelectionMenu}
-                        handleSelectNetwork={handleSelectToNetwork}
-                        selectedNetwork={selectedToNetwork}
-                        filterToken={filterToToken}
-                        setFilterToken={setFilterToToken}
-                        filterAddress={filterToAddress}
-                        setFilterAddress={setFilterToAddress}
-                        tokensData={toTokensData}
-                        selectedProtocol={selectedToProtocol}
-                        onChangeToken={onChangeToToken}
-                        onChangeProtocol={onChangeToProtocol}
-                        protocolNames={protocolNames}
-                        title="Select destination token"
-                    />
+                {/* FROM_TOKEN SELECTION MODAL */}
+                <TokenSelectionMenu
+                    showMenu={showFromSelectionMenu}
+                    closeMenu={closeFromSelectionMenu}
+                    handleSelectNetwork={handleSelectFromNetwork}
+                    selectedNetwork={selectedFromNetwork}
+                    filterToken={filterFromToken}
+                    setFilterToken={setFilterFromToken}
+                    filterAddress={filterFromAddress}
+                    setFilterAddress={setFilterFromAddress}
+                    tokensData={fromTokensData}
+                    selectedProtocol={selectedFromProtocol}
+                    onChangeToken={onChangeFromToken}
+                    onChangeProtocol={onChangeFromProtocol}
+                    protocolNames={protocolNames}
+                    title="Select source token"
+                />
+                {/* TO_TOKEN SELECTION MODAL */}
+                <TokenSelectionMenu
+                    showMenu={showToSelectionMenu}
+                    closeMenu={closeToSelectionMenu}
+                    handleSelectNetwork={handleSelectToNetwork}
+                    selectedNetwork={selectedToNetwork}
+                    filterToken={filterToToken}
+                    setFilterToken={setFilterToToken}
+                    filterAddress={filterToAddress}
+                    setFilterAddress={setFilterToAddress}
+                    tokensData={toTokensData}
+                    selectedProtocol={selectedToProtocol}
+                    onChangeToken={onChangeToToken}
+                    onChangeProtocol={onChangeToProtocol}
+                    protocolNames={protocolNames}
+                    title="Select destination token"
+                />
 
-                    {/* BATCHING TOKEN SELECTION --> TO AND FROM */}
-                    <div className="relative w-full">
-                        <BatchSelectionSection
-                            handleSwap={handleSwap}
-                            onChangeAmountIn={onChangeAmountIn}
-                            sendSingleBatchToList={sendSingleBatchToList}
-                            handleExecuteMethod={handleExecuteMethod}
-                            processRebalancing={processRebalancing}
-                        />
-                        {noScwBalance && <button
+                {/* BATCHING TOKEN SELECTION --> TO AND FROM */}
+                <div className="relative w-full">
+                    <BatchSelectionSection
+                        handleSwap={handleSwap}
+                        onChangeAmountIn={onChangeAmountIn}
+                        sendSingleBatchToList={sendSingleBatchToList}
+                        handleExecuteMethod={handleExecuteMethod}
+                        processRebalancing={processRebalancing}
+                    />
+                    {noScwBalance && (
+                        <button
                             className="absolute -top-4 -right-4 z-20 rounded-full border bg-white hover:scale-105 transition-transform"
                             onClick={() => setIsOnboardOpen(true)}
                         >
                             <HiMiniExclamationCircle className="text-red-500 text-3xl" />
-                        </button>}
-                    </div>
+                        </button>
+                    )}
                 </div>
 
                 {/* Modal - Select Execution Method */}
