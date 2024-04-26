@@ -61,6 +61,7 @@ const ExecuteMethod = ({
                                     ))}
                                 </div>
                                 <Button
+                                    disabled={!item.isEnable}
                                     handleClick={() => ExecuteAllBatches(true, item.providerName)}
                                     customStyle="!w-auto"
                                     innerText={item.title}
