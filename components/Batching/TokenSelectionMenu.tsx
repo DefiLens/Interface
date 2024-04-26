@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import clsx from "clsx";
+import { cn } from "../../lib/utils";
 import { HiOutlineXMark } from "react-icons/hi2";
 import { NETWORK_LIST } from "../../utils/data/network";
 import SearchInput from "../common/SearchInput";
@@ -49,14 +49,14 @@ const TokenSelectionMenu: React.FC<TokenSelectionMenuProps> = ({
 
     return (
         <div
-            className={clsx(
+            className={cn(
                 "fixed inset-0 z-50 overflow-auto bg-gray-500 bg-opacity-75 flex justify-center items-center",
-                showMenu ? "" : "hidden"
+                !showMenu && "hidden"
             )}
         >
             <div className="relative w-full max-h-[80%] max-w-md mx-auto rounded-lg shadow-lg z-50 overflow-auto">
                 <div
-                    className={clsx(
+                    className={cn(
                         "w-full max-h-full bg-W100 flex flex-col gap-2 rounded-lg p-5 shadow-2xl",
                         showMenu ? "block" : "hidden"
                     )}
@@ -81,11 +81,11 @@ const TokenSelectionMenu: React.FC<TokenSelectionMenuProps> = ({
                                     <div
                                         key={item.chainName}
                                         onClick={() => handleSelectNetwork(item)}
-                                        className={`h-14 w-14 flex justify-center items-center gap-3 bg-font-100 hover:bg-font-200 active:bg-font-400 border-2 border-font-200 hover:border-font-300 shadow-sm rounded-md cursor-pointer  ${
-                                            selectedNetwork?.chainName === item.chainName
-                                                ? "bg-gradient-to-br from-[#7339FD] to-[#4DD4F4]"
-                                                : ""
-                                        }`}
+                                        className={cn(
+                                            "h-14 w-14 flex justify-center items-center gap-3 bg-font-100 hover:bg-font-200 active:bg-font-400 border-2 border-font-200 hover:border-font-300 shadow-sm rounded-md cursor-pointer",
+                                            selectedNetwork?.chainName === item.chainName &&
+                                                "bg-gradient-to-br from-[#7339FD] to-[#4DD4F4]"
+                                        )}
                                     >
                                         <Image src={item.icon} alt="Network Icons" className="h-10 w-10 rounded-full" />
                                     </div>
