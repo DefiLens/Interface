@@ -52,7 +52,7 @@ const ProtocolSelection: React.FC<iProtocolSelectionProps> = ({
                                 {/* Protocol Selection Bar */}
                                 {(isRebalance &&
                                     showFromSelectionMenu &&
-                                    selectedNetworkProtocols.value[protocolIndex] != "ERC20") ||
+                                    selectedNetworkProtocols.value[protocolIndex] !== "ERC20") || // if isRebalance, only show ERC20 tokens
                                     (selectedProtocol && selectedProtocol !== protocol.name) || (
                                         <div
                                             key={protocol.name}

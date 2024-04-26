@@ -122,7 +122,7 @@ const Token: React.FC<PropTypes> = ({ network, isErc20, token, onItemClick, toke
                         {isErc20 && (
                             <Image
                                 src={token.logoURI.includes("s2.coinmarketcap.com") ? optimism : token.logoURI}
-                                alt=""
+                                alt={`${tokenName}-logo`}
                                 width={10}
                                 height={10}
                                 className="w-8 h-8 mr-2"
@@ -130,7 +130,6 @@ const Token: React.FC<PropTypes> = ({ network, isErc20, token, onItemClick, toke
                         )}
                         <span>{tokenName}</span>
                     </div>
-                    {/* <span className="ml-2 text-gray-500">{!isLoading ? tokenBal : "Loading..."}</span> */}
                     <div className="inline-flex items-center gap-1 text-gray-500">
                         {!isLoading ? (
                             parseFloat(tokenBal) > 0 ? (
