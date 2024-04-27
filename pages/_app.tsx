@@ -13,6 +13,7 @@ import FooterContainer from "../modules/footer/FooterContainer";
 import "@biconomy/web3-auth/dist/src/style.css";
 import "../assets/styles/index.css";
 import Head from "next/head";
+import { metadata } from "../utils/constants";
 
 export default function App({ Component, pageProps }: AppProps) {
     const { selectedNetwork }: iGlobal = useGlobalStore((state) => state);
@@ -43,6 +44,10 @@ export default function App({ Component, pageProps }: AppProps) {
                     phantomWallet(),
                     rainbowWallet(),
                 ]}
+                dAppMeta={{
+                    name: metadata.APP_NAME,
+                    url: metadata.url,
+                }}
             >
                 <QueryClientProvider client={queryClient}>
                     <Toaster

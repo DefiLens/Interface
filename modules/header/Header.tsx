@@ -7,16 +7,16 @@ import { usePathname } from "next/navigation";
 import { useAddress, useChainId, useChain } from "@thirdweb-dev/react";
 // Type, Store, Components, Helper Imports
 import { tHeader } from "./types";
-import { wallet, mirgrate_asset } from "../../assets/images";
+// import { wallet, mirgrate_asset } from "../../assets/images";
 import { HiArrowPathRoundedSquare } from "react-icons/hi2";
 import useClickOutside from "../../hooks/useClickOutside";
-import { ChainIdDetails, NETWORK_LIST } from "../../utils/data/network";
+import { ChainIdDetails, NETWORK_LIST, SUPPORTED_NETWORKS } from "../../utils/data/network";
 import { NavigationList } from "../../utils/data/navigation";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import toast from "react-hot-toast";
 import CopyButton from "../../components/common/CopyButton";
 import ConnectWalletWrapper from "../../components/Button/ConnectWalletWrapper";
-import clsx from "clsx";
+import { cn } from "../../lib/utils";
 
 const Header: React.FC<tHeader> = ({ switchOnSpecificChain }) => {
     const pathname = usePathname();
@@ -54,15 +54,10 @@ const Header: React.FC<tHeader> = ({ switchOnSpecificChain }) => {
     // To Check user remain on supported chains
     useEffect(() => {
         if (chainId) {
-            if (
-                chain?.slug == "polygon" ||
-                chain?.slug == "base" ||
-                chain?.slug == "optimism" ||
-                chain?.slug == "arbitrum"
-            ) {
-                switchOnSpecificChain(chain?.slug);
+            if (chain?.slug && SUPPORTED_NETWORKS.includes(chain.slug)) {
+                switchOnSpecificChain(chain.slug);
             } else {
-                toast.error("Only Base, Optimism and Polygon supported.");
+                toast.error("Only Polygon, Optimism, Arbitrum, and Base supported.");
             }
         }
     }, [chainId]);
@@ -95,7 +90,7 @@ const Header: React.FC<tHeader> = ({ switchOnSpecificChain }) => {
                         {/* Transfer funds */}
                         <Link
                             href="/transfer-fund"
-                            className={clsx(
+                            className={cn(
                                 "flex h-full items-center justify-center gap-2 cursor-pointer px-5 py-3 text-sm md:text-base text-center rounded-full bg-N0 shadow-sm hover:bg-N20 border border-N40 transition duration-300",
                                 pathname === "/transfer-fund"
                                     ? "bg-gradient-to-br from-D600 via-D400 to-D100 text-N0"

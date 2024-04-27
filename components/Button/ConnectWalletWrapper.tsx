@@ -2,6 +2,7 @@ import { memo } from "react";
 import Image from "next/image";
 import { ConnectWallet } from "@thirdweb-dev/react";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
+import { walletInfo } from "../../utils/constants";
 
 const WalletConnected = () => {
     const { selectedNetwork }: iGlobal = useGlobalStore((state) => state);
@@ -18,12 +19,22 @@ const ConnectWalletWrapper = memo(() => {
     return (
         <ConnectWallet
             theme={"light"}
-            modalSize={"compact"}
-            btnTitle="Connect Wallet"
+            modalSize={"wide"}
+            btnTitle={walletInfo.buttonTitle}
             className="Custom-btn"
-            modalTitle="Choose your wallet"
+            modalTitle={walletInfo.modalTitle}
             modalTitleIconUrl=""
             detailsBtn={() => <WalletConnected />}
+            welcomeScreen={{
+                title: walletInfo.welcomeScreen.title,
+                subtitle: walletInfo.welcomeScreen.subtitle,
+                img: {
+                    src: "/next.svg",
+                    width: 120,
+                    height: 120,
+                },
+            }}
+            switchToActiveChain={true}
         />
     );
 });
