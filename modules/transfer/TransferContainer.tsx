@@ -1,12 +1,11 @@
+// Library Imports
 import { useEffect } from "react";
-
 import web3 from "web3";
 import { toast } from "react-hot-toast";
 import { BigNumber, Contract, ethers } from "ethers";
 import { BigNumber as bg } from "bignumber.js";
-
 import { useAddress, useChain, useSigner } from "@thirdweb-dev/react";
-
+// Type, Helper, Component Imports
 import Transfer from "./Transfer";
 import IERC20 from "../../abis/IERC20.json";
 import { ethereum, polygon } from "../../assets/images";
@@ -18,38 +17,33 @@ import { iTransfer, useTransferStore } from "../../store/TransferStore";
 import { getTokenListByChainId, setSafeState } from "../../utils/helper";
 import { useCalculateGasCost } from "../../hooks/utilsHooks/useCalculateGasCost";
 import { getErc20Balanceof, getErc20Decimals } from "../../utils/web3Libs/ethers";
+import { walletInfo } from "../../utils/constants";
 
 bg.config({ DECIMAL_PLACES: 5 });
 
 const TransferContainer: React.FC = () => {
     const { mutateAsync: calculategasCost } = useCalculateGasCost();
 
-    const { smartAccount, smartAccountAddress, showTransferFundToggle, selectedNetwork }: iGlobal = useGlobalStore((state) => state);
+    const { smartAccount, smartAccountAddress, showTransferFundToggle, selectedNetwork }: iGlobal = useGlobalStore(
+        (state) => state
+    );
 
     const {
         tokenAddress,
         setTokenAddress,
         amountIn,
         setAmountIn,
-        amountInDecimals,
         setAmountInDecimals,
         isNative,
         setIsnative,
         isSCW,
         setIsSCW,
-        sendTxLoading,
         setSendtxLoading,
-        txhash,
         setTxHash,
-        tokensData,
         setTokensData,
-        scwBalance,
         setScwTokenInbalance,
-        eoaBalance,
         setEoaTokenInbalance,
-        tokenInDecimals,
         setTokenInDecimals,
-        gasCost,
         setGasCost,
     }: iTransfer = useTransferStore((state) => state);
 
@@ -61,7 +55,7 @@ const TransferContainer: React.FC = () => {
         async function onChangeFromProtocol() {
             // if (true) {
             const filteredTokens = getTokenListByChainId(selectedNetwork.chainId, UNISWAP_TOKENS);
-            if (selectedNetwork.chainId === '137') {
+            if (selectedNetwork.chainId === "137") {
                 filteredTokens.unshift({
                     chainId: 137,
                     address: "0x0000000000000000000000000000000000001010",
@@ -94,23 +88,23 @@ const TransferContainer: React.FC = () => {
         }
     }, [address, smartAccount]);
 
-    const onOptionChange = async (e) => {
-        try {
-            setGasCost(0);
-            setAmountIn(0);
-            setAmountInDecimals(0);
-            setTokenAddress("");
-            const tempChcekNative = isNative ? false : true; // because isNative can not access after just updated
-            setIsnative(tempChcekNative);
-            await setBalance("ethereum", "0x");
-        } catch (error) {
-            console.log("send-error: ", error);
-            return;
-        }
-    };
+    // const onOptionChange = async (e) => {
+    //     try {
+    //         setGasCost(0);
+    //         setAmountIn(0);
+    //         setAmountInDecimals(0);
+    //         setTokenAddress("");
+    //         const tempChcekNative = isNative ? false : true; // because isNative can not access after just updated
+    //         setIsnative(tempChcekNative);
+    //         await setBalance("ethereum", "0x");
+    //     } catch (error) {
+    //         console.log("send-error: ", error);
+    //         return;
+    //     }
+    // };
 
     const setBalance = async (_tokenName, _tokenAddress) => {
-        console.log("------------>>.", _tokenName, _tokenAddress)
+        console.log("------------>>.", _tokenName, _tokenAddress);
         try {
             if (_tokenName == "ethereum") {
                 let provider = await new ethers.providers.Web3Provider(web3.givenProvider);
@@ -119,7 +113,7 @@ const TransferContainer: React.FC = () => {
                     return;
                 }
                 if (!address) {
-                    toast.error("no metamask connected");
+                    toast.error(`${walletInfo.error.notConnected}`);
                     return;
                 }
                 const _eoaBalance = await provider.getBalance(address);
@@ -152,7 +146,10 @@ const TransferContainer: React.FC = () => {
             setAmountIn(0);
             setTokenAddress(_tokenAddress);
             const contract = await getContract(_tokenAddress);
-            const _scwBalance: BigNumber | undefined = await getErc20Balanceof(contract as Contract, smartAccountAddress);
+            const _scwBalance: BigNumber | undefined = await getErc20Balanceof(
+                contract as Contract,
+                smartAccountAddress
+            );
             const _eoaBalance: BigNumber | undefined = await getErc20Balanceof(contract as Contract, address ?? "");
             const decimals: number | undefined = await getErc20Decimals(contract);
             setSafeState(setTokenInDecimals, decimals, 0);
@@ -237,7 +234,7 @@ const TransferContainer: React.FC = () => {
                     return;
                 }
                 tx = { to: _toAdress, value: amountIn, data: "0x" };
-                console.log("Native tx", tx, "isSCW", isSCW)
+                console.log("Native tx", tx, "isSCW", isSCW);
             } else {
                 const contract = await getContract(tokenAddress);
                 if (!contract) {
@@ -251,7 +248,7 @@ const TransferContainer: React.FC = () => {
                 }
                 const data = await contract.populateTransaction.transfer(_toAdress, amountIn);
                 tx = { to: tokenAddress, data: data.data };
-                console.log("Not native tx", tx, "isSCW", isSCW)
+                console.log("Not native tx", tx, "isSCW", isSCW);
             }
 
             if (isSCW) {

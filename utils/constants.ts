@@ -50,4 +50,7 @@ export const walletInfo = {
         subtitle:
             "Connecting your wallet is like “logging in” to Web3. Select your wallet from the options to get started.",
     },
+    error: {
+        notConnected: "Please connect your wallet to proceed.",
+    },
 };
