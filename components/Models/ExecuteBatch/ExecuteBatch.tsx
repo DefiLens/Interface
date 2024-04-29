@@ -133,7 +133,7 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
                                                                 src={
                                                                     ChainIdDetails[
                                                                         selectedFromNetwork.chainId.toString()
-                                                                    ].networkLogo
+                                                                    ]?.networkLogo
                                                                 }
                                                                 alt=""
                                                                 className="h-8 w-8 bg-slate-200 rounded-full cursor-pointer"
@@ -143,7 +143,7 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
                                                                     src={
                                                                         protocolNames[
                                                                             selectedFromNetwork.chainId
-                                                                        ].key.find(
+                                                                        ]?.key.find(
                                                                             (entry) =>
                                                                                 entry.name == bar.data.fromProtocol
                                                                         )?.icon
@@ -170,7 +170,7 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
                                                             <Image
                                                                 src={
                                                                     ChainIdDetails[bar.data.toChainId.toString()]
-                                                                        .networkLogo
+                                                                        ?.networkLogo
                                                                 }
                                                                 alt=""
                                                                 className="h-8 w-8 bg-slate-200 rounded-full cursor-pointer"
@@ -208,7 +208,8 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
                             <span className="flex flex-col justify-center items-center gap-2">
                                 <a
                                     target="_blank"
-                                    href={buildTxHash(selectedFromNetwork.chainId, txhash, false)}
+                                    href={txhash.includes("tenderly") ? txhash : buildTxHash(selectedFromNetwork.chainId, txhash, false)}
+                                    // href={buildTxHash(selectedFromNetwork.chainId, txhash, false)}
                                     className="cursor-pointer bg-teal-500 text-white rounded-lg px-5 py-1"
                                 >
                                     View on Explorer

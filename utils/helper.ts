@@ -238,22 +238,26 @@ export function setSafeState<T>(setStateFunction: (value: T) => void, value: T |
 
 ///// build txHash link from hash and chainId
 
-export const buildTxHash = (chainId: string | undefined, txhash: string, isSocketScan?: boolean) => {
-    if (isSocketScan) {
-        return `https://socketscan.io/tx/${txhash}`;
-    }
-    if (chainId == "137") {
-        return `https://polygonscan.com/tx/${txhash}`;
-    } else if (chainId == "43114") {
-        return `https://snowtrace.io/tx/${txhash}`;
-    } else if (chainId == "42161") {
-        return `https://arbiscan.io/tx/${txhash}`;
-    } else if (chainId == "10") {
-        return `https://optimistic.etherscan.io/tx/${txhash}`;
-    } else if (chainId == "1") {
-        return `https://etherscan.io/tx/${txhash}`;
-    } else if (chainId == "8453") {
-        return `https://basescan.org/tx/${txhash}`;
+export const buildTxHash = (chainId: string, txhash: string, isSocketScan?: boolean, isSimulate?: boolean) => {
+    if (isSimulate) {
+        return `https://dashboard.tenderly.co/sunnyRK/project/simulator/${txhash}`;
+    } else {
+        if (isSocketScan) {
+            return `https://socketscan.io/tx/${txhash}`;
+        }
+        if (chainId == "137") {
+            return `https://polygonscan.com/tx/${txhash}`;
+        } else if (chainId == "43114") {
+            return `https://snowtrace.io/tx/${txhash}`;
+        } else if (chainId == "42161") {
+            return `https://arbiscan.io/tx/${txhash}`;
+        } else if (chainId == "10") {
+            return `https://optimistic.etherscan.io/tx/${txhash}`;
+        } else if (chainId == "1") {
+            return `https://etherscan.io/tx/${txhash}`;
+        } else if (chainId == "8453") {
+            return `https://basescan.org/tx/${txhash}`;
+        }
     }
 };
 
