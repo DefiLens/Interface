@@ -1,9 +1,9 @@
 import React from "react";
-
 import Image from "next/image";
 import { BiSolidChevronDown } from "react-icons/bi";
-
 import { tSelectInput } from "./types";
+import { cn } from "../../lib/utils";
+import { tokenData } from "../../modules/transfer/types";
 
 const SelectInput = ({
     inputSearch,
@@ -24,13 +24,19 @@ const SelectInput = ({
                     type="text"
                     value={selectedOption.symbol ? selectedOption.symbol : inputSearch}
                     onChange={(e) => {
-                        setSelectedOption({});
+                        setSelectedOption({} as tokenData);
                         setInputSearch(e.target.value);
                     }}
                     placeholder={inputPlaceholder}
-                    className={`w-full text-sm md:text-base outline-none font-semibold !placeholder-font-B75 !bg-N20 text-B100 ${inputClassName}`}
+                    className={cn(
+                        "w-full text-sm md:text-base outline-none font-semibold !placeholder-font-B75 !bg-N20 text-B100",
+                        inputClassName
+                    )}
                 />
-                <BiSolidChevronDown size="30px" onClick={() => setShowOptionList(!showOptionList)} className="p-1 cursor-pointer text-B100 hover:bg-[rgba(132,144,251,.1)] rounded-full p-1" />
+                <BiSolidChevronDown
+                    onClick={() => setShowOptionList(!showOptionList)}
+                    className={cn("p-1 h-7 w-7 cursor-pointer text-B100 hover:bg-[rgba(132,144,251,.1)] rounded-full transition-transform duration-300", showOptionList && "rotate-180")}
+                />
             </div>
             {(inputSearch.length > 0 || showOptionList) && (
                 <div className="w-full max-h-44 bg-N20 border-2 border-B50 text-B100 overflow-scroll px-2 mt-1 rounded-md shadow-lg">
