@@ -4,10 +4,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { CgSpinner } from "react-icons/cg";
 import { usePathname } from "next/navigation";
-import { useAddress, useChainId, useChain } from "@thirdweb-dev/react";
+import { useAddress, useChainId, useChain, useWallet } from "@thirdweb-dev/react";
 // Type, Store, Components, Helper Imports
 import { tHeader } from "./types";
-// import { wallet, mirgrate_asset } from "../../assets/images";
 import { HiArrowPathRoundedSquare } from "react-icons/hi2";
 import useClickOutside from "../../hooks/useClickOutside";
 import { ChainIdDetails, NETWORK_LIST, SUPPORTED_NETWORKS } from "../../utils/data/network";
@@ -30,14 +29,19 @@ const Header: React.FC<tHeader> = ({ switchOnSpecificChain }) => {
         showWalletAddress,
         setShowWalletAddress,
         selectedNetwork,
+        setConnectedWallet
     }: iGlobal = useGlobalStore((state) => state);
 
     const address = useAddress();
     const chainId = useChainId();
     const chain = useChain();
+    const wallet = useWallet();
 
     const walletAddressRef = useRef(null);
     const selectNetworkRef = useRef(null);
+
+    // set connected wallet's instance globally
+    useEffect(() => setConnectedWallet(wallet ?? null), [wallet]);
 
     // To close copy dropdown
     useClickOutside([walletAddressRef], () => {
@@ -85,9 +89,8 @@ const Header: React.FC<tHeader> = ({ switchOnSpecificChain }) => {
                                 </Link>
                             ))}
                     </div>
-                    {/* Link: "/transfer-fund" */}
                     <div className="flex justify-between items-center gap-3">
-                        {/* Transfer funds */}
+                        {/* Link: "/transfer-fund" */}
                         <Link
                             href="/transfer-fund"
                             className={cn(
