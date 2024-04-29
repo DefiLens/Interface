@@ -1,6 +1,6 @@
 import { create } from "zustand";
-
 import { BiconomySmartAccountV2 } from "@biconomy/account";
+import { WalletInstance } from "@thirdweb-dev/react";
 
 export interface iSelectedNetwork {
     key: string;
@@ -26,6 +26,9 @@ export interface iGlobal {
     eoaBalance: string;
 
     currentProvider: string;
+
+    connectedWallet: WalletInstance | null;
+    setConnectedWallet: (wallet: WalletInstance | null) => void;
 
     setSelectedNetwork: (selectedNetwork: iSelectedNetwork) => void;
     setActiveChainName: (activeChainName: string) => void;
@@ -65,6 +68,9 @@ export const useGlobalStore = create<iGlobal>((set) => ({
     smartAccountAddress: "",
     scwBalance: "",
     eoaBalance: "",
+
+    connectedWallet: null,
+    setConnectedWallet: (connectedWallet) => set(() => ({ connectedWallet })),
 
     currentProvider: "",
 
