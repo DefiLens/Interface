@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Image from "next/image";
 import { BiSolidChevronDown } from "react-icons/bi";
 import { tSelectInput } from "./types";
@@ -17,6 +17,18 @@ const SelectInput = ({
     selectedOption,
     setSelectedOption,
 }: tSelectInput) => {
+    // Auto-select if only one token in options
+    useEffect(() => {
+        if (selectOptions.length === 1) {
+            const option = selectOptions[0];
+            handleSelectOption(option.name, option.address);
+            setSelectedOption(option);
+            setInputSearch("");
+        } else {
+            setSelectedOption({} as tokenData);
+        }
+    }, [selectOptions]);
+
     return (
         <div className="w-full text-font-200 rounded-lg">
             <div className="w-full flex justify-start items-center gap-2 bg-N20 border-2 border-B50 text-B100 rounded-md py-3 px-5 shadow-lg">
@@ -42,7 +54,7 @@ const SelectInput = ({
                 />
             </div>
             {(inputSearch.length > 0 || showOptionList) && (
-                <div className="w-full max-h-44 bg-N20 border-2 border-B50 text-B100 overflow-scroll px-2 mt-1 rounded-md shadow-lg">
+                <div className="w-full max-h-44 bg-N20 border-2 border-B50 text-B100 overflow-auto px-2 mt-1 rounded-md shadow-lg">
                     {selectOptions.length > 0 &&
                         selectOptions.map((option, optionIndex: number) => {
                             return option.name.toLowerCase().includes(inputSearch.toLowerCase()) ? (

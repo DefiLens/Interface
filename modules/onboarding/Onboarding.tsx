@@ -13,20 +13,22 @@ import { copyToClipboard, decreasePowerByDecimals, shorten } from "../../utils/h
 import { ChainIdDetails } from "../../utils/data/network";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import { iTransfer, useTransferStore } from "../../store/TransferStore";
-import { tTransfer } from "../transfer/types";
 import { cn } from "../../lib/utils";
+import { transferText } from "../../utils/constants";
 
-const Onboarding: React.FC<tTransfer> = ({ onOptionChangeForWallet, setBalance, handleAmountIn, send }) => {
-    const { smartAccount, smartAccountAddress, selectedNetwork }: iGlobal = useGlobalStore((state) => state);
-    const signer = useSigner(); // Detect the connected address
+interface PropsType {
+    setBalance: (_tokenName: string, _tokenAddress: string) => void;
+    handleAmountIn: (_amountIn: string) => void;
+    send: () => void;
+}
+
+const Onboarding: React.FC<PropsType> = ({ setBalance, handleAmountIn, send }) => {
+    const { smartAccount, smartAccountAddress }: iGlobal = useGlobalStore((state) => state);
     const address = useAddress(); // connected address
     const chain = useChain(); // connected chain
 
     const {
-        tokenAddress,
-        amountIn,
         amountInDecimals,
-        isNative,
         isSCW,
         sendTxLoading,
         txhash,
@@ -36,9 +38,6 @@ const Onboarding: React.FC<tTransfer> = ({ onOptionChangeForWallet, setBalance, 
         tokenInDecimals,
         gasCost,
         isGasCostExpanded,
-        setGasCost,
-        setAmountIn,
-        setAmountInDecimals,
         setIsGasCostExpanded,
         searchToken,
         setSearchToken,
@@ -46,8 +45,6 @@ const Onboarding: React.FC<tTransfer> = ({ onOptionChangeForWallet, setBalance, 
         setShowTokenList,
         selectedToken,
         setSelectedToken,
-        setSendtxLoading,
-        setTxHash,
     }: iTransfer = useTransferStore((state) => state);
 
     return (
@@ -64,53 +61,50 @@ const Onboarding: React.FC<tTransfer> = ({ onOptionChangeForWallet, setBalance, 
                     <div className="w-full p-5">
                         <h3 className="font-semibold text-lg md:text-2xl text-N20 mb-3">Transfer Fund</h3>
                         <div className="w-full flex flex-col sm:flex-row justify-center items-center gap-2 md:gap-4 bg-[rgba(225,225,225,.4)] rounded-xl text-B100 p-3">
+                            {/* FROM LABEL */}
                             <div className="flex-1 md:w-40 flex flex-col justify-center items-center gap-2">
                                 <div className="flex flex-col justify-center gap-2">
                                     <span className="font-bold text-base text-N40">From</span>
-                                    <div className="flex items-center justify-center gap-2 bg-[rgba(225,225,225,.6)] rounded-lg py-3 px-5">
+                                    <div className="flex items-center justify-center gap-2 bg-[rgba(225,225,225,.3)] rounded-lg py-3 px-5">
                                         <span className="font-bold text-xl text-N10">EOA</span>
                                         <div className="group relative flex justify-center bg-N0 rounded-full">
-                                            <HiOutlineInformationCircle
-                                                size="25px"
-                                                className="text-B300 cursor-pointer"
-                                            />
-                                            <span className="w-fit absolute z-50 top-7 -right-[65px] scale-0 transition-all group-hover:scale-100 rounded shadow-lg bg-N0 px-3 py-1 font-medium text-start text-xs text-B100">
-                                                <button className="w-full relative flex justify-between items-center gap-3 py-2 px-2">
-                                                    <div className="flex flex-col justify-center items-start text-B100 text-sm">
+                                            <HiOutlineInformationCircle className="h-6 w-6 text-B300 cursor-pointer" />
+                                            {/* Tooltip for Address */}
+                                            <div className="w-fit absolute z-50 top-7 -right-[65px] scale-0 transition-all group-hover:scale-100 rounded shadow-lg bg-N0 px-3 py-1 font-medium text-start text-xs text-B100">
+                                                <div className="w-full relative flex justify-between items-center gap-3 p-1">
+                                                    <span className="flex flex-col justify-center items-start text-B100 text-sm">
                                                         {smartAccount &&
                                                             address &&
                                                             address.slice(0, 13) + "..." + address.slice(-3)}
-                                                    </div>
+                                                    </span>
                                                     <CopyButton copy={address} />
-                                                </button>
-                                            </span>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                            {/* TO LABEL */}
                             <div className="flex-1 md:w-40 flex flex-col justify-center items-center gap-2">
                                 <div className="flex flex-col justify-center gap-2">
                                     <span className="font-bold text-base text-N40">To</span>
-                                    <div className="flex items-center justify-center gap-2 bg-[rgba(225,225,225,.6)] rounded-lg py-3 px-5">
+                                    <div className="flex items-center justify-center gap-2 bg-[rgba(225,225,225,.3)] rounded-lg py-3 px-5">
                                         <span className="font-bold text-xl text-N20">SCW</span>
                                         <div className="group relative flex justify-center bg-N0 rounded-full">
-                                            <HiOutlineInformationCircle
-                                                size="25px"
-                                                className="text-B300 cursor-pointer"
-                                            />
-
-                                            <span className="w-fit absolute z-50 top-7 -right-[65px] scale-0 group-hover:scale-100 transition-all rounded shadow-lg bg-N0 px-3 py-1 font-medium text-start text-xs text-B100">
-                                                <button className="w-full relative flex justify-between items-center gap-3 py-2 px-2">
-                                                    <div className="flex flex-col justify-center items-start text-B100 text-sm">
+                                            <HiOutlineInformationCircle className="h-6 w-6 text-B300 cursor-pointer" />
+                                            {/* Tooltip for Address */}
+                                            <div className="w-fit absolute z-50 top-7 -right-[65px] scale-0 group-hover:scale-100 transition-all rounded shadow-lg bg-N0 px-3 py-1 font-medium text-start text-xs text-B100">
+                                                <div className="w-full relative flex justify-between items-center gap-3 p-1">
+                                                    <span className="flex flex-col justify-center items-start text-B100 text-sm">
                                                         {smartAccount &&
                                                             smartAccountAddress &&
                                                             smartAccountAddress.slice(0, 13) +
                                                                 "..." +
                                                                 smartAccountAddress.slice(-3)}
-                                                    </div>
+                                                    </span>
                                                     <CopyButton copy={smartAccountAddress} />
-                                                </button>
-                                            </span>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -135,17 +129,6 @@ const Onboarding: React.FC<tTransfer> = ({ onOptionChangeForWallet, setBalance, 
                         <div className="w-full lg:max-w-xl flex flex-col justify-center items-center gap-3 my-1">
                             <div className="w-full">
                                 <div className="flex justify-end items-center gap-2 text-B100 font-semibold text-xs md:text-sm p-1">
-                                    {/* <div className="text-B200 text-sm">
-                                        SmartAccount Balance :
-                                        <span className="font-bold text-B100 text-base px-1">
-                                            {!scwBalance.isZero()
-                                                ? decreasePowerByDecimals(
-                                                      BigNumber.from(scwBalance).toString(),
-                                                      tokenInDecimals
-                                                  )
-                                                : "0"}
-                                        </span>
-                                    </div> */}
                                     <div className="text-B200 text-sm">
                                         EOA Balance:
                                         <span className="font-bold text-B100 text-sm px-1">
@@ -228,8 +211,9 @@ const Onboarding: React.FC<tTransfer> = ({ onOptionChangeForWallet, setBalance, 
                             <Button
                                 handleClick={() => send()}
                                 isLoading={sendTxLoading}
+                                disabled={sendTxLoading}
                                 customStyle="sm:w-[65%]"
-                                innerText={"Send EOA to SmartAccount"}
+                                innerText={transferText.button.migrate_EOA_SCW}
                             />
 
                             {txhash && (

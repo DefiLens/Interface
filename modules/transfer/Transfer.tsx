@@ -17,6 +17,7 @@ import SelectInput from "../../components/SelectInput/SelectInput";
 import { iTransfer, useTransferStore } from "../../store/TransferStore";
 import CopyButton from "../../components/common/CopyButton";
 import { LiaWalletSolid } from "react-icons/lia";
+import { transferText } from "../../utils/constants";
 
 const Transfer: React.FC<tTransfer> = ({
     onOptionChangeForWallet,
@@ -249,8 +250,11 @@ const Transfer: React.FC<tTransfer> = ({
                             <Button
                                 handleClick={() => send()}
                                 isLoading={sendTxLoading}
+                                disabled={sendTxLoading}
                                 customStyle="sm:w-[65%]"
-                                innerText={isSCW ? "Send SmartAccount to EOA" : "Send EOA to SmartAccount"}
+                                innerText={
+                                    isSCW ? transferText.button.migrate_SCW_EOA : transferText.button.migrate_EOA_SCW
+                                }
                             />
 
                             {txhash && (

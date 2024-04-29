@@ -54,3 +54,10 @@ export const walletInfo = {
         notConnected: "Please connect your wallet to proceed.",
     },
 };
+
+export const transferText = {
+    button: {
+        migrate_EOA_SCW: "Send EOA to SmartAccount",
+        migrate_SCW_EOA: "Send SmartAccount to EOA",
+    }
+}

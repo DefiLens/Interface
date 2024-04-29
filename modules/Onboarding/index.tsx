@@ -37,7 +37,6 @@ const OnboardingPage = () => {
         isNative,
         setIsnative,
         isSCW,
-        setIsSCW,
         setSendtxLoading,
         setTxHash,
         setTokensData,
@@ -94,14 +93,6 @@ const OnboardingPage = () => {
             toast.error("Error: " + error);
             return;
         }
-    };
-
-    const onOptionChangeForWallet = () => {
-        setGasCost(0);
-        setAmountIn(0);
-        setAmountInDecimals(0);
-        setTokenAddress("");
-        setIsSCW(!isSCW);
     };
 
     const handleTokenAddress = async (_tokenName, _tokenAddress) => {
@@ -182,8 +173,8 @@ const OnboardingPage = () => {
                 return;
             }
             let tx;
-            const _fromAddress = isSCW ? smartAccountAddress : address;
-            const _toAdress = isSCW ? address : smartAccountAddress;
+            const _fromAddress = address;
+            const _toAdress = smartAccountAddress;
             if (isNative) {
                 let provider = await new ethers.providers.Web3Provider(web3.givenProvider);
                 if (!provider) {
@@ -191,7 +182,7 @@ const OnboardingPage = () => {
                     return;
                 }
 
-                const balance = await provider.getBalance(_fromAddress);
+                const balance = await provider.getBalance(_fromAddress ?? "");
                 if (!BigNumber.from(balance).gte(amountIn)) {
                     toast.error("Not native enough balance-");
                     return;
@@ -287,7 +278,6 @@ const OnboardingPage = () => {
 
     return (
         <Onboarding
-            onOptionChangeForWallet={onOptionChangeForWallet}
             setBalance={setBalance}
             handleAmountIn={handleAmountIn}
             send={send}
