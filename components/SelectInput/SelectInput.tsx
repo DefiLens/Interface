@@ -35,7 +35,10 @@ const SelectInput = ({
                 />
                 <BiSolidChevronDown
                     onClick={() => setShowOptionList(!showOptionList)}
-                    className={cn("p-1 h-7 w-7 cursor-pointer text-B100 hover:bg-[rgba(132,144,251,.1)] rounded-full transition-transform duration-300", showOptionList && "rotate-180")}
+                    className={cn(
+                        "p-1 h-7 w-7 cursor-pointer text-B100 hover:bg-[rgba(132,144,251,.1)] rounded-full transition-transform duration-300",
+                        showOptionList && "rotate-180"
+                    )}
                 />
             </div>
             {(inputSearch.length > 0 || showOptionList) && (
