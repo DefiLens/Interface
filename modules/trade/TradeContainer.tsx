@@ -16,7 +16,7 @@ import {
 
 // Component, Util Imports
 import Trade from "./Trade";
-import { setSafeState } from "../../utils/helper";
+import { buildTxHash, setSafeState } from "../../utils/helper";
 import { ChainIdDetails } from "../../utils/data/network";
 import { protocolNames } from "../../utils/data/protocols";
 import { decreasePowerByDecimals, getTokenListByChainId, incresePowerByDecimals } from "../../utils/helper";
@@ -30,6 +30,7 @@ import { useCCRefinance } from "../../hooks/Batching/useCCRefinance";
 import { useEoaProvider } from "../../hooks/aaProvider/useEoaProvider";
 import { useSwitchOnSpecificChain } from "../../hooks/useSwitchOnSpecificChain";
 import { useBiconomyProvider } from "../../hooks/aaProvider/useBiconomyProvider";
+import { useSendSimulateTx } from "../../hooks/aaProvider/useSendSimulateTx";
 import { useBiconomyERC20Provider } from "../../hooks/aaProvider/useBiconomyERC20Provider";
 import { useBiconomyGasLessProvider } from "../../hooks/aaProvider/useBiconomyGasLessProvider";
 import { useBiconomySessionKeyProvider } from "../../hooks/aaProvider/useBiconomySessionKeyProvider";
@@ -52,6 +53,7 @@ const TradeContainer: React.FC = () => {
     const signer = useSigner(); // Detect the connected address
 
     const { mutateAsync: sendToBiconomy } = useBiconomyProvider();
+    const { mutateAsync: sendSimulateTx } = useSendSimulateTx();
     const { mutateAsync: sendToGasLessBiconomy } = useBiconomyGasLessProvider();
     const { mutateAsync: sendToERC20Biconomy } = useBiconomyERC20Provider();
     const { mutateAsync: sendToSessionKeyBiconomy } = useBiconomySessionKeyProvider();
@@ -729,12 +731,15 @@ const TradeContainer: React.FC = () => {
             }
             const mergeArray: any = [];
             await individualBatch.map((bar) => bar.txArray.map((hash) => mergeArray.push(hash)));
-            let tempTxhash = "";
+            let tempTxhash: string = "";
             if (isSCW) {
                 if (whichProvider == "isAA") {
                     tempTxhash = await sendToBiconomy(mergeArray);
                 } else if (whichProvider == "isERC20") {
                     tempTxhash = await sendToERC20Biconomy(mergeArray);
+                } else if (whichProvider == "isSimulate") {
+                    tempTxhash = await sendSimulateTx(mergeArray)  || "";
+                    tempTxhash = buildTxHash(selectedFromNetwork.chainId, tempTxhash, false, true) || ""
                 }
                 // tempTxhash = await sendToGasLessBiconomy(mergeArray);
                 // tempTxhash = await sendToSessionKeyBiconomy(mergeArray);

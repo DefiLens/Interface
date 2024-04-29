@@ -13,6 +13,23 @@ export const ETH_ADDRESS = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
 export const ExecutionMethodsList = [
     {
         isEnable: true,
+        title: 'Simulate only if you do not have funds',
+        providerName: 'isSimulate',
+        icons: [
+            {
+                name: 'ethereum',
+                icon: ethereum,
+                style: 'translate-x-5'
+            },
+            {
+                name: 'polygon',
+                icon: polygon,
+                style: 'z-0 translate-x-2.5'
+            },
+        ],
+    },
+    {
+        isEnable: true,
         title: 'Pay via Native Tokens',
         providerName: 'isAA',
         icons: [
