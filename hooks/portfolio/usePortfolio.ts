@@ -7,9 +7,15 @@ import toast from "react-hot-toast";
 export function usePortfolio() {
     const { chainId, setChainData, setIsLoading, setError }: iPortfolio = usePortfolioStore((state) => state);
 
+    /**
+     * 
+     * @param address Requested portfolio's user's account address
+     */
     async function fetchPortfolio(address: string) {
         try {
             setIsLoading(true);
+
+            // Zerion API Key
             const authToken = process.env.NEXT_PUBLIC_ZERION_API_KEY;
 
             let requests;

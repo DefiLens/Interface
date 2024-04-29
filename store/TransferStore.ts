@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { BigNumber } from "ethers";
+import { tokenData } from "../modules/transfer/types";
 
 export interface iTransfer {
     tokenAddress: number | string;
@@ -9,7 +10,7 @@ export interface iTransfer {
     isSCW: boolean;
     sendTxLoading: boolean;
     txhash: string;
-    tokensData: object[];
+    tokensData: tokenData[];
     scwBalance: BigNumber;
     eoaBalance: BigNumber;
     tokenInDecimals: number;
@@ -17,7 +18,7 @@ export interface iTransfer {
     isGasCostExpanded: boolean;
     searchToken: string;
     showTokenList: boolean;
-    selectedToken: Object;
+    selectedToken: tokenData;
 
     setTokenAddress: (tokenAddress: number | string) => void;
     setAmountIn: (amountIn: number | string) => void;
@@ -26,7 +27,7 @@ export interface iTransfer {
     setIsSCW: (isSCW: boolean) => void;
     setSendtxLoading: (sendTxLoading: boolean) => void;
     setTxHash: (txhash: string) => void;
-    setTokensData: (tokensData: object[]) => void;
+    setTokensData: (tokensData: tokenData[]) => void;
     setScwTokenInbalance: (scwBalance: BigNumber) => void;
     setEoaTokenInbalance: (eoaBalance: BigNumber) => void;
     setTokenInDecimals: (tokenInDecimals: number) => void;
@@ -34,7 +35,7 @@ export interface iTransfer {
     setIsGasCostExpanded: (isGasCostExpanded: boolean) => void;
     setSearchToken: (searchToken: string) => void;
     setShowTokenList: (showTokenList: boolean) => void;
-    setSelectedToken: (selectedToken: Object) => void;
+    setSelectedToken: (selectedToken: tokenData) => void;
 }
 
 export const useTransferStore = create<iTransfer>((set) => ({
@@ -53,7 +54,7 @@ export const useTransferStore = create<iTransfer>((set) => ({
     isGasCostExpanded: false,
     searchToken: "",
     showTokenList: false,
-    selectedToken: {},
+    selectedToken: {} as tokenData,
 
     setTokenAddress: (tokenAddress) => set(() => ({ tokenAddress })),
     setAmountIn: (amountIn) => set(() => ({ amountIn })),

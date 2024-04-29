@@ -16,6 +16,7 @@ import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import { iTrading, useTradingStore } from "../../store/TradingStore";
 import { protocolNames } from "../../utils/data/protocols";
 import { cn } from "../../lib/utils";
+import { socialHandles } from "../../utils/constants";
 
 bg.config({ DECIMAL_PLACES: 10 });
 
@@ -150,7 +151,7 @@ const Trade: React.FC<tTrade> = ({
                             Note: Please contact us on our{" "}
                             <Link
                                 className="underline underline-offset-2"
-                                href="https://x.com/DefiLensTech"
+                                href={socialHandles[0].href}
                                 target="_blank"
                             >
                                 telegram community
