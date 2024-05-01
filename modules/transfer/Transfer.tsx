@@ -255,8 +255,9 @@ const Transfer: React.FC<tTransfer> = ({
 
                             {txhash && (
                                 <div className="flex flex-wrap justify-start items-center gap-3 text-base">
-                                    <FiCopy onClick={() => copyToClipboard(txhash, "Transaction Hash Copied")} />
+                                    {/* <FiCopy onClick={() => copyToClipboard(txhash, "Transaction Hash Copied")} /> */}
                                     <p>TxHash : {shorten(txhash)}</p>
+                                    <CopyButton copy={txhash} />
                                 </div>
                             )}
                         </div>

@@ -1,6 +1,24 @@
 import { create } from "zustand";
 import { BigNumber } from "ethers";
 
+interface LogoURI {
+    src: string;
+    height: number;
+    width: number;
+    blurWidth: number;
+    blurHeight: number;
+}
+
+interface TokenData {
+    chainId: number;
+    address: string;
+    name: string;
+    symbol: string;
+    decimals: number;
+    logoURI: LogoURI;
+}
+
+
 export interface iTransfer {
     tokenAddress: number | string;
     amountIn: number | string;
@@ -9,7 +27,7 @@ export interface iTransfer {
     isSCW: boolean;
     sendTxLoading: boolean;
     txhash: string;
-    tokensData: object[];
+    tokensData: TokenData[];
     scwBalance: BigNumber;
     eoaBalance: BigNumber;
     tokenInDecimals: number;
@@ -17,7 +35,7 @@ export interface iTransfer {
     isGasCostExpanded: boolean;
     searchToken: string;
     showTokenList: boolean;
-    selectedToken: Object;
+    selectedToken: TokenData;
 
     setTokenAddress: (tokenAddress: number | string) => void;
     setAmountIn: (amountIn: number | string) => void;
@@ -44,7 +62,7 @@ export const useTransferStore = create<iTransfer>((set) => ({
     isNative: true,
     isSCW: true,
     sendTxLoading: false,
-    txhash: false,
+    txhash: "",
     tokensData: [],
     scwBalance: BigNumber.from(0),
     eoaBalance: BigNumber.from(0),
@@ -53,7 +71,7 @@ export const useTransferStore = create<iTransfer>((set) => ({
     isGasCostExpanded: false,
     searchToken: "",
     showTokenList: false,
-    selectedToken: {},
+    selectedToken: {} as TokenData,
 
     setTokenAddress: (tokenAddress) => set(() => ({ tokenAddress })),
     setAmountIn: (amountIn) => set(() => ({ amountIn })),

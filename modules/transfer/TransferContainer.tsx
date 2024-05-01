@@ -12,19 +12,22 @@ import IERC20 from "../../abis/IERC20.json";
 import { ethereum, polygon } from "../../assets/images";
 import { BIG_ZERO } from "../../utils/data/constants";
 import UNISWAP_TOKENS from "../../abis/tokens/Uniswap.json";
-import { incresePowerByDecimals } from "../../utils/helper";
+import { decreasePowerByDecimals, incresePowerByDecimals } from "../../utils/helper";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import { iTransfer, useTransferStore } from "../../store/TransferStore";
 import { getTokenListByChainId, setSafeState } from "../../utils/helper";
 import { useCalculateGasCost } from "../../hooks/utilsHooks/useCalculateGasCost";
 import { getErc20Balanceof, getErc20Decimals } from "../../utils/web3Libs/ethers";
+import { saveMigrateTxnHistory } from "../../utils/globalApis/trackingApi";
 
 bg.config({ DECIMAL_PLACES: 5 });
 
 const TransferContainer: React.FC = () => {
     const { mutateAsync: calculategasCost } = useCalculateGasCost();
 
-    const { smartAccount, smartAccountAddress, showTransferFundToggle, selectedNetwork }: iGlobal = useGlobalStore((state) => state);
+    const { smartAccount, smartAccountAddress, showTransferFundToggle, selectedNetwork }: iGlobal = useGlobalStore(
+        (state) => state
+    );
 
     const {
         tokenAddress,
@@ -51,6 +54,7 @@ const TransferContainer: React.FC = () => {
         setTokenInDecimals,
         gasCost,
         setGasCost,
+        selectedToken,
     }: iTransfer = useTransferStore((state) => state);
 
     const address = useAddress(); // Detect the connected address
@@ -61,7 +65,7 @@ const TransferContainer: React.FC = () => {
         async function onChangeFromProtocol() {
             // if (true) {
             const filteredTokens = getTokenListByChainId(selectedNetwork.chainId, UNISWAP_TOKENS);
-            if (selectedNetwork.chainId === '137') {
+            if (selectedNetwork.chainId === "137") {
                 filteredTokens.unshift({
                     chainId: 137,
                     address: "0x0000000000000000000000000000000000001010",
@@ -110,7 +114,7 @@ const TransferContainer: React.FC = () => {
     };
 
     const setBalance = async (_tokenName, _tokenAddress) => {
-        console.log("------------>>.", _tokenName, _tokenAddress)
+        console.log("------------>>.", _tokenName, _tokenAddress);
         try {
             if (_tokenName == "ethereum") {
                 let provider = await new ethers.providers.Web3Provider(web3.givenProvider);
@@ -152,7 +156,10 @@ const TransferContainer: React.FC = () => {
             setAmountIn(0);
             setTokenAddress(_tokenAddress);
             const contract = await getContract(_tokenAddress);
-            const _scwBalance: BigNumber | undefined = await getErc20Balanceof(contract as Contract, smartAccountAddress);
+            const _scwBalance: BigNumber | undefined = await getErc20Balanceof(
+                contract as Contract,
+                smartAccountAddress
+            );
             const _eoaBalance: BigNumber | undefined = await getErc20Balanceof(contract as Contract, address ?? "");
             const decimals: number | undefined = await getErc20Decimals(contract);
             setSafeState(setTokenInDecimals, decimals, 0);
@@ -165,6 +172,7 @@ const TransferContainer: React.FC = () => {
             console.log("handleTokenAddress-error", error);
         }
     };
+
     const handleAmountIn = async (_amountIn) => {
         try {
             setAmountInDecimals(_amountIn);
@@ -208,12 +216,14 @@ const TransferContainer: React.FC = () => {
             console.log("getContract-error", error);
         }
     };
+
     const send = async () => {
         if (amountIn == "") {
             toast.error("Please Enter Amount");
             return;
         }
         try {
+            const decimalAmount = await decreasePowerByDecimals(amountIn, selectedToken.decimals);
             setSendtxLoading(true);
             setTxHash("");
             if (!BigNumber.from(amountIn).gt(0)) {
@@ -224,6 +234,7 @@ const TransferContainer: React.FC = () => {
             const _fromAddress = isSCW ? smartAccountAddress : address;
             const _toAdress = isSCW ? address : smartAccountAddress;
             if (isNative) {
+                console.log("givenProvider>>>>>>>>>>>.", chain?.chain, selectedToken, decimalAmount);
                 let provider = await new ethers.providers.Web3Provider(web3.givenProvider);
                 if (!provider) {
                     toast.error("no provider");
@@ -236,8 +247,21 @@ const TransferContainer: React.FC = () => {
                     return;
                 }
                 tx = { to: _toAdress, value: amountIn, data: "0x" };
-                console.log("Native tx", tx, "isSCW", isSCW)
+                console.log("Native tx", tx, "isSCW", isSCW);
+                console.log("SCW_TO_EOA");
+
+                // saveMigrateTxnHistory(
+                //     smartAccountAddress,
+                //     address,
+                //     selectedToken?.symbol,
+                //     chain?.chain.toLowerCase(),
+                //     decimalAmount,
+                //     "newTest",// txReciept?.hash,
+                //     isSCW ? "SCW_TO_EOA" : "EOA_TO_SCW",
+                //     "TRANSFER_FUND" 
+                // );
             } else {
+                console.log("givenProvider>>>>>>>>>>>.", chain?.chain, selectedToken, decimalAmount);
                 const contract = await getContract(tokenAddress);
                 if (!contract) {
                     toast.error("add valid Token address first");
@@ -248,28 +272,45 @@ const TransferContainer: React.FC = () => {
                     toast.error("Not erc20 enough balance");
                     return;
                 }
-                const data = await contract.populateTransaction.transfer(_toAdress, amountIn);
+                const data = await contract.populateTransaction.transfer(_toAdress, selectedToken?.symbol);
                 tx = { to: tokenAddress, data: data.data };
-                console.log("Not native tx", tx, "isSCW", isSCW)
+                console.log("Not native tx", tx, "isSCW", isSCW);
+                console.log("EOA_TO_SCW");
+
+                // saveMigrateTxnHistory(
+                //     smartAccountAddress,
+                //     address,
+                //     selectedToken?.symbol,
+                //     chain?.chain.toLowerCase(),
+                //     decimalAmount,
+                //     "newTest",// txReciept?.hash,
+                //     isSCW ? "SCW_TO_EOA" : "EOA_TO_SCW",
+                //     "TRANSFER_FUND" 
+                // );
             }
 
             if (isSCW) {
                 const userOp = await smartAccount.buildUserOp([tx]);
                 userOp.paymasterAndData = "0x";
-
                 const userOpResponse = await smartAccount.sendUserOp(userOp);
-
                 const txReciept = await userOpResponse.wait();
 
-                // const txResponseOfBiconomyAA = await smartAccount?.sendTransactionBatch({
-                //   transactions: [tx],
-                // });
-                // const txReciept = await txResponseOfBiconomyAA?.wait();
                 setTxHash(txReciept?.receipt.transactionHash);
                 setAmountIn(0);
                 setAmountInDecimals(0);
                 setSendtxLoading(false);
-                toast.success(`Tx Succefully done: ${txReciept?.receipt.transactionHash}`);
+                toast.success(`Tx Succefully done: ${txReciept?.receipt.transactionHash.slice(0, 50)}`);
+
+                saveMigrateTxnHistory(
+                    smartAccountAddress,
+                    address,
+                    selectedToken?.symbol,
+                    chain?.chain.toLowerCase(),
+                    decimalAmount,
+                    txReciept?.receipt.transactionHash,
+                    isSCW ? "SCW_TO_EOA" : "EOA_TO_SCW",
+                    "TRANSFER_FUND"
+                );
             } else {
                 if (!signer) {
                     toast.error("Please connect wallet or refresh it!");
@@ -281,7 +322,18 @@ const TransferContainer: React.FC = () => {
                 setAmountIn(0);
                 setAmountInDecimals(0);
                 setSendtxLoading(false);
-                toast.success(`Tx Succefully done: ${txReciept?.hash}`);
+                toast.success(`Tx Succefully done: ${txReciept?.hash.slice(0, 50)}`);
+
+                saveMigrateTxnHistory(
+                    smartAccountAddress,
+                    address,
+                    selectedToken?.symbol,
+                    chain?.chain.toLowerCase(),
+                    decimalAmount,
+                    txReciept?.hash,
+                    isSCW ? "SCW_TO_EOA" : "EOA_TO_SCW",
+                    "TRANSFER_FUND" 
+                );
             }
         } catch (error) {
             console.log("send-error: ", error);
@@ -291,11 +343,6 @@ const TransferContainer: React.FC = () => {
             setSendtxLoading(false);
             return;
         }
-    };
-    const copyToClipboard = (id: any) => {
-        navigator.clipboard.writeText(id);
-        // Alert the copied text
-        toast.success("Transaction Hash Copied");
     };
 
     return (

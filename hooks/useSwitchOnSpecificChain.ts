@@ -6,17 +6,19 @@ import { BigNumber as bg } from "bignumber.js";
 import { useMutation } from "@tanstack/react-query";
 import { Bundler, IBundler } from "@biconomy/bundler";
 import { BiconomyPaymaster, IPaymaster } from "@biconomy/paymaster";
-import { BiconomySmartAccountV2, BiconomySmartAccountConfig, DEFAULT_ENTRYPOINT_ADDRESS } from "@biconomy/account";
-import { metamaskWallet, useAddress, useChain, useConnect, useSigner, useSwitchChain, useConnectionStatus } from "@thirdweb-dev/react";
+import { BiconomySmartAccountV2, DEFAULT_ENTRYPOINT_ADDRESS } from "@biconomy/account";
+import { metamaskWallet, useAddress, useChain, useConnect, useSigner, useSwitchChain, useConnectionStatus, useWallet } from "@thirdweb-dev/react";
 
 import { ChainIdDetails } from "../utils/data/network";
 import { iGlobal, useGlobalStore } from "../store/GlobalStore";
 import { iTrading, useTradingStore } from "../store/TradingStore";
 import { useCalculatebalance } from "../hooks/utilsHooks/useCalculateBalance";
 import { arbitrum, avalanche, base, ethereum, optimism, polygon } from "../assets/images";
-import { DEFAULT_ECDSA_OWNERSHIP_MODULE, DEFAULT_MULTICHAIN_MODULE, ECDSAOwnershipValidationModule, MultiChainValidationModule } from "@biconomy/modules";
+import {DEFAULT_MULTICHAIN_MODULE, MultiChainValidationModule } from "@biconomy/modules";
 import { Signer } from "ethers";
-
+import { handleLogin } from "../utils/globalApis/trackingApi";
+import { iTransfer, useTransferStore } from "../store/TransferStore";
+import { iPortfolio, usePortfolioStore } from "../store/Portfolio";
 bg.config({ DECIMAL_PLACES: 5 });
 
 export function useSwitchOnSpecificChain() {
@@ -31,6 +33,19 @@ export function useSwitchOnSpecificChain() {
         setCurrentProvider,
         setSelectedNetwork,
     }: iGlobal = useGlobalStore((state) => state);
+
+    const {
+        txhash: txhashTrading,
+    }: iTrading = useTradingStore((state) => state);
+
+    const {
+        txhash: txhashTransferFund,
+    }: iTransfer = useTransferStore((state) => state);
+
+    const {
+        txhash: txhashPortfolio,
+    }: iPortfolio = usePortfolioStore((state) => state);
+
     const { setSelectedFromNetwork }: iTrading = useTradingStore((state) => state);
     const { mutateAsync: fetchNativeBalance } = useCalculatebalance();
     const switchChain = useSwitchChain();
@@ -39,6 +54,7 @@ export function useSwitchOnSpecificChain() {
     const address = useAddress(); // Detect the connected address
     const signer = useSigner(); // Detect the connected address
     const chain = useChain();
+    const wallet = useWallet();
 
     useEffect(() => {
         async function changeWallet() {
@@ -61,6 +77,7 @@ export function useSwitchOnSpecificChain() {
                     chainId: chain?.chainId.toString(),
                     icon: ChainIdDetails[chain?.chainId.toString()].networkLogo,
                 });
+
             } else {
                 setSmartAccount(null);
                 setSmartAccountAddress("");
@@ -86,8 +103,8 @@ export function useSwitchOnSpecificChain() {
 
     useEffect(() => {
         if (smartAccount) isNetworkCorrect(chain?.chainId, smartAccountAddress);
-    }, []);
-
+    }, [txhashTransferFund, txhashPortfolio, txhashTrading]);
+    
     const handleConnect = async () => {
         connect(metamaskConfig, {})
             .then(() => {
@@ -115,7 +132,7 @@ export function useSwitchOnSpecificChain() {
         // };
         // let biconomySmartAccount = new BiconomySmartAccount(biconomySmartAccountConfig);
         // biconomySmartAccount = await biconomySmartAccount.init();
-        
+
         // const ownerShipModule: any = await ECDSAOwnershipValidationModule.create({
         //     signer: signer as Signer,
         //     moduleAddress: DEFAULT_ECDSA_OWNERSHIP_MODULE,
@@ -123,7 +140,7 @@ export function useSwitchOnSpecificChain() {
         const multiChainModule = await MultiChainValidationModule.create({
             signer: signer as Signer,
             moduleAddress: DEFAULT_MULTICHAIN_MODULE,
-          });
+        });
         //   setProvider(provider)
         let biconomySmartAccount = await BiconomySmartAccountV2.create({
             chainId: chainId,
@@ -133,15 +150,16 @@ export function useSwitchOnSpecificChain() {
             defaultValidationModule: multiChainModule,
             activeValidationModule: multiChainModule,
         });
+
         // await biconomySmartAccount.init()
         // console.log('biconomySmartAccount-2', biconomySmartAccount)
 
         return biconomySmartAccount;
     };
 
-    const isNetworkCorrect = async (chainId: number, smartAccountAddress: any) => {
+    const isNetworkCorrect = async (chainId: number | undefined, smartAccountAddress: any) => {
         try {
-            const chainIds = [137, 42161, 10, 1, 43114, 8453];
+            const chainIds: Array<number | undefined> = [1, 137, 42161, 43114, 10, 8453];
             if (chainIds.includes(chainId)) {
                 await fetchNativeBalance({
                     chainId: chainId,
@@ -178,6 +196,13 @@ export function useSwitchOnSpecificChain() {
 
             setLoading(false);
             setCurrentProvider("Biconomy");
+
+            console.log("----------------------------Log in--------------------------")
+            console.log('address:', _smartAccountAddress);
+            console.log("wallet", wallet)
+
+            handleLogin(_smartAccountAddress, address, wallet?.walletId);
+
             return smartAccount;
         } catch (err) {
             setLoading(false);

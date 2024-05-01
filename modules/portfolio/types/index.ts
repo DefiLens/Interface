@@ -102,6 +102,7 @@ export type tTxnHistory = {
         toToken: string;
         txHash: string;
     }[];
+    message?: string;
     smartAccount: any;
 }
 

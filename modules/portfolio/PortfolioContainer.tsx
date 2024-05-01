@@ -3,14 +3,15 @@ import Portfolio from "./Portfolio";
 import { usePortfolio } from "../../hooks/portfolio/usePortfolio";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import { iPortfolio, usePortfolioStore } from "../../store/Portfolio";
-import { useAddress, useSigner } from "@thirdweb-dev/react";
+import { useAddress, useChain, useSigner } from "@thirdweb-dev/react";
 import toast from "react-hot-toast";
 import { BigNumber, ethers } from "ethers";
 import { BigNumber as bg } from "bignumber.js";
 import web3 from "web3";
 import IERC20 from "../../abis/IERC20.json";
-import { incresePowerByDecimals } from "../../utils/helper";
+import { decreasePowerByDecimals, incresePowerByDecimals } from "../../utils/helper";
 import { ChainIdDetails, NETWORK_LIST } from "../../utils/data/network";
+import { saveMigrateTxnHistory } from "../../utils/globalApis/trackingApi";
 
 const PortfolioContainer: React.FC = () => {
     const { mutateAsync: fetchPortfolio } = usePortfolio();
@@ -31,6 +32,7 @@ const PortfolioContainer: React.FC = () => {
         setTxHash,
     }: iPortfolio = usePortfolioStore((state) => state);
 
+    const chain = useChain();
     // To fetch portfolio
     const handleFetchPorfolioData = () => {
         const fetch = async (address: string) => {
@@ -120,12 +122,17 @@ const PortfolioContainer: React.FC = () => {
             toast.error("Select One Token");
             return;
         }
-        // console.log(amountIn);
         if (amountIn == "") {
             toast.error("Please Enter Amount");
             return;
         }
         try {
+            const selectedToken: string = selectOneAsset?.attributes?.fungible_info?.symbol;
+            const decimalAmount = await decreasePowerByDecimals(
+                amountIn,
+                selectOneAsset?.attributes?.quantity?.decimals
+            );
+
             setSendtxLoading(true);
             setTxHash("");
             if (!BigNumber.from(amountIn).gt(0)) {
@@ -162,12 +169,7 @@ const PortfolioContainer: React.FC = () => {
                     return;
                 }
                 const balance = await contract.balanceOf(_fromAddress);
-                // console.log({
-                //     balance,
-                //     amountIn,
-                //     isNative,
-                //     contractAddress,
-                // });
+             
                 if (!BigNumber.from(balance).gte(amountIn)) {
                     toast.error("Not erc20 enough balance");
                     return;
@@ -175,6 +177,7 @@ const PortfolioContainer: React.FC = () => {
                 const data = await contract.populateTransaction.transfer(_toAdress, amountIn);
                 tx = { to: contractAddress, data: data.data };
                 console.log("Not native tx", tx, "isSCW", isSCW);
+
             }
 
             if (isSCW) {
@@ -185,15 +188,22 @@ const PortfolioContainer: React.FC = () => {
 
                 const txReciept = await userOpResponse.wait();
 
-                // const txResponseOfBiconomyAA = await smartAccount?.sendTransactionBatch({
-                //   transactions: [tx],
-                // });
-                // const txReciept = await txResponseOfBiconomyAA?.wait();
                 setTxHash(txReciept?.receipt.transactionHash);
                 setAmountIn(0);
                 setAmountInDecimals(0);
                 setSendtxLoading(false);
-                toast.success(`Tx Succefully done: ${txReciept?.receipt.transactionHash}`);
+                toast.success(`Tx Succefully done: ${txReciept?.receipt.transactionHash.slice(0, 40)}`);
+
+                saveMigrateTxnHistory(
+                    smartAccountAddress,
+                    address,
+                    selectedToken,
+                    chain?.chain.toLowerCase(),
+                    decimalAmount,
+                    txReciept?.receipt.transactionHash,
+                    isSCW ? "SCW_TO_EOA" : "EOA_TO_SCW",
+                    "PORTFOLIO"
+                );
             } else {
                 if (!signer) {
                     toast.error("Please connect wallet or refresh it!");
@@ -205,7 +215,18 @@ const PortfolioContainer: React.FC = () => {
                 setAmountIn(0);
                 setAmountInDecimals(0);
                 setSendtxLoading(false);
-                toast.success(`Tx Succefully done: ${txReciept?.hash}`);
+                toast.success(`Tx Succefully done: ${txReciept?.hash.slice(0, 40)}`);
+
+                saveMigrateTxnHistory(
+                    smartAccountAddress,
+                    address,
+                    selectedToken,
+                    chain?.chain.toLowerCase(),
+                    decimalAmount,
+                    txReciept?.hash,
+                    isSCW ? "SCW_TO_EOA" : "EOA_TO_SCW",
+                    "PORTFOLIO"
+                );
             }
         } catch (error) {
             console.log("send-error: ", error);
