@@ -29,7 +29,7 @@ const Header: React.FC<tHeader> = ({ switchOnSpecificChain }) => {
         showWalletAddress,
         setShowWalletAddress,
         selectedNetwork,
-        setConnectedWallet
+        setConnectedWallet,
     }: iGlobal = useGlobalStore((state) => state);
 
     const address = useAddress();
@@ -126,6 +126,7 @@ const Header: React.FC<tHeader> = ({ switchOnSpecificChain }) => {
                             {smartAccount && !loading && (
                                 <button
                                     onClick={() => setShowWalletAddress(!showWalletAddress)}
+                                    ref={walletAddressRef}
                                     className="relative flex justify-center items-center gap-3 wallet-container bg-N0 border border-N40 px-5 py-1 rounded-xl text-B100 shadow-sm font-medium transition duration-300 hover:bg-N20 cursor-pointer"
                                 >
                                     {/* Smart account address and copy btn */}
@@ -137,10 +138,7 @@ const Header: React.FC<tHeader> = ({ switchOnSpecificChain }) => {
 
                                     {/* Drop down see both addresses */}
                                     {showWalletAddress && (
-                                        <div
-                                            ref={walletAddressRef}
-                                            className="w-80 absolute top-16 right-0 z-50 flex flex-col justify-center items-start bg-N0 border-1 border-B75 shadow-xl p-3 rounded-lg"
-                                        >
+                                        <div className="w-80 absolute top-16 right-0 z-50 flex flex-col justify-center items-start bg-N0 border-1 border-B75 shadow-xl p-3 rounded-lg">
                                             {/* SCW Address and Balance */}
                                             <div className="w-full relative flex justify-between p-2 items-center gap-2 cursor-default">
                                                 <div className="flex flex-col justify-center items-start">
@@ -164,7 +162,7 @@ const Header: React.FC<tHeader> = ({ switchOnSpecificChain }) => {
                                                 </div>
                                                 <CopyButton copy={smartAccountAddress} />
                                             </div>
-                                            {/* EOA Addrss and Balance */}
+                                            {/* EOA Address and Balance */}
                                             <div className="w-full flex justify-between items-center gap-2 p-2 cursor-default">
                                                 <div className="flex flex-col justify-center items-start">
                                                     <span className="text-B200 text-base font-medium">

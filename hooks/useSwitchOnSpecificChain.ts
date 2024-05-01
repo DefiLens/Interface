@@ -17,14 +17,13 @@ import {
     useConnect,
     useSigner,
     useSwitchChain,
-    useWallet,
 } from "@thirdweb-dev/react";
 import {
-    DEFAULT_ECDSA_OWNERSHIP_MODULE,
+    // DEFAULT_ECDSA_OWNERSHIP_MODULE,
     DEFAULT_MULTICHAIN_MODULE,
-    ECDSAOwnershipValidationModule,
+    // ECDSAOwnershipValidationModule,
     MultiChainValidationModule,
-} from "@biconomy/modules";// Store, Util Imports
+} from "@biconomy/modules"; // Store, Util Imports
 import { ChainIdDetails } from "../utils/data/network";
 import { iGlobal, useGlobalStore } from "../store/GlobalStore";
 import { iTrading, useTradingStore } from "../store/TradingStore";
@@ -120,7 +119,7 @@ export function useSwitchOnSpecificChain() {
             return connect(phantomConfig, {});
         } else if (walletName == "coinbase") {
             return connect(coinbaseConfig, {});
-        } else if (walletName == "rainbow") {
+        } else if (walletName == "rainbowWallet") {
             return connect(rainbowConfig, {});
         } else {
             return connect(metamaskConfig, {});

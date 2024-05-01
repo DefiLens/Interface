@@ -124,9 +124,9 @@ const Trade: React.FC<tTrade> = ({
                         handleExecuteMethod={handleExecuteMethod}
                         processRebalancing={processRebalancing}
                     />
-                    {noScwBalance && (
+                    {noScwBalance && address && (
                         <button
-                            className="absolute -top-4 -right-4 z-20 rounded-full border bg-white hover:scale-105 transition-transform"
+                            className="absolute -top-4 -right-4 z-0 rounded-full border bg-white hover:scale-105 transition-transform"
                             onClick={() => setIsOnboardOpen(true)}
                         >
                             <HiMiniExclamationCircle className="text-red-500 text-3xl" />
