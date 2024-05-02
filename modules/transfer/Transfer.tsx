@@ -18,6 +18,7 @@ import { iTransfer, useTransferStore } from "../../store/TransferStore";
 import CopyButton from "../../components/common/CopyButton";
 import { LiaWalletSolid } from "react-icons/lia";
 import { success } from "../../assets/gifs";
+import { useEffect } from "react";
 
 const Transfer: React.FC<tTransfer> = ({
     onOptionChangeForWallet,
@@ -52,6 +53,12 @@ const Transfer: React.FC<tTransfer> = ({
     const address = useAddress();
     const chain = useChain();
     const chainId = useChainId();
+
+    useEffect(() => {
+        if (amountInDecimals === 0) {
+            setSelectedToken("")
+        }
+    }, [amountInDecimals])
 
     return (
         <div className="w-full h-full overflow-scroll flex flex-col justify-start items-center gap-5">
