@@ -2,16 +2,15 @@ import { email, github, telegram, twitter, web } from "../assets/images";
 import { tSocialHandle } from "../modules/footer/types";
 
 export const metadata = {
-    title: "DefiLens",
-    description:
-        "DefiLens unified Defi trading experience with One-click. DefiLens abstract chains and execute multiple orders in batch across-chains with smart wallet designed platform.",
-    keywords:
-        "defi, ethereum, base, arbitrum, polygon, optimism, cross chain, cross-chain, acccount abstraction, smart account, trading, batching, rebalance",
-    url: "https://defilens.tech",
-    image: "https://defilens.tech/twitter-cover.png",
-    SITE_NAME: "defilens.tech",
     APP_NAME: "DefiLens",
-    username: "@DefiLensTech",
+    DESCRIPTION:
+        "DefiLens unified Defi trading experience with One-click. DefiLens abstract chains and execute multiple orders in batch across-chains with smart wallet designed platform.",
+    KEYWORDS:
+        "defi, ethereum, base, arbitrum, polygon, optimism, cross chain, cross-chain, acccount abstraction, smart account, trading, batching, rebalance",
+    DOMAIN: "https://app.defilens.tech",
+    IMAGE: "https://app.defilens.tech/twitter-cover.png",
+    SITE_NAME: "app.defilens.tech",
+    USERNAME: "@DefiLensTech",
 };
 
 export const socialHandles: tSocialHandle[] = [

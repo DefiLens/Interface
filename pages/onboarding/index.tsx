@@ -1,3 +1,3 @@
-import OnboardingPage from "../../modules/onboarding";
+import OnboardingPage from "../../modules/Onboarding";
 
 export default OnboardingPage;
