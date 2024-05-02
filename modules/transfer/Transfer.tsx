@@ -1,16 +1,16 @@
 // Library Imports
 import Image from "next/image";
 import { BigNumber } from "ethers";
-import { useAddress, useChain } from "@thirdweb-dev/react";
+import { useAddress, useChain, useChainId } from "@thirdweb-dev/react";
 import { FiCopy } from "react-icons/fi";
 import { MdKeyboardArrowUp } from "react-icons/md";
 import { HiOutlineArrowsRightLeft, HiOutlineInformationCircle } from "react-icons/hi2";
 // Type, Component, Store and Helper Imports
 import { tTransfer } from "./types";
 import { Button, ConnectWalletWrapper } from "../../components/Button";
-import { change, gas, info } from "../../assets/images";
+import { change, closeNarrow, gas, info } from "../../assets/images";
 import { ChainIdDetails } from "../../utils/data/network";
-import { decreasePowerByDecimals } from "../../utils/helper";
+import { buildTxHash, decreasePowerByDecimals } from "../../utils/helper";
 import { copyToClipboard, shorten } from "../../utils/helper";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import SelectInput from "../../components/SelectInput/SelectInput";
@@ -18,10 +18,11 @@ import { iTransfer, useTransferStore } from "../../store/TransferStore";
 import CopyButton from "../../components/common/CopyButton";
 import { LiaWalletSolid } from "react-icons/lia";
 import { transferText } from "../../utils/constants";
+import { success } from "../../assets/gifs";
+import { useEffect } from "react";
 
 const Transfer: React.FC<tTransfer> = ({
     onOptionChangeForWallet,
-    // onOptionChange,
     setBalance,
     handleAmountIn,
     send,
@@ -29,9 +30,7 @@ const Transfer: React.FC<tTransfer> = ({
     const { smartAccount, smartAccountAddress }: iGlobal = useGlobalStore((state) => state);
 
     const {
-        // tokenAddress,
         amountInDecimals,
-        // isNative,
         isSCW,
         sendTxLoading,
         txhash,
@@ -48,10 +47,19 @@ const Transfer: React.FC<tTransfer> = ({
         setShowTokenList,
         selectedToken,
         setSelectedToken,
+        showSuccessModal,
+        setShowSuccessModal,
     }: iTransfer = useTransferStore((state) => state);
 
-    const address = useAddress(); // Detect the connected address
+    const address = useAddress();
     const chain = useChain();
+    const chainId = useChainId();
+
+    useEffect(() => {
+        if (amountInDecimals === 0) {
+            setSelectedToken("")
+        }
+    }, [amountInDecimals])
 
     return (
         <div className="w-full h-full overflow-scroll flex flex-col justify-start items-center gap-5">
@@ -259,10 +267,42 @@ const Transfer: React.FC<tTransfer> = ({
 
                             {txhash && (
                                 <div className="flex flex-wrap justify-start items-center gap-3 text-base">
-                                    <FiCopy onClick={() => copyToClipboard(txhash, "Transaction Hash Copied")} />
+                                    {/* <FiCopy onClick={() => copyToClipboard(txhash, "Transaction Hash Copied")} /> */}
                                     <p>TxHash : {shorten(txhash)}</p>
+                                    <CopyButton copy={txhash} />
                                 </div>
                             )}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {showSuccessModal && (
+                <div className="fixed w-full h-full flex justify-center items-center top-0 right-0 left-0 bottom-0 z-50 text-black backdrop-brightness-50 p-5 md:p-10">
+                    <div className="h-auto w-[600px] flex flex-col justify-center items-center gap-2 bg-white border-2 border-gray-300 rounded-2xl p-3">
+                        <button
+                            type="button"
+                            onClick={() => setShowSuccessModal(false)}
+                            className="w-8 h-8 place-self-end p-2 bg-slate-50 hover:bg-slate-200 active:bg-slate-100 rounded-xl cursor-pointer outline-none"
+                        >
+                            <Image src={closeNarrow} alt="" />
+                        </button>
+                        <div className="h-full w-full flex flex-col justify-center items-center gap-2 p-5">
+                            <Image src={success} alt="" className="w-20 h-20 md:w-28 md:h-28 !bg-green-400" />
+                            <div className="w-full text-center text-xl md:text-2xl text-black font-bold cursor-pointer m-2">
+                                Transaction Successful
+                            </div>
+                            <div className="w-full break-words text-center text-base md:text-lg text-teal-500  font-semibold m-2">
+                                <span className="flex flex-col justify-center items-center gap-2">
+                                    <a
+                                        target="_blank"
+                                        href={buildTxHash(chainId?.toString(), txhash, false)}
+                                        className="cursor-pointer bg-teal-500 text-white rounded-lg px-5 py-1"
+                                    >
+                                        View on Explorer
+                                    </a>
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -2,6 +2,24 @@ import { create } from "zustand";
 import { BigNumber } from "ethers";
 import { tokenData } from "../modules/transfer/types";
 
+export interface LogoURI {
+    src: string;
+    height: number;
+    width: number;
+    blurWidth: number;
+    blurHeight: number;
+}
+
+export interface TokenData {
+    chainId: number;
+    address: string;
+    name: string;
+    symbol: string;
+    decimals: number;
+    logoURI: LogoURI;
+}
+
+
 export interface iTransfer {
     tokenAddress: number | string;
     amountIn: number | string;
@@ -10,7 +28,7 @@ export interface iTransfer {
     isSCW: boolean;
     sendTxLoading: boolean;
     txhash: string;
-    tokensData: tokenData[];
+    tokensData: TokenData[];
     scwBalance: BigNumber;
     eoaBalance: BigNumber;
     tokenInDecimals: number;
@@ -18,7 +36,8 @@ export interface iTransfer {
     isGasCostExpanded: boolean;
     searchToken: string;
     showTokenList: boolean;
-    selectedToken: tokenData;
+    selectedToken: TokenData;
+    showSuccessModal: boolean;
 
     setTokenAddress: (tokenAddress: number | string) => void;
     setAmountIn: (amountIn: number | string) => void;
@@ -35,7 +54,8 @@ export interface iTransfer {
     setIsGasCostExpanded: (isGasCostExpanded: boolean) => void;
     setSearchToken: (searchToken: string) => void;
     setShowTokenList: (showTokenList: boolean) => void;
-    setSelectedToken: (selectedToken: tokenData) => void;
+    setSelectedToken: (selectedToken: Object) => void;
+    setShowSuccessModal: (showSuccessModal: boolean) => void;
 }
 
 export const useTransferStore = create<iTransfer>((set) => ({
@@ -45,7 +65,7 @@ export const useTransferStore = create<iTransfer>((set) => ({
     isNative: true,
     isSCW: true,
     sendTxLoading: false,
-    txhash: false,
+    txhash: "",
     tokensData: [],
     scwBalance: BigNumber.from(0),
     eoaBalance: BigNumber.from(0),
@@ -54,7 +74,8 @@ export const useTransferStore = create<iTransfer>((set) => ({
     isGasCostExpanded: false,
     searchToken: "",
     showTokenList: false,
-    selectedToken: {} as tokenData,
+    selectedToken: {} as TokenData,
+    showSuccessModal: false,
 
     setTokenAddress: (tokenAddress) => set(() => ({ tokenAddress })),
     setAmountIn: (amountIn) => set(() => ({ amountIn })),
@@ -72,4 +93,5 @@ export const useTransferStore = create<iTransfer>((set) => ({
     setSearchToken: (searchToken) => set(() => ({ searchToken })),
     setShowTokenList: (showTokenList) => set(() => ({ showTokenList })),
     setSelectedToken: (selectedToken) => set(() => ({ selectedToken })),
+    setShowSuccessModal: (showSuccessModal) => set(() => ({ showSuccessModal })),
 }));

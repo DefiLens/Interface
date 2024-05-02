@@ -68,8 +68,8 @@ const Header: React.FC<tHeader> = ({ switchOnSpecificChain }) => {
 
     return (
         <>
-            <div className="w-full fixed top-0 left-0 right-0 md:top-3 z-10 ">
-                <div className="max-w-[1380px] w-full md:w-[94%] mx-auto h-[70px] placeholder:h-[70px] flex justify-between items-center gap-3 bg-N0 md:border md:shadow-lg md:rounded-full p-3">
+            <div className="w-full fixed top-0 left-0 right-0 md:top-3 z-50 ">
+                <div className="max-w-[1380px] w-full md:w-[94%] mx-auto h-[70px] placeholder:h-[70px] flex justify-between items-center gap-3 bg-N0 md:border md:rounded-full p-3">
                     {/* Left Side navigation */}
                     <div className="flex justify-between items-center gap-8">
                         {NavigationList.length > 0 &&

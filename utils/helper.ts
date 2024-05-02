@@ -238,7 +238,7 @@ export function setSafeState<T>(setStateFunction: (value: T) => void, value: T |
 
 ///// build txHash link from hash and chainId
 
-export const buildTxHash = (chainId: string, txhash: string, isSocketScan?: boolean) => {
+export const buildTxHash = (chainId: string | undefined, txhash: string, isSocketScan?: boolean) => {
     if (isSocketScan) {
         return `https://socketscan.io/tx/${txhash}`;
     }
