@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import web3 from "web3";
 import { toast } from "react-hot-toast";
@@ -55,41 +55,29 @@ const TransferContainer: React.FC = () => {
         gasCost,
         setGasCost,
         selectedToken,
+        showSuccessModal,
+        setShowSuccessModal,
     }: iTransfer = useTransferStore((state) => state);
 
-    const address = useAddress(); // Detect the connected address
-    const signer = useSigner(); // Detect the connected address
+    const address = useAddress();
+    const signer = useSigner();
     const chain = useChain();
 
     useEffect(() => {
         async function onChangeFromProtocol() {
-            // if (true) {
             const filteredTokens = getTokenListByChainId(selectedNetwork.chainId, UNISWAP_TOKENS);
-            if (selectedNetwork.chainId === "137") {
-                filteredTokens.unshift({
-                    chainId: 137,
-                    address: "0x0000000000000000000000000000000000001010",
-                    name: "Matic",
-                    symbol: "MATIC",
-                    decimals: 18,
-                    logoURI: polygon,
-                });
-            } else {
-                filteredTokens.unshift({
-                    chainId: 1,
-                    address: "",
-                    name: "ethereum",
-                    symbol: "Ethereum",
-                    decimals: 18,
-                    logoURI: ethereum,
-                });
-            }
+            filteredTokens.unshift({
+                chainId: parseInt(selectedNetwork.chainId),
+                address: "0x0000000000000000000000000000000000000000",
+                name: selectedNetwork.chainId === "137" ? "Matic" : "ethereum",
+                symbol: selectedNetwork.chainId === "137" ? "MATIC" : "Ethereum",
+                decimals: 18,
+                logoURI: selectedNetwork.chainId === "137" ? polygon : ethereum,
+            });
             setTokensData(filteredTokens);
         }
-        // }
         setTokenAddress("");
         onChangeFromProtocol();
-        // }, [showTransferFundToggle, selectedNetwork.chainId]);
     }, [selectedNetwork.chainId]);
 
     useEffect(() => {
@@ -98,25 +86,9 @@ const TransferContainer: React.FC = () => {
         }
     }, [address, smartAccount]);
 
-    const onOptionChange = async (e) => {
-        try {
-            setGasCost(0);
-            setAmountIn(0);
-            setAmountInDecimals(0);
-            setTokenAddress("");
-            const tempChcekNative = isNative ? false : true; // because isNative can not access after just updated
-            setIsnative(tempChcekNative);
-            await setBalance("ethereum", "0x");
-        } catch (error) {
-            console.log("send-error: ", error);
-            return;
-        }
-    };
-
     const setBalance = async (_tokenName, _tokenAddress) => {
-        console.log("------------>>.", _tokenName, _tokenAddress);
         try {
-            if (_tokenName == "ethereum") {
+            if (_tokenName == "ethereum" || _tokenName == "Matic") {
                 let provider = await new ethers.providers.Web3Provider(web3.givenProvider);
                 if (!provider) {
                     toast.error("no provider");
@@ -233,8 +205,8 @@ const TransferContainer: React.FC = () => {
             let tx;
             const _fromAddress = isSCW ? smartAccountAddress : address;
             const _toAdress = isSCW ? address : smartAccountAddress;
+
             if (isNative) {
-                console.log("givenProvider>>>>>>>>>>>.", chain?.chain, selectedToken, decimalAmount);
                 let provider = await new ethers.providers.Web3Provider(web3.givenProvider);
                 if (!provider) {
                     toast.error("no provider");
@@ -243,50 +215,25 @@ const TransferContainer: React.FC = () => {
 
                 const balance = await provider.getBalance(_fromAddress);
                 if (!BigNumber.from(balance).gte(amountIn)) {
-                    toast.error("Not native enough balance-");
+                    toast.error("Not enough balance");
                     return;
                 }
                 tx = { to: _toAdress, value: amountIn, data: "0x" };
                 console.log("Native tx", tx, "isSCW", isSCW);
-                console.log("SCW_TO_EOA");
-
-                // saveMigrateTxnHistory(
-                //     smartAccountAddress,
-                //     address,
-                //     selectedToken?.symbol,
-                //     chain?.chain.toLowerCase(),
-                //     decimalAmount,
-                //     "newTest",// txReciept?.hash,
-                //     isSCW ? "SCW_TO_EOA" : "EOA_TO_SCW",
-                //     "TRANSFER_FUND" 
-                // );
             } else {
-                console.log("givenProvider>>>>>>>>>>>.", chain?.chain, selectedToken, decimalAmount);
                 const contract = await getContract(tokenAddress);
                 if (!contract) {
-                    toast.error("add valid Token address first");
+                    toast.error("Add valid Token address first");
                     return;
                 }
                 const balance = await contract.balanceOf(_fromAddress);
                 if (!BigNumber.from(balance).gte(amountIn)) {
-                    toast.error("Not erc20 enough balance");
+                    toast.error("Not enough balance");
                     return;
                 }
-                const data = await contract.populateTransaction.transfer(_toAdress, selectedToken?.symbol);
+                const data = await contract.populateTransaction.transfer(_toAdress, amountIn);
                 tx = { to: tokenAddress, data: data.data };
                 console.log("Not native tx", tx, "isSCW", isSCW);
-                console.log("EOA_TO_SCW");
-
-                // saveMigrateTxnHistory(
-                //     smartAccountAddress,
-                //     address,
-                //     selectedToken?.symbol,
-                //     chain?.chain.toLowerCase(),
-                //     decimalAmount,
-                //     "newTest",// txReciept?.hash,
-                //     isSCW ? "SCW_TO_EOA" : "EOA_TO_SCW",
-                //     "TRANSFER_FUND" 
-                // );
             }
 
             if (isSCW) {
@@ -299,8 +246,8 @@ const TransferContainer: React.FC = () => {
                 setAmountIn(0);
                 setAmountInDecimals(0);
                 setSendtxLoading(false);
-                toast.success(`Tx Succefully done: ${txReciept?.receipt.transactionHash.slice(0, 50)}`);
-
+                toast.success(`Tx Succefully done`);
+                setShowSuccessModal(true);
                 saveMigrateTxnHistory(
                     smartAccountAddress,
                     address,
@@ -322,7 +269,9 @@ const TransferContainer: React.FC = () => {
                 setAmountIn(0);
                 setAmountInDecimals(0);
                 setSendtxLoading(false);
-                toast.success(`Tx Succefully done: ${txReciept?.hash.slice(0, 50)}`);
+                // toast.success(`Tx Succefully done: ${txReciept?.hash.slice(0, 50)}`);
+                toast.success(`Tx Succefully done`);
+                setShowSuccessModal(true);
 
                 saveMigrateTxnHistory(
                     smartAccountAddress,
@@ -332,7 +281,7 @@ const TransferContainer: React.FC = () => {
                     decimalAmount,
                     txReciept?.hash,
                     isSCW ? "SCW_TO_EOA" : "EOA_TO_SCW",
-                    "TRANSFER_FUND" 
+                    "TRANSFER_FUND"
                 );
             }
         } catch (error) {
@@ -348,7 +297,6 @@ const TransferContainer: React.FC = () => {
     return (
         <Transfer
             onOptionChangeForWallet={onOptionChangeForWallet}
-            // onOptionChange={onOptionChange}
             setBalance={setBalance}
             handleAmountIn={handleAmountIn}
             send={send}

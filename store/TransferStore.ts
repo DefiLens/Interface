@@ -36,6 +36,7 @@ export interface iTransfer {
     searchToken: string;
     showTokenList: boolean;
     selectedToken: TokenData;
+    showSuccessModal: boolean;
 
     setTokenAddress: (tokenAddress: number | string) => void;
     setAmountIn: (amountIn: number | string) => void;
@@ -53,6 +54,7 @@ export interface iTransfer {
     setSearchToken: (searchToken: string) => void;
     setShowTokenList: (showTokenList: boolean) => void;
     setSelectedToken: (selectedToken: Object) => void;
+    setShowSuccessModal: (showSuccessModal: boolean) => void;
 }
 
 export const useTransferStore = create<iTransfer>((set) => ({
@@ -72,6 +74,7 @@ export const useTransferStore = create<iTransfer>((set) => ({
     searchToken: "",
     showTokenList: false,
     selectedToken: {} as TokenData,
+    showSuccessModal: false,
 
     setTokenAddress: (tokenAddress) => set(() => ({ tokenAddress })),
     setAmountIn: (amountIn) => set(() => ({ amountIn })),
@@ -89,4 +92,5 @@ export const useTransferStore = create<iTransfer>((set) => ({
     setSearchToken: (searchToken) => set(() => ({ searchToken })),
     setShowTokenList: (showTokenList) => set(() => ({ showTokenList })),
     setSelectedToken: (selectedToken) => set(() => ({ selectedToken })),
+    setShowSuccessModal: (showSuccessModal) => set(() => ({ showSuccessModal })),
 }));
