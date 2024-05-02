@@ -76,8 +76,8 @@ const Trade: React.FC<tTrade> = ({
         <div className="w-full h-full flex flex-col justify-center items-center py-5">
             <div
                 className={cn(
-                    showBatchList ? "!w-full" : "!w-[50%]",
-                    "h-full md:max-w-xl flex flex-col lg:flex-row justify-start lg:justify-center items-center lg:items-start gap-4"
+                    showBatchList ? "!w-full" : "w-full md:w-3/4 lg:!w-1/2",
+                    "h-full px-4 sm:px-0 max-w-lg lg:max-w-5xl flex flex-col lg:flex-row justify-start lg:justify-center items-center lg:items-start gap-4"
                 )}
             >
                 {/* FROM_TOKEN SELECTION MODAL */}
@@ -116,7 +116,7 @@ const Trade: React.FC<tTrade> = ({
                 />
 
                 {/* BATCHING TOKEN SELECTION --> TO AND FROM */}
-                <div className="relative w-full">
+                <div className={cn("relative", showBatchList ? "w-full" : "w-full xl:w-3/4")}>
                     <BatchSelectionSection
                         handleSwap={handleSwap}
                         onChangeAmountIn={onChangeAmountIn}
@@ -149,11 +149,7 @@ const Trade: React.FC<tTrade> = ({
                     footer={
                         <p className="text-slate-400 text-sm font-medium w-full">
                             Note: Please contact us on our{" "}
-                            <Link
-                                className="underline underline-offset-2"
-                                href={socialHandles[0].href}
-                                target="_blank"
-                            >
+                            <Link className="underline underline-offset-2" href={socialHandles[0].href} target="_blank">
                                 telegram community
                             </Link>{" "}
                             if you need help.

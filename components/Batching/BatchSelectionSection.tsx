@@ -105,7 +105,7 @@ const BatchSelectionSection: React.FC<tBatchSelectionSection> = ({
     };
 
     return (
-        <div className="w-full flex flex-col gap-5 bg-gradient-to-br from-[#7339FD] via-[#56B0F6] to-[#4DD4F4] rounded-2xl shadow-2xl overflow-hidden">
+        <div className="w-full md:max-w-xl mx-auto flex flex-col gap-5 bg-gradient-to-br from-[#7339FD] via-[#56B0F6] to-[#4DD4F4] rounded-2xl shadow-lg border lg:shadow-xl overflow-hidden">
             <div className="px-5 pt-7">
                 <div className="flex flex-col gap-3 bg-[rgba(225,225,225,.4)] rounded-xl px-5 py-3 ">
                     {/* Token Selection */}

@@ -36,11 +36,11 @@ const BatchingListSection: React.FC<tBatchListSection> = ({ removeBatch, toggleS
     }, [individualBatch]);
 
     return (
-        <div className="w-full md:max-w-2xl max-h-full bg-W100 flex flex-col justify-start items-center gap-1 rounded-2xl cursor-pointer shadow-2xl">
+        <div className="w-full md:max-w-xl max-h-full bg-W100 flex flex-col justify-start items-center gap-1 rounded-2xl cursor-pointer border shadow-lg lg:shadow-xl">
             {/* Batching List Title */}
             <div className="w-full flex justify-between items-center gap-1 px-5 pt-7">
                 <h1 className="text-B200 text-lg md:text-xl lg:text-2xl text-center font-bold rounded-t-2xl ">
-                    Batching List...
+                    Batching List
                 </h1>
 
                 {/* Display Total Gas if available */}
@@ -110,8 +110,7 @@ const BatchingListSection: React.FC<tBatchListSection> = ({ removeBatch, toggleS
                                                             <Image
                                                                 src={
                                                                     protocolNames[selectedFromNetwork.chainId].key.find(
-                                                                        (entry) =>
-                                                                            entry.name == bar.data.fromProtocol
+                                                                        (entry) => entry.name == bar.data.fromProtocol
                                                                     )?.icon || defaultBlue
                                                                 }
                                                                 alt=""
@@ -145,7 +144,8 @@ const BatchingListSection: React.FC<tBatchListSection> = ({ removeBatch, toggleS
                                             </div>
                                             {showIndividualBatchList === inputBarIndex && (
                                                 <div className="flex flex-col justify-start items-start gap-1 pl-10 pt-3">
-                                                    {bar.batchesFlow !== undefined && bar.batchesFlow.length > 0 &&
+                                                    {bar.batchesFlow !== undefined &&
+                                                        bar.batchesFlow.length > 0 &&
                                                         bar.batchesFlow.map((item, index: number) => (
                                                             <div
                                                                 key={item.action}
@@ -189,7 +189,8 @@ const BatchingListSection: React.FC<tBatchListSection> = ({ removeBatch, toggleS
                                                                         </span>
                                                                     </div>
                                                                 </div>
-                                                                {bar.batchesFlow !== undefined && bar.batchesFlow.length - 1 > index ? (
+                                                                {bar.batchesFlow !== undefined &&
+                                                                bar.batchesFlow.length - 1 > index ? (
                                                                     <PiDotsThreeOutlineVertical
                                                                         size="32px"
                                                                         className="text-B200"

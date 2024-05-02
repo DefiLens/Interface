@@ -135,7 +135,7 @@ const MigrateAsset: React.FC<MigrateAssetProps> = ({ send, handleAmountIn }) => 
             {/* Modal Backdrop */}
             <div
                 onClick={() => setSelectOneAsset(null)}
-                className="fixed border border-red-500 top-0 left-0 z-40 w-screen h-screen bg-[rgba(0,0,0,0.4)] transition duration-300"
+                className="fixed top-0 left-0 z-40 w-screen h-screen bg-[rgba(0,0,0,0.4)] transition duration-300"
             ></div>
         </>
     );
