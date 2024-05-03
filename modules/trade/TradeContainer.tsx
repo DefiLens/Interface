@@ -73,6 +73,7 @@ const TradeContainer: React.FC<any> = () => {
         setSmartAccount,
         setSmartAccountAddress,
         setConnected,
+        isSimulate
     }: iGlobal = useGlobalStore((state) => state);
 
     const {
@@ -738,22 +739,25 @@ const TradeContainer: React.FC<any> = () => {
                 isError: false,
             };
 
-            // const userOp = await smartAccount.buildUserOp(refinaceData.txArray);
+            let fees
+            if (!isSimulate) {
+                const userOp = await smartAccount.buildUserOp(refinaceData.txArray);
 
-            // const fees = bg(userOp.callGasLimit.toString())
-            //     .plus(bg(userOp.verificationGasLimit.toString()))
-            //     .multipliedBy(bg(userOp.maxFeePerGas.toString()))
-            //     .dividedBy(1e18);
-            // let _totalfees = totalfees;
+                fees = bg(userOp.callGasLimit.toString())
+                    .plus(bg(userOp.verificationGasLimit.toString()))
+                    .multipliedBy(bg(userOp.maxFeePerGas.toString()))
+                    .dividedBy(1e18);
+                let _totalfees = totalfees;
 
-            // if (refinaceData.value) {
-            //     _totalfees = bg(_totalfees.toString())
-            //         .plus(fees.toString())
-            //         .plus(bg(refinaceData.value.toString()).dividedBy(1e18));
-            // } else {
-            //     _totalfees = bg(_totalfees).plus(fees);
-            // }
-            // setTotalFees(bg(_totalfees));
+                if (refinaceData.value) {
+                    _totalfees = bg(_totalfees.toString())
+                        .plus(fees.toString())
+                        .plus(bg(refinaceData.value.toString()).dividedBy(1e18));
+                } else {
+                    _totalfees = bg(_totalfees).plus(fees);
+                }
+                setTotalFees(bg(_totalfees));
+            }
 
             updateInputValues(
                 individualBatch.length - 1,
@@ -769,8 +773,7 @@ const TradeContainer: React.FC<any> = () => {
                     fromToken: selectedFromToken,
                     toToken: selectedToToken,
                     amountIn: amountIn,
-                    // fees: fees.toString(),
-                    fees: "0",
+                    fees: isSimulate ? "0.001" : fees.toString(),
                     extraValue: refinaceData.value ? bg(refinaceData.value.toString()).dividedBy(1e18).toString() : "0",
                 },
                 simulation
