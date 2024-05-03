@@ -13,7 +13,7 @@ export const ETH_ADDRESS = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
 export const ExecutionMethodsList = [
     {
         isEnable: true,
-        title: 'Simulate only if you do not have funds',
+        title: 'Simulate',
         providerName: 'isSimulate',
         icons: [
             {

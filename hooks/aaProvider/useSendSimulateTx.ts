@@ -20,6 +20,7 @@ interface ConvertedObject {
     from: string;
     to: string;
     input: string;
+    value: BigNumber;
 }
 
 interface OriginalObject {
@@ -32,15 +33,17 @@ function convertArray(array: OriginalObject[]): ConvertedObject[] {
     return array.map(obj => ({
         from: "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789", // Entrypoint
         to: obj.to,
-        input: obj.data || "" // If 'data' is undefined, set input to an empty string
+        input: obj.data || "", // If 'data' is undefined, set input to an empty string
+        value: obj.value || BigNumber.from("0")
     }));
 }
 
-function separateArrays(convertedArray: ConvertedObject[]): { fromArray: string[], toArray: string[], inputArray: string[] } {
+function separateArrays(convertedArray: ConvertedObject[]): { fromArray: string[], toArray: string[], inputArray: string[], valueArray: BigNumber[] } {
     const fromArray = convertedArray.map(obj => obj.from);
     const toArray = convertedArray.map(obj => obj.to);
     const inputArray = convertedArray.map(obj => obj.input);
-    return { fromArray, toArray, inputArray };
+    const valueArray = convertedArray.map(obj => obj.value);
+    return { fromArray, toArray, inputArray, valueArray };
 }
 
 export function useSendSimulateTx() {
@@ -50,21 +53,22 @@ export function useSendSimulateTx() {
         try {
 
             const txsNew = convertArray(txs)
-            console.log("txsNew", txsNew)
+            console.log("txsNew", txsNew, smartAccount.accountAddress)
 
-            const { fromArray, toArray, inputArray } = separateArrays(txsNew);
+            const { fromArray, toArray, inputArray, valueArray } = separateArrays(txsNew);
             const bigNumberArray: BigNumber[] = [];
             for (let i = 0; i < toArray.length; i++) {
                 bigNumberArray.push(BigNumber.from("0".repeat(toArray.length)));
             }
+            console.log("bigNumberArray", bigNumberArray)
             const abiInterface = new ethers.utils.Interface(["function executeBatch(address[],uint256[],bytes[])"]);
-            const txData = abiInterface.encodeFunctionData("executeBatch", [toArray, bigNumberArray, inputArray]);
-            console.log("smartAccount", smartAccount)
+            const txData = abiInterface.encodeFunctionData("executeBatch", [toArray, valueArray, inputArray]);
+
             const simulate = (
                 await axios.post(
                     `https://api.tenderly.co/api/v1/account/${TENDERLY_USER}/project/${TENDERLY_PROJECT}/simulate-bundle`,
                     {
-                        simulations: getTxSequence("0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789", smartAccount.accountAddress, txData).map(
+                        simulations: getTxSequence("0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789", "0x9Ce935D780424FB795bef7E72697f263A8258fAA", txData).map(
                             (transaction) => ({
                                 network_id: selectedNetwork.chainId, // network to simulate on
                                 save: true,

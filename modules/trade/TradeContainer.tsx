@@ -119,6 +119,8 @@ const TradeContainer: React.FC = () => {
         totalfees,
         setTotalFees,
         setShowExecuteMethodModel,
+        simulationHashes,
+        setSimulationsHashes
     }: iTrading = useTradingStore((state) => state);
 
     const {
@@ -502,6 +504,7 @@ const TradeContainer: React.FC = () => {
 
     const removeBatch = (index: number) => {
         removeBatchItem(index);
+        setSimulationsHashes(simulationHashes.filter((_, idx) => idx !== index));
     };
 
     const clearSelectedBatchData = () => {
@@ -545,6 +548,8 @@ const TradeContainer: React.FC = () => {
     };
 
     const sendSingleBatchToList = async (isSCW: boolean) => {
+        alert("sendSingleBatchToList")
+        console.log(simulationHashes)
         try {
             if (isSCW) {
                 setAddToBatchLoading(true);
@@ -655,22 +660,22 @@ const TradeContainer: React.FC = () => {
                 isError: false,
             };
 
-            const userOp = await smartAccount.buildUserOp(refinaceData.txArray);
+            // const userOp = await smartAccount.buildUserOp(refinaceData.txArray);
 
-            const fees = bg(userOp.callGasLimit.toString())
-                .plus(bg(userOp.verificationGasLimit.toString()))
-                .multipliedBy(bg(userOp.maxFeePerGas.toString()))
-                .dividedBy(1e18);
-            let _totalfees = totalfees;
+            // const fees = bg(userOp.callGasLimit.toString())
+            //     .plus(bg(userOp.verificationGasLimit.toString()))
+            //     .multipliedBy(bg(userOp.maxFeePerGas.toString()))
+            //     .dividedBy(1e18);
+            // let _totalfees = totalfees;
 
-            if (refinaceData.value) {
-                _totalfees = bg(_totalfees.toString())
-                    .plus(fees.toString())
-                    .plus(bg(refinaceData.value.toString()).dividedBy(1e18));
-            } else {
-                _totalfees = bg(_totalfees).plus(fees);
-            }
-            setTotalFees(bg(_totalfees));
+            // if (refinaceData.value) {
+            //     _totalfees = bg(_totalfees.toString())
+            //         .plus(fees.toString())
+            //         .plus(bg(refinaceData.value.toString()).dividedBy(1e18));
+            // } else {
+            //     _totalfees = bg(_totalfees).plus(fees);
+            // }
+            // setTotalFees(bg(_totalfees));
 
             updateInputValues(
                 individualBatch.length - 1,
@@ -686,7 +691,8 @@ const TradeContainer: React.FC = () => {
                     fromToken: selectedFromToken,
                     toToken: selectedToToken,
                     amountIn: amountIn,
-                    fees: fees.toString(),
+                    // fees: fees.toString(),
+                    fees: "0",
                     extraValue: refinaceData.value ? bg(refinaceData.value.toString()).dividedBy(1e18).toString() : "0",
                 },
                 simulation

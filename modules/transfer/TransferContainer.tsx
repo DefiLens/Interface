@@ -12,7 +12,7 @@ import IERC20 from "../../abis/IERC20.json";
 import { ethereum, polygon } from "../../assets/images";
 import { BIG_ZERO } from "../../utils/data/constants";
 import UNISWAP_TOKENS from "../../abis/tokens/Uniswap.json";
-import { incresePowerByDecimals } from "../../utils/helper";
+import { getScwBalance, incresePowerByDecimals } from "../../utils/helper";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import { iTransfer, useTransferStore } from "../../store/TransferStore";
 import { getTokenListByChainId, setSafeState } from "../../utils/helper";
@@ -24,7 +24,7 @@ bg.config({ DECIMAL_PLACES: 5 });
 const TransferContainer: React.FC = () => {
     const { mutateAsync: calculategasCost } = useCalculateGasCost();
 
-    const { smartAccount, smartAccountAddress, showTransferFundToggle, selectedNetwork }: iGlobal = useGlobalStore((state) => state);
+    const { smartAccount, smartAccountAddress, showTransferFundToggle, selectedNetwork, isSimulate }: iGlobal = useGlobalStore((state) => state);
 
     const {
         tokenAddress,
@@ -123,7 +123,8 @@ const TransferContainer: React.FC = () => {
                     return;
                 }
                 const _eoaBalance = await provider.getBalance(address);
-                const _scwBalance = await smartAccount.provider.getBalance(smartAccountAddress);
+                // const _scwBalance = await smartAccount.provider.getBalance(smartAccountAddress);
+                let _scwBalance = await getScwBalance(isSimulate, smartAccount, smartAccountAddress)
                 setScwTokenInbalance(BigNumber.from(_scwBalance));
                 setEoaTokenInbalance(BigNumber.from(_eoaBalance));
                 setTokenInDecimals(18);
@@ -230,7 +231,8 @@ const TransferContainer: React.FC = () => {
                     return;
                 }
 
-                const balance = await provider.getBalance(_fromAddress);
+                // const balance = await provider.getBalance(_fromAddress);
+                let balance = await getScwBalance(isSimulate, smartAccount, _fromAddress)
                 if (!BigNumber.from(balance).gte(amountIn)) {
                     toast.error("Not native enough balance-");
                     return;

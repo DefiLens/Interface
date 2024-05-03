@@ -30,6 +30,7 @@ export function useSwitchOnSpecificChain() {
         setSmartAccountAddress,
         setCurrentProvider,
         setSelectedNetwork,
+        isSimulate
     }: iGlobal = useGlobalStore((state) => state);
     const { setSelectedFromNetwork }: iTrading = useTradingStore((state) => state);
     const { mutateAsync: fetchNativeBalance } = useCalculatebalance();
@@ -115,7 +116,7 @@ export function useSwitchOnSpecificChain() {
         // };
         // let biconomySmartAccount = new BiconomySmartAccount(biconomySmartAccountConfig);
         // biconomySmartAccount = await biconomySmartAccount.init();
-        
+
         // const ownerShipModule: any = await ECDSAOwnershipValidationModule.create({
         //     signer: signer as Signer,
         //     moduleAddress: DEFAULT_ECDSA_OWNERSHIP_MODULE,
@@ -173,9 +174,13 @@ export function useSwitchOnSpecificChain() {
             const smartAccount = await createAccount(chainId);
             const _smartAccountAddress = await smartAccount.getAccountAddress()
             console.log('_smartAccountAddress ,', _smartAccountAddress)
-            setSmartAccountAddress(_smartAccountAddress);
-            setSmartAccount(smartAccount);
 
+            if (isSimulate) {
+                setSmartAccountAddress("0x9Ce935D780424FB795bef7E72697f263A8258fAA");
+            } else {
+                setSmartAccountAddress(_smartAccountAddress);
+            }
+            setSmartAccount(smartAccount);
             setLoading(false);
             setCurrentProvider("Biconomy");
             return smartAccount;

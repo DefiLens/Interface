@@ -293,7 +293,7 @@ const BatchSelectionSection: React.FC<tBatchSelectionSection> = ({
                             <Button
                                 handleClick={() => sendSingleBatchToList(true)}
                                 isLoading={addToBatchLoading}
-                                disabled={!isOneBatchBtnClickable || addToBatchLoading}
+                                // disabled={!isOneBatchBtnClickable || addToBatchLoading}
                                 customStyle=""
                                 innerText="Add Batch to List"
                             />
