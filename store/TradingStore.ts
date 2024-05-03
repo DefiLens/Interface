@@ -152,6 +152,8 @@ export interface iTrading {
     hasExecutionError: string;
     showExecuteMethodModel: boolean;
 
+    simulationHashes: string[];
+
     setTotalFees: (totalfees: bg) => void;
     setMaxBalance: (maxBalance: string) => void;
     setIsmaxBalanceLoading: (ismaxBalanceLoading: boolean) => void;
@@ -196,6 +198,7 @@ export interface iTrading {
     individualBatch: iIndividualBatch[];
     addBatchItem: (item: iIndividualBatch) => void;
     removeBatchItem: (id: number) => void;
+    setSimulationsHashes: (simulationHashes: string[]) => void;
 }
 
 export const useTradingStore = create<iTrading>((set) => ({
@@ -260,6 +263,8 @@ export const useTradingStore = create<iTrading>((set) => ({
     hasExecutionError: "",
     showExecuteMethodModel: false,
 
+    simulationHashes: [],
+
     setTotalFees: (totalfees) => set(() => ({ totalfees })),
     setMaxBalance: (maxBalance) => set(() => ({ maxBalance })),
     setIsmaxBalanceLoading: (ismaxBalanceLoading) => set(() => ({ ismaxBalanceLoading })),
@@ -301,6 +306,7 @@ export const useTradingStore = create<iTrading>((set) => ({
     setHasExecutionSuccess: (hasExecutionSuccess) => set(() => ({ hasExecutionSuccess })),
     setHasExecutionError: (hasExecutionError) => set(() => ({ hasExecutionError })),
     setShowExecuteMethodModel: (showExecuteMethodModel) => set(() => ({ showExecuteMethodModel })),
+    setSimulationsHashes: (simulationHashes) => set(() => ({ simulationHashes })),
 }));
 
 //Rebalance Store

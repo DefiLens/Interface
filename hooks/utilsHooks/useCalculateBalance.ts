@@ -3,12 +3,12 @@ import { toast } from "react-hot-toast";
 import { useMutation } from "@tanstack/react-query";
 
 import { getProvider } from "../../utils/web3Libs/ethers";
-import { decreasePowerByDecimals } from "../../utils/helper";
+import { decreasePowerByDecimals, getScwBalance } from "../../utils/helper";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import { BigNumberish, ethers } from "ethers";
 
 export function useCalculatebalance() {
-    const { smartAccount, setScwBalance, setEoaBalance }: iGlobal = useGlobalStore((state) => state);
+    const { smartAccount, setScwBalance, setEoaBalance, isSimulate }: iGlobal = useGlobalStore((state) => state);
 
     async function fetchNativeBalance({ chainId, eoaAddress, scwAddress }) {
         try {
@@ -21,7 +21,9 @@ export function useCalculatebalance() {
                 setEoaBalance(_eoabalance);
             }
             if (scwAddress) {
-                let _scwbalance: BigNumberish | undefined = await smartAccount.provider.getBalance(scwAddress);
+                // const scw = isSimulate ? "0x9Ce935D780424FB795bef7E72697f263A8258fAA" : scwAddress;
+                // let _scwbalance: BigNumberish | undefined = await smartAccount.provider.getBalance(scw);
+                let _scwbalance: BigNumberish | undefined = await getScwBalance(isSimulate, smartAccount, scwAddress)
                 if (_scwbalance === undefined) return;
                 _scwbalance = await decreasePowerByDecimals(_scwbalance, 18);
                 setScwBalance(_scwbalance);

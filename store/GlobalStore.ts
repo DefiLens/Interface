@@ -26,6 +26,7 @@ export interface iGlobal {
     eoaBalance: string;
 
     currentProvider: string;
+    isSimulate: boolean;
 
     connectedWallet: WalletInstance | null;
     setConnectedWallet: (wallet: WalletInstance | null) => void;
@@ -46,6 +47,7 @@ export interface iGlobal {
     setEoaBalance: (eoaBalance: string) => void;
 
     setCurrentProvider: (currentProvider: string) => void;
+    setIsSimulate: (isSimulate: boolean) => void;
 }
 
 export const useGlobalStore = create<iGlobal>((set) => ({
@@ -73,6 +75,7 @@ export const useGlobalStore = create<iGlobal>((set) => ({
     setConnectedWallet: (connectedWallet) => set(() => ({ connectedWallet })),
 
     currentProvider: "",
+    isSimulate: true,
 
     setSelectedNetwork: (selectedNetwork) => set(() => ({ selectedNetwork })),
     setActiveChainName: (activeChainName) => set(() => ({ activeChainName })),
@@ -90,4 +93,5 @@ export const useGlobalStore = create<iGlobal>((set) => ({
     setEoaBalance: (eoaBalance) => set(() => ({ eoaBalance })),
 
     setCurrentProvider: (currentProvider) => set(() => ({ currentProvider })),
+    setIsSimulate: (isSimulate) => set(() => ({ isSimulate })),
 }));

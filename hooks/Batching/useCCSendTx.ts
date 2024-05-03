@@ -8,7 +8,7 @@ import IERC20 from "../../abis/IERC20.json";
 import ChainPing from "../../abis/ChainPing.json";
 import { useOneInch } from "../swaphooks/useOneInch";
 import { ChainIdDetails } from "../../utils/data/network";
-import { decreasePowerByDecimals } from "../../utils/helper";
+import { decreasePowerByDecimals, getScwBalance } from "../../utils/helper";
 import IStarGateRouter from "../../abis/IStarGateRouter.json";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import { iTrading, useTradingStore } from "../../store/TradingStore";
@@ -20,11 +20,13 @@ import { nativeTokenFetcher, newChainPingByNetwork, starGateRouterByNetwork, tok
 
 export function useCCSendTx() {
     const { mutateAsync: oneInchSwap } = useOneInch();
-    const { smartAccount, smartAccountAddress }: iGlobal = useGlobalStore((state) => state);
+    const { smartAccount, smartAccountAddress, isSimulate }: iGlobal = useGlobalStore((state) => state);
 
     const {
         selectedFromNetwork,
         setTxHash,
+        setSimulationsHashes,
+        simulationHashes
     }: iTrading = useTradingStore((state) => state);
 
     async function sendTxToChain({
@@ -165,7 +167,7 @@ export function useCCSendTx() {
                 toChainPing,
                 amountAfterSlippage,
             ]);
-            const gasUsed = await findGasUsedBySimulation(
+            const simulate = await findGasUsedBySimulation(
                 toUsdc,
                 toChainPing,
                 dummmyTranferToCheckData,
@@ -173,6 +175,11 @@ export function useCCSendTx() {
                 false,
                 chooseChianId(toChainId)
             );
+            console.log('simulate: ', simulate)
+            const gasUsed = simulate.simulation_results[1].transaction.gas_used;
+            console.log('simulate: ', simulate)
+
+            setSimulationsHashes([...simulationHashes, simulate.simulation_results[1].simulation.id]);
 
             const stargateRouter = await getContractInstance(fromStarGateRouter, IStarGateRouter, _currentProvider);
             if (!stargateRouter) return;
@@ -207,7 +214,9 @@ export function useCCSendTx() {
                 { value: quoteData[0] }
             );
 
-            const scwOrEoaNativeBalance = await _currentProvider.getBalance(_currentAddress);
+
+            let scwOrEoaNativeBalance = await getScwBalance(isSimulate, smartAccount, _currentAddress)
+            // const scwOrEoaNativeBalance = await _currentProvider.getBalance(_currentAddress);
             const currentBalance = BigNumber.from(scwOrEoaNativeBalance);
             const minimumBalanceRequired = await decreasePowerByDecimals(quoteData[0], 18);
 
