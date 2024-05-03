@@ -206,7 +206,8 @@ export const findGasUsedBySimulation = async (
     if (isSimulate) {
         return simulate.simulation_results[1];
     } else {
-        return simulate.simulation_results[1].transaction.gas_used;
+        // return simulate.simulation_results[1].transaction.gas_used;
+        return simulate;
     }
 };
 
@@ -361,3 +362,10 @@ export const formatDate = (dateString: Date | undefined) => {
     const year = date.getFullYear();
     return `${day} ${month} ${year}`;
 };
+
+
+export const getScwBalance = async (isSimulate: boolean, smartAccount, scwAddress) => {
+    const scw = isSimulate ? "0x9Ce935D780424FB795bef7E72697f263A8258fAA" : scwAddress;
+    let _scwbalance: BigNumberish | undefined = await smartAccount.provider.getBalance(scw);
+    return _scwbalance;
+}

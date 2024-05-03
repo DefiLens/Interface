@@ -9,13 +9,13 @@ import { BigNumber, ethers } from "ethers";
 import { BigNumber as bg } from "bignumber.js";
 import web3 from "web3";
 import IERC20 from "../../abis/IERC20.json";
-import { decreasePowerByDecimals, incresePowerByDecimals } from "../../utils/helper";
+import { getScwBalance, decreasePowerByDecimals, incresePowerByDecimals } from "../../utils/helper";
 import { ChainIdDetails, NETWORK_LIST } from "../../utils/data/network";
 import { saveMigrateTxnHistory } from "../../utils/globalApis/trackingApi";
 
 const PortfolioContainer: React.FC = () => {
     const { mutateAsync: fetchPortfolio } = usePortfolio();
-    const { smartAccount, smartAccountAddress }: iGlobal = useGlobalStore((state) => state);
+    const { smartAccount, smartAccountAddress, isSimulate }: iGlobal = useGlobalStore((state) => state);
     const address = useAddress();
     const signer = useSigner();
 
@@ -152,8 +152,9 @@ const PortfolioContainer: React.FC = () => {
                     return;
                 }
 
-                const balance = await provider.getBalance(_fromAddress);
-                console.log("balance checking____))))))", balance);
+                // const balance = await provider.getBalance(_fromAddress);
+                let balance = await getScwBalance(isSimulate, smartAccount, _fromAddress)
+                alert("balance checking____))))))"+ balance?.toString());
                 if (!BigNumber.from(balance).gte(amountIn)) {
                     toast.error("Not native enough balance-");
                     return;
