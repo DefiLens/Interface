@@ -4,6 +4,7 @@ import { BiSolidChevronDown } from "react-icons/bi";
 import { tSelectInput } from "./types";
 import { cn } from "../../lib/utils";
 import { tokenData } from "../../modules/transfer/types";
+import { TokenData } from "../../store/TransferStore";
 
 const SelectInput = ({
     inputSearch,
@@ -25,7 +26,7 @@ const SelectInput = ({
             setSelectedOption(option);
             setInputSearch("");
         } else {
-            setSelectedOption({} as tokenData);
+            setSelectedOption({} as TokenData);
         }
     }, [selectOptions]);
 
@@ -36,7 +37,7 @@ const SelectInput = ({
                     type="text"
                     value={selectedOption.symbol ? selectedOption.symbol : inputSearch}
                     onChange={(e) => {
-                        setSelectedOption({} as tokenData);
+                        setSelectedOption({} as TokenData);
                         setInputSearch(e.target.value);
                     }}
                     placeholder={inputPlaceholder}

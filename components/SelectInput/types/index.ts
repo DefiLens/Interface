@@ -1,14 +1,14 @@
-import { tokenData } from "../../../modules/transfer/types";
+import { TokenData } from "../../../store/TransferStore";
 
 export type tSelectInput = {
     inputSearch: string;
     setInputSearch: (inputSearch: string) => void;
     inputPlaceholder: string;
     inputClassName: string;
-    selectOptions: tokenData[];
+    selectOptions: TokenData[];
     handleSelectOption: (tokenName: string, selectOption: string) => void;
     showOptionList: boolean;
     setShowOptionList: (showOptionList: boolean) => void;
-    selectedOption: tokenData;
-    setSelectedOption: (selectedOption: tokenData) => void;
+    selectedOption: TokenData;
+    setSelectedOption: (selectedOption: TokenData) => void;
 };
