@@ -52,7 +52,7 @@ const Token: React.FC<PropTypes> = ({ network, isErc20, token, onItemClick, toke
 
                 // if (tokenBalances[tokenName] !== balance && parseFloat(balance) > 0) {
                 if (tokenBal !== balance && parseFloat(balance) > 0) {
-                    console.log("Balance updated!");
+                    // console.log("Balance updated!");
                     setTokenBal(balance);
                     // setTokenBalances({ [tokenName]: balance });
                 } else {
@@ -63,13 +63,13 @@ const Token: React.FC<PropTypes> = ({ network, isErc20, token, onItemClick, toke
                     setIsLoading(false);
                 }
 
-                console.log({
-                    token: tokenName,
-                    tokenAddress,
-                    balance,
-                    tokendecimal,
-                    isErc20,
-                });
+                // console.log({
+                //     token: tokenName,
+                //     tokenAddress,
+                //     balance,
+                //     tokendecimal,
+                //     isErc20,
+                // });
             } else {
                 // Non ERC20 Tokens
                 // const erc20Instance = await getContractInstance(tokenAddress, IERC20, provider);
@@ -84,18 +84,18 @@ const Token: React.FC<PropTypes> = ({ network, isErc20, token, onItemClick, toke
 
                 // if (tokenBalances[tokenName] !== balance && parseFloat(balance) > 0) {
                 if (tokenBal !== balance && parseFloat(balance) > 0) {
-                    console.log("Balance updated!");
+                    // console.log("Balance updated!");
                     setTokenBal(balance);
                     // setTokenBalances({ [tokenName]: balance });
                 }
 
-                console.log({
-                    token: tokenName,
-                    tokenAddress,
-                    balance,
-                    tokendecimal,
-                    isErc20,
-                });
+                // console.log({
+                //     token: tokenName,
+                //     tokenAddress,
+                //     balance,
+                //     tokendecimal,
+                //     isErc20,
+                // });
             }
         } catch (error) {
             console.error(error);

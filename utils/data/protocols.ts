@@ -1151,6 +1151,38 @@ export async function buildParams({
     }
 }
 
+export async function amountIndexInParams(paramDetailsMethod) {
+    if (
+        paramDetailsMethod == "aave_deposit" ||
+        paramDetailsMethod == "aave_supply_v3" ||
+        paramDetailsMethod == "seamless_supply_v3" ||
+        paramDetailsMethod == "granary_deposit" ||
+        paramDetailsMethod == "radiant_deposit" ||
+        paramDetailsMethod == "aave_withdraw" ||
+        paramDetailsMethod == "aave_withdraw_v3" ||
+        paramDetailsMethod == "seamless_withdraw_v3" ||
+        paramDetailsMethod == "granary_withdraw" ||
+        paramDetailsMethod == "radiant_withdraw" ||
+        paramDetailsMethod == "compound_supply" ||
+        paramDetailsMethod == "compound_withdraw" ||
+        paramDetailsMethod == "dForce_deposit" ||
+        paramDetailsMethod == "dForce_withdraw")
+    {
+        return "1"
+    } else if (
+        paramDetailsMethod == "exactly_deposit" ||
+        paramDetailsMethod == "exactly_withdraw" ||
+        paramDetailsMethod == "benqi_redeemUnderlying" ||
+        paramDetailsMethod == "moonwell_redeem" ||
+        paramDetailsMethod == "sonne_redeem" ||
+        paramDetailsMethod == "benqi_mint" ||
+        paramDetailsMethod == "moonwell_mint" ||
+        paramDetailsMethod == "sonne_mint"
+    ) {
+        return "0"
+    }
+}
+
 export async function fetchApy({ protocol, contractAddress, provider, signer, token }) {
     if (protocol == "fetchApyForAaveV2Polygon") {
         let abi = new ethers.utils.Interface(aave_v2_Abi);

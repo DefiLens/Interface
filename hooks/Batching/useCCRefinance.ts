@@ -12,7 +12,7 @@ import { ChainIdDetails } from "../../utils/data/network";
 import { getTokenListByChainId, incresePowerByDecimals } from "../../utils/helper";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import { iBatchFlowData, iSelectedNetwork, iTokenData, iTrading, useTradingStore } from "../../store/TradingStore";
-import { abiFetcher, abiFetcherNum, buildParams, nativeTokenFetcher, nativeTokenNum, OneInchRouter, tokensByNetworkForCC, uniswapSwapRouterByChainId } from "../../utils/data/protocols";
+import { abiFetcher, abiFetcherNum, amountIndexInParams, buildParams, nativeTokenFetcher, nativeTokenNum, OneInchRouter, tokensByNetworkForCC, uniswapSwapRouterByChainId } from "../../utils/data/protocols";
 import { useState } from "react";
 import UNISWAP_TOKENS from "../../abis/tokens/Uniswap.json";
 
@@ -183,6 +183,7 @@ export function useCCRefinance() {
             let extraValue;
             if (selectedFromNetwork.chainName != selectedToNetwork.chainName) {
                 if (toProtocol == "erc20") {
+                    const _amountIndex = await amountIndexInParams(paramDetailsMethod)
                     const _tempAmount = BigNumber.from(await incresePowerByDecimals(amountIn, 6).toString());
                     let data: tStargateData | undefined = await sendTxToChain({
                         tokenIn: tokensByNetworkForCC[selectedFromNetwork.chainId].usdc,
@@ -190,7 +191,7 @@ export function useCCRefinance() {
                         address,
                         isSCW: true,
                         params,
-                        isThisAmount: "1",
+                        isThisAmount: _amountIndex,
                         srcPoolId: "1",
                         destPoolId: "1",
                         fromChainId: ChainIdDetails[selectedFromNetwork.chainId].stargateChainId,
@@ -264,6 +265,8 @@ export function useCCRefinance() {
                         tokenOutContractAddress = abiFetcher[selectedToNetwork.chainId][abiNum]["contractAddress"];
                     }
 
+                    const _amountIndex = await amountIndexInParams(paramDetailsMethod)
+
                     const _tempAmount = BigNumber.from(await incresePowerByDecimals(amountIn, 6).toString());
                     // console.log("_tempAmount.", _tempAmount);
                     let data: tStargateData | undefined = await sendTxToChain({
@@ -272,7 +275,7 @@ export function useCCRefinance() {
                         address,
                         isSCW: true,
                         params,
-                        isThisAmount: "1",
+                        isThisAmount: _amountIndex,
                         srcPoolId: "1",
                         destPoolId: "1",
                         fromChainId: ChainIdDetails[selectedFromNetwork.chainId].stargateChainId,

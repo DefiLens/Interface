@@ -41,7 +41,11 @@ const Header: React.FC<tHeader> = ({ switchOnSpecificChain }) => {
     const selectNetworkRef = useRef(null);
 
     // set connected wallet's instance globally
-    useEffect(() => setConnectedWallet(wallet ?? null), [wallet]);
+    useEffect(() => {
+        if (wallet) {
+            setConnectedWallet(wallet)
+        }
+    }, [wallet]);
 
     // To close copy dropdown
     useClickOutside([walletAddressRef], () => {
