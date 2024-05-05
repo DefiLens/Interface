@@ -37,7 +37,6 @@ const OnboardingPage = () => {
         setAmountInDecimals,
         isNative,
         setIsnative,
-        isSCW,
         setSendtxLoading,
         setTxHash,
         setTokensData,
@@ -189,7 +188,7 @@ const OnboardingPage = () => {
                     return;
                 }
                 tx = { to: _toAdress, value: amountIn, data: "0x" };
-                console.log("Native tx", tx, "isSCW", isSCW);
+                console.log("Native tx", tx);
             } else {
                 const contract = await getContract(tokenAddress);
                 if (!contract) {
@@ -203,35 +202,20 @@ const OnboardingPage = () => {
                 }
                 const data = await contract.populateTransaction.transfer(_toAdress, amountIn);
                 tx = { to: tokenAddress, data: data.data };
-                console.log("Not native tx", tx, "isSCW", isSCW);
+                console.log("Not native tx", tx);
             }
 
-            if (isSCW) {
-                const userOp = await smartAccount.buildUserOp([tx]);
-                userOp.paymasterAndData = "0x";
-
-                const userOpResponse = await smartAccount.sendUserOp(userOp);
-
-                const txReciept = await userOpResponse.wait();
-
-                setTxHash(txReciept?.receipt.transactionHash);
-                setAmountIn(0);
-                setAmountInDecimals(0);
-                setSendtxLoading(false);
-                toast.success(`Tx Succefully done: ${txReciept?.receipt.transactionHash}`);
-            } else {
-                if (!signer) {
-                    toast.error("Please connect wallet or refresh it!");
-                    return;
-                }
-                const txReciept = await signer.sendTransaction(tx);
-                await txReciept?.wait();
-                setTxHash(txReciept?.hash);
-                setAmountIn(0);
-                setAmountInDecimals(0);
-                setSendtxLoading(false);
-                toast.success(`Tx Succefully done: ${txReciept?.hash}`);
+            if (!signer) {
+                toast.error("Please connect wallet or refresh it!");
+                return;
             }
+            const txReciept = await signer.sendTransaction(tx);
+            await txReciept?.wait();
+            setTxHash(txReciept?.hash);
+            setAmountIn(0);
+            setAmountInDecimals(0);
+            setSendtxLoading(false);
+            toast.success(`Tx Succefully done: ${txReciept?.hash}`);
         } catch (error) {
             console.log("send-error: ", error);
             toast.error("Transaction Failed");
@@ -279,7 +263,7 @@ const OnboardingPage = () => {
 
     return (
         <>
-            <MetaTags title={`Onboarding on ${metadata.APP_NAME}`}  />
+            <MetaTags title={`Onboarding on ${metadata.APP_NAME}`} />
             <Onboarding setBalance={setBalance} handleAmountIn={handleAmountIn} send={send} />
         </>
     );
