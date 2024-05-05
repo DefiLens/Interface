@@ -4,3 +4,12 @@
 
 @import "./base/_base-dir.css";
 @import "./modules/_modules-dir.css";
+
+@layer base {
+    html {
+        @apply antialiased;
+    }
+    .page-center {
+        @apply flex justify-start items-center pt-32 h-[calc(100vh-80px)] sm:h-[calc(100vh-88px)];
+    }
+}
