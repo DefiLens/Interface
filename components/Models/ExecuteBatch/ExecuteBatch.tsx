@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import { BsArrowRight } from "react-icons/bs";
+// import { BsArrowRight } from "react-icons/bs";
+import {HiArrowLongRight} from "react-icons/hi2";
 
 import axiosInstance from "../../../axiosInstance/axiosInstance";
 import { tExecuteBatch } from "./types";
@@ -96,16 +97,16 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
                         onClick={() => closeExecuteBatchModel()}
                         className="w-8 h-8 place-self-end p-2 bg-slate-50 hover:bg-slate-200 active:bg-slate-100 rounded-xl cursor-pointer outline-none"
                     >
-                        <Image src={closeNarrow} alt="" />
+                        <Image src={closeNarrow} alt="close button" />
                     </button>
                 ) : null}
                 <div className="h-full w-full flex flex-col justify-center items-center gap-2 p-5">
                     <Image
                         src={txhash ? success : hasExecutionError ? error : loading}
-                        alt=""
+                        alt="transaction_state_icon"
                         className="w-20 h-20 md:w-28 md:h-28 !bg-green-400"
                     />
-                    <div className="w-full text-center text-xl md:text-2xl text-black font-bold cursor-pointer m-2">
+                    <div className="w-full text-center text-xl md:text-2xl text-black font-bold m-2">
                         {txhash
                             ? "Execute Batches Successfully"
                             : hasExecutionError
@@ -135,8 +136,8 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
                                                                         selectedFromNetwork.chainId.toString()
                                                                     ]?.networkLogo
                                                                 }
-                                                                alt=""
-                                                                className="h-8 w-8 bg-slate-200 rounded-full cursor-pointer"
+                                                                alt="network_chain_logo"
+                                                                className="h-8 w-8 bg-slate-200 rounded-full"
                                                             />
                                                             <div className="absolute -bottom-1 -right-1 bg-white h-4 w-4 flex justify-center items-center rounded-full">
                                                                 <Image
@@ -148,8 +149,8 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
                                                                                 entry.name == bar.data.fromProtocol
                                                                         )?.icon
                                                                     }
-                                                                    alt=""
-                                                                    className="h-3 w-3 bg-slate-200 rounded-full cursor-pointer"
+                                                                    alt="protocol_icon"
+                                                                    className="h-3 w-3 bg-slate-200 rounded-full"
                                                                 />
                                                             </div>
                                                         </div>
@@ -163,7 +164,7 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
                                                         </div>
                                                     </div>
 
-                                                    <BsArrowRight className="w-10 h-10" />
+                                                    <HiArrowLongRight size="32px" />
 
                                                     <div className="w-full flex justify-start items-center gap-3">
                                                         <div className="relative">
@@ -172,8 +173,8 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
                                                                     ChainIdDetails[bar.data.toChainId.toString()]
                                                                         ?.networkLogo
                                                                 }
-                                                                alt=""
-                                                                className="h-8 w-8 bg-slate-200 rounded-full cursor-pointer"
+                                                                alt="network_chain_logo"
+                                                                className="h-8 w-8 bg-slate-200 rounded-full"
                                                             />
                                                             <div className="absolute -bottom-1 -right-1 bg-white h-4 w-4 flex justify-center items-center rounded-full">
                                                                 <Image
@@ -183,8 +184,8 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
                                                                                 entry.name == bar.data.toProtocol
                                                                         )?.icon
                                                                     }
-                                                                    alt=""
-                                                                    className="h-3 w-3 bg-slate-200 rounded-full cursor-pointer"
+                                                                    alt="protocol_logo"
+                                                                    className="h-3 w-3 bg-slate-200 rounded-full"
                                                                 />
                                                             </div>
                                                         </div>
@@ -203,14 +204,14 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
                                 </div>
                             ) : null)}
                     </div>
-                    <div className="w-full break-words text-center text-base md:text-lg text-teal-500  font-semibold m-2">
+                    <div className="w-full break-words text-center text-base md:text-lg text-teal-500 font-semibold m-2">
                         {txhash ? (
                             <span className="flex flex-col justify-center items-center gap-2">
                                 <a
                                     target="_blank"
                                     href={txhash.includes("tenderly") ? txhash : buildTxHash(selectedFromNetwork.chainId, txhash, false)}
                                     // href={buildTxHash(selectedFromNetwork.chainId, txhash, false)}
-                                    className="cursor-pointer bg-teal-500 text-white rounded-lg px-5 py-1"
+                                    className="bg-teal-500 text-white rounded-lg px-5 py-2"
                                 >
                                     View on Explorer
                                 </a>
@@ -218,7 +219,7 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
                                     <a
                                         target="_blank"
                                         href={buildTxHash(selectedFromNetwork.chainId, txhash, true)}
-                                        className="cursor-pointer bg-blue-700 text-white rounded-lg px-6 py-0.5"
+                                        className="bg-blue-700 text-white rounded-lg px-6 py-2"
                                     >
                                         View on SocketScan.io
                                     </a>
