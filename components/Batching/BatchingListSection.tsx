@@ -274,7 +274,7 @@ const BatchingListSection: React.FC<tBatchListSection> = ({ removeBatch, toggleS
                 ) : (
                     // Display message when no batches found
                     <div className="text-center text-font-700 font-semibold text-base md:text-lg">
-                        {txhash ? "Last Batches executed, Now create new batches" : "No Batches Found !"}
+                        {txhash ? "Last Batches executed, Please create new batches." : "No Batches found, Please create new Batch."}
                     </div>
                 )}
             </div>
