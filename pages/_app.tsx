@@ -29,7 +29,7 @@ export default function App({ Component, pageProps }: AppProps) {
     return (
         <>
             <Head>
-                <title>DefiLens</title>
+                <title>{metadata.APP_NAME}</title>
             </Head>
             {/* @ts-ignore */}
             <ThirdwebProvider
@@ -46,7 +46,7 @@ export default function App({ Component, pageProps }: AppProps) {
                 ]}
                 dAppMeta={{
                     name: metadata.APP_NAME,
-                    url: metadata.url,
+                    url: metadata.DOMAIN,
                 }}
             >
                 <QueryClientProvider client={queryClient}>
