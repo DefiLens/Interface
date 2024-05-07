@@ -1,10 +1,6 @@
-import { batching, logoLight, portfolio } from "../../assets/images";
+import { batching, portfolio } from "../../assets/images";
 
 export const NavigationList = [
-    {
-        route: "/",
-        image: logoLight,
-    },
     {
         title: "Batching",
         route: "/",
