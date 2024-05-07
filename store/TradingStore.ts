@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { BigNumber as bg } from "bignumber.js";
 import { Indexed } from "ethers/lib/utils";
+import { iGlobal, useGlobalStore } from "./GlobalStore";
 
 export interface iSelectedNetwork {
     key: string;
@@ -45,10 +46,11 @@ export interface iIndividualBatch {
         fees: string;
         extraValue: string;
     };
-    simulation: {
+    simulation?: {
         isSuccess: boolean;
         isError: boolean;
     };
+    simulationHash?: string;
 }
 
 export interface iContract {
@@ -199,6 +201,13 @@ export interface iTrading {
     addBatchItem: (item: iIndividualBatch) => void;
     removeBatchItem: (id: number) => void;
     setSimulationsHashes: (simulationHashes: string[]) => void;
+
+
+    simulationSmartAddress: string | null | any;
+    setSimulationSmartAddress: (simulationSmartAddress: string | null) => void;
+
+    selectedFromTokenAddress: string;
+    setSelectedFromTokenAddress: (selectedFromTokenAddress: string) => void;
 }
 
 export const useTradingStore = create<iTrading>((set) => ({
@@ -307,6 +316,12 @@ export const useTradingStore = create<iTrading>((set) => ({
     setHasExecutionError: (hasExecutionError) => set(() => ({ hasExecutionError })),
     setShowExecuteMethodModel: (showExecuteMethodModel) => set(() => ({ showExecuteMethodModel })),
     setSimulationsHashes: (simulationHashes) => set(() => ({ simulationHashes })),
+
+    simulationSmartAddress: "",
+    setSimulationSmartAddress: (simulationSmartAddress) => set(() => ({ simulationSmartAddress })),
+
+    selectedFromTokenAddress: "",
+    setSelectedFromTokenAddress: (selectedFromTokenAddress) => set(() => ({ selectedFromTokenAddress })),
 }));
 
 //Rebalance Store

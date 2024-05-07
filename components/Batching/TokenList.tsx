@@ -10,6 +10,7 @@ interface TokenListProps {
     onItemClick: (tokenName: string) => void;
     selectedNetwork: iSelectedNetwork;
     tokenAddresses?: { [key: string]: string };
+    handleSelectedTokenAddress: (_tokenAddress: string) => void;
 }
 
 const TokenList: React.FC<TokenListProps> = ({
@@ -19,6 +20,7 @@ const TokenList: React.FC<TokenListProps> = ({
     onItemClick,
     selectedNetwork,
     tokenAddresses,
+    handleSelectedTokenAddress
 }) => {
     return (
         <>
@@ -38,6 +40,7 @@ const TokenList: React.FC<TokenListProps> = ({
                                     tokenAddresses={tokenAddresses}
                                     token={token}
                                     onItemClick={onItemClick}
+                                    handleSelectedTokenAddress={handleSelectedTokenAddress}
                                 />
                             )
                         );

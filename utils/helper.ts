@@ -239,7 +239,7 @@ export function setSafeState<T>(setStateFunction: (value: T) => void, value: T |
 
 ///// build txHash link from hash and chainId
 
-export const buildTxHash = (chainId: string, txhash: string, isSocketScan?: boolean, isSimulate?: boolean) => {
+export const buildTxHash = (chainId: string, txhash: string | undefined, isSocketScan?: boolean, isSimulate?: boolean) => {
     if (isSimulate) {
         return `https://dashboard.tenderly.co/sunnyRK/project/simulator/${txhash}`;
     } else {
@@ -365,7 +365,8 @@ export const formatDate = (dateString: Date | undefined) => {
 
 
 export const getScwBalance = async (isSimulate: boolean, smartAccount, scwAddress) => {
-    const scw = isSimulate ? "0x9Ce935D780424FB795bef7E72697f263A8258fAA" : scwAddress;
-    let _scwbalance: BigNumberish | undefined = await smartAccount.provider.getBalance(scw);
+    // const scw = isSimulate ? "0x9Ce935D780424FB795bef7E72697f263A8258fAA" : scwAddress;
+    const scw = scwAddress;
+    let _scwbalance: BigNumberish | undefined = await smartAccount.provider.getBalance(scwAddress);
     return _scwbalance;
 }
