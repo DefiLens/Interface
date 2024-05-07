@@ -562,6 +562,8 @@ const TradeContainer: React.FC = () => {
             if (isSCW) {
                 setAddToBatchLoading(true);
             }
+
+            // Error handling conditions
             if (selectedFromToken == selectedToToken && selectedFromNetwork.chainName === selectedToNetwork.chainName) {
                 toast.error("Transaction to same protocol is not allowed");
                 setAddToBatchLoading(false);
@@ -581,37 +583,37 @@ const TradeContainer: React.FC = () => {
                 return;
             }
             if (bg(maxBalance).isLessThan(amountIn)) {
-                toast.error("You don't have enough funds to complete transaction");
+                toast.error("You don't have enough funds to complete transaction.");
                 setAddToBatchLoading(false);
                 return;
             }
             if (addToBatchLoading) {
-                toast.error("wait, tx loading");
+                toast.error("Wait, transaction loading.");
                 setAddToBatchLoading(false);
                 return;
             }
             if (!selectedFromProtocol) {
-                toast.error("select from protocol");
+                toast.error("Source Protocol not found, please select one!");
                 setAddToBatchLoading(false);
                 return;
             }
             if (!selectedFromToken) {
-                toast.error("select fromToken");
+                toast.error("Source Token not found, please select one!");
                 setAddToBatchLoading(false);
                 return;
             }
             if (!selectedToProtocol) {
-                toast.error("select to protocol");
+                toast.error("Destination Protocol not found, please select one!");
                 setAddToBatchLoading(false);
                 return;
             }
             if (!selectedToToken) {
-                toast.error("select toToken");
+                toast.error("Destination Token not found, please select one!");
                 setAddToBatchLoading(false);
                 return;
             }
             if (!amountIn && fromTokenDecimal) {
-                toast.error("select amountIn");
+                toast.error("Please enter amount to proceed.");
                 setAddToBatchLoading(false);
                 return;
             }
@@ -716,10 +718,12 @@ const TradeContainer: React.FC = () => {
             setAddToBatchLoading(false);
             setShowBatchList(true);
 
+            toast.error("Something went wrong, please try again.");
+
             if (error.message) {
                 console.log("sendBatch: Error", error.message);
             } else {
-                console.log("sendBatch: Eerror", error);
+                console.log("sendBatch: Error", error);
             }
             return;
         }

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import { BsArrowRight } from "react-icons/bs";
+// import { BsArrowRight } from "react-icons/bs";
+import {HiArrowLongRight} from "react-icons/hi2";
 
 import axiosInstance from "../../../axiosInstance/axiosInstance";
 import { tExecuteBatch } from "./types";
@@ -102,13 +103,13 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
                         onClick={() => closeExecuteBatchModel()}
                         className="absolute top-2 right-2 w-8 h-8 place-self-end p-2 bg-slate-50 hover:bg-slate-200 active:bg-slate-100 rounded-full cursor-pointer outline-none"
                     >
-                        <Image src={closeNarrow} alt="" />
+                        <Image src={closeNarrow} alt="close button" />
                     </button>
                 ) : null}
                 <div className="h-full w-full flex flex-col justify-center items-center gap-2 p-5">
                     <Image
                         src={txhash ? success : hasExecutionError ? error : loading}
-                        alt=""
+                        alt="transaction_state_icon"
                         className="w-20 h-20 md:w-28 md:h-28 !bg-green-400"
                     />
                     {/* <PiShieldCheckLight size={80} /> */}
@@ -275,7 +276,7 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
                                     <a
                                         target="_blank"
                                         href={buildTxHash(selectedFromNetwork.chainId, txhash, true)}
-                                        className="cursor-pointer bg-blue-700 text-white rounded-lg px-6 py-0.5"
+                                        className="bg-blue-700 text-white rounded-lg px-6 py-2"
                                     >
                                         View on SocketScan.io
                                     </a>
