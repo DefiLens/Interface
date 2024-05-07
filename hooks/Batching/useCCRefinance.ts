@@ -54,7 +54,7 @@ export function useCCRefinance() {
         amountIn
     }: tRefinance): Promise<tRefinanceResponse | undefined> {
 
-        console.log(">>>>>>>>>>",selectedFromNetwork.chainName, "- To -", selectedToNetwork.chainName);
+        console.log(">>>>>>>>>>", selectedFromNetwork.chainName, "- To -", selectedToNetwork.chainName);
         await onChangeselectedToProtocol(selectedToNetwork)
         // console.log("--------------useCCRefinance", toTokensData)
 
@@ -65,6 +65,7 @@ export function useCCRefinance() {
             }
             let tempTxs: any = [];
             const batchFlows: iBatchFlowData[] = [];
+            let simulationHash: string | undefined;
 
             let swapData: tOneInchSwapResponse | undefined
             let abiNum,
@@ -212,6 +213,8 @@ export function useCCRefinance() {
                         toTokensData: toTokensData
                     } as tCCSendTx);
 
+                    simulationHash = data?.simulationHash;
+
                     if (!data) return;
                     extraValue = data.value;
 
@@ -295,6 +298,7 @@ export function useCCRefinance() {
                         selectedToToken: selectedToToken,
                         toTokensData: toTokensData
                     } as tCCSendTx);
+                    simulationHash = data?.simulationHash;
 
                     if (!data) return;
                     extraValue = data.value;
@@ -323,7 +327,7 @@ export function useCCRefinance() {
                     batchFlows.push(batchFlow);
                 }
             }
-            return { txArray: tempTxs, batchFlow: batchFlows, value: extraValue };
+            return { txArray: tempTxs, batchFlow: batchFlows, value: extraValue, simulationHash: simulationHash };
         } catch (error: any) {
             if (error.message) {
                 console.log("refinanceForCC: Error", error.message);

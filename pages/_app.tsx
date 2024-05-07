@@ -14,6 +14,7 @@ import "@biconomy/web3-auth/dist/src/style.css";
 import "../assets/styles/index.css";
 import Head from "next/head";
 import { metadata } from "../utils/constants";
+import JoinWaitlistContainer from "../modules/join-waitlist/migrate-asset/JoinWaitlistContainer";
 
 export default function App({ Component, pageProps }: AppProps) {
     const { selectedNetwork }: iGlobal = useGlobalStore((state) => state);
@@ -69,6 +70,7 @@ export default function App({ Component, pageProps }: AppProps) {
                         <div className="main-bg min-h-screen w-screen overflow-hidden">
                             <HeaderContainer />
                             <main className="mt-20 w-full h-full">
+                                <JoinWaitlistContainer />
                                 <Component {...pageProps} />
                             </main>
                             <FooterContainer />

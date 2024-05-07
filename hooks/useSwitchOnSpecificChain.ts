@@ -44,6 +44,7 @@ export function useSwitchOnSpecificChain() {
         setSelectedNetwork,
     }: iGlobal = useGlobalStore((state) => state);
 
+
     const {
         txhash: txhashTrading,
     }: iTrading = useTradingStore((state) => state);
@@ -56,7 +57,10 @@ export function useSwitchOnSpecificChain() {
         txhash: txhashPortfolio,
     }: iPortfolio = usePortfolioStore((state) => state);
 
-    const { setSelectedFromNetwork }: iTrading = useTradingStore((state) => state);
+    const {
+        setSelectedFromNetwork,
+        setSimulationSmartAddress
+    }: iTrading = useTradingStore((state) => state);
     const { mutateAsync: fetchNativeBalance } = useCalculatebalance();
     const switchChain = useSwitchChain();
     const connect = useConnect();
@@ -225,8 +229,17 @@ export function useSwitchOnSpecificChain() {
         try {
             const smartAccount = await createAccount(chainId);
             const _smartAccountAddress = await smartAccount.getAccountAddress()
-            console.log('_smartAccountAddress ,', _smartAccountAddress)
+            
+            setSimulationSmartAddress(isSimulate ? "0x9Ce935D780424FB795bef7E72697f263A8258fAA" : _smartAccountAddress)
             setSmartAccountAddress(_smartAccountAddress);
+
+
+            console.log('_smartAccountAddress ,', smartAccountAddress)
+
+            // if (isSimulate) {
+            //     setSmartAccountAddress("0x9Ce935D780424FB795bef7E72697f263A8258fAA");
+            // } else {
+            // }
             setSmartAccount(smartAccount);
             setLoading(false);
             setCurrentProvider("Biconomy");

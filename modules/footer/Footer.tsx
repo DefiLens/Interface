@@ -1,8 +1,12 @@
 import Image from "next/image";
 import { tFooter } from "./types";
+import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
+import { tenderly } from "../../assets/images";
 import { metadata } from "../../utils/constants";
 
 const Footer: React.FC<tFooter> = ({ SocialHandles }) => {
+    const { isSimulate }: iGlobal = useGlobalStore((state) => state);
+
     return (
         <footer className="bg-white">
             <div className="mx-auto max-w-7xl px-6 py-4 md:flex md:items-center md:justify-between lg:px-8">
@@ -25,6 +29,15 @@ const Footer: React.FC<tFooter> = ({ SocialHandles }) => {
                     </p>
                 </div>
             </div>
+            {isSimulate && (
+                <h2 className="flex gap-1 items-center">
+                    {/* <span className="text-lg md:text-xl font-bold text-black">Simulation powered by</span> */}
+                    {/* <Image src={tenderly} alt="" className="h-8 w-8" /> */}
+                    <Image src={tenderly} alt="" className="h-8 w-8 animate-spin" />
+
+                    <span className="text-base md:text-lg font-bold text-slate-900">tenderly</span>
+                </h2>
+            )}
         </footer>
     );
 };
