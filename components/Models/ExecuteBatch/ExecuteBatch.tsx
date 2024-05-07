@@ -1,8 +1,9 @@
+// Library Imports
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-// import { BsArrowRight } from "react-icons/bs";
-import {HiArrowLongRight} from "react-icons/hi2";
-
+import { useAddress } from "@thirdweb-dev/react";
+import { RxExternalLink } from "react-icons/rx";
+// Helper, Type, Util Imports
 import axiosInstance from "../../../axiosInstance/axiosInstance";
 import { tExecuteBatch } from "./types";
 import { buildTxHash } from "../../../utils/helper";
@@ -13,10 +14,6 @@ import { error, loading, success } from "../../../assets/gifs";
 import { iIndividualBatch, iTrading, useTradingStore } from "../../../store/TradingStore";
 import { iBatchHistory, iSingleTransaction } from "../../../modules/portfolio/types";
 import { iGlobal, useGlobalStore } from "../../../store/GlobalStore";
-import { useAddress } from "@thirdweb-dev/react";
-import { RxExternalLink } from "react-icons/rx";
-import { IoEllipsisHorizontalOutline } from "react-icons/io5";
-import { PiShieldCheckLight } from "react-icons/pi";
 
 const ExecuteBatch = ({}: tExecuteBatch) => {
     const {
@@ -28,8 +25,8 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
         setHasExecutionError,
         txhash,
         setTxHash,
-        simulationHashes,
-        setSimulationsHashes,
+        // simulationHashes,
+        // setSimulationsHashes,
     }: iTrading = useTradingStore((state) => state);
     const address = useAddress();
     const { smartAccountAddress, isSimulate }: iGlobal = useGlobalStore((state) => state);
@@ -130,6 +127,19 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
                                     <div className="w-full flex justify-start items-center gap-5">
                                         <div className="w-full flex justify-start items-center gap-3">
                                             <h1 className="text-xl font-bold">Source</h1>
+                                            {txhash && (
+                                                <a
+                                                    target="_blank"
+                                                    href={
+                                                        txhash.includes("tenderly")
+                                                            ? txhash
+                                                            : buildTxHash(selectedFromNetwork.chainId, txhash, false)
+                                                    }
+                                                    className="cursor-pointer text-gray-900 text-xl"
+                                                >
+                                                    <RxExternalLink size="18px" />
+                                                </a>
+                                            )}
                                         </div>
 
                                         <div className="w-full flex justify-start items-center gap-3">
@@ -152,7 +162,7 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
                                                                             selectedFromNetwork.chainId.toString()
                                                                         ]?.networkLogo
                                                                     }
-                                                                    alt=""
+                                                                    alt="from network logo"
                                                                     className="h-10 w-10 bg-slate-200 rounded-full"
                                                                 />
                                                                 <div className="absolute -bottom-1 -right-1 bg-white h-5 w-5 flex justify-center items-center rounded-full">
@@ -165,7 +175,7 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
                                                                                     entry.name == bar.data.fromProtocol
                                                                             )?.icon
                                                                         }
-                                                                        alt=""
+                                                                        alt="from protocol logo"
                                                                         className="h-5 w-5 bg-slate-200 rounded-full"
                                                                     />
                                                                 </div>
@@ -178,25 +188,6 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
                                                                     {bar.data.fromProtocol} on {bar.data.fromNetwork}
                                                                 </span>
                                                             </div>
-                                                            <div className="w-4">
-                                                                {
-                                                                    <a
-                                                                        target="_blank"
-                                                                        href={
-                                                                            txhash.includes("tenderly")
-                                                                                ? txhash
-                                                                                : buildTxHash(
-                                                                                      selectedFromNetwork.chainId,
-                                                                                      txhash,
-                                                                                      false
-                                                                                  )
-                                                                        }
-                                                                        className="cursor-pointer ftext-gray-900 text-xl"
-                                                                    >
-                                                                        <RxExternalLink />
-                                                                    </a>
-                                                                }
-                                                            </div>
                                                         </div>
 
                                                         <div className="w-full flex justify-start items-center gap-3">
@@ -206,7 +197,7 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
                                                                         ChainIdDetails[bar.data.toChainId.toString()]
                                                                             ?.networkLogo
                                                                     }
-                                                                    alt=""
+                                                                    alt="to network logo"
                                                                     className="h-10 w-10 bg-slate-200 rounded-full"
                                                                 />
                                                                 <div className="absolute -bottom-1 -right-1 bg-white h-5 w-5 flex justify-center items-center rounded-full">
@@ -217,7 +208,7 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
                                                                                     entry.name == bar.data.toProtocol
                                                                             )?.icon
                                                                         }
-                                                                        alt=""
+                                                                        alt="to protocol logo"
                                                                         className="h-5 w-5 bg-slate-200 rounded-full"
                                                                     />
                                                                 </div>
@@ -233,7 +224,7 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
                                                                 </span>
                                                             </div>
                                                             <div className="w-4">
-                                                                {bar?.simulationHash && (
+                                                                {bar?.simulationHash && txhash && (
                                                                     <a
                                                                         target="_blank"
                                                                         href={buildTxHash(
