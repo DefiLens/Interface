@@ -27,17 +27,17 @@ export const socialHandles: tSocialHandle[] = [
     {
         icon: email,
         key: "email",
-        href: "mailto:radadiyasunny970@gmail.com",
+        href: "mailto:contact@defilens.com",
     },
-    {
-        icon: github,
-        key: "github",
-        href: "https://github.com/sunnyRK",
-    },
+    // {
+    //     icon: github,
+    //     key: "github",
+    //     href: "https://github.com/sunnyRK",
+    // },
     {
         icon: web,
         key: "web",
-        href: metadata.url,
+        href: "https://defilens.tech/",
     },
 ];
 

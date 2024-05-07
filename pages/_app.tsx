@@ -66,17 +66,11 @@ export default function App({ Component, pageProps }: AppProps) {
                     />
 
                     <Suspense fallback={<div>Loading...</div>}>
-                        <div className="main-bg h-screen w-screen">
-                            <div className="h-[79px]">
-                                <HeaderContainer />
-                            </div>
-
-                            <div className="w-screen h-[calc(100%-119px)]  flex justify-center items-start">
-                                <main className="w-full h-full overflow-y-scroll overflow-x-hidden">
-                                    <Component {...pageProps} />
-                                </main>
-                            </div>
-
+                        <div className="main-bg min-h-screen w-screen overflow-hidden">
+                            <HeaderContainer />
+                            <main className="mt-20 w-full h-full">
+                                <Component {...pageProps} />
+                            </main>
                             <FooterContainer />
                         </div>
                     </Suspense>

@@ -16,6 +16,7 @@ import toast from "react-hot-toast";
 import CopyButton from "../../components/common/CopyButton";
 import ConnectWalletWrapper from "../../components/Button/ConnectWalletWrapper";
 import { cn } from "../../lib/utils";
+import { logoLight } from "../../assets/images";
 
 const Header: React.FC<tHeader> = ({ switchOnSpecificChain }) => {
     const pathname = usePathname();
@@ -43,7 +44,7 @@ const Header: React.FC<tHeader> = ({ switchOnSpecificChain }) => {
     // set connected wallet's instance globally
     useEffect(() => {
         if (wallet) {
-            setConnectedWallet(wallet)
+            setConnectedWallet(wallet);
         }
     }, [wallet]);
 
@@ -72,27 +73,32 @@ const Header: React.FC<tHeader> = ({ switchOnSpecificChain }) => {
 
     return (
         <>
-            <div className="w-full fixed top-0 left-0 right-0 md:top-3 z-50 ">
-                <div className="max-w-[1380px] w-full md:w-[94%] mx-auto h-[70px] placeholder:h-[70px] flex justify-between items-center gap-3 bg-N0 md:border md:rounded-full p-3">
+            <header className="w-full fixed top-0 left-0 right-0 md:top-3 z-50">
+                <div className="max-w-[1380px] w-full md:w-[94%] mx-auto h-[70px] placeholder:h-[70px] flex justify-between items-center gap-3 bg-N0 md:border md:rounded-full py-3 px-7">
                     {/* Left Side navigation */}
-                    <div className="flex justify-between items-center gap-8">
-                        {NavigationList.length > 0 &&
-                            NavigationList?.map((item, index: number) => (
-                                <Link
-                                    href={item.route}
-                                    key={index}
-                                    className={`lg:flex hidden flex-row justify-between items-center gap-3 text-black text-lg`}
-                                >
-                                    {item.image && (
-                                        <Image src={item.image} width={150} height={150} alt="DefiLens" className="" />
-                                    )}
-                                    {item.icon && (
-                                        <Image src={item.icon} width={30} height={30} alt="Batching" className="" />
-                                    )}
-                                    <span>{item.title}</span>
-                                </Link>
-                            ))}
+                    <div className="flex justify-between items-center gap-6">
+                        {/* Logo */}
+                        <Image src={logoLight} width={150} height={150} alt="defilens logo" />
+                        {/* Navigation Links */}
+                        <div className="inline-flex items-center gap-4">
+                            {NavigationList.length > 0 &&
+                                NavigationList?.map((item, index: number) => (
+                                    <Link
+                                        href={item.route}
+                                        key={index}
+                                        className="lg:flex hidden flex-row transition-colors duration-200 rounded-full justify-between items-center gap-1 text-black text-lg"
+                                    >
+                                        <span className="p-2 rounded-full">
+                                            {item.icon && (
+                                                <Image src={item.icon} width={24} height={24} alt={item.title} />
+                                            )}
+                                        </span>
+                                        <span className="text-base font-bold">{item.title}</span>
+                                    </Link>
+                                ))}
+                        </div>
                     </div>
+                    {/* CTA Buttons */}
                     <div className="flex justify-between items-center gap-3">
                         {/* Link: "/transfer-fund" */}
                         <Link
@@ -198,8 +204,9 @@ const Header: React.FC<tHeader> = ({ switchOnSpecificChain }) => {
                         </div>
                     </div>
                 </div>
-            </div>
+            </header>
 
+            {/* Network switching Modal */}
             {chainId && (
                 <>
                     {chain?.slug == "polygon" ||
