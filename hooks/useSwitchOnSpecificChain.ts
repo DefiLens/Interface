@@ -32,7 +32,11 @@ export function useSwitchOnSpecificChain() {
         setSelectedNetwork,
         isSimulate
     }: iGlobal = useGlobalStore((state) => state);
-    const { setSelectedFromNetwork }: iTrading = useTradingStore((state) => state);
+
+    const {
+        setSelectedFromNetwork,
+        setSimulationSmartAddress
+    }: iTrading = useTradingStore((state) => state);
     const { mutateAsync: fetchNativeBalance } = useCalculatebalance();
     const switchChain = useSwitchChain();
     const metamaskConfig = metamaskWallet();
@@ -124,7 +128,7 @@ export function useSwitchOnSpecificChain() {
         const multiChainModule = await MultiChainValidationModule.create({
             signer: signer as Signer,
             moduleAddress: DEFAULT_MULTICHAIN_MODULE,
-          });
+        });
         //   setProvider(provider)
         let biconomySmartAccount = await BiconomySmartAccountV2.create({
             chainId: chainId,
@@ -173,13 +177,17 @@ export function useSwitchOnSpecificChain() {
         try {
             const smartAccount = await createAccount(chainId);
             const _smartAccountAddress = await smartAccount.getAccountAddress()
-            console.log('_smartAccountAddress ,', _smartAccountAddress)
+            
+            setSimulationSmartAddress(isSimulate ? "0x9Ce935D780424FB795bef7E72697f263A8258fAA" : _smartAccountAddress)
+            setSmartAccountAddress(_smartAccountAddress);
 
-            if (isSimulate) {
-                setSmartAccountAddress("0x9Ce935D780424FB795bef7E72697f263A8258fAA");
-            } else {
-                setSmartAccountAddress(_smartAccountAddress);
-            }
+
+            console.log('_smartAccountAddress ,', smartAccountAddress)
+
+            // if (isSimulate) {
+            //     setSmartAccountAddress("0x9Ce935D780424FB795bef7E72697f263A8258fAA");
+            // } else {
+            // }
             setSmartAccount(smartAccount);
             setLoading(false);
             setCurrentProvider("Biconomy");

@@ -27,8 +27,23 @@ export const STACKUP_POLYGON_MAINNET_RPC_NODE_URL: any = process.env.NEXT_PUBLIC
 export const BICONOMY_GAS_PRICE_URL = "https://sdk-relayer.prod.biconomy.io/api/v1/relay/feeOptions?chainId=";
 export const IPFS_FIX_URL = "https://cloudflare-ipfs.com/ipfs/";
 export const NODE_JWT_TOKEN = process.env.NEXT_PUBLIC_NODE_JWT_TOKEN
-export const NODE_ONEINCH_URL = "https://server.defilens.tech/api/v1/general/1Inch"
+// export const NODE_ONEINCH_URL = "https://server.defilens.tech/api/v1/general/1Inch"
 
+
+export const get1InchUrl = (NODE_ENV: string | undefined) => {
+    switch (NODE_ENV) {
+      case 'production':
+        return 'https://server.defilens.tech/api/v1/general/1Inch';
+
+      case 'staging':
+        return 'https://server.defilens.tech/api/v1/general/1Inch';
+
+      case 'dev':
+        return 'http://localhost:8080/api/v1/general/1Inch';
+
+      default: return 'http://localhost:8080/api/v1/general/1Inch';
+    }
+  };
 
 const getBaseURL = (NODE_ENV: string | undefined) => {
     switch (NODE_ENV) {
@@ -45,4 +60,5 @@ const getBaseURL = (NODE_ENV: string | undefined) => {
     }
   };
 
+export const NODE_ONEINCH_URL = get1InchUrl(process.env.NEXT_PUBLIC_NODE_ENV);
 export const BASE_URL = getBaseURL(process.env.NEXT_PUBLIC_NODE_ENV);

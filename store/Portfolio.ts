@@ -48,7 +48,7 @@ export interface iPortfolio {
     setAmountInDecimals: (amountInDecimals: number | string) => void;
     setIsnative: (isNative: boolean) => void;
     setSendtxLoading: (sendTxLoading: boolean) => void;
-    setTxHash: (txhash: boolean | string) => void;
+    setTxHash: (txhash: string) => void;
     setTokensData: (tokensData: object[]) => void;
     setScwTokenInbalance: (scwBalance: BigNumber) => void;
     setEoaTokenInbalance: (eoaBalance: BigNumber) => void;
@@ -84,7 +84,7 @@ export const usePortfolioStore = create<iPortfolio>((set) => ({
     amountInDecimals: "",
     isNative: true,
     sendTxLoading: false,
-    txhash: false,
+    txhash: "",
     tokensData: [],
     scwBalance: BigNumber.from(0),
     eoaBalance: BigNumber.from(0),

@@ -7,12 +7,16 @@ import SelectionBar from "../SelectionBar/SelectionBar";
 import Button from "../Button/Button";
 import { iRebalance, iTrading, useRebalanceStore, useTradingStore } from "../../store/TradingStore";
 import { protocolNames } from "../../utils/data/protocols";
-import { defaultBlue } from "../../assets/images";
+import { defaultBlue, tenderly } from "../../assets/images";
 import { BiLoaderAlt } from "react-icons/bi";
 import { tBatchSelectionSection } from "../../modules/trade/types";
 import CustomCheckbox from "../common/CustomCheckbox";
 import { Rebalance } from "./Rebalance";
 import clsx from "clsx";
+import axios from "axios";
+import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
+import { useChain } from "@thirdweb-dev/react";
+import { CgSpinner } from "react-icons/cg";
 
 bg.config({ DECIMAL_PLACES: 10 });
 
@@ -22,6 +26,8 @@ const BatchSelectionSection: React.FC<tBatchSelectionSection> = ({
     sendSingleBatchToList,
     handleExecuteMethod,
     processRebalancing,
+    oraclePrice,
+    oraclePriceLoading,
 }) => {
     const {
         maxBalance,
@@ -43,6 +49,7 @@ const BatchSelectionSection: React.FC<tBatchSelectionSection> = ({
     }: iTrading = useTradingStore((state) => state);
 
     const { isRebalance, setIsRebalance, rebalanceData }: iRebalance = useRebalanceStore((state) => state);
+    const { isSimulate }: iGlobal = useGlobalStore((state) => state);
 
     const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (addToBatchLoading) {
@@ -243,12 +250,18 @@ const BatchSelectionSection: React.FC<tBatchSelectionSection> = ({
                                     }
                                     className="w-full text-xl bg-W100 md:text-2xl text-B100 placeholder:text-slate-400 font-bold outline-none"
                                 />
-                                <div className="text-xs md:text-sm text-B100 font-medium">$0.00</div>
+                                <div className="text-xs md:text-sm text-B100 font-medium">
+                                    {oraclePriceLoading ? (
+                                        <div className="bg-gray-200 h-4 w-16 animate-pulse rounded-md"></div>
+                                    ) : (
+                                        oraclePrice && <p>${(oraclePrice * amountIn).toFixed(5)}</p>
+                                    )}
+                                </div>
                                 <div className="absolute right-0 bottom-0 flex flex-col justify-center items-end gap-1">
                                     {maxBalance !== amountIn && maxBalance !== "0" ? (
                                         <span
                                             onClick={() => onChangeAmountIn(maxBalance ? maxBalance.toString() : "0")}
-                                            className="text-xs md:text-sm text-S600 font-medium bg-[rgba(109,223,255,.4)] rounded-xl px-3 py-1"
+                                            className="text-xs md:text-sm text-S600 font-medium bg-[rgba(109,223,255,.4)] rounded-xl px-3 py-1 cursor-pointer"
                                         >
                                             Max
                                         </span>
@@ -260,7 +273,8 @@ const BatchSelectionSection: React.FC<tBatchSelectionSection> = ({
                                     <span className="flex gap-2 text-xs md:text-sm text-B100 font-semibold cursor-default">
                                         Balance:
                                         {ismaxBalanceLoading ? (
-                                            <BiLoaderAlt className="animate-spin h-4 w-4" />
+                                            // <BiLoaderAlt className="animate-spin h-4 w-4" />
+                                            <div className="bg-gray-200 h-4 w-14 animate-pulse rounded-md"></div>
                                         ) : (
                                             <span className="text-B100">
                                                 {maxBalance ? maxBalance : 0} {selectedFromToken && selectedFromToken}
@@ -299,13 +313,25 @@ const BatchSelectionSection: React.FC<tBatchSelectionSection> = ({
                             />
                         )}
 
-                        <Button
-                            handleClick={() => handleExecuteMethod()}
-                            isLoading={sendTxLoading}
-                            disabled={!isExecuteBtnClickable || addToBatchLoading}
-                            customStyle=""
-                            innerText="Execute Batch"
-                        />
+                        {!isSimulate ? (
+                            <Button
+                                handleClick={() => handleExecuteMethod()}
+                                isLoading={sendTxLoading}
+                                disabled={!isExecuteBtnClickable || addToBatchLoading}
+                                customStyle=""
+                                innerText="Execute Batch"
+                            />
+                        ) : (
+                            <button
+                                type="button"
+                                disabled={sendTxLoading}
+                                onClick={() => handleExecuteMethod()}
+                                className={`${sendTxLoading ? "bg-[rgba(132,144,251,.3)] cursor-not-allowed" : "bg-[rgba(132,144,251,.08)] hover:bg-[rgba(132,144,251,.1)]"} border border-[rgba(132,144,251)] w-full flex justify-center items-center gap-2  py-3 px-5 rounded-lg text-base md:text-lg text-[rgba(132,144,251)] font-bold transition duration-300`}
+                            >
+                                {sendTxLoading && <CgSpinner className="animate-spin h-7 w-7" />}
+                                Simulate
+                            </button>
+                        )}
                     </div>
                 </div>
             </div>

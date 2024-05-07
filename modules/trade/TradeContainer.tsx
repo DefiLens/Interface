@@ -1,5 +1,5 @@
 // Library Imports
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { ethers, BigNumber, Signer } from "ethers";
 import { toast } from "react-hot-toast";
 import { BigNumber as bg } from "bignumber.js";
@@ -45,6 +45,8 @@ import {
     useRebalanceStore,
     useTradingStore,
 } from "../../store/TradingStore";
+import axios from "axios";
+import axiosInstance from "../../axiosInstance/axiosInstance";
 
 bg.config({ DECIMAL_PLACES: 10 });
 
@@ -70,7 +72,7 @@ const TradeContainer: React.FC = () => {
         setSmartAccount,
         setSmartAccountAddress,
         setConnected,
-        isSimulate
+        isSimulate,
     }: iGlobal = useGlobalStore((state) => state);
 
     const {
@@ -121,7 +123,11 @@ const TradeContainer: React.FC = () => {
         setTotalFees,
         setShowExecuteMethodModel,
         simulationHashes,
-        setSimulationsHashes
+        setSimulationsHashes,
+        simulationSmartAddress,
+        setSimulationSmartAddress,
+        selectedFromTokenAddress,
+        setSelectedFromTokenAddress,
     }: iTrading = useTradingStore((state) => state);
 
     const {
@@ -133,8 +139,6 @@ const TradeContainer: React.FC = () => {
         removeDataAtIndex,
         setClearRebalanceData,
     }: iRebalance = useRebalanceStore((state) => state);
-
-    // console.log("individial", individualBatch);
 
     useEffect(() => {
         if (individualBatch.length === 1 && individualBatch[0].txArray.length === 0) {
@@ -156,7 +160,6 @@ const TradeContainer: React.FC = () => {
 
     const handleSelectToNetwork = async (_toNetwork: iSelectedNetwork) => {
         try {
-            console.log("handleSelectToNetwork ~ _toNetwork", _toNetwork);
             setSelectedToNetwork(_toNetwork);
         } catch (error) {
             console.error("API Error:", error);
@@ -185,6 +188,7 @@ const TradeContainer: React.FC = () => {
                 setAmountIn("");
                 setSmartAccount(null);
                 setSmartAccountAddress("");
+                setSimulationSmartAddress("");
                 setConnected(false);
                 setSelectedFromNetwork({
                     key: "",
@@ -326,14 +330,12 @@ const TradeContainer: React.FC = () => {
                       )?.tokenAddresses[_fromToken]
                     : erc20Address[0]?.address;
 
-            console.log(_fromToken, tokenAddress);
-
             const erc20 = await getContractInstance(tokenAddress, IERC20, provider);
             const fromTokendecimal: any = await getErc20Decimals(erc20);
             setSafeState(setFromTokenDecimal, fromTokendecimal, 0);
 
             let scwAddress: any;
-            if (!smartAccountAddress) {
+            if (!simulationSmartAddress) {
                 const createAccount = async (chainId: any) => {
                     const bundler: IBundler = new Bundler({
                         bundlerUrl: ChainIdDetails[chainId].bundlerURL,
@@ -366,7 +368,6 @@ const TradeContainer: React.FC = () => {
                         defaultValidationModule: ownerShipModule,
                         activeValidationModule: ownerShipModule,
                     });
-                    console.log("biconomySmartAccount-1", biconomySmartAccount);
                     return biconomySmartAccount;
                 };
                 scwAddress = await createAccount(selectedFromNetwork.chainId);
@@ -374,7 +375,7 @@ const TradeContainer: React.FC = () => {
 
             const maxBal: BigNumber | undefined = await getErc20Balanceof(
                 erc20 as ethers.Contract,
-                smartAccountAddress ? smartAccountAddress : scwAddress.address
+                simulationSmartAddress ? simulationSmartAddress : scwAddress.address
             );
             if (!maxBal) return;
             const MaxBalance = await decreasePowerByDecimals(maxBal?.toString(), fromTokendecimal);
@@ -524,7 +525,14 @@ const TradeContainer: React.FC = () => {
         setMaxBalance("");
     };
 
-    const updateInputValues = (index: number, txArray: Array<tTx>, batchesFlow: any, data: any, simulation: any) => {
+    const updateInputValues = (
+        index: number,
+        txArray: Array<tTx>,
+        batchesFlow: any,
+        data: any,
+        simulation: any,
+        simulationHash: string | undefined
+    ) => {
         if (txArray.length < 1) return toast.error("Please complete the last input before adding a new one.");
         const newItem: any = {
             id: index,
@@ -532,6 +540,7 @@ const TradeContainer: React.FC = () => {
             batchesFlow,
             data: data,
             simulation,
+            simulationHash,
         };
 
         addBatchItem(newItem);
@@ -549,8 +558,6 @@ const TradeContainer: React.FC = () => {
     };
 
     const sendSingleBatchToList = async (isSCW: boolean) => {
-        alert("sendSingleBatchToList")
-        console.log(simulationHashes)
         try {
             if (isSCW) {
                 setAddToBatchLoading(true);
@@ -624,7 +631,7 @@ const TradeContainer: React.FC = () => {
                     tokenOut: "",
                     tokenOutName: selectedToToken,
                     amount: _tempAmount,
-                    address: isSCW ? smartAccountAddress : address,
+                    address: isSCW ? simulationSmartAddress : address,
                     provider,
                     selectedToNetwork: selectedToNetwork,
                     selectedToProtocol: selectedToProtocol,
@@ -641,7 +648,7 @@ const TradeContainer: React.FC = () => {
                     tokenOut: "",
                     tokenOutName: selectedToToken,
                     amount: _tempAmount,
-                    address: isSCW ? smartAccountAddress : address,
+                    address: isSCW ? simulationSmartAddress : address,
                     provider,
                     selectedToNetwork: selectedToNetwork,
                     selectedToProtocol: selectedToProtocol,
@@ -649,6 +656,8 @@ const TradeContainer: React.FC = () => {
                     amountIn: amountIn,
                 } as tRefinance);
             }
+
+            console.log("refinaceData", refinaceData);
 
             if (!refinaceData) {
                 setAddToBatchLoading(false);
@@ -661,7 +670,7 @@ const TradeContainer: React.FC = () => {
                 isError: false,
             };
 
-            let fees
+            let fees;
             if (!isSimulate) {
                 const userOp = await smartAccount.buildUserOp(refinaceData.txArray);
 
@@ -698,7 +707,8 @@ const TradeContainer: React.FC = () => {
                     fees: isSimulate ? "0.001" : fees.toString(),
                     extraValue: refinaceData.value ? bg(refinaceData.value.toString()).dividedBy(1e18).toString() : "0",
                 },
-                simulation
+                simulation,
+                refinaceData.simulationHash
             );
             setAddToBatchLoading(false);
             setShowBatchList(true);
@@ -716,7 +726,7 @@ const TradeContainer: React.FC = () => {
     };
 
     const handleExecuteMethod = async () => {
-        if (!individualBatch[0].txArray.length) {
+        if (!individualBatch[0]?.txArray?.length) {
             toast.error("No Batch found for Execution");
             return;
         }
@@ -747,11 +757,9 @@ const TradeContainer: React.FC = () => {
                 } else if (whichProvider == "isERC20") {
                     tempTxhash = await sendToERC20Biconomy(mergeArray);
                 } else if (whichProvider == "isSimulate") {
-                    tempTxhash = await sendSimulateTx(mergeArray)  || "";
-                    tempTxhash = buildTxHash(selectedFromNetwork.chainId, tempTxhash, false, true) || ""
+                    tempTxhash = (await sendSimulateTx(mergeArray)) || "";
+                    tempTxhash = buildTxHash(selectedFromNetwork.chainId, tempTxhash, false, true) || "";
                 }
-                // tempTxhash = await sendToGasLessBiconomy(mergeArray);
-                // tempTxhash = await sendToSessionKeyBiconomy(mergeArray);
             } else {
                 tempTxhash = await sendTxTrditionally(mergeArray);
             }
@@ -858,7 +866,7 @@ const TradeContainer: React.FC = () => {
                     tokenOut: "",
                     tokenOutName: selectedToToken,
                     amount: _tempAmount,
-                    address: isSCW ? smartAccountAddress : address,
+                    address: isSCW ? simulationSmartAddress : address,
                     provider,
                     selectedToNetwork: selectedToNetwork,
                     selectedToProtocol: selectedToProtocol,
@@ -875,7 +883,7 @@ const TradeContainer: React.FC = () => {
                     tokenOut: "",
                     tokenOutName: selectedToToken,
                     amount: _tempAmount,
-                    address: isSCW ? smartAccountAddress : address,
+                    address: isSCW ? simulationSmartAddress : address,
                     provider,
                     selectedToNetwork: selectedToNetwork,
                     selectedToProtocol: selectedToProtocol,
@@ -929,7 +937,8 @@ const TradeContainer: React.FC = () => {
                     fees: fees.toString(),
                     extraValue: refinaceData.value ? bg(refinaceData.value.toString()).dividedBy(1e18).toString() : "0",
                 },
-                simulation
+                simulation,
+                refinaceData.simulationHash
             );
 
             setAddToBatchLoading(false);
@@ -967,6 +976,33 @@ const TradeContainer: React.FC = () => {
         return new Promise((resolve) => setTimeout(resolve, ms));
     }
 
+    const handleSelectedTokenAddress = (_tokenAddress: string) => {
+        setSelectedFromTokenAddress(_tokenAddress);
+    };
+
+    const [oraclePrice, setOraclePrice] = useState<number>(0);
+    const [oraclePriceLoading, setOraclePriceLoading] = useState<boolean>(false);
+    useEffect(() => {
+        const fetchTokenData = async (_tokenAddress: string) => {
+            try {
+                setOraclePriceLoading(true);
+                const response = await axiosInstance.get(`/general/ze/token-data/${_tokenAddress}`);
+
+                setOraclePrice(response?.data?.market_data?.price);
+                console.log(response?.data);
+                setOraclePriceLoading(false);
+            } catch (error) {
+                console.error("Error fetching token data:", error);
+                setOraclePriceLoading(false);
+            }
+        };
+
+        if (selectedFromTokenAddress) {
+            fetchTokenData(selectedFromTokenAddress);
+        }
+    }, [selectedFromTokenAddress, smartAccountAddress]);
+
+    // console.log("simulationHashes", simulationHashes);
     return (
         <Trade
             handleSelectFromNetwork={handleSelectFromNetwork}
@@ -986,6 +1022,9 @@ const TradeContainer: React.FC = () => {
             closeFromSelectionMenu={closeFromSelectionMenu}
             closeToSelectionMenu={closeToSelectionMenu}
             processRebalancing={processRebalancing}
+            handleSelectedTokenAddress={handleSelectedTokenAddress}
+            oraclePrice={oraclePrice}
+            oraclePriceLoading={oraclePriceLoading}
         />
     );
 };

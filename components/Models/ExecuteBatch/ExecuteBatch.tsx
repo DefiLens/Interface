@@ -5,7 +5,7 @@ import { BsArrowRight } from "react-icons/bs";
 import axiosInstance from "../../../axiosInstance/axiosInstance";
 import { tExecuteBatch } from "./types";
 import { buildTxHash } from "../../../utils/helper";
-import { closeNarrow } from "../../../assets/images";
+import { closeNarrow, tenderly } from "../../../assets/images";
 import { ChainIdDetails } from "../../../utils/data/network";
 import { protocolNames } from "../../../utils/data/protocols";
 import { error, loading, success } from "../../../assets/gifs";
@@ -13,6 +13,9 @@ import { iIndividualBatch, iTrading, useTradingStore } from "../../../store/Trad
 import { iBatchHistory, iSingleTransaction } from "../../../modules/portfolio/types";
 import { iGlobal, useGlobalStore } from "../../../store/GlobalStore";
 import { useAddress } from "@thirdweb-dev/react";
+import { RxExternalLink } from "react-icons/rx";
+import { IoEllipsisHorizontalOutline } from "react-icons/io5";
+import { PiShieldCheckLight } from "react-icons/pi";
 
 const ExecuteBatch = ({}: tExecuteBatch) => {
     const {
@@ -24,9 +27,11 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
         setHasExecutionError,
         txhash,
         setTxHash,
+        simulationHashes,
+        setSimulationsHashes,
     }: iTrading = useTradingStore((state) => state);
     const address = useAddress();
-    const { smartAccountAddress }: iGlobal = useGlobalStore((state) => state);
+    const { smartAccountAddress, isSimulate }: iGlobal = useGlobalStore((state) => state);
 
     const closeExecuteBatchModel = () => {
         setShowExecuteBatchModel(false);
@@ -40,9 +45,7 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
     const handleIsCrossChainTxs = () => {
         const txn =
             individualBatch.length > 0 &&
-            individualBatch.filter(
-                (item: iIndividualBatch, index) => item.data.fromNetwork !== item.data.toNetwork
-            );
+            individualBatch.filter((item: iIndividualBatch, index) => item.data.fromNetwork !== item.data.toNetwork);
         setHasCrossChainTxs(txn);
     };
 
@@ -52,7 +55,8 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
 
     const handleTxnHistory = async (txHistory: iBatchHistory) => {
         try {
-            await axiosInstance.post("/transactions/batch", txHistory)
+            await axiosInstance
+                .post(`/transactions/${isSimulate ? "batch-simulation" : "batch"}`, txHistory)
                 .then(async (res) => {
                     console.log("Thanks for Working with us");
                 })
@@ -75,12 +79,14 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
                 fromToken: item.data.fromToken,
                 toToken: item.data.toToken,
                 txHash: txhash,
+                isSimulate: isSimulate,
+                simulationLink: item.simulationHash,
             }));
 
-            const dataToSend: iBatchHistory= {
+            const dataToSend: iBatchHistory = {
                 transactions: txHistory,
                 smartAccount: smartAccountAddress,
-                eoaAccount: address
+                eoaAccount: address,
             };
 
             handleTxnHistory(dataToSend);
@@ -89,12 +95,12 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
 
     return (
         <div className="fixed w-full h-full flex justify-center items-center top-0 right-0 left-0 bottom-0 z-50 text-black backdrop-brightness-50 p-5 md:p-10">
-            <div className="h-auto w-[600px] flex flex-col justify-center items-center gap-2 bg-white border-2 border-gray-300 rounded-2xl p-3">
+            <div className="h-auto w-[600px] flex flex-col justify-center items-center gap-2 bg-white border-gray-300 rounded-2xl p-3 border-8 relative">
                 {txhash || hasExecutionError ? (
                     <button
                         type="button"
                         onClick={() => closeExecuteBatchModel()}
-                        className="w-8 h-8 place-self-end p-2 bg-slate-50 hover:bg-slate-200 active:bg-slate-100 rounded-xl cursor-pointer outline-none"
+                        className="absolute top-2 right-2 w-8 h-8 place-self-end p-2 bg-slate-50 hover:bg-slate-200 active:bg-slate-100 rounded-full cursor-pointer outline-none"
                     >
                         <Image src={closeNarrow} alt="" />
                     </button>
@@ -105,116 +111,167 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
                         alt=""
                         className="w-20 h-20 md:w-28 md:h-28 !bg-green-400"
                     />
-                    <div className="w-full text-center text-xl md:text-2xl text-black font-bold cursor-pointer m-2">
+                    {/* <PiShieldCheckLight size={80} /> */}
+                    <div className="w-full text-center text-xl md:text-2xl text-black font-bold mb-8 mt-2">
                         {txhash
-                            ? "Execute Batches Successfully"
+                            ? isSimulate
+                                ? "Simulation Executed Successfully"
+                                : "Batches Executed Successfully"
                             : hasExecutionError
-                            ? "Execution Error"
-                            : "Executing All Batches"}
+                              ? "Execution Error"
+                              : "Executing All Batches"}
                     </div>
-                    <div className="w-full overflow-auto">
+                    <div className="w-full">
                         {selectedFromNetwork &&
                             !hasExecutionError &&
                             (individualBatch.length > 0 && individualBatch[0].txArray.length > 0 ? (
-                                <div className="w-full max-h-60 flex flex-col justify-start items-center text-sm md:text-base py-5">
-                                    {individualBatch.map(
-                                        (bar: iIndividualBatch, index) =>
-                                            bar.txArray.length > 0 && (
-                                                <div
-                                                    key={bar.id}
-                                                    className="w-full flex justify-start items-center gap-5 py-2"
-                                                >
-                                                    <div className="w-full flex justify-start items-center gap-3">
-                                                        <span className="text-base md:text-lg font-semibold">
-                                                            {index + 1}.
-                                                        </span>
-                                                        <div className="relative">
-                                                            <Image
-                                                                src={
-                                                                    ChainIdDetails[
-                                                                        selectedFromNetwork.chainId.toString()
-                                                                    ]?.networkLogo
-                                                                }
-                                                                alt=""
-                                                                className="h-8 w-8 bg-slate-200 rounded-full cursor-pointer"
-                                                            />
-                                                            <div className="absolute -bottom-1 -right-1 bg-white h-4 w-4 flex justify-center items-center rounded-full">
+                                <div className="flex flex-col gap-4">
+                                    <div className="w-full flex justify-start items-center gap-5">
+                                        <div className="w-full flex justify-start items-center gap-3">
+                                            <h1 className="text-xl font-bold">Source</h1>
+                                        </div>
+
+                                        <div className="w-full flex justify-start items-center gap-3">
+                                            <h1 className="text-xl font-bold">Destination</h1>
+                                        </div>
+                                    </div>
+                                    <div className="w-full max-h-60 flex flex-col justify-start items-center text-sm md:text-base gap-6 overflow-auto py-1">
+                                        {individualBatch.map(
+                                            (bar: iIndividualBatch, index) =>
+                                                bar.txArray.length > 0 && (
+                                                    <div
+                                                        key={bar.id}
+                                                        className="w-full flex justify-start items-center gap-5"
+                                                    >
+                                                        <div className="w-full flex justify-start items-center gap-3">
+                                                            <div className="relative">
                                                                 <Image
                                                                     src={
-                                                                        protocolNames[
-                                                                            selectedFromNetwork.chainId
-                                                                        ]?.key.find(
-                                                                            (entry) =>
-                                                                                entry.name == bar.data.fromProtocol
-                                                                        )?.icon
+                                                                        ChainIdDetails[
+                                                                            selectedFromNetwork.chainId.toString()
+                                                                        ]?.networkLogo
                                                                     }
                                                                     alt=""
-                                                                    className="h-3 w-3 bg-slate-200 rounded-full cursor-pointer"
+                                                                    className="h-10 w-10 bg-slate-200 rounded-full"
                                                                 />
+                                                                <div className="absolute -bottom-1 -right-1 bg-white h-5 w-5 flex justify-center items-center rounded-full">
+                                                                    <Image
+                                                                        src={
+                                                                            protocolNames[
+                                                                                selectedFromNetwork.chainId
+                                                                            ]?.key.find(
+                                                                                (entry) =>
+                                                                                    entry.name == bar.data.fromProtocol
+                                                                            )?.icon
+                                                                        }
+                                                                        alt=""
+                                                                        className="h-5 w-5 bg-slate-200 rounded-full"
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                            <div className="flex flex-col justify-start items-start">
+                                                                <span className="text-sm md:text-base font-semibold text-slate-700">
+                                                                    {bar.data.amountIn} {bar.data.fromToken}
+                                                                </span>
+                                                                <span className="text-xs md:text-sm font-semibold text-slate-700">
+                                                                    {bar.data.fromProtocol} on {bar.data.fromNetwork}
+                                                                </span>
+                                                            </div>
+                                                            <div className="w-4">
+                                                                {
+                                                                    <a
+                                                                        target="_blank"
+                                                                        href={
+                                                                            txhash.includes("tenderly")
+                                                                                ? txhash
+                                                                                : buildTxHash(
+                                                                                      selectedFromNetwork.chainId,
+                                                                                      txhash,
+                                                                                      false
+                                                                                  )
+                                                                        }
+                                                                        className="cursor-pointer ftext-gray-900 text-xl"
+                                                                    >
+                                                                        <RxExternalLink />
+                                                                    </a>
+                                                                }
                                                             </div>
                                                         </div>
-                                                        <div className="flex flex-col justify-start items-start">
-                                                            <span className="text-sm md:text-base font-semibold text-slate-700">
-                                                                {bar.data.fromProtocol}
-                                                            </span>
-                                                            <span className="text-xs md:text-sm font-semibold text-slate-700">
-                                                                {bar.data.amountIn} {bar.data.fromToken}
-                                                            </span>
-                                                        </div>
-                                                    </div>
 
-                                                    <BsArrowRight className="w-10 h-10" />
-
-                                                    <div className="w-full flex justify-start items-center gap-3">
-                                                        <div className="relative">
-                                                            <Image
-                                                                src={
-                                                                    ChainIdDetails[bar.data.toChainId.toString()]
-                                                                        ?.networkLogo
-                                                                }
-                                                                alt=""
-                                                                className="h-8 w-8 bg-slate-200 rounded-full cursor-pointer"
-                                                            />
-                                                            <div className="absolute -bottom-1 -right-1 bg-white h-4 w-4 flex justify-center items-center rounded-full">
+                                                        <div className="w-full flex justify-start items-center gap-3">
+                                                            <div className="relative">
                                                                 <Image
                                                                     src={
-                                                                        protocolNames[bar.data.toChainId].key.find(
-                                                                            (entry) =>
-                                                                                entry.name == bar.data.toProtocol
-                                                                        )?.icon
+                                                                        ChainIdDetails[bar.data.toChainId.toString()]
+                                                                            ?.networkLogo
                                                                     }
                                                                     alt=""
-                                                                    className="h-3 w-3 bg-slate-200 rounded-full cursor-pointer"
+                                                                    className="h-10 w-10 bg-slate-200 rounded-full"
                                                                 />
+                                                                <div className="absolute -bottom-1 -right-1 bg-white h-5 w-5 flex justify-center items-center rounded-full">
+                                                                    <Image
+                                                                        src={
+                                                                            protocolNames[bar.data.toChainId].key.find(
+                                                                                (entry) =>
+                                                                                    entry.name == bar.data.toProtocol
+                                                                            )?.icon
+                                                                        }
+                                                                        alt=""
+                                                                        className="h-5 w-5 bg-slate-200 rounded-full"
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                            <div className="flex flex-col justify-start items-start">
+                                                                <span className="text-sm md:text-base font-semibold text-slate-700">
+                                                                    {/* {bar.data.toProtocol} */}
+                                                                    {bar.data.amountIn} {bar.data.toToken}
+                                                                </span>
+                                                                <span className="text-xs md:text-sm font-semibold text-slate-700">
+                                                                    {bar.data.toProtocol} on {bar.data.toNetwork}
+                                                                    {/* {bar.data.amountIn} {bar.data.toToken} */}
+                                                                </span>
+                                                            </div>
+                                                            <div className="w-4">
+                                                                {bar?.simulationHash && (
+                                                                    <a
+                                                                        target="_blank"
+                                                                        href={buildTxHash(
+                                                                            selectedFromNetwork.chainId,
+                                                                            bar?.simulationHash,
+                                                                            false,
+                                                                            true
+                                                                        )}
+                                                                        className="cursor-pointer text-gray-900 text-xl"
+                                                                    >
+                                                                        <RxExternalLink />
+                                                                    </a>
+                                                                )}
                                                             </div>
                                                         </div>
-                                                        <div className="flex flex-col justify-start items-start">
-                                                            <span className="text-sm md:text-base font-semibold text-slate-700">
-                                                                {bar.data.toProtocol}
-                                                            </span>
-                                                            <span className="text-xs md:text-sm font-semibold text-slate-700">
-                                                                {bar.data.amountIn} {bar.data.toToken}
-                                                            </span>
-                                                        </div>
                                                     </div>
-                                                </div>
-                                            )
-                                    )}
+                                                )
+                                        )}
+                                    </div>
                                 </div>
                             ) : null)}
                     </div>
-                    <div className="w-full break-words text-center text-base md:text-lg text-teal-500  font-semibold m-2">
+                    <div className="w-full break-words text-center text-base md:text-lg text-teal-500  font-semibold">
                         {txhash ? (
                             <span className="flex flex-col justify-center items-center gap-2">
-                                <a
-                                    target="_blank"
-                                    href={txhash.includes("tenderly") ? txhash : buildTxHash(selectedFromNetwork.chainId, txhash, false)}
-                                    // href={buildTxHash(selectedFromNetwork.chainId, txhash, false)}
-                                    className="cursor-pointer bg-teal-500 text-white rounded-lg px-5 py-1"
-                                >
-                                    View on Explorer
-                                </a>
-                                {hasCrossChainTxs && hasCrossChainTxs.length > 0 && (
+                                {!isSimulate && (
+                                    <a
+                                        target="_blank"
+                                        href={
+                                            txhash.includes("tenderly")
+                                                ? txhash
+                                                : buildTxHash(selectedFromNetwork.chainId, txhash, false)
+                                        }
+                                        className="cursor-pointer bg-teal-500 text-white rounded-lg px-5 py-1"
+                                    >
+                                        View on Explorer
+                                    </a>
+                                )}
+                                {!isSimulate && hasCrossChainTxs && hasCrossChainTxs.length > 0 && (
                                     <a
                                         target="_blank"
                                         href={buildTxHash(selectedFromNetwork.chainId, txhash, true)}
@@ -231,10 +288,15 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
                                     : "Something went wrong."}
                             </span>
                         ) : (
-                            <span>Proceed in your wallet</span>
+                            !isSimulate && <span>Proceed in your wallet</span>
                         )}
                     </div>
                 </div>
+                <h2 className="flex gap-1 items-center">
+                    <span className="text-lg md:text-xl font-bold text-black">Powered by</span>
+                    <Image src={tenderly} alt="" className="h-10 w-10" />
+                    <span className="text-base md:text-lg font-bold text-slate-900">tenderly</span>
+                </h2>
             </div>
         </div>
     );

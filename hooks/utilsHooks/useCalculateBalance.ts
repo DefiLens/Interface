@@ -12,6 +12,7 @@ export function useCalculatebalance() {
 
     async function fetchNativeBalance({ chainId, eoaAddress, scwAddress }) {
         try {
+
             const provider: ethers.providers.JsonRpcProvider | undefined = await getProvider(chainId);
             if (!provider) throw "No Provider";
             if (eoaAddress) {

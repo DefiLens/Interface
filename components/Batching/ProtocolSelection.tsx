@@ -19,6 +19,7 @@ interface iProtocolSelectionProps {
     selectedProtocol: string;
     onChangeToken: (protocol: string) => void;
     protocolNames: iProtocolNames;
+    handleSelectedTokenAddress: (_tokenAddress: string) => void;
 }
 
 const ProtocolSelection: React.FC<iProtocolSelectionProps> = ({
@@ -32,6 +33,7 @@ const ProtocolSelection: React.FC<iProtocolSelectionProps> = ({
     selectedProtocol,
     onChangeToken,
     protocolNames,
+    handleSelectedTokenAddress
 }) => {
     const { showFromSelectionMenu }: iTrading = useTradingStore((state) => state);
     const { isRebalance }: iRebalance = useRebalanceStore((state) => state);
@@ -101,6 +103,7 @@ const ProtocolSelection: React.FC<iProtocolSelectionProps> = ({
                                         onItemClick={onChangeToken}
                                         selectedNetwork={selectedNetwork}
                                         tokenAddresses={protocol.tokenAddresses}
+                                        handleSelectedTokenAddress={handleSelectedTokenAddress}
                                     />
                                 )}
 
@@ -112,6 +115,7 @@ const ProtocolSelection: React.FC<iProtocolSelectionProps> = ({
                                         tokens={tokensData}
                                         selectedNetwork={selectedNetwork}
                                         onItemClick={onChangeToken}
+                                        handleSelectedTokenAddress={handleSelectedTokenAddress}
                                     />
                                 )}
                             </div>

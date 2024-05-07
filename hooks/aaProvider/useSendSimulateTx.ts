@@ -53,14 +53,12 @@ export function useSendSimulateTx() {
         try {
 
             const txsNew = convertArray(txs)
-            console.log("txsNew", txsNew, smartAccount.accountAddress)
 
             const { fromArray, toArray, inputArray, valueArray } = separateArrays(txsNew);
             const bigNumberArray: BigNumber[] = [];
             for (let i = 0; i < toArray.length; i++) {
                 bigNumberArray.push(BigNumber.from("0".repeat(toArray.length)));
             }
-            console.log("bigNumberArray", bigNumberArray)
             const abiInterface = new ethers.utils.Interface(["function executeBatch(address[],uint256[],bytes[])"]);
             const txData = abiInterface.encodeFunctionData("executeBatch", [toArray, valueArray, inputArray]);
 
@@ -83,8 +81,6 @@ export function useSendSimulateTx() {
                     }
                 )
             ).data;
-            console.log("simulate", simulate)
-            console.log("simulate", simulate.simulation_results[0].transaction.hash)
 
             // https://dashboard.tenderly.co/sunnyRK/project/simulator/1115b85a-73c7-44dc-abfa-3338d6ed03b5
             return simulate.simulation_results[0].simulation.id // simulation reciept

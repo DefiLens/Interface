@@ -28,6 +28,9 @@ const Trade: React.FC<tTrade> = ({
     closeFromSelectionMenu,
     closeToSelectionMenu,
     processRebalancing,
+    handleSelectedTokenAddress,
+    oraclePrice,
+    oraclePriceLoading,
 }) => {
     const {
         selectedFromNetwork,
@@ -48,7 +51,7 @@ const Trade: React.FC<tTrade> = ({
         setFilterToAddress,
         showBatchList,
         showExecuteBatchModel,
-        showExecuteMethodModel
+        showExecuteMethodModel,
     }: iTrading = useTradingStore((state) => state);
 
     return (
@@ -76,6 +79,7 @@ const Trade: React.FC<tTrade> = ({
                         onChangeProtocol={onChangeFromProtocol}
                         protocolNames={protocolNames}
                         title="Select source token"
+                        handleSelectedTokenAddress={handleSelectedTokenAddress}
                     />
                     {/* TO_TOKEN SELECTION MENU */}
                     <TokenSelectionMenu
@@ -102,6 +106,8 @@ const Trade: React.FC<tTrade> = ({
                         sendSingleBatchToList={sendSingleBatchToList}
                         handleExecuteMethod={handleExecuteMethod}
                         processRebalancing={processRebalancing}
+                        oraclePrice={oraclePrice}
+                        oraclePriceLoading={oraclePriceLoading}
                     />
                 </div>
 
