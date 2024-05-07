@@ -13,6 +13,7 @@ import FooterContainer from "../modules/footer/FooterContainer";
 import "@biconomy/web3-auth/dist/src/style.css";
 import "../assets/styles/index.css";
 import Head from "next/head";
+import JoinWaitlistContainer from "../modules/join-waitlist/migrate-asset/JoinWaitlistContainer";
 
 export default function App({ Component, pageProps }: AppProps) {
     const { selectedNetwork }: iGlobal = useGlobalStore((state) => state);
@@ -68,6 +69,7 @@ export default function App({ Component, pageProps }: AppProps) {
 
                             <div className="w-screen h-[calc(100%-119px)]  flex justify-center items-start">
                                 <main className="w-full h-full overflow-y-scroll overflow-x-hidden">
+                                <JoinWaitlistContainer />
                                     <Component {...pageProps} />
                                 </main>
                             </div>

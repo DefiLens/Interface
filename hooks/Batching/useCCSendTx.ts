@@ -175,7 +175,6 @@ export function useCCSendTx() {
                 false,
                 chooseChianId(toChainId)
             );
-            console.log('simulate: ', simulate)
             const gasUsed = simulate.simulation_results[1].transaction.gas_used;
             console.log('simulate: ', simulate)
 
@@ -235,9 +234,9 @@ export function useCCSendTx() {
                 value: BigNumber.from(stargateTx.value),
             };
             if (approveTx) {
-                return { txArray: [approveTx, sendTx], value: stargateTx.value };
+                return { txArray: [approveTx, sendTx], value: stargateTx.value, simulationHash: simulate.simulation_results[1].simulation.id };
             } else {
-                return { txArray: [sendTx], value: stargateTx.value };
+                return { txArray: [sendTx], value: stargateTx.value, simulationHash: simulate.simulation_results[1].simulation.id };
             }
         } catch (error: unknown) {
             console.log("sendTx: Error: ", error);

@@ -21,6 +21,9 @@ export type tTrade = {
     createSession: () => void;
     erc20Transfer: () => void;
     processRebalancing: () => void;
+    handleSelectedTokenAddress: (_tokenAddress: string) => void;
+    oraclePrice: number;
+    oraclePriceLoading: boolean;
 };
 
 export type tBatchSelectionSection = {
@@ -29,6 +32,8 @@ export type tBatchSelectionSection = {
     sendSingleBatchToList: (isSCW: any) => void;
     handleExecuteMethod: () => void;
     processRebalancing: () => void;
+    oraclePrice: number;
+    oraclePriceLoading: boolean;
 };
 
 export type tBatchListSection = {

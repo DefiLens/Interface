@@ -8,10 +8,16 @@ import { loading01, payClick } from "../../../assets/gifs";
 import { ExecutionMethodsList } from "../../../utils/data/constants";
 import { closeNarrow } from "../../../assets/images";
 import { iTrading, useTradingStore } from "../../../store/TradingStore";
+import { iGlobal, useGlobalStore } from "../../../store/GlobalStore";
+import clsx from "clsx";
 
 const ExecuteMethod = ({
     ExecuteAllBatches
 }: tExecuteMethod) => {
+    const {
+        isSimulate
+    }: iGlobal = useGlobalStore((state) => state);
+
     const {
         sendTxLoading,
         setShowExecuteMethodModel,
@@ -35,11 +41,11 @@ const ExecuteMethod = ({
                     />
                 </button>
                 <div className="h-full w-full flex flex-col justify-center items-center gap-2 p-5">
-                    <Image
+                    {/* <Image
                         src={sendTxLoading ? loading01 : payClick}
                         alt={sendTxLoading ? 'loading' : 'click'}
                         className="w-14 h-14"
-                    />
+                    /> */}
                     <div className="w-full text-center text-xl md:text-2xl text-black font-extrabold">
                         Execute Batch in Single Click
                     </div>
@@ -48,9 +54,9 @@ const ExecuteMethod = ({
                             <div
                                 key={item.title}
                                 role="presentation"
-                                className="w-full flex flex-col justify-between items-center gap-3 p-4 border rounded-lg shadow cursor-pointer"
+                                className={clsx("w-full flex flex-col justify-between items-center gap-3 p-4 border rounded-lg shadow cursor-pointer", !item.isEnable && 'opacity-50')}
                             >
-                                <div className="w-full flex justify-center items-center">
+                                <div className="w-full flex justify-center items-center gap-3">
                                     {item.icons.length > 0 && item.icons?.map((logo) => (
                                         <Image
                                             key={logo.name}
