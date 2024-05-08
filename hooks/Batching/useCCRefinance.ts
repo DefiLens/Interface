@@ -313,7 +313,7 @@ export function useCCRefinance() {
                         protocol: selectedToProtocol,
                         tokenIn: "USDC",
                         tokenOut: tokenOutName,
-                        amount: amountIn,
+                        amount: data.amountOutWithoutDecimal,
                         action: "Deposit",
                     };
                     batchFlows.push(batchFlow);
