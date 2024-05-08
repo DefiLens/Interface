@@ -284,7 +284,7 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
                         )}
                     </div>
                 </div>
-                <h2 className="flex gap-1 items-center">
+                <h2 className="flex gap-1 items-center mt-10">
                     <span className="text-base md:text-lg font-bold text-black">Powered by</span>
                     <Image src={tenderly} alt="tenderly logo" width={32} height={32} />
                     <span className="text-base md:text-base font-bold text-slate-900">tenderly</span>
