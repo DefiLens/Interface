@@ -65,6 +65,7 @@ export function useCCRefinance() {
             let tempTxs: any = [];
             const batchFlows: iBatchFlowData[] = [];
             let simulationHash: string | undefined;
+            let amountOut: string = "0"
 
             let swapData: tOneInchSwapResponse | undefined
             let abiNum,
@@ -307,19 +308,21 @@ export function useCCRefinance() {
                         action: `Bridge from ${selectedFromNetwork.chainName} to ${selectedToNetwork.chainName}`,
                     };
                     batchFlows.push(batchFlow);
+
+                    amountOut = data.amountOutWithoutDecimal
                     batchFlow = {
                         fromChainId: selectedToNetwork.chainId,
                         toChainId: selectedToNetwork.chainId,
                         protocol: selectedToProtocol,
                         tokenIn: "USDC",
                         tokenOut: tokenOutName,
-                        amount: data.amountOutWithoutDecimal,
+                        amount: amountOut,
                         action: "Deposit",
                     };
                     batchFlows.push(batchFlow);
                 }
             }
-            return { txArray: tempTxs, batchFlow: batchFlows, value: extraValue, simulationHash: simulationHash };
+            return { txArray: tempTxs, batchFlow: batchFlows, value: extraValue, simulationHash: simulationHash, amountOut: amountOut };
         } catch (error: any) {
             if (error.message) {
                 console.log("refinanceForCC: Error", error.message);

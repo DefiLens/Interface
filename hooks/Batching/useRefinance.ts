@@ -60,6 +60,7 @@ export function useRefinance() {
             }
             const tempTxs: any = [];
             const batchFlows: iBatchFlowData[] = [];
+            let _amountOut: string = "0";
 
             let swapData: tOneInchSwapResponse | undefined
             let abiNum: any,
@@ -229,21 +230,23 @@ export function useRefinance() {
                 const tx2 = { to: tokenOutContractAddress, data: txData };
                 tempTxs.push(tx2);
 
+                _amountOut = isSwap && swapData
+                ? await decreasePowerByDecimals(newAmount, swapData.tokenOutDecimals)
+                : await decreasePowerByDecimals(amount, nativeTokenOutDecimal)
+
                 let batchFlow: iBatchFlowData = {
                     fromChainId: selectedFromNetwork.chainId,
                     toChainId: selectedFromNetwork.chainId,
                     protocol: selectedToProtocol,
                     tokenIn: newTokenInSymbol,
                     tokenOut: tokenOutName,
-                    amount: isSwap && swapData
-                        ? await decreasePowerByDecimals(newAmount, swapData.tokenOutDecimals)
-                        : await decreasePowerByDecimals(amount, nativeTokenOutDecimal),
+                    amount: _amountOut,
                     action: "Deposit",
                 };
                 batchFlows.push(batchFlow);
             }
 
-            return { txArray: tempTxs, batchFlow: batchFlows, value: BigNumber.from("0") };
+            return { txArray: tempTxs, batchFlow: batchFlows, value: BigNumber.from("0"), amountOut: _amountOut };
         } catch (error: any) {
             if (error.message) {
                 console.log("refinance: Error", error.message);

@@ -99,7 +99,7 @@ export type tStargateData = {
     txArray: Array<tTx>;
     value?: BigNumberish;
     simulationHash?: string;
-    amountOutWithoutDecimal: BigNumber
+    amountOutWithoutDecimal: string
 };
 
 export type tRefinance = {
@@ -124,4 +124,5 @@ export type tRefinanceResponse = {
     value?: BigNumberish;
     batchFlow?: Array<iBatchFlowData>;
     simulationHash?: string;
+    amountOut: string
 };

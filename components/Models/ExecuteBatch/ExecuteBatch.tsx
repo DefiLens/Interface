@@ -216,7 +216,7 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
                                                             <div className="flex flex-col justify-start items-start">
                                                                 <span className="text-sm md:text-base font-semibold text-slate-700">
                                                                     {/* {bar.data.toProtocol} */}
-                                                                    {bar.data.amountIn} {bar.data.toToken}
+                                                                    {bar.data.amountOut} {bar.data.toToken}
                                                                 </span>
                                                                 <span className="text-xs md:text-sm font-semibold text-slate-700">
                                                                     {bar.data.toProtocol} on {bar.data.toNetwork}

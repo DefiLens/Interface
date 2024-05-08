@@ -43,6 +43,7 @@ export interface iIndividualBatch {
         fromToken: string;
         toToken: string;
         amountIn: string;
+        amountOut: string;
         fees: string;
         extraValue: string;
     };
