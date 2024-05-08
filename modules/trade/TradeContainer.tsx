@@ -128,6 +128,8 @@ const TradeContainer: React.FC = () => {
         setSimulationSmartAddress,
         selectedFromTokenAddress,
         setSelectedFromTokenAddress,
+        setOraclePrice,
+        setOraclePriceLoading,
     }: iTrading = useTradingStore((state) => state);
 
     const {
@@ -986,8 +988,6 @@ const TradeContainer: React.FC = () => {
         setSelectedFromTokenAddress(_tokenAddress);
     };
 
-    const [oraclePrice, setOraclePrice] = useState<number>(0);
-    const [oraclePriceLoading, setOraclePriceLoading] = useState<boolean>(false);
     useEffect(() => {
         const fetchTokenData = async (_tokenAddress: string) => {
             try {
@@ -1029,8 +1029,6 @@ const TradeContainer: React.FC = () => {
             closeToSelectionMenu={closeToSelectionMenu}
             processRebalancing={processRebalancing}
             handleSelectedTokenAddress={handleSelectedTokenAddress}
-            oraclePrice={oraclePrice}
-            oraclePriceLoading={oraclePriceLoading}
         />
     );
 };

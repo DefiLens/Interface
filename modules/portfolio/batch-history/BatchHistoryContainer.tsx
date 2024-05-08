@@ -10,12 +10,16 @@ const BatchHistoryContainer = () => {
     const { smartAccountAddress }: iGlobal = useGlobalStore((state) => state);
     const { chainName }: iPortfolio = usePortfolioStore((state) => state);
     const [transactions, setTransactions] = useState<iBatchHistory[]>([]);
+    const [isSimulation, setIsSimulation] = useState<boolean>(false);
 
     const fetchTransactions = async () => {
         try {
-            const response = await axiosInstance.get(`/transactions/batch/${smartAccountAddress}`, {
-                params: { network: chainName },
-            });
+            const response = await axiosInstance.get(
+                `/transactions/${isSimulation ? "batch" : "batch-simulation"}/${smartAccountAddress}`,
+                {
+                    params: { network: chainName },
+                }
+            );
             setTransactions(response.data as iBatchHistory[]);
         } catch (error) {
             console.error("Error fetching transaction history:", error);
@@ -24,9 +28,9 @@ const BatchHistoryContainer = () => {
 
     useEffect(() => {
         fetchTransactions();
-    }, [smartAccountAddress, chainName]);
+    }, [smartAccountAddress, chainName, isSimulation]);
 
-    return <BatchHistory transactions={transactions} smartAccountAddress={smartAccountAddress} />;
+    return <BatchHistory transactions={transactions} smartAccountAddress={smartAccountAddress} isSimulation={isSimulation} setIsSimulation={setIsSimulation} />;
 };
 
 export default BatchHistoryContainer;
