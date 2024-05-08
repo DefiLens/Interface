@@ -13,7 +13,7 @@ export const ETH_ADDRESS = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
 export const ExecutionMethodsList = [
     {
         isEnable: true,
-        title: 'Simulate',
+        title: 'Simulate using tenderly',
         providerName: 'isSimulate',
         icons: [
             {

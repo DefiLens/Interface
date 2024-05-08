@@ -203,12 +203,23 @@ export interface iTrading {
     removeBatchItem: (id: number) => void;
     setSimulationsHashes: (simulationHashes: string[]) => void;
 
+    oraclePrice: number;
+    setOraclePrice: (oraclePrice: number) => void;
+
+    oraclePriceLoading: boolean;
+    setOraclePriceLoading: (oraclePriceLoading: boolean) => void;
 
     simulationSmartAddress: string | null | any;
     setSimulationSmartAddress: (simulationSmartAddress: string | null) => void;
 
     selectedFromTokenAddress: string;
     setSelectedFromTokenAddress: (selectedFromTokenAddress: string) => void;
+
+    showReviewModal: boolean;
+    setShowReviewModal: (showReviewModal: boolean) => void;
+
+    selectedExecuteMethod: string;
+    setSelectedExecuteMethod: (selectedExecuteMethod: string) => void;
 }
 
 export const useTradingStore = create<iTrading>((set) => ({
@@ -318,11 +329,23 @@ export const useTradingStore = create<iTrading>((set) => ({
     setShowExecuteMethodModel: (showExecuteMethodModel) => set(() => ({ showExecuteMethodModel })),
     setSimulationsHashes: (simulationHashes) => set(() => ({ simulationHashes })),
 
+    oraclePrice: 0,
+    setOraclePrice: (oraclePrice) => set(() => ({ oraclePrice })),
+
+    oraclePriceLoading: false,
+    setOraclePriceLoading: (oraclePriceLoading) => set(() => ({ oraclePriceLoading })),
+
     simulationSmartAddress: "",
     setSimulationSmartAddress: (simulationSmartAddress) => set(() => ({ simulationSmartAddress })),
 
     selectedFromTokenAddress: "",
     setSelectedFromTokenAddress: (selectedFromTokenAddress) => set(() => ({ selectedFromTokenAddress })),
+
+    showReviewModal: false,
+    setShowReviewModal: (showReviewModal) => set(() => ({ showReviewModal })),
+
+    selectedExecuteMethod: "",
+    setSelectedExecuteMethod: (selectedExecuteMethod) => set(() => ({ selectedExecuteMethod })),
 }));
 
 //Rebalance Store
