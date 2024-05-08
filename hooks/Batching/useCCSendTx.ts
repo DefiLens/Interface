@@ -55,7 +55,7 @@ export function useCCSendTx() {
         try {
             let nativeTokenOutAddress;
             let nativeTokenOutDecimal;
-            let amountOutWithoutDecimal;
+            let _amountOutWithoutDecimal: string = "0";
             if (selectedToProtocol == "erc20") {
                 const tokenOutName = selectedToToken;
                 nativeTokenOutAddress = toTokensData?.filter((token) => token.symbol === tokenOutName)[0].address;
@@ -123,10 +123,10 @@ export function useCCSendTx() {
                 if (selectedToProtocol != "erc20") {
                     params[isThisAmount] = amountOutAfterSlippage.toString();
                 }
-                amountOutWithoutDecimal = await decreasePowerByDecimals(amountOutAfterSlippage, nativeTokenOutDecimal)
+                _amountOutWithoutDecimal = await decreasePowerByDecimals(amountOutAfterSlippage, nativeTokenOutDecimal)
             } else if (selectedToProtocol != "erc20") {
                 params[isThisAmount] = amountAfterSlippage.toString();
-                amountOutWithoutDecimal = await decreasePowerByDecimals(amountAfterSlippage, nativeTokenOutDecimal)
+                _amountOutWithoutDecimal = await decreasePowerByDecimals(amountAfterSlippage, nativeTokenOutDecimal)
             }
 
             let destChainExecTx;
@@ -241,9 +241,9 @@ export function useCCSendTx() {
                 value: BigNumber.from(stargateTx.value),
             };
             if (approveTx) {
-                return { txArray: [approveTx, sendTx], value: stargateTx.value, simulationHash: simulate.simulation_results[1].simulation.id, amountOutWithoutDecimal: amountOutWithoutDecimal };
+                return { txArray: [approveTx, sendTx], value: stargateTx.value, simulationHash: simulate.simulation_results[1].simulation.id, amountOutWithoutDecimal: _amountOutWithoutDecimal };
             } else {
-                return { txArray: [sendTx], value: stargateTx.value, simulationHash: simulate.simulation_results[1].simulation.id, amountOutWithoutDecimal: amountOutWithoutDecimal };
+                return { txArray: [sendTx], value: stargateTx.value, simulationHash: simulate.simulation_results[1].simulation.id, amountOutWithoutDecimal: _amountOutWithoutDecimal };
             }
         } catch (error: unknown) {
             console.log("sendTx: Error: ", error);
