@@ -1,5 +1,6 @@
 import { BigNumberish, ethers } from "ethers";
 import { iBatchFlowData, iSelectedNetwork, iTokenData } from "../store/TradingStore";
+import BigNumber from "bignumber.js";
 
 export type tOneInch = {
     tokenIn: string;
@@ -98,6 +99,7 @@ export type tStargateData = {
     txArray: Array<tTx>;
     value?: BigNumberish;
     simulationHash?: string;
+    amountOutWithoutDecimal: BigNumber
 };
 
 export type tRefinance = {
