@@ -38,8 +38,6 @@ const Trade: React.FC<tTrade> = ({
     closeToSelectionMenu,
     processRebalancing,
     handleSelectedTokenAddress,
-    oraclePrice,
-    oraclePriceLoading,
 }) => {
     const {
         selectedFromNetwork,
@@ -61,6 +59,9 @@ const Trade: React.FC<tTrade> = ({
         showBatchList,
         showExecuteBatchModel,
         showExecuteMethodModel,
+        showReviewModal,
+        oraclePrice,
+        oraclePriceLoading
         showExecuteMethodModel,
     }: iTrading = useTradingStore((state) => state);
 
@@ -142,7 +143,7 @@ const Trade: React.FC<tTrade> = ({
                 </div>
 
                 {/* Modal - Select Execution Method */}
-                {showExecuteMethodModel && <ExecuteMethod ExecuteAllBatches={ExecuteAllBatches} />}
+                {showReviewModal && <ExecuteMethod ExecuteAllBatches={ExecuteAllBatches} />}
 
                 {/* Modal - While Executing Batches */}
                 {showExecuteBatchModel && <ExecuteBatch />}
