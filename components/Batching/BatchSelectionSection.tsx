@@ -7,82 +7,17 @@ import SelectionBar from "../SelectionBar/SelectionBar";
 import Button from "../Button/Button";
 import { iRebalance, iTrading, useRebalanceStore, useTradingStore } from "../../store/TradingStore";
 import { protocolNames } from "../../utils/data/protocols";
-import { defaultBlue, tenderly } from "../../assets/images";
-import { BiLoaderAlt } from "react-icons/bi";
+import { defaultBlue } from "../../assets/images";
 import { tBatchSelectionSection } from "../../modules/trade/types";
 import CustomCheckbox from "../common/CustomCheckbox";
 import { Rebalance } from "./Rebalance";
 import { cn } from "../../lib/utils";
 import axios from "axios";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
-import { useChain } from "@thirdweb-dev/react";
-import { CgSpinner } from "react-icons/cg";
 
 bg.config({ DECIMAL_PLACES: 10 });
-
-import { useRouter } from "next/router";
 import { IoIosArrowDown } from "react-icons/io";
 import { ExecutionMethodsList } from "../../utils/data/constants";
-const YourComponent = () => {
-    const { showReviewModal, setShowReviewModal, selectedExecuteMethod, setSelectedExecuteMethod, addToBatchLoading, individualBatch }: iTrading =
-        useTradingStore((state) => state);
-
-    const [selectedOption, setSelectedOption] = useState<string>("");
-    const [isOpen, setIsOpen] = useState(false);
-
-    const handleOptionChange = (option) => {
-        setSelectedOption(option.title);
-        setSelectedExecuteMethod(option.providerName);
-        setIsOpen(false);
-    };
-
-    return (
-        <div className="grid grid-cols-2 justify-between items-center w-full gap-2">
-            {/* Dropdown */}
-            <div className="relative inline-block text-left">
-                {/* Dropdown Button */}
-                <div>
-                    <button
-                        onClick={() => setIsOpen(!isOpen)}
-                        type="button"
-                        className="rounded-lg focus:outline-none focus:shadow-outline hover:border-gray-400 bg-[rgba(132,144,251,.08)] hover:bg-[rgba(132,144,251,.1)] border border-[rgba(132,144,251)] w-full flex justify-between items-center py-3 px-2 text-base md:text-lg text-[rgba(132,144,251)] font-bold transition duration-300 gap-2 whitespace-nowrap"
-                    >
-                        {selectedOption ? selectedOption : "Select an option"}
-                        <IoIosArrowDown className="text-[rgba(132,144,251)]" />
-                    </button>
-                </div>
-
-                {/* Dropdown Items */}
-                {isOpen && (
-                    <div className="absolute bottom-0 right-0 mt-2 rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-200 focus:outline-none w-full overflow-hidden">
-                        {ExecutionMethodsList.length > 0 &&
-                            ExecutionMethodsList.map((item) => (
-                                <button
-                                    disabled={!item.isEnable}
-                                    key={item.title}
-                                    className={`px-4 py-2 text-lg text-gray-700 ${
-                                        !item.isEnable ? "opacity-50 cursor-not-allowed" : "bg-white hover:bg-gray-100"
-                                    } w-full text-start`}
-                                    onClick={() => handleOptionChange(item)}
-                                >
-                                    {item.title}
-                                </button>
-                            ))}
-                    </div>
-                )}
-            </div>
-
-            {/* Next Page Button */}
-            <Button
-                handleClick={() => setShowReviewModal(true)}
-                isLoading={false}
-                disabled={selectedOption === "" || addToBatchLoading || individualBatch.length === 0}
-                customStyle=""
-                innerText="Review Batch"
-            />
-        </div>
-    );
-};
 
 const BatchSelectionSection: React.FC<tBatchSelectionSection> = ({
     handleSwap,
@@ -110,7 +45,18 @@ const BatchSelectionSection: React.FC<tBatchSelectionSection> = ({
         individualBatch,
         oraclePrice,
         oraclePriceLoading,
+        setShowReviewModal,
+        setSelectedExecuteMethod,
     }: iTrading = useTradingStore((state) => state);
+
+    const [selectedOption, setSelectedOption] = useState<string>("");
+    const [isOpen, setIsOpen] = useState<boolean>(false);
+
+    const handleOptionChange = (option) => {
+        setSelectedOption(option.title);
+        setSelectedExecuteMethod(option.providerName);
+        setIsOpen(false);
+    };
 
     const { isRebalance, setIsRebalance, rebalanceData }: iRebalance = useRebalanceStore((state) => state);
     const { isSimulate }: iGlobal = useGlobalStore((state) => state);
@@ -374,27 +320,52 @@ const BatchSelectionSection: React.FC<tBatchSelectionSection> = ({
                         />
                     )}
 
-                        {/* {!isSimulate ? (
-                            <Button
-                                handleClick={() => handleExecuteMethod()}
-                                isLoading={sendTxLoading}
-                                disabled={!isExecuteBtnClickable || addToBatchLoading}
-                                customStyle=""
-                                innerText="Execute Batch"
-                            />
-                        ) : (
-                            <button
-                                type="button"
-                                disabled={sendTxLoading}
-                                onClick={() => handleExecuteMethod()}
-                                className={`${sendTxLoading ? "bg-[rgba(132,144,251,.3)] cursor-not-allowed" : "bg-[rgba(132,144,251,.08)] hover:bg-[rgba(132,144,251,.1)]"} border border-[rgba(132,144,251)] w-full flex justify-center items-center gap-2  py-3 px-5 rounded-lg text-base md:text-lg text-[rgba(132,144,251)] font-bold transition duration-300`}
-                            >
-                                {sendTxLoading && <CgSpinner className="animate-spin h-7 w-7" />}
-                                Simulate
-                            </button>
-                        )} */}
+                        <div className="grid grid-cols-2 justify-between items-center w-full gap-2">
+                            {/* Dropdown */}
+                            <div className="relative inline-block text-left">
+                                {/* Dropdown Button */}
+                                <div>
+                                    <button
+                                        onClick={() => setIsOpen(!isOpen)}
+                                        type="button"
+                                        className="rounded-lg focus:outline-none focus:shadow-outline hover:border-gray-400 bg-[rgba(132,144,251,.08)] hover:bg-[rgba(132,144,251,.1)] border border-[rgba(132,144,251)] w-full flex justify-centers items-center py-3 px-2 text-base md:text-lg text-[rgba(132,144,251)] font-bold transition duration-300 gap-2 whitespace-nowrap"
+                                    >
+                                        {selectedOption ? selectedOption : "Select an option"}
+                                        <IoIosArrowDown className="text-[rgba(132,144,251)]" />
+                                    </button>
+                                </div>
 
-                        <YourComponent />
+                                {/* Dropdown Items */}
+                                {isOpen && (
+                                    <div className="absolute bottom-0 right-0 mt-2 rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-200 focus:outline-none w-full overflow-hidden">
+                                        {ExecutionMethodsList.length > 0 &&
+                                            ExecutionMethodsList.map((item) => (
+                                                <button
+                                                    disabled={!item.isEnable}
+                                                    key={item.title}
+                                                    className={`px-4 py-2 text-lg text-gray-700 ${
+                                                        !item.isEnable
+                                                            ? "opacity-50 cursor-not-allowed"
+                                                            : "bg-white hover:bg-gray-100"
+                                                    } w-full text-start`}
+                                                    onClick={() => handleOptionChange(item)}
+                                                >
+                                                    {item.title}
+                                                </button>
+                                            ))}
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Next Page Button */}
+                            <Button
+                                handleClick={() => setShowReviewModal(true)}
+                                isLoading={false}
+                                disabled={selectedOption === "" || addToBatchLoading || individualBatch.length === 0}
+                                customStyle=""
+                                innerText="Review Batch"
+                            />
+                        </div>
                     </div>
                 </div>
             </div>
