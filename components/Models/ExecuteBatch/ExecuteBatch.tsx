@@ -1,5 +1,5 @@
 // Library Imports
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useAddress } from "@thirdweb-dev/react";
 import { RxExternalLink } from "react-icons/rx";
@@ -146,9 +146,9 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
                                             <h1 className="text-xl font-bold">Destination</h1>
                                         </div>
                                     </div>
-                                    <div className="w-full max-h-60 flex flex-col justify-start items-center text-sm md:text-base gap-6 overflow-auto py-1">
+                                    <div className="w-full max-h-60 flex flex-col justify-start items-center text-sm md:text-base gap-6 py-1">
                                         {individualBatch.map(
-                                            (bar: iIndividualBatch, index) =>
+                                            (bar: iIndividualBatch) =>
                                                 bar.txArray.length > 0 && (
                                                     <div
                                                         key={bar.id}
@@ -285,9 +285,9 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
                     </div>
                 </div>
                 <h2 className="flex gap-1 items-center">
-                    <span className="text-lg md:text-xl font-bold text-black">Powered by</span>
-                    <Image src={tenderly} alt="" className="h-10 w-10" />
-                    <span className="text-base md:text-lg font-bold text-slate-900">tenderly</span>
+                    <span className="text-base md:text-lg font-bold text-black">Powered by</span>
+                    <Image src={tenderly} alt="tenderly logo" width={32} height={32} />
+                    <span className="text-base md:text-base font-bold text-slate-900">tenderly</span>
                 </h2>
             </div>
         </div>
