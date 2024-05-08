@@ -26,10 +26,7 @@ const Footer: React.FC<tFooter> = ({ SocialHandles }) => {
             </div>
             {isSimulate && (
                 <h2 className="flex gap-1 items-center">
-                    {/* <span className="text-lg md:text-xl font-bold text-black">Simulation powered by</span> */}
-                    {/* <Image src={tenderly} alt="" className="h-8 w-8" /> */}
-                    <Image src={tenderly} alt="" className="h-8 w-8 animate-spin" />
-
+                    <Image src={tenderly} alt="tenderly logo" width={32} height={32} />
                     <span className="text-base md:text-lg font-bold text-slate-900">tenderly</span>
                 </h2>
             )}
