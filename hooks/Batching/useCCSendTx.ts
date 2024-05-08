@@ -17,6 +17,8 @@ import { getContractInstance, getErc20Allownace } from "../../utils/web3Libs/eth
 import { calculateFees, chooseChianId, findGasUsedBySimulation } from "../../utils/helper";
 import { _functionType, _nonce, BYTES_ZERO, ZERO_ADDRESS } from "../../utils/data/constants";
 import { nativeTokenFetcher, newChainPingByNetwork, starGateRouterByNetwork, tokensByNetworkForCC } from "../../utils/data/protocols";
+import { BigNumber as bg } from "bignumber.js";
+bg.config({ DECIMAL_PLACES: 10 });
 
 export function useCCSendTx() {
     const { mutateAsync: oneInchSwap } = useOneInch();
@@ -52,11 +54,14 @@ export function useCCSendTx() {
     }: tCCSendTx): Promise<tStargateData | undefined> {
         try {
             let nativeTokenOutAddress;
+            let nativeTokenOutDecimal;
+            let amountOutWithoutDecimal;
             if (selectedToProtocol == "erc20") {
                 const tokenOutName = selectedToToken;
                 nativeTokenOutAddress = toTokensData?.filter((token) => token.symbol === tokenOutName)[0].address;
             } else {
                 nativeTokenOutAddress = nativeTokenFetcher[selectedToNetwork.chainId][tokenOutNum].nativeToken;
+                nativeTokenOutDecimal = nativeTokenFetcher[selectedToNetwork.chainId][tokenOutNum].decimals;
             }
             const _tempAmount = _amountIn;
             let _currentAddress;
@@ -118,8 +123,10 @@ export function useCCSendTx() {
                 if (selectedToProtocol != "erc20") {
                     params[isThisAmount] = amountOutAfterSlippage.toString();
                 }
+                amountOutWithoutDecimal = await decreasePowerByDecimals(amountOutAfterSlippage, nativeTokenOutDecimal)
             } else if (selectedToProtocol != "erc20") {
                 params[isThisAmount] = amountAfterSlippage.toString();
+                amountOutWithoutDecimal = await decreasePowerByDecimals(amountAfterSlippage, nativeTokenOutDecimal)
             }
 
             let destChainExecTx;
@@ -234,9 +241,9 @@ export function useCCSendTx() {
                 value: BigNumber.from(stargateTx.value),
             };
             if (approveTx) {
-                return { txArray: [approveTx, sendTx], value: stargateTx.value, simulationHash: simulate.simulation_results[1].simulation.id };
+                return { txArray: [approveTx, sendTx], value: stargateTx.value, simulationHash: simulate.simulation_results[1].simulation.id, amountOutWithoutDecimal: amountOutWithoutDecimal };
             } else {
-                return { txArray: [sendTx], value: stargateTx.value, simulationHash: simulate.simulation_results[1].simulation.id };
+                return { txArray: [sendTx], value: stargateTx.value, simulationHash: simulate.simulation_results[1].simulation.id, amountOutWithoutDecimal: amountOutWithoutDecimal };
             }
         } catch (error: unknown) {
             console.log("sendTx: Error: ", error);
