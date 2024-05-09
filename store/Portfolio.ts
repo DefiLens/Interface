@@ -42,13 +42,14 @@ export interface iPortfolio {
     searchToken: string;
     showTokenList: boolean;
     selectedToken: Object;
+    showMigrationSuccess: boolean;
 
     setTokenAddress: (tokenAddress: number | string) => void;
     setAmountIn: (amountIn: number | string) => void;
     setAmountInDecimals: (amountInDecimals: number | string) => void;
     setIsnative: (isNative: boolean) => void;
     setSendtxLoading: (sendTxLoading: boolean) => void;
-    setTxHash: (txhash: boolean | string) => void;
+    setTxHash: (txhash: string) => void;
     setTokensData: (tokensData: object[]) => void;
     setScwTokenInbalance: (scwBalance: BigNumber) => void;
     setEoaTokenInbalance: (eoaBalance: BigNumber) => void;
@@ -58,6 +59,7 @@ export interface iPortfolio {
     setSearchToken: (searchToken: string) => void;
     setShowTokenList: (showTokenList: boolean) => void;
     setSelectedToken: (selectedToken: Object) => void;
+    setShowMigrationSuccess: (showMigrationSuccess: boolean) => void;
 }
 
 export const usePortfolioStore = create<iPortfolio>((set) => ({
@@ -84,7 +86,7 @@ export const usePortfolioStore = create<iPortfolio>((set) => ({
     amountInDecimals: "",
     isNative: true,
     sendTxLoading: false,
-    txhash: false,
+    txhash: "",
     tokensData: [],
     scwBalance: BigNumber.from(0),
     eoaBalance: BigNumber.from(0),
@@ -94,6 +96,7 @@ export const usePortfolioStore = create<iPortfolio>((set) => ({
     searchToken: "",
     showTokenList: false,
     selectedToken: {},
+    showMigrationSuccess: false,
 
     setTokenAddress: (tokenAddress) => set(() => ({ tokenAddress })),
     setAmountIn: (amountIn) => set(() => ({ amountIn })),
@@ -110,4 +113,5 @@ export const usePortfolioStore = create<iPortfolio>((set) => ({
     setSearchToken: (searchToken) => set(() => ({ searchToken })),
     setShowTokenList: (showTokenList) => set(() => ({ showTokenList })),
     setSelectedToken: (selectedToken) => set(() => ({ selectedToken })),
+    setShowMigrationSuccess: (showMigrationSuccess) => set(() => ({ showMigrationSuccess })),
 }));

@@ -6,19 +6,23 @@ import { useChainId } from "@thirdweb-dev/react";
 import { BiDotsVerticalRounded } from "react-icons/bi";
 // Store, Components, Util, Type Imports
 import { iPortfolio, usePortfolioStore } from "../../store/Portfolio";
-import { defaultBlue } from "../../assets/images";
+import { closeNarrow, defaultBlue } from "../../assets/images";
 import { tOneAsset } from "./types";
 import MigrateAsset from "./MigrateAsset";
+import { buildTxHash } from "../../utils/helper";
+import { success } from "../../assets/gifs";
+import CopyButton from "../../components/common/CopyButton";
 
 const OneAsset: React.FC<tOneAsset> = ({ positions, send, handleAmountIn, currentChainId }) => {
-    const { selectOneAsset, setSelectOneAsset }: iPortfolio = usePortfolioStore((state) => state);
+    const { selectOneAsset, setSelectOneAsset, showMigrationSuccess, setShowMigrationSuccess, txhash }: iPortfolio =
+        usePortfolioStore((state) => state);
 
     const [showAll, setShowAll] = useState(false);
 
     const toggleShowAll = () => {
         setShowAll(!showAll);
     };
-    
+
     const chainId = useChainId();
 
     return (
@@ -90,6 +94,54 @@ const OneAsset: React.FC<tOneAsset> = ({ positions, send, handleAmountIn, curren
 
                         {/* Migrate Assets Modal */}
                         {selectOneAsset === item && <MigrateAsset send={send} handleAmountIn={handleAmountIn} />}
+                        {showMigrationSuccess && (
+                            <div
+                                className={`fixed z-[52] inset-0 overflow-y-auto ${showMigrationSuccess ? "block" : "hidden"}`}
+                            >
+                                <div className="fixed inset-0 bg-black bg-opacity-10 backdrop-blur-[1px] backdrop-filter"></div>
+                                <div className="relative flex items-center justify-center min-h-screen">
+                                    <div className="h-auto w-[600px] flex flex-col justify-center items-center gap-2 bg-white border-2 border-gray-300 rounded-2xl p-3">
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowMigrationSuccess(false)}
+                                            className="w-8 h-8 place-self-end p-2 bg-slate-50 hover:bg-slate-200 active:bg-slate-100 rounded-xl cursor-pointer outline-none"
+                                        >
+                                            <Image src={closeNarrow} alt="" />
+                                        </button>
+                                        <div className="h-full w-full flex flex-col justify-center items-center gap-2 p-5">
+                                            <Image
+                                                src={success}
+                                                alt=""
+                                                className="w-20 h-20 md:w-28 md:h-28 !bg-green-400"
+                                            />
+                                            <div className="w-full text-center text-xl md:text-2xl text-black font-bold cursor-pointer">
+                                                Transaction Successful
+                                            </div>
+                                            <div className="w-full relative flex items-center justify-center gap-3">
+                                                <div className="flex flex-col justify-center items-start gap-2">
+                                                    <span className="text-B100 text-base font-medium">
+                                                        {txhash && txhash.slice(0, 25) + "......" + txhash.slice(-8)}
+                                                    </span>
+                                                </div>
+                                                <CopyButton copy={txhash} />
+                                            </div>
+
+                                            <div className="w-full break-words text-center text-base md:text-lg text-teal-500  font-semibold m-2">
+                                                <span className="flex flex-col justify-center items-center gap-2">
+                                                    <a
+                                                        target="_blank"
+                                                        href={buildTxHash(chainId?.toString(), txhash, false)}
+                                                        className="cursor-pointer bg-teal-500 text-white rounded-lg px-5 py-1"
+                                                    >
+                                                        View on Explorer
+                                                    </a>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 ))}
 

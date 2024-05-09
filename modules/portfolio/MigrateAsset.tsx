@@ -14,13 +14,21 @@ type MigrateAssetProps = {
 };
 
 const MigrateAsset: React.FC<MigrateAssetProps> = ({ send, handleAmountIn }) => {
-    const { isSCW, selectOneAsset, setSelectOneAsset, amountInDecimals, sendTxLoading, txhash }: iPortfolio =
-        usePortfolioStore((state) => state);
+    const {
+        isSCW,
+        selectOneAsset,
+        setSelectOneAsset,
+        amountInDecimals,
+        sendTxLoading,
+        txhash,
+        showMigrationSuccess,
+        setShowMigrationSuccess,
+    }: iPortfolio = usePortfolioStore((state) => state);
     const { smartAccount }: iGlobal = useGlobalStore((state) => state);
     return (
         <>
             <div
-                className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 bg-N0 border-1 border-B75 p-3 rounded-lg transition duration-300 shadow-lg"
+                className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[52] bg-N0 border-1 border-B75 p-3 rounded-lg transition duration-300 shadow-lg"
                 style={{ minWidth: "30%", minHeight: "30%" }}
             >
                 {smartAccount && (
@@ -123,7 +131,7 @@ const MigrateAsset: React.FC<MigrateAssetProps> = ({ send, handleAmountIn }) => 
 
                         {/* Show TxHash when tx. completes */}
                         {txhash && (
-                            <div className="text-font-100 flex flex-wrap justify-start items-center gap-3 text-base">
+                            <div className="text-B200 flex flex-wrap justify-start items-center gap-3 text-base">
                                 <FiCopy onClick={() => copyToClipboard(txhash, "Transaction Hash Copied")} />
                                 <p>TxHash : {shorten(txhash)}</p>
                             </div>
@@ -135,7 +143,7 @@ const MigrateAsset: React.FC<MigrateAssetProps> = ({ send, handleAmountIn }) => 
             {/* Modal Backdrop */}
             <div
                 onClick={() => setSelectOneAsset(null)}
-                className="fixed top-0 left-0 z-40 w-screen h-screen bg-[rgba(0,0,0,0.4)] transition duration-300"
+                className="fixed top-0 left-0 z-[51] w-screen h-screen bg-[rgba(0,0,0,0.4)] transition duration-300"
             ></div>
         </>
     );
