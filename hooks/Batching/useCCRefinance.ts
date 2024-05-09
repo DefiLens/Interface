@@ -16,6 +16,7 @@ import { abiFetcher, abiFetcherNum, amountIndexInParams, buildParams, nativeToke
 import { useState } from "react";
 import UNISWAP_TOKENS from "../../abis/tokens/Uniswap.json";
 import { ETH_ADDRESS } from "../../utils/data/constants";
+import { ZERO_ADDRESS } from "../../utils/data/constants";
 
 export function useCCRefinance() {
     const { mutateAsync: approve } = useApprove();
@@ -273,6 +274,7 @@ export function useCCRefinance() {
                     } else {
                         tokenOutContractAddress = abiFetcher[selectedToNetwork.chainId][abiNum]["contractAddress"];
                     }
+                    let isShareToken = abiFetcher[selectedToNetwork.chainId][abiNum]["isShareToken"];
 
                     const _amountIndex = await amountIndexInParams(paramDetailsMethod)
 
@@ -292,7 +294,7 @@ export function useCCRefinance() {
                         currentFunc: methodName,
                         currentAbi: [abi],
                         contractAddress: tokenOutContractAddress,
-                        extraOrShareToken: "0x0000000000000000000000000000000000000000",
+                        extraOrShareToken: isShareToken ? tokenOutContractAddress : ZERO_ADDRESS,
                         tokenOutNum: tokenOutNum,
                         selectedToNetwork: selectedToNetwork,
                         selectedToProtocol: selectedToProtocol,

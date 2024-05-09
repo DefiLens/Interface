@@ -370,6 +370,7 @@ export const abiFetcher = {
             contractAddress: "0xF25212E676D1F7F89Cd72fFEe66158f541246445",
             isContractSet: false,
             apyFetch: "fetchApyForCompoundPolygon",
+            isShareToken: true,
         },
         "2": {
             depositAbi: "function deposit(address asset, uint256 amount, address onBehalfOf, uint16 referralCode)",
@@ -382,6 +383,7 @@ export const abiFetcher = {
             contractAddress: "0x8dFf5E27EA6b7AC08EbFdf9eB090F32ee9a30fcf",
             isContractSet: false,
             apyFetch: "fetchApyForAaveV2Polygon",
+            isShareToken: false,
         },
         "3": {
             depositAbi: "function mint(address _recipient, uint256 _mintAmount)",
@@ -394,6 +396,7 @@ export const abiFetcher = {
             contractAddress: "0x5268b3c4afb0860D365a093C184985FCFcb65234",
             isContractSet: false,
             apyFetch: "fetchApyForDForcePolygon",
+            isShareToken: false,
         },
         "4": {
             depositAbi: "function supply(address asset, uint256 amount, address onBehalfOf, uint16 referralCode)",
@@ -406,6 +409,7 @@ export const abiFetcher = {
             contractAddress: "0x794a61358D6845594F94dc1DB02A252b5b4814aD",
             isContractSet: false,
             apyFetch: "fetchApyForAaveV3Polygon",
+            isShareToken: false,
         },
     },
     "43114": {
@@ -420,6 +424,7 @@ export const abiFetcher = {
             contractAddress: "0x794a61358D6845594F94dc1DB02A252b5b4814aD",
             isContractSet: false,
             apyFetch: "fetchApyForAaveV3Avalanche",
+            isShareToken: false,
         },
         "2": {
             depositAbi: "function mint(uint256 mintAmount)",
@@ -445,6 +450,7 @@ export const abiFetcher = {
                 qiDAI: "0x835866d37AFB8CB8F8334dCCdaf66cf01832Ff5D",
             },
             apyFetch: "fetchApyForBenqiAvalanche",
+            isShareToken: true,
         },
     },
     "42161": {
@@ -459,6 +465,7 @@ export const abiFetcher = {
             contractAddress: "0x794a61358D6845594F94dc1DB02A252b5b4814aD",
             isContractSet: false,
             apyFetch: "fetchApyForAaveV3Arbitrum",
+            isShareToken: false,
         },
         "2": {
             depositAbi: "function supply(address asset, uint256 amount)",
@@ -470,6 +477,7 @@ export const abiFetcher = {
             contractAddress: "0xA5EDBDD9646f8dFF606d7448e414884C7d905dCA",
             isContractSet: false,
             apyFetch: "fetchApyForCompoundArbitrum",
+            isShareToken: true,
         },
         "3": {
             depositAbi: "function supply(address asset, uint256 amount)",
@@ -481,6 +489,7 @@ export const abiFetcher = {
             contractAddress: "0x9c4ec768c28520B50860ea7a15bd7213a9fF58bf",
             isContractSet: false,
             apyFetch: "fetchApyForCompoundArbitrum",
+            isShareToken: true,
         },
         "4": {
             depositAbi: "function deposit(address asset,uint256 amount,address onBehalfOf,uint16 referralCode)",
@@ -493,6 +502,7 @@ export const abiFetcher = {
             contractAddress: "0xF4B1486DD74D07706052A33d31d7c0AAFD0659E1",
             isContractSet: false,
             apyFetch: "fetchApyForRadiantArbitrum",
+            isShareToken: false,
         },
     },
     "10": {
@@ -507,6 +517,7 @@ export const abiFetcher = {
             contractAddress: "0x794a61358D6845594F94dc1DB02A252b5b4814aD",
             isContractSet: false,
             apyFetch: "fetchApyForAaveV3Optimism",
+            isShareToken: false,
         },
         "2": {
             depositAbi: "function mint(uint256 mintAmount)",
@@ -534,6 +545,7 @@ export const abiFetcher = {
                 soUSDC: "0x1AfD1fF9E441973B7D34c7B8AbE91d94F1B23ce0"
             },
             apyFetch: "fetchApyForSonneOptimism",
+            isShareToken: true,
         },
         "3": {
             depositAbi: "function deposit(uint256 assets,address receiver)",
@@ -553,6 +565,7 @@ export const abiFetcher = {
                 "exawstETH": "0x22ab31Cd55130435b5efBf9224b6a9d5EC36533F",
             },
             apyFetch: "fetchApyForExactlyOptimism",
+            isShareToken: false,
         },
         "4": {
             depositAbi: "function deposit(address asset, uint256 amount, address onBehalfOf, uint16 referralCode)",
@@ -565,6 +578,7 @@ export const abiFetcher = {
             contractAddress: "0x8FD4aF47E4E63d1D2D45582c3286b4BD9Bb95DfE",
             isContractSet: false,
             apyFetch: "fetchApyForGranaryOptimism",
+            isShareToken: false,
         },
     },
     "8453": {
@@ -578,6 +592,7 @@ export const abiFetcher = {
             contractAddress: "0x9c4ec768c28520B50860ea7a15bd7213a9fF58bf",
             isContractSet: false,
             apyFetch: "fetchApyForCompoundPolygon",
+            isShareToken: true,
         },
         "2": {
             depositAbi: "function supply(address asset, uint256 amount, address onBehalfOf, uint16 referralCode)",
@@ -590,6 +605,7 @@ export const abiFetcher = {
             contractAddress: "0xA238Dd80C259a72e81d7e4664a9801593F98d1c5",
             isContractSet: false,
             apyFetch: "fetchApyForAaveV3Base",
+            isShareToken: false,
         },
         "3": {
             depositAbi: "function supply(address asset, uint256 amount, address onBehalfOf, uint16 referralCode)",
@@ -602,6 +618,7 @@ export const abiFetcher = {
             contractAddress: "0x8F44Fd754285aa6A2b8B9B97739B79746e0475a7",
             isContractSet: false,
             apyFetch: "fetchApyForSeamlessV3Base",
+            isShareToken: false,
         },
         "4": {
             depositAbi: "function mint(uint256 mintAmount)",
@@ -622,6 +639,7 @@ export const abiFetcher = {
                 mrETH: "0xCB1DaCd30638ae38F2B94eA64F066045B7D45f44",
             },
             apyFetch: "fetchApyForMoonWellBase",
+            isShareToken: true,
         },
         "5": {
             depositAbi: "function mint(uint256 mintAmount)",
@@ -640,6 +658,7 @@ export const abiFetcher = {
                 sobcbETH: "0x6C91bEECEEDda2089307fAb818E12757948BF489",
             },
             apyFetch: "fetchApyForSonneBase",
+            isShareToken: true,
         },
     },
 };
