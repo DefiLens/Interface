@@ -29,7 +29,7 @@ export const ExecutionMethodsList = [
         ],
     },
     {
-        isEnable: false,
+        isEnable: true,
         title: 'Pay via Native Tokens',
         providerName: 'isAA',
         icons: [
