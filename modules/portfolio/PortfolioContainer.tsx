@@ -30,6 +30,8 @@ const PortfolioContainer: React.FC = () => {
         setAmountInDecimals,
         setSendtxLoading,
         setTxHash,
+        setShowMigrationSuccess,
+        setSelectOneAsset,
     }: iPortfolio = usePortfolioStore((state) => state);
 
     const chain = useChain();
@@ -192,7 +194,10 @@ const PortfolioContainer: React.FC = () => {
                 setAmountIn(0);
                 setAmountInDecimals(0);
                 setSendtxLoading(false);
-                toast.success(`Tx Succefully done: ${txReciept?.receipt.transactionHash.slice(0, 40)}`);
+
+                toast.success(`Tx Succefully done`);
+                setSelectOneAsset(null)
+                setShowMigrationSuccess(true);
 
                 saveMigrateTxnHistory(
                     smartAccountAddress,
@@ -215,7 +220,10 @@ const PortfolioContainer: React.FC = () => {
                 setAmountIn(0);
                 setAmountInDecimals(0);
                 setSendtxLoading(false);
-                toast.success(`Tx Succefully done: ${txReciept?.hash.slice(0, 40)}`);
+
+                toast.success(`Tx Succefully done`);
+                setSelectOneAsset(null)
+                setShowMigrationSuccess(true);
 
                 saveMigrateTxnHistory(
                     smartAccountAddress,
