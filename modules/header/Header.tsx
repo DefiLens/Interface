@@ -20,6 +20,7 @@ import { logoLight } from "../../assets/images";
 
 const Header: React.FC<tHeader> = ({ switchOnSpecificChain }) => {
     const pathname = usePathname();
+    useEffect(() => console.log("path", pathname), [pathname]);
 
     const {
         loading,
@@ -88,12 +89,17 @@ const Header: React.FC<tHeader> = ({ switchOnSpecificChain }) => {
                                         key={index}
                                         className="lg:flex hidden flex-row transition-colors duration-200 rounded-full justify-between items-center gap-1 text-black text-lg"
                                     >
-                                        <span className="p-2 rounded-full">
+                                        <span
+                                            className={cn(
+                                                "p-2 rounded-full",
+                                                pathname == item.route && "bg-purple-100"
+                                            )}
+                                        >
                                             {item.icon && (
-                                                <Image src={item.icon} width={24} height={24} alt={item.title} />
+                                                <Image src={item.icon} width={20} height={20} alt={item.title} />
                                             )}
                                         </span>
-                                        <span className="text-base font-bold">{item.title}</span>
+                                        <span className={cn("text-base text-font-700 font-bold", pathname == item.route && "text-font-1000")}>{item.title}</span>
                                     </Link>
                                 ))}
                         </div>

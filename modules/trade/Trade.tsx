@@ -77,7 +77,7 @@ const Trade: React.FC<tTrade> = ({
     }, [scwBalance, useAddress]);
 
     return (
-        <div className="w-full min-h-[calc(100vh-80px)] flex flex-col justify-center items-center py-5">
+        <div className="w-full flex flex-col justify-center items-center py-5">
             <div
                 className={cn(
                     showBatchList ? "!w-full" : "w-full md:w-3/4 lg:!w-1/2",
