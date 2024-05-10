@@ -8,9 +8,12 @@ const Footer: React.FC<tFooter> = ({ SocialHandles }) => {
     const { isSimulate }: iGlobal = useGlobalStore((state) => state);
 
     return (
-        <footer className="bg-white">
-            <div className="mx-auto max-w-7xl px-6 py-4 md:flex md:items-center md:justify-between lg:px-8">
-                <div className="flex justify-center items-center space-x-6 md:order-2">
+        <footer className="bg-white mx-auto">
+            <div className="mx-auto max-w-7xl px-6 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-y-2 lg:px-8">
+                <div className="flex justify-center items-center space-x-6">
+                    <p className="hidden md:block text-center text-xs leading-5 text-gray-500">
+                        &copy; {new Date().getFullYear()} {metadata.APP_NAME}. All rights reserved.
+                    </p>
                     {SocialHandles.map((item) => (
                         <a
                             key={item.key}
@@ -23,18 +26,19 @@ const Footer: React.FC<tFooter> = ({ SocialHandles }) => {
                         </a>
                     ))}
                 </div>
-                <div className="mt-8 md:order-1 md:mt-0">
-                    <p className="text-center text-xs leading-5 text-gray-500">
-                        &copy; {new Date().getFullYear()} {metadata.APP_NAME}. All rights reserved.
-                    </p>
-                </div>
+                <span>
+                    {isSimulate && (
+                        <h2 className="flex justify-center sm:my-0 gap-1 mx-auto w-full md:w-fit md: items-center">
+                            <span className="text-sm text-font-500 font-medium">simulation by</span>
+                            <Image src={tenderly} alt="tenderly logo" width={32} height={32} />
+                            <span className="text-base md:text-lg font-bold text-slate-900">tenderly</span>
+                        </h2>
+                    )}
+                </span>
+                <p className="sm:hidden text-center text-xs leading-5 text-gray-500">
+                    &copy; {new Date().getFullYear()} {metadata.APP_NAME}. All rights reserved.
+                </p>
             </div>
-            {isSimulate && (
-                <h2 className="flex gap-1 items-center">
-                    <Image src={tenderly} alt="tenderly logo" width={32} height={32} />
-                    <span className="text-base md:text-lg font-bold text-slate-900">tenderly</span>
-                </h2>
-            )}
         </footer>
     );
 };

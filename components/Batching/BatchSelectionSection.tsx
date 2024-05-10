@@ -49,7 +49,8 @@ const BatchSelectionSection: React.FC<tBatchSelectionSection> = ({
         setSelectedExecuteMethod,
     }: iTrading = useTradingStore((state) => state);
 
-    const [selectedOption, setSelectedOption] = useState<string>("");
+    // Default Simulation Method
+    const [selectedOption, setSelectedOption] = useState<string>(ExecutionMethodsList[0].title);
     const [isOpen, setIsOpen] = useState<boolean>(false);
 
     const handleOptionChange = (option) => {
@@ -122,9 +123,9 @@ const BatchSelectionSection: React.FC<tBatchSelectionSection> = ({
     };
 
     return (
-        <div className="w-full md:max-w-xl mx-auto flex flex-col gap-5 bg-gradient-to-br from-[#7339FD] via-[#56B0F6] to-[#4DD4F4] rounded-2xl shadow-lg border lg:shadow-xl overflow-hidden">
+        <div className="w-full mx-auto flex flex-col gap-5 bg-gradient-to-br from-[#7339FD] via-[#56B0F6] to-[#4DD4F4] rounded-2xl shadow-lg border lg:shadow-xl overflow-hidden">
             <div className="px-5 pt-7">
-                <div className="flex flex-col gap-3 bg-[rgba(225,225,225,.4)] rounded-xl px-5 py-3 ">
+                <div className="flex flex-col gap-3 bg-[rgba(225,225,225,.4)] rounded-xl px-5 py-3">
                     {/* Token Selection */}
                     <div
                         className={cn(
@@ -207,12 +208,12 @@ const BatchSelectionSection: React.FC<tBatchSelectionSection> = ({
             <div className="w-full flex flex-col gap-5 px-5 py-7 bg-W100 rounded-xl">
                 {/* Amount Selection */}
                 <div
-                    className={`border ${
+                    className={cn(
+                        "border rounded-lg px-5 py-3",
                         bg(maxBalance).isLessThan(amountIn) ? "border-error-600" : "border-[#A9A9A9]"
-                    } rounded-lg px-5 py-3`}
+                    )}
                 >
                     <h5 className="text-sm md:text-base lg:text-lg font-medium md:font-semibold text-B200">You Pay</h5>
-
                     {/* Token Icons */}
                     <div className="relative flex flex-row justify-start items-center gap-8 py-3">
                         {selectedFromNetwork.chainName && selectedFromProtocol ? (
@@ -243,56 +244,52 @@ const BatchSelectionSection: React.FC<tBatchSelectionSection> = ({
                             </div>
                         )}
 
-                            {/* Amount Input */}
-                            <div className="text-B200">
-                                <input
-                                    min="0"
-                                    type="number"
-                                    placeholder="0"
-                                    value={
-                                        fromTokenDecimal && amountIn && bg(amountIn).isGreaterThan(0)
-                                            ? amountIn
-                                            : amountIn
-                                    }
-                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                                        onChangeAmountIn(e.target.value)
-                                    }
-                                    className="w-full text-xl bg-W100 md:text-2xl text-B100 placeholder:text-slate-400 font-bold outline-none"
-                                />
-                                <div className="text-xs md:text-sm text-B100 font-medium">
-                                    {oraclePriceLoading ? (
-                                        <div className="bg-gray-200 h-4 w-16 animate-pulse rounded-md"></div>
-                                    ) : (
-                                        oraclePrice && <p>${(oraclePrice * amountIn).toFixed(5)}</p>
-                                    )}
-                                </div>
-                                <div className="absolute right-0 bottom-0 flex flex-col justify-center items-end gap-1">
-                                    {maxBalance !== amountIn && maxBalance !== "0" ? (
-                                        <span
-                                            onClick={() => onChangeAmountIn(maxBalance ? maxBalance.toString() : "0")}
-                                            className="text-xs md:text-sm text-S600 font-medium bg-[rgba(109,223,255,.4)] rounded-xl px-3 py-1 cursor-pointer"
-                                        >
-                                            Max
-                                        </span>
-                                    ) : maxBalance == "0" ? (
-                                        <span className="text-xs md:text-sm text-S600 font-medium bg-[rgba(109,223,255,.4)] rounded-xl px-3 py-1 cursor-default">
-                                            No Balance
-                                        </span>
-                                    ) : null}
-                                    <span className="flex gap-2 text-xs md:text-sm text-B100 font-semibold cursor-default">
-                                        Balance:
-                                        {ismaxBalanceLoading ? (
-                                            // <BiLoaderAlt className="animate-spin h-4 w-4" />
-                                            <div className="bg-gray-200 h-4 w-14 animate-pulse rounded-md"></div>
-                                        ) : (
-                                            <span className="text-B100">
-                                                {maxBalance ? maxBalance : 0} {selectedFromToken && selectedFromToken}
-                                            </span>
-                                        )}
+                        {/* Amount Input */}
+                        <div className="text-B200">
+                            <input
+                                min="0"
+                                type="number"
+                                placeholder="0"
+                                value={
+                                    fromTokenDecimal && amountIn && bg(amountIn).isGreaterThan(0) ? amountIn : amountIn
+                                }
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChangeAmountIn(e.target.value)}
+                                className="w-full text-xl bg-W100 md:text-2xl text-B100 placeholder:text-slate-400 font-bold outline-none"
+                            />
+                            <div className="text-xs md:text-sm text-B100 font-medium">
+                                {oraclePriceLoading ? (
+                                    <div className="bg-gray-200 h-4 w-16 animate-pulse rounded-md"></div>
+                                ) : (
+                                    oraclePrice && <p>${(oraclePrice * amountIn).toFixed(5)}</p>
+                                )}
+                            </div>
+                            <div className="absolute right-0 bottom-0 flex flex-col justify-center items-end gap-1">
+                                {maxBalance !== amountIn && maxBalance !== "0" ? (
+                                    <span
+                                        onClick={() => onChangeAmountIn(maxBalance ? maxBalance.toString() : "0")}
+                                        className="text-xs md:text-sm text-S600 font-medium bg-[rgba(109,223,255,.4)] rounded-xl px-3 py-1 cursor-pointer"
+                                    >
+                                        Max
                                     </span>
-                                </div>
+                                ) : maxBalance == "0" ? (
+                                    <span className="text-xs md:text-sm text-S600 font-medium bg-[rgba(109,223,255,.4)] rounded-xl px-3 py-1 cursor-default">
+                                        No Balance
+                                    </span>
+                                ) : null}
+                                <span className="flex gap-2 text-xs md:text-sm text-B100 font-semibold cursor-default">
+                                    Balance:
+                                    {ismaxBalanceLoading ? (
+                                        // <BiLoaderAlt className="animate-spin h-4 w-4" />
+                                        <div className="bg-gray-200 h-4 w-14 animate-pulse rounded-md"></div>
+                                    ) : (
+                                        <span className="text-B100">
+                                            {maxBalance ? maxBalance : 0} {selectedFromToken && selectedFromToken}
+                                        </span>
+                                    )}
+                                </span>
                             </div>
                         </div>
+                    </div>
 
                     {/* Error Message */}
                     {bg(maxBalance).isLessThan(amountIn) && (
@@ -320,52 +317,50 @@ const BatchSelectionSection: React.FC<tBatchSelectionSection> = ({
                         />
                     )}
 
-                        <div className="grid grid-cols-2 justify-between items-center w-full gap-2">
-                            {/* Dropdown */}
-                            <div className="relative inline-block text-left">
-                                {/* Dropdown Button */}
-                                <div>
-                                    <button
-                                        onClick={() => setIsOpen(!isOpen)}
-                                        type="button"
-                                        className="rounded-lg focus:outline-none focus:shadow-outline hover:border-gray-400 bg-[rgba(132,144,251,.08)] hover:bg-[rgba(132,144,251,.1)] border border-[rgba(132,144,251)] w-full flex justify-centers items-center py-3 px-2 text-base md:text-lg text-[rgba(132,144,251)] font-bold transition duration-300 gap-2 whitespace-nowrap"
-                                    >
-                                        {selectedOption ? selectedOption : "Select an option"}
-                                        <IoIosArrowDown className="text-[rgba(132,144,251)]" />
-                                    </button>
+                    <div className="grid grid-cols-2 justify-between items-center w-full gap-2">
+                        {/* Dropdown */}
+                        <div className="relative inline-block text-left">
+                            {/* Dropdown Button */}
+                            <button
+                                onClick={() => setIsOpen(!isOpen)}
+                                type="button"
+                                className="rounded-lg focus:outline-none focus:shadow-outline hover:border-gray-400 bg-[rgba(132,144,251,.08)] hover:bg-[rgba(132,144,251,.1)] border border-[rgba(132,144,251)] w-full flex justify-centers items-center py-3 px-2 text-base md:text-lg text-[rgba(132,144,251)] font-bold transition duration-300 gap-2 whitespace-nowrap"
+                            >
+                                {selectedOption ? selectedOption : "Select an option"}
+                                <IoIosArrowDown className="text-[rgba(132,144,251)]" />
+                            </button>
+
+                            {/* Dropdown Items */}
+                            {isOpen && (
+                                <div className="absolute bottom-0 right-0 mt-2 rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-200 focus:outline-none w-full overflow-hidden">
+                                    {ExecutionMethodsList.length > 0 &&
+                                        ExecutionMethodsList.map((item) => (
+                                            <button
+                                                disabled={!item.isEnable}
+                                                key={item.title}
+                                                className={cn(
+                                                    "px-4 py-2 text-lg text-gray-700 w-full text-start",
+                                                    !item.isEnable
+                                                        ? "opacity-50 cursor-not-allowed"
+                                                        : "bg-white hover:bg-gray-100"
+                                                )}
+                                                onClick={() => handleOptionChange(item)}
+                                            >
+                                                {item.title}
+                                            </button>
+                                        ))}
                                 </div>
-
-                                {/* Dropdown Items */}
-                                {isOpen && (
-                                    <div className="absolute bottom-0 right-0 mt-2 rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-200 focus:outline-none w-full overflow-hidden">
-                                        {ExecutionMethodsList.length > 0 &&
-                                            ExecutionMethodsList.map((item) => (
-                                                <button
-                                                    disabled={!item.isEnable}
-                                                    key={item.title}
-                                                    className={`px-4 py-2 text-lg text-gray-700 ${
-                                                        !item.isEnable
-                                                            ? "opacity-50 cursor-not-allowed"
-                                                            : "bg-white hover:bg-gray-100"
-                                                    } w-full text-start`}
-                                                    onClick={() => handleOptionChange(item)}
-                                                >
-                                                    {item.title}
-                                                </button>
-                                            ))}
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Next Page Button */}
-                            <Button
-                                handleClick={() => setShowReviewModal(true)}
-                                isLoading={false}
-                                disabled={selectedOption === "" || addToBatchLoading || individualBatch.length === 0}
-                                customStyle=""
-                                innerText="Review Batch"
-                            />
+                            )}
                         </div>
+
+                        {/* Next Page Button */}
+                        <Button
+                            handleClick={() => setShowReviewModal(true)}
+                            isLoading={false}
+                            disabled={selectedOption === "" || addToBatchLoading || individualBatch.length === 0}
+                            customStyle=""
+                            innerText="Review Batch"
+                        />
                     </div>
                 </div>
             </div>

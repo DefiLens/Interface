@@ -61,8 +61,7 @@ const Trade: React.FC<tTrade> = ({
         showExecuteMethodModel,
         showReviewModal,
         oraclePrice,
-        oraclePriceLoading
-        showExecuteMethodModel,
+        oraclePriceLoading,
     }: iTrading = useTradingStore((state) => state);
 
     const { scwBalance }: iGlobal = useGlobalStore((state) => state);
@@ -78,7 +77,7 @@ const Trade: React.FC<tTrade> = ({
     }, [scwBalance, useAddress]);
 
     return (
-        <div className="w-full h-full flex flex-col justify-center items-center py-5">
+        <div className="w-full min-h-[calc(100vh-80px)] flex flex-col justify-center items-center py-5">
             <div
                 className={cn(
                     showBatchList ? "!w-full" : "w-full md:w-3/4 lg:!w-1/2",
@@ -122,7 +121,7 @@ const Trade: React.FC<tTrade> = ({
                 />
 
                 {/* BATCHING TOKEN SELECTION --> TO AND FROM */}
-                <div className={cn("relative", showBatchList ? "w-full" : "w-full xl:w-3/4")}>
+                <div className={cn("relative md:max-w-xl", showBatchList ? "w-full" : "w-full xl:w-3/4")}>
                     <BatchSelectionSection
                         handleSwap={handleSwap}
                         onChangeAmountIn={onChangeAmountIn}

@@ -12,4 +12,34 @@
     .page-center {
         @apply flex justify-start items-center pt-32 h-[calc(100vh-80px)] sm:h-[calc(100vh-120px)];
     }
+    /* Track */
+    ::-webkit-scrollbar-track {
+        border-radius: 6px;
+        cursor: pointer;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: #6d55fc;
+        cursor: default;
+        border-radius: 28px;
+    }
+
+    /* Handle on hover */
+    ::-webkit-scrollbar-thumb:hover {
+        background: #7339fd;
+    }
+
+    /* width */
+    ::-webkit-scrollbar {
+        width: 4px;
+        height: 8px;
+        border-radius: 100px;
+    }
 }
+
+/*
+// Hide the scrollbar
+::-webkit-scrollbar {
+    display: none;
+}
+*/
