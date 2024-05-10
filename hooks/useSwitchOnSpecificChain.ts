@@ -25,7 +25,7 @@ import { iGlobal, useGlobalStore } from "../store/GlobalStore";
 import { iTrading, useTradingStore } from "../store/TradingStore";
 import { useCalculatebalance } from "../hooks/utilsHooks/useCalculateBalance";
 import { arbitrum, avalanche, base, ethereum, optimism, polygon } from "../assets/images";
-import {DEFAULT_MULTICHAIN_MODULE, MultiChainValidationModule } from "@biconomy/modules";
+import { DEFAULT_MULTICHAIN_MODULE, MultiChainValidationModule } from "@biconomy/modules";
 import { handleLogin } from "../utils/globalApis/trackingApi";
 import { iTransfer, useTransferStore } from "../store/TransferStore";
 import { iPortfolio, usePortfolioStore } from "../store/Portfolio";
@@ -42,25 +42,17 @@ export function useSwitchOnSpecificChain() {
         setSmartAccountAddress,
         setCurrentProvider,
         setSelectedNetwork,
+        connectedWallet,
+        isSimulate,
     }: iGlobal = useGlobalStore((state) => state);
 
+    const { txhash: txhashTrading }: iTrading = useTradingStore((state) => state);
 
-    const {
-        txhash: txhashTrading,
-    }: iTrading = useTradingStore((state) => state);
+    const { txhash: txhashTransferFund }: iTransfer = useTransferStore((state) => state);
 
-    const {
-        txhash: txhashTransferFund,
-    }: iTransfer = useTransferStore((state) => state);
+    const { txhash: txhashPortfolio }: iPortfolio = usePortfolioStore((state) => state);
 
-    const {
-        txhash: txhashPortfolio,
-    }: iPortfolio = usePortfolioStore((state) => state);
-
-    const {
-        setSelectedFromNetwork,
-        setSimulationSmartAddress
-    }: iTrading = useTradingStore((state) => state);
+    const { setSelectedFromNetwork, setSimulationSmartAddress }: iTrading = useTradingStore((state) => state);
     const { mutateAsync: fetchNativeBalance } = useCalculatebalance();
     const switchChain = useSwitchChain();
     const connect = useConnect();
@@ -90,7 +82,6 @@ export function useSwitchOnSpecificChain() {
                     chainId: chain?.chainId.toString(),
                     icon: ChainIdDetails[chain?.chainId.toString()].networkLogo,
                 });
-
             } else {
                 setSmartAccount(null);
                 setSmartAccountAddress("");
@@ -228,13 +219,14 @@ export function useSwitchOnSpecificChain() {
         // const web3Provider = new ethers.providers.Web3Provider(sdkRef.current.provider);
         try {
             const smartAccount = await createAccount(chainId);
-            const _smartAccountAddress = await smartAccount.getAccountAddress()
-            
-            setSimulationSmartAddress(isSimulate ? "0x9Ce935D780424FB795bef7E72697f263A8258fAA" : _smartAccountAddress)
+            const _smartAccountAddress = await smartAccount.getAccountAddress();
+
+            console.log("smartAccount in setup", smartAccount);
+
+            setSimulationSmartAddress(isSimulate ? "0x9Ce935D780424FB795bef7E72697f263A8258fAA" : _smartAccountAddress);
             setSmartAccountAddress(_smartAccountAddress);
 
-
-            console.log('_smartAccountAddress ,', smartAccountAddress)
+            console.log("_smartAccountAddress ,", smartAccountAddress);
 
             // if (isSimulate) {
             //     setSmartAccountAddress("0x9Ce935D780424FB795bef7E72697f263A8258fAA");
@@ -244,9 +236,9 @@ export function useSwitchOnSpecificChain() {
             setLoading(false);
             setCurrentProvider("Biconomy");
 
-            console.log("----------------------------Log in--------------------------")
-            console.log('address:', _smartAccountAddress);
-            console.log("wallet", wallet)
+            console.log("----------------------------Log in--------------------------");
+            console.log("address:", _smartAccountAddress);
+            console.log("wallet", wallet);
 
             handleLogin(_smartAccountAddress, address, wallet?.walletId);
 
