@@ -16,7 +16,7 @@ import axios from "axios";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 
 bg.config({ DECIMAL_PLACES: 10 });
-import { IoIosArrowDown } from "react-icons/io";
+import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import { ExecutionMethodsList } from "../../utils/data/constants";
 
 const BatchSelectionSection: React.FC<tBatchSelectionSection> = ({
@@ -49,18 +49,26 @@ const BatchSelectionSection: React.FC<tBatchSelectionSection> = ({
         setSelectedExecuteMethod,
     }: iTrading = useTradingStore((state) => state);
 
-    // Default Simulation Method
-    const [selectedOption, setSelectedOption] = useState<string>(ExecutionMethodsList[0].title);
+    const [selectedOption, setSelectedOption] = useState<string>("");
     const [isOpen, setIsOpen] = useState<boolean>(false);
 
+    // Execution Selection Menu handler
     const handleOptionChange = (option) => {
         setSelectedOption(option.title);
         setSelectedExecuteMethod(option.providerName);
         setIsOpen(false);
     };
 
+    // Default Simulation Method
+    useEffect(() => {
+        if (ExecutionMethodsList.length > 0) {
+            setSelectedOption(ExecutionMethodsList[0].title);
+            setSelectedExecuteMethod(ExecutionMethodsList[0].providerName);
+        }
+    }, [ExecutionMethodsList]);
+
     const { isRebalance, setIsRebalance, rebalanceData }: iRebalance = useRebalanceStore((state) => state);
-    const { isSimulate }: iGlobal = useGlobalStore((state) => state);
+    // const { isSimulate }: iGlobal = useGlobalStore((state) => state);
 
     const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (addToBatchLoading) {
@@ -78,7 +86,7 @@ const BatchSelectionSection: React.FC<tBatchSelectionSection> = ({
     // Tip: This can be implemented using useMemo, instead of useEffect hook.
     const [isRebalanceBtnClickable, setIsRebalanceBtnClickable] = useState(false);
     const [isOneBatchBtnClickable, setIsOneBatchBtnClickable] = useState(false);
-    const [isExecuteBtnClickable, setIsExecuteBtnClickable] = useState(false);
+    // const [isExecuteBtnClickable, setIsExecuteBtnClickable] = useState(false);
 
     useEffect(() => {
         const areAllObjectsFilled =
@@ -100,12 +108,12 @@ const BatchSelectionSection: React.FC<tBatchSelectionSection> = ({
         setIsOneBatchBtnClickable(isButtonClickable);
     }, [selectedFromProtocol, selectedFromToken, amountIn, selectedToProtocol, selectedToToken]);
 
-    useEffect(() => {
-        const areAllObjectsFilled =
-            individualBatch.length > 0 &&
-            individualBatch.every((object) => Object.values(object).every((value) => value !== ""));
-        setIsExecuteBtnClickable(areAllObjectsFilled);
-    }, [individualBatch]);
+    // useEffect(() => {
+    //     const areAllObjectsFilled =
+    //         individualBatch.length > 0 &&
+    //         individualBatch.every((object) => Object.values(object).every((value) => value !== ""));
+    //     setIsExecuteBtnClickable(areAllObjectsFilled);
+    // }, [individualBatch]);
 
     const handleShowFromSelectionMenu = () => {
         if (addToBatchLoading) {
@@ -123,7 +131,7 @@ const BatchSelectionSection: React.FC<tBatchSelectionSection> = ({
     };
 
     return (
-        <div className="w-full mx-auto flex flex-col gap-5 bg-gradient-to-br from-[#7339FD] via-[#56B0F6] to-[#4DD4F4] rounded-2xl shadow-lg border lg:shadow-xl overflow-hidden">
+        <div className="w-full mx-auto flex flex-col gap-5 bg-gradient-to-br from-[#7339FD] via-[#56B0F6] to-[#4DD4F4] rounded-2xl shadow-lg border lg:shadow-xl">
             <div className="px-5 pt-7">
                 <div className="flex flex-col gap-3 bg-[rgba(225,225,225,.4)] rounded-xl px-5 py-3">
                     {/* Token Selection */}
@@ -318,21 +326,32 @@ const BatchSelectionSection: React.FC<tBatchSelectionSection> = ({
                     )}
 
                     <div className="grid grid-cols-2 justify-between items-center w-full gap-2">
-                        {/* Dropdown */}
+                        {/* Select Execution Method */}
                         <div className="relative inline-block text-left">
                             {/* Dropdown Button */}
                             <button
                                 onClick={() => setIsOpen(!isOpen)}
                                 type="button"
-                                className="rounded-lg focus:outline-none focus:shadow-outline hover:border-gray-400 bg-[rgba(132,144,251,.08)] hover:bg-[rgba(132,144,251,.1)] border border-[rgba(132,144,251)] w-full flex justify-centers items-center py-3 px-2 text-base md:text-lg text-[rgba(132,144,251)] font-bold transition duration-300 gap-2 whitespace-nowrap"
+                                className={cn(
+                                    "flex justify-center items-center gap-2", // position
+                                    "rounded-lg w-full py-3 px-2 text-base md:text-lg font-bold whitespace-nowrap", // size
+                                    "focus:outline-none focus:shadow-outline hover:border-gray-400 bg-[rgba(132,144,251,.08)] hover:bg-[rgba(132,144,251,.1)] border border-[rgba(132,144,251)] text-[rgba(132,144,251)]  transition duration-300" // colors
+                                )}
                             >
-                                {selectedOption ? selectedOption : "Select an option"}
-                                <IoIosArrowDown className="text-[rgba(132,144,251)]" />
+                                <span className=" text-wrap">
+                                    {selectedOption ? selectedOption : "Select a method"}
+                                </span>
+                                <IoIosArrowUp
+                                    className={cn(
+                                        "hidden sm:block text-[rgba(132,144,251)] transition-transform duration-200",
+                                        isOpen && "rotate-180"
+                                    )}
+                                />
                             </button>
 
                             {/* Dropdown Items */}
                             {isOpen && (
-                                <div className="absolute bottom-0 right-0 mt-2 rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-200 focus:outline-none w-full overflow-hidden">
+                                <div className="absolute bottom-0 left-0 mb-14 rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-200 focus:outline-none min-w-[250px] sm:min-w-fit overflow-hidden">
                                     {ExecutionMethodsList.length > 0 &&
                                         ExecutionMethodsList.map((item) => (
                                             <button

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { startCase } from "lodash";
-import { MdDelete, MdKeyboardArrowUp } from "react-icons/md";
+import { MdDelete, MdKeyboardArrowDown } from "react-icons/md";
 import { HiArrowLongRight, HiOutlineEllipsisVertical } from "react-icons/hi2";
 import { BsFillFuelPumpFill } from "react-icons/bs";
 import gas from "../../assets/images/gas.png";
@@ -32,6 +32,7 @@ const BatchingListSection: React.FC<tBatchListSection> = ({ removeBatch, toggleS
 
         return totalFees + totalExtraFees;
     }
+
     useEffect(() => {
         const totalFees = calculateTotalFees();
         setTotalFees(totalFees);
@@ -145,7 +146,7 @@ const BatchingListSection: React.FC<tBatchListSection> = ({ removeBatch, toggleS
                                                     </div>
                                                 </div>
                                                 <div className="flex ml-2 justify-center items-center bg-[rgba(132,144,251,.1)] rounded-full">
-                                                    <MdKeyboardArrowUp
+                                                    <MdKeyboardArrowDown
                                                         size="28px"
                                                         className={cn(
                                                             "text-[rgba(132,144,251)] transition-transform duration-300",
