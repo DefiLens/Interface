@@ -6,8 +6,8 @@ import ethereum from "./ethereum.svg";
 import metamask from "./metamask.svg";
 import optimism from "./optimism.svg";
 import polygon from "./polygon.svg";
-import sonne from './sonne-icon.svg';
-import exactly from './exactly.png';
+import sonne from "./sonne-icon.svg";
+import exactly from "./exactly.png";
 import tarot from "./Tarot.jpeg";
 import compoundV3 from "./compoundV3.png";
 import aave from "./aave.png";
@@ -40,12 +40,13 @@ import seamless from "./seamless.jpeg";
 import granary from "./granary.jpeg";
 import checkBox from "./checkBox.png";
 import uncheckBox from "./uncheckBox.png";
-import portfolio from './nav-portfolio.svg';
-import batching from './nav-batching.svg';
-import conditional_trading from './nav-conditional-trading.svg';
-import mirgrate_asset from './nav-mirgrate-asset.svg';
-import radiant from './radiant.jpeg';
-import tenderly from './tenderly.png';
+import portfolio from "./nav-portfolio.svg";
+import batching from "./nav-batching.svg";
+import conditional_trading from "./nav-conditional-trading.svg";
+import mirgrate_asset from "./nav-mirgrate-asset.svg";
+import radiant from "./radiant.jpeg";
+import tenderly from "./tenderly.png";
+import transferfund from "./nav-transfer-fund.svg";
 
 export {
     closeNarrow,
@@ -95,5 +96,6 @@ export {
     conditional_trading,
     mirgrate_asset,
     radiant,
-    tenderly
+    tenderly,
+    transferfund,
 };

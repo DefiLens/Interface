@@ -1,4 +1,4 @@
-import { batching, portfolio } from "../../assets/images";
+import { batching, portfolio, transferfund } from "../../assets/images";
 
 export const NavigationList = [
     {
@@ -10,5 +10,10 @@ export const NavigationList = [
         title: "Portfolio",
         route: "/portfolio",
         icon: portfolio,
+    },
+    {
+        title: "Transfer Fund",
+        route: "/transfer-fund",
+        icon: transferfund,
     },
 ];

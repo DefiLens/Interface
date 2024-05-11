@@ -1,14 +1,13 @@
 // Library Imports
-import { useRef, useEffect, useState } from "react";
-import { Dialog, DialogPanel } from "@headlessui/react";
+import { useRef, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { CgSpinner } from "react-icons/cg";
 import { usePathname } from "next/navigation";
 import { useAddress, useChainId, useChain, useWallet } from "@thirdweb-dev/react";
-import { HiBars3 } from "react-icons/hi2";
 // Type, Store, Components, Helper Imports
 import { tHeader } from "./types";
+import { HiArrowPathRoundedSquare } from "react-icons/hi2";
 import useClickOutside from "../../hooks/useClickOutside";
 import { ChainIdDetails, NETWORK_LIST, SUPPORTED_NETWORKS } from "../../utils/data/network";
 import { NavigationList } from "../../utils/data/navigation";
@@ -20,8 +19,8 @@ import { cn } from "../../lib/utils";
 import { logoLight } from "../../assets/images";
 
 const Header: React.FC<tHeader> = ({ switchOnSpecificChain }) => {
-    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const pathname = usePathname();
+    useEffect(() => console.log("path", pathname), [pathname]);
 
     const {
         loading,
@@ -76,38 +75,63 @@ const Header: React.FC<tHeader> = ({ switchOnSpecificChain }) => {
     return (
         <>
             <header className="w-full fixed top-0 left-0 right-0 md:top-3 z-50">
-                <nav
-                    className="max-w-[1380px] w-full md:w-[94%] mx-auto h-[70px] placeholder:h-[70px] flex justify-between items-center gap-3 bg-N0 md:border md:rounded-full py-3 px-7"
-                    aria-label="Global"
-                >
-                    <div className="flex lg:flex-1">
-                        <Link href="/" className="-m-1.5 p-1.5">
-                            <span className="sr-only">DefiLens</span>
-                            <Image src={logoLight} width={150} height={150} alt="defilens logo" />
+                <div className="max-w-[1380px] w-full md:w-[94%] mx-auto h-[70px] placeholder:h-[70px] flex justify-between items-center gap-3 bg-N0 md:border md:rounded-full py-3 px-7">
+                    {/* Left Side navigation */}
+                    <div className="flex justify-between items-center gap-6">
+                        {/* Logo */}
+                        <Image src={logoLight} width={150} height={150} alt="defilens logo" />
+                        {/* Navigation Links */}
+                        <div className="inline-flex items-center gap-4">
+                            {NavigationList.length > 0 &&
+                                NavigationList?.map((item, index: number) => (
+                                    <Link
+                                        href={item.route}
+                                        key={index}
+                                        className="lg:flex hidden flex-row transition-colors duration-200 rounded-full justify-between items-center gap-1 text-black text-lg"
+                                    >
+                                        <span
+                                            className={cn(
+                                                "p-2 rounded-full",
+                                                pathname == item.route && "bg-purple-100"
+                                            )}
+                                        >
+                                            {item.icon && (
+                                                <Image src={item.icon} width={20} height={20} alt={item.title} />
+                                            )}
+                                        </span>
+                                        <span
+                                            className={cn(
+                                                "text-base text-font-700 font-bold",
+                                                pathname == item.route && "text-font-1000"
+                                            )}
+                                        >
+                                            {item.title}
+                                        </span>
+                                    </Link>
+                                ))}
+                        </div>
+                    </div>
+                    {/* CTA Buttons */}
+                    <div className="flex justify-between items-center gap-3">
+                        {/* Link: "/transfer-fund" */}
+                        <Link
+                            href="/transfer-fund"
+                            className={cn(
+                                "flex h-full items-center justify-center gap-2 cursor-pointer px-5 py-3 text-sm md:text-base text-center rounded-full bg-N0 shadow-sm hover:bg-N20 border border-N40 transition duration-300",
+                                pathname === "/transfer-fund"
+                                    ? "bg-gradient-to-br from-D600 via-D400 to-D100 text-N0"
+                                    : "text-green-800 bg-green-100"
+                            )}
+                        >
+                            <span className="font-bold pl-2">Transfer Fund</span>
+                            <HiArrowPathRoundedSquare className="h-5 w-5" />
+                            {/* <Image
+                                src={pathname === "/transfer-fund" ? wallet : mirgrate_asset}
+                                alt="close"
+                                className="h-10 w-10 p-1.5 rounded-lg"
+                            /> */}
                         </Link>
-                    </div>
-                    <div className="hidden lg:flex lg:gap-x-12">
-                        {NavigationList.map((item, index) => (
-                            <Link
-                                key={item.title}
-                                href={item.route}
-                                className="flex flex-row transition-colors duration-200 rounded-full justify-between items-center gap-1"
-                            >
-                                <span className={cn("p-2 rounded-full", pathname == item.route && "bg-purple-100")}>
-                                    {item.icon && <Image src={item.icon} width={20} height={20} alt={item.title} />}
-                                </span>
-                                <span
-                                    className={cn(
-                                        "text-base text-font-700 font-bold",
-                                        pathname == item.route && "text-font-1000"
-                                    )}
-                                >
-                                    {item.title}
-                                </span>
-                            </Link>
-                        ))}
-                    </div>
-                    <div className="flex flex-1 items-center justify-end gap-x-6">
+
                         {/* Loading spinner */}
                         {loading && (
                             <div className="flex flex-wrap justify-start items-center gap-3 text-base">
@@ -126,7 +150,7 @@ const Header: React.FC<tHeader> = ({ switchOnSpecificChain }) => {
                                 <button
                                     onClick={() => setShowWalletAddress(!showWalletAddress)}
                                     ref={walletAddressRef}
-                                    className="relative hidden sm:flex justify-center items-center gap-3 wallet-container bg-N0 border border-N40 px-5 py-1 rounded-xl text-B100 shadow-sm font-medium transition duration-300 hover:bg-N20 cursor-pointer"
+                                    className="relative flex justify-center items-center gap-3 wallet-container bg-N0 border border-N40 px-5 py-1 rounded-xl text-B100 shadow-sm font-medium transition duration-300 hover:bg-N20 cursor-pointer"
                                 >
                                     {/* Smart account address and copy btn */}
                                     <span className="text-sm font-medium">
@@ -192,56 +216,7 @@ const Header: React.FC<tHeader> = ({ switchOnSpecificChain }) => {
                             <ConnectWalletWrapper />
                         </div>
                     </div>
-                    <div className="flex lg:hidden">
-                        <button
-                            type="button"
-                            className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700"
-                            onClick={() => {
-                                console.log("mobileMenuOpen", !mobileMenuOpen);
-                                setMobileMenuOpen(!mobileMenuOpen);
-                            }}
-                        >
-                            <span className="sr-only">Open main menu</span>
-                            <HiBars3 className="h-6 w-6" aria-hidden="true" />
-                        </button>
-                    </div>
-                </nav>
-                <Dialog className="lg:hidden" open={mobileMenuOpen} onClose={setMobileMenuOpen}>
-                    <div className="fixed inset-0 z-10" />
-                    <DialogPanel className="fixed inset-y-0 mt-16 sm:mt-20 sm:mr-7 max-h-fit rounded-xl shadow-xl right-0 z-20 w-full sm:max-w-sm overflow-y-auto bg-white px-6 py-6 sm:ring-1 sm:ring-gray-900/10">
-                        <div className="hidden sm:flex items-center gap-x-6">
-                            <Link href="/" className="-m-1.5 p-1.5">
-                                <span className="sr-only">DefiLens</span>
-                                <Image src={logoLight} width={150} height={150} alt="defilens logo" />
-                            </Link>
-                        </div>
-                        <div className="mt-6 flow-root">
-                            <div className="-my-6 divide-y divide-gray-500/10">
-                                <div className="flex flex-col space-y-2 py-6">
-                                    {NavigationList.map((item) => (
-                                        <Link
-                                            key={item.title}
-                                            href={item.route}
-                                            className="-mx-3 inline-flex items-center gap-2 rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
-                                        >
-                                            <span
-                                                className={cn(
-                                                    "p-2 rounded-full",
-                                                    pathname == item.route && "bg-purple-100"
-                                                )}
-                                            >
-                                                {item.icon && (
-                                                    <Image src={item.icon} width={20} height={20} alt={item.title} />
-                                                )}
-                                            </span>
-                                            <span>{item.title}</span>
-                                        </Link>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-                    </DialogPanel>
-                </Dialog>
+                </div>
             </header>
 
             {/* Network switching Modal */}
