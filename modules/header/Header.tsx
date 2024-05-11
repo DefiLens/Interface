@@ -99,7 +99,14 @@ const Header: React.FC<tHeader> = ({ switchOnSpecificChain }) => {
                                                 <Image src={item.icon} width={20} height={20} alt={item.title} />
                                             )}
                                         </span>
-                                        <span className={cn("text-base text-font-700 font-bold", pathname == item.route && "text-font-1000")}>{item.title}</span>
+                                        <span
+                                            className={cn(
+                                                "text-base text-font-700 font-bold",
+                                                pathname == item.route && "text-font-1000"
+                                            )}
+                                        >
+                                            {item.title}
+                                        </span>
                                     </Link>
                                 ))}
                         </div>

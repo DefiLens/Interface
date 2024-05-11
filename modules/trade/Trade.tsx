@@ -80,8 +80,9 @@ const Trade: React.FC<tTrade> = ({
         <div className="w-full flex flex-col justify-center items-center py-5">
             <div
                 className={cn(
-                    showBatchList ? "!w-full" : "w-full md:w-3/4 lg:!w-1/2",
-                    "h-full px-4 sm:px-0 max-w-lg lg:max-w-5xl flex flex-col lg:flex-row justify-start lg:justify-center items-center lg:items-start gap-4"
+                    showBatchList ? "!w-full" : "w-full md:w-3/4 lg:!w-1/2", // width when showing batchlist
+                    "flex flex-col lg:flex-row justify-start lg:justify-center items-center lg:items-start gap-4", // positions
+                    "h-full px-4 sm:px-0 lg:px-5 xl:px-0 max-w-lg lg:max-w-7xl" // sizes
                 )}
             >
                 {/* FROM_TOKEN SELECTION MODAL */}

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { startCase } from "lodash";
-import { MdDelete, MdKeyboardArrowDown, MdKeyboardArrowUp } from "react-icons/md";
+import { MdDelete, MdKeyboardArrowUp } from "react-icons/md";
 import { HiArrowLongRight, HiOutlineEllipsisVertical } from "react-icons/hi2";
 import { BsFillFuelPumpFill } from "react-icons/bs";
 import gas from "../../assets/images/gas.png";
@@ -10,6 +10,7 @@ import { ChainIdDetails } from "../../utils/data/network";
 import { iTrading, useTradingStore } from "../../store/TradingStore";
 import { defaultBlue } from "../../assets/images";
 import { tBatchListSection } from "../../modules/trade/types";
+import { cn } from "../../lib/utils";
 
 const BatchingListSection: React.FC<tBatchListSection> = ({ removeBatch, toggleShowBatchList }) => {
     const { selectedFromNetwork, showIndividualBatchList, txhash, individualBatch }: iTrading = useTradingStore(
@@ -37,11 +38,16 @@ const BatchingListSection: React.FC<tBatchListSection> = ({ removeBatch, toggleS
     }, [individualBatch]);
 
     return (
-        <div className="w-full md:max-w-xl max-h-full bg-W100 flex flex-col justify-start items-center gap-1 rounded-2xl cursor-pointer border shadow-lg lg:shadow-xl">
+        <div
+            className={cn(
+                "flex flex-col justify-start items-center gap-1", // position
+                "min-w-fit md:max-w-xl max-h-full rounded-2xl", // sizes
+                "bg-W100 shadow-lg lg:shadow-xl cursor-pointer" // colors
+            )}
+        >
             {/* Batching List Title */}
-            <div className="w-full flex justify-between items-center gap-1 px-5 pt-7">
-                <h1 className="text-B200 text-lg md:text-xl lg:text-2xl text-center font-bold rounded-t-2xl ">
-                    Batching List
+            <div className="w-full flex justify-between items-center gap-1 px-5 pt-7 ">
+                <h1 className="text-B200 text-lg md:text-xl lg:text-2xl text-center font-bold rounded-t-2xl">
                     Batching List
                 </h1>
 
@@ -138,18 +144,14 @@ const BatchingListSection: React.FC<tBatchListSection> = ({ removeBatch, toggleS
                                                         </p>
                                                     </div>
                                                 </div>
-                                                <div className="flex justify-center items-center hover:bg-[rgba(132,144,251,.1)] rounded-full">
-                                                    {showIndividualBatchList === inputBarIndex ? (
-                                                        <MdKeyboardArrowUp
-                                                            size="30px"
-                                                            className="text-[rgba(132,144,251)]"
-                                                        />
-                                                    ) : (
-                                                        <MdKeyboardArrowDown
-                                                            size="30px"
-                                                            className="text-[rgba(132,144,251)]"
-                                                        />
-                                                    )}
+                                                <div className="flex ml-2 justify-center items-center bg-[rgba(132,144,251,.1)] rounded-full">
+                                                    <MdKeyboardArrowUp
+                                                        size="28px"
+                                                        className={cn(
+                                                            "text-[rgba(132,144,251)] transition-transform duration-300",
+                                                            showIndividualBatchList === inputBarIndex && "rotate-180"
+                                                        )}
+                                                    />
                                                 </div>
                                             </div>
                                             {/* Display Batch Flow */}
@@ -275,7 +277,9 @@ const BatchingListSection: React.FC<tBatchListSection> = ({ removeBatch, toggleS
                 ) : (
                     // Display message when no batches found
                     <div className="text-center text-font-700 font-semibold text-base md:text-lg">
-                        {txhash ? "Last Batches executed, Please create new batches." : "No Batches found, Please create new Batch."}
+                        {txhash
+                            ? "Last Batches executed, Please create new batches."
+                            : "No Batches found, Please create new Batch."}
                     </div>
                 )}
             </div>
