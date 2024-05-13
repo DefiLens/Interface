@@ -8,10 +8,6 @@
         "start": "next start",
         "lint": "next lint"
     },
-    "engines": {
-        "node": "20.12.1",
-        "yarn": "^4"
-    },
     "dependencies": {
         "@biconomy/account": "3.1.1",
         "@biconomy/bundler": "3.1.1",
