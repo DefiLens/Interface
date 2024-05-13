@@ -2,20 +2,13 @@ import React from "react";
 import Image from "next/image";
 import { tExecuteMethod } from "./types";
 import Button from "../../Button/Button";
-// import { loading01, payClick } from "../../../assets/gifs";
-// import { ExecutionMethodsList } from "../../../utils/data/constants";
 import { closeNarrow, defaultBlue } from "../../../assets/images";
 import { iTrading, useTradingStore } from "../../../store/TradingStore";
-// import { iGlobal, useGlobalStore } from "../../../store/GlobalStore";
-// import clsx from "clsx";
 import { ChainIdDetails } from "../../../utils/data/network";
 import { protocolNames } from "../../../utils/data/protocols";
-// import { startCase } from "lodash";
 import { HiArrowLongRight, HiXMark } from "react-icons/hi2";
 
 const ExecuteMethod = ({ ExecuteAllBatches }: tExecuteMethod) => {
-    // const { isSimulate }: iGlobal = useGlobalStore((state) => state);
-
     const {
         // sendTxLoading,
         setShowReviewModal,
@@ -153,9 +146,12 @@ const ExecuteMethod = ({ ExecuteAllBatches }: tExecuteMethod) => {
                                                                 <div className="flex items-center justify-between text-base font-semibold">
                                                                     <span className="opacity-70">Bridge Fee:</span>
                                                                     <span>
-                                                                        {bar.batchesFlow !== undefined &&
-                                                                            bar.batchesFlow[1].amount}{" "}
-                                                                        {bar.data.fromToken}
+                                                                        {bar.data !== undefined &&
+                                                                            Number(bar.data.extraValue)
+                                                                                .toPrecision(5)
+                                                                                .toString()}{" "}
+                                                                        {/* {bar.batchesFlow !== undefined &&
+                                                                            bar.batchesFlow[1].tokenOut} */}
                                                                     </span>
                                                                 </div>
                                                                 <div className="flex items-center justify-between text-base font-semibold">
