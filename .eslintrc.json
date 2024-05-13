@@ -6,9 +6,11 @@
         "browser": true,
         "jest": true,
         "node": true
-      },
-      "rules": {
+    },
+    "rules": {
         "react-hooks/exhaustive-deps": "off",
-        "no-unused-vars": "warn"
-      }
+        "no-unused-vars": "off",
+        "prettier/prettier": "warn",
+        "react/display-name": "warn"
+    }
 }
