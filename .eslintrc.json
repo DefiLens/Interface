@@ -10,7 +10,7 @@
     "rules": {
         "react-hooks/exhaustive-deps": "off",
         "no-unused-vars": "off",
-        "prettier/prettier": "warn",
+        "prettier/prettier": "off",
         "react/display-name": "warn"
     }
 }
