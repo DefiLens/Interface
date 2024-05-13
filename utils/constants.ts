@@ -58,5 +58,13 @@ export const transferText = {
     button: {
         migrate_EOA_SCW: "Send EOA to SmartAccount",
         migrate_SCW_EOA: "Send SmartAccount to EOA",
-    }
-}
+    },
+};
+
+export const batchingText = {
+    error: {
+        wrongNetwork: "Batching is only supported on Polygon, Base, Arbitrum, and Optimism as of now.",
+        insufficientFunds: "You don't have enough funds to complete transaction.",
+        noAmount: "Please enter amount to proceed."
+    },
+};

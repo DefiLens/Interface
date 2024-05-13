@@ -14,10 +14,11 @@ import { Rebalance } from "./Rebalance";
 import { cn } from "../../lib/utils";
 import axios from "axios";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
-
-bg.config({ DECIMAL_PLACES: 10 });
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import { ExecutionMethodsList } from "../../utils/data/constants";
+import { ConnectWalletWrapper } from "../Button";
+
+bg.config({ DECIMAL_PLACES: 10 });
 
 const BatchSelectionSection: React.FC<tBatchSelectionSection> = ({
     handleSwap,
@@ -49,6 +50,8 @@ const BatchSelectionSection: React.FC<tBatchSelectionSection> = ({
         setSelectedExecuteMethod,
     }: iTrading = useTradingStore((state) => state);
 
+    const { smartAccount }: iGlobal = useGlobalStore((state) => state);
+
     const [selectedOption, setSelectedOption] = useState<string>("");
     const [isOpen, setIsOpen] = useState<boolean>(false);
 
@@ -68,7 +71,6 @@ const BatchSelectionSection: React.FC<tBatchSelectionSection> = ({
     }, [ExecutionMethodsList]);
 
     const { isRebalance, setIsRebalance, rebalanceData }: iRebalance = useRebalanceStore((state) => state);
-    // const { isSimulate }: iGlobal = useGlobalStore((state) => state);
 
     const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (addToBatchLoading) {
@@ -238,7 +240,7 @@ const BatchSelectionSection: React.FC<tBatchSelectionSection> = ({
                                                 (entry) => entry.name == selectedFromProtocol
                                             )?.icon || defaultBlue
                                         }
-                                        alt=""
+                                        alt="Selected Source Network Icon"
                                         className="h-5 w-5 rounded-full cursor-pointer"
                                     />
                                 </div>
@@ -306,82 +308,88 @@ const BatchSelectionSection: React.FC<tBatchSelectionSection> = ({
                 </div>
 
                 {/* Action Buttons */}
-                <div className="w-full flex flex-col justify-center items-center gap-3">
-                    {isRebalance ? (
-                        <Button
-                            handleClick={() => processRebalancing()}
-                            isLoading={addToBatchLoading}
-                            customStyle=""
-                            disabled={!isRebalanceBtnClickable || addToBatchLoading}
-                            innerText="Rebalance"
-                        />
-                    ) : (
-                        <Button
-                            handleClick={() => sendSingleBatchToList(true)}
-                            isLoading={addToBatchLoading}
-                            disabled={!isOneBatchBtnClickable || addToBatchLoading}
-                            customStyle=""
-                            innerText="Add Batch to List"
-                        />
-                    )}
-
-                    <div className="grid grid-cols-2 justify-between items-center w-full gap-2">
-                        {/* Select Execution Method */}
-                        <div className="relative inline-block text-left">
-                            {/* Dropdown Button */}
-                            <button
-                                onClick={() => setIsOpen(!isOpen)}
-                                type="button"
-                                className={cn(
-                                    "flex justify-center items-center gap-2", // position
-                                    "rounded-lg w-full py-3 px-2 text-base md:text-lg font-bold whitespace-nowrap", // size
-                                    "focus:outline-none focus:shadow-outline hover:border-gray-400 bg-[rgba(132,144,251,.08)] hover:bg-[rgba(132,144,251,.1)] border border-[rgba(132,144,251)] text-[rgba(132,144,251)]  transition duration-300" // colors
-                                )}
-                            >
-                                <span className=" text-wrap">
-                                    {selectedOption ? selectedOption : "Select a method"}
-                                </span>
-                                <IoIosArrowUp
-                                    className={cn(
-                                        "hidden sm:block text-[rgba(132,144,251)] transition-transform duration-200",
-                                        isOpen && "rotate-180"
-                                    )}
-                                />
-                            </button>
-
-                            {/* Dropdown Items */}
-                            {isOpen && (
-                                <div className="absolute bottom-0 left-0 mb-14 rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-200 focus:outline-none min-w-[250px] sm:min-w-fit overflow-hidden">
-                                    {ExecutionMethodsList.length > 0 &&
-                                        ExecutionMethodsList.map((item) => (
-                                            <button
-                                                disabled={!item.isEnable}
-                                                key={item.title}
-                                                className={cn(
-                                                    "px-4 py-2 text-lg text-gray-700 w-full text-start",
-                                                    !item.isEnable
-                                                        ? "opacity-50 cursor-not-allowed"
-                                                        : "bg-white hover:bg-gray-100"
-                                                )}
-                                                onClick={() => handleOptionChange(item)}
-                                            >
-                                                {item.title}
-                                            </button>
-                                        ))}
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Next Page Button */}
-                        <Button
-                            handleClick={() => setShowReviewModal(true)}
-                            isLoading={false}
-                            disabled={selectedOption === "" || addToBatchLoading || individualBatch.length === 0}
-                            customStyle=""
-                            innerText="Review Batch"
-                        />
+                {!smartAccount ? (
+                    <div className="w-full inline-flex justify-center">
+                        <ConnectWalletWrapper />
                     </div>
-                </div>
+                ) : (
+                    <div className="w-full flex flex-col justify-center items-center gap-3">
+                        {isRebalance ? (
+                            <Button
+                                handleClick={() => processRebalancing()}
+                                isLoading={addToBatchLoading}
+                                customStyle=""
+                                disabled={!isRebalanceBtnClickable || addToBatchLoading}
+                                innerText="Rebalance"
+                            />
+                        ) : (
+                            <Button
+                                handleClick={() => sendSingleBatchToList(true)}
+                                isLoading={addToBatchLoading}
+                                disabled={!isOneBatchBtnClickable || addToBatchLoading}
+                                customStyle=""
+                                innerText="Add Batch to List"
+                            />
+                        )}
+
+                        <div className="grid grid-cols-2 justify-between items-center w-full gap-2">
+                            {/* Select Execution Method */}
+                            <div className="relative inline-block text-left">
+                                {/* Dropdown Button */}
+                                <button
+                                    onClick={() => setIsOpen(!isOpen)}
+                                    type="button"
+                                    className={cn(
+                                        "flex justify-center items-center gap-2", // position
+                                        "rounded-lg w-full py-3 px-2 text-base md:text-lg font-bold whitespace-nowrap", // size
+                                        "focus:outline-none focus:shadow-outline hover:border-gray-400 bg-[rgba(132,144,251,.08)] hover:bg-[rgba(132,144,251,.1)] border border-[rgba(132,144,251)] text-[rgba(132,144,251)]  transition duration-300" // colors
+                                    )}
+                                >
+                                    <span className=" text-wrap">
+                                        {selectedOption ? selectedOption : "Select a method"}
+                                    </span>
+                                    <IoIosArrowUp
+                                        className={cn(
+                                            "hidden sm:block text-[rgba(132,144,251)] transition-transform duration-200",
+                                            isOpen && "rotate-180"
+                                        )}
+                                    />
+                                </button>
+
+                                {/* Dropdown Items */}
+                                {isOpen && (
+                                    <div className="absolute bottom-0 left-0 mb-14 rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-200 focus:outline-none min-w-[250px] sm:min-w-fit overflow-hidden">
+                                        {ExecutionMethodsList.length > 0 &&
+                                            ExecutionMethodsList.map((item) => (
+                                                <button
+                                                    disabled={!item.isEnable}
+                                                    key={item.title}
+                                                    className={cn(
+                                                        "px-4 py-2 text-lg text-gray-700 w-full text-start",
+                                                        !item.isEnable
+                                                            ? "opacity-50 cursor-not-allowed"
+                                                            : "bg-white hover:bg-gray-100"
+                                                    )}
+                                                    onClick={() => handleOptionChange(item)}
+                                                >
+                                                    {item.title}
+                                                </button>
+                                            ))}
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Next Page Button */}
+                            <Button
+                                handleClick={() => setShowReviewModal(true)}
+                                isLoading={false}
+                                disabled={selectedOption === "" || addToBatchLoading || individualBatch.length === 0}
+                                customStyle=""
+                                innerText="Review Batch"
+                            />
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

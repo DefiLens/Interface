@@ -50,6 +50,7 @@ import axios from "axios";
 import axiosInstance from "../../axiosInstance/axiosInstance";
 
 import { ETH_ADDRESS } from "../../utils/data/constants";
+import { batchingText } from "../../utils/constants";
 bg.config({ DECIMAL_PLACES: 10 });
 
 const TradeContainer: React.FC<any> = () => {
@@ -294,7 +295,7 @@ const TradeContainer: React.FC<any> = () => {
                 selectedFromNetwork.chainName == "optimism"
             )
         ) {
-            toast.error("Batching is only supported on polygon and base as of now");
+            toast.error(batchingText.error.wrongNetwork);
             return;
         }
         setSelectedFromToken("");
@@ -322,7 +323,7 @@ const TradeContainer: React.FC<any> = () => {
                 selectedFromNetwork.chainName == "optimism"
             )
         ) {
-            toast.error("Batching is only supported on polygon and base as of now");
+            toast.error(batchingText.error.wrongNetwork);
             return;
         }
         if (!selectedFromProtocol) {
@@ -474,7 +475,7 @@ const TradeContainer: React.FC<any> = () => {
                 selectedFromNetwork.chainName == "optimism"
             )
         ) {
-            toast.error("Batching is only supported on Polygon and Base Network as of now.");
+            toast.error(batchingText.error.wrongNetwork);
             return;
         }
         if (selectedToProtocol === _toProtocol) {
@@ -500,7 +501,7 @@ const TradeContainer: React.FC<any> = () => {
                 selectedFromNetwork.chainName == "optimism"
             )
         ) {
-            toast.error("Batching is only supported on polygon and base as of now");
+            toast.error(batchingText.error.wrongNetwork);
             return;
         }
         if (selectedToToken === _toToken) {
@@ -512,7 +513,7 @@ const TradeContainer: React.FC<any> = () => {
 
     const onChangeAmountIn = async (_amountIn: string) => {
         if (addToBatchLoading) {
-            toast.error("wait, tx loading");
+            toast.error("Wait, transaction loading...");
             return;
         }
         if (
@@ -524,7 +525,7 @@ const TradeContainer: React.FC<any> = () => {
                 selectedFromNetwork.chainName == "optimism"
             )
         ) {
-            toast.error("Batching is only supported on polygon as of now");
+            toast.error(batchingText.error.wrongNetwork);
             return;
         }
         if (_amountIn) {
@@ -653,17 +654,17 @@ const TradeContainer: React.FC<any> = () => {
                     selectedFromNetwork.chainName == "optimism"
                 )
             ) {
-                toast.error("Batching is only supported on polygon as of now");
+                toast.error(batchingText.error.wrongNetwork);
                 setAddToBatchLoading(false);
                 return;
             }
             if (bg(maxBalance).isLessThan(amountIn)) {
-                toast.error("You don't have enough funds to complete transaction.");
+                toast.error(batchingText.error.insufficientFunds);
                 setAddToBatchLoading(false);
                 return;
             }
             if (addToBatchLoading) {
-                toast.error("Wait, transaction loading.");
+                toast.error("Wait, transaction loading...");
                 setAddToBatchLoading(false);
                 return;
             }
@@ -688,7 +689,7 @@ const TradeContainer: React.FC<any> = () => {
                 return;
             }
             if (!amountIn && fromTokenDecimal) {
-                toast.error("Please enter amount to proceed.");
+                toast.error(batchingText.error.noAmount);
                 setAddToBatchLoading(false);
                 return;
             }
@@ -886,7 +887,7 @@ const TradeContainer: React.FC<any> = () => {
                     selectedFromNetwork.chainName == "optimism"
                 )
             ) {
-                toast.error("Batching is only supported on polygon as of now");
+                toast.error(batchingText.error.wrongNetwork);
                 setAddToBatchLoading(false);
                 return;
             }
