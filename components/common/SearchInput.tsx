@@ -1,5 +1,5 @@
-import React from 'react';
-import { AiOutlineSearch } from 'react-icons/ai';
+import React from "react";
+import { AiOutlineSearch } from "react-icons/ai";
 
 interface SearchInputProps {
     value: string;

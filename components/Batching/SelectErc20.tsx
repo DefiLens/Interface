@@ -35,11 +35,18 @@ const SelectErc20: React.FC<TokenModalProps> = ({
     onProtocolSelect,
     onTokenSelect,
     selectedNetwork,
-    selectedProtocol
+    selectedProtocol,
 }) => {
-    const { toTokensData, filterToToken, setFilterToToken, filterToAddress, setFilterToAddress,
-        setShowToSelectionMenu, showToSelectionMenu, setToTokensData }: iTrading =
-        useTradingStore((state) => state);
+    const {
+        toTokensData,
+        filterToToken,
+        setFilterToToken,
+        filterToAddress,
+        setFilterToAddress,
+        setShowToSelectionMenu,
+        showToSelectionMenu,
+        setToTokensData,
+    }: iTrading = useTradingStore((state) => state);
 
     const [filterValue, setFilterValue] = useState("");
     const [tokensData, setTokensData] = useState(tokens);
@@ -111,8 +118,8 @@ const SelectErc20: React.FC<TokenModalProps> = ({
                                 <div
                                     key={item.name}
                                     onClick={() => {
-                                        onProtocolSelect(item.name)
-                                        setShowToSelectionMenu(true)
+                                        onProtocolSelect(item.name);
+                                        setShowToSelectionMenu(true);
                                     }}
                                     className="w-full flex justify-between items-center gap-3 text-B300 bg-[rgba(132,144,251,.0.9) border border-[rgba(132,144,251)] hover:bg-[rgba(132,144,251,.1)] py-2 px-3 my-1 rounded-lg cursor-pointer"
                                 >

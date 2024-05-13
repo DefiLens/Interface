@@ -143,7 +143,8 @@ const ExecuteMethod = ({ ExecuteAllBatches }: tExecuteMethod) => {
                                                                             {bar.data.toNetwork}
                                                                         </span>
                                                                         <p className="inline-flex items-center gap-2 text-sm xl:text-sm font-bold text-font-600">
-                                                                            {Number(bar.data.amountOut).toFixed(6)} {bar.data.toToken}
+                                                                            {Number(bar.data.amountOut).toFixed(6)}{" "}
+                                                                            {bar.data.toToken}
                                                                         </p>
                                                                     </div>
                                                                 </div>

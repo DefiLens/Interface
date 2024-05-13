@@ -44,7 +44,7 @@ const TokenSelectionMenu: React.FC<TokenSelectionMenuProps> = ({
     protocolNames,
     title = "Select a token",
     description = "To select a token, choose the Network and Protocol of your choice.",
-    handleSelectedTokenAddress
+    handleSelectedTokenAddress,
 }) => {
     const { isRebalance }: iRebalance = useRebalanceStore((state) => state);
     const { showFromSelectionMenu }: iTrading = useTradingStore((state) => state);

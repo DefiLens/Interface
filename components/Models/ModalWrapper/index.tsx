@@ -28,11 +28,7 @@ const ModalWrapper: React.FC<Props> = ({ open, onOpenChange, trigger, title, des
                     <DialogDescription>{description}</DialogDescription>
                 </DialogHeader>
                 {children}
-                {footer && (
-                    <DialogFooter>
-                        {footer}
-                    </DialogFooter>
-                )}
+                {footer && <DialogFooter>{footer}</DialogFooter>}
             </DialogContent>
         </Dialog>
     );

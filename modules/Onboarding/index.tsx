@@ -17,8 +17,7 @@ import { iTokenInfo } from "../trade/types";
 import { getTokenListByChainId, incresePowerByDecimals, setSafeState } from "../../utils/helper";
 import { getErc20Balanceof, getErc20Decimals } from "../../utils/web3Libs/ethers";
 import { BIG_ZERO } from "../../utils/data/constants";
-import { metadata, walletInfo } from "../../utils/constants";
-import MetaTags from "../../components/Metatags";
+import { walletInfo } from "../../utils/constants";
 
 bg.config({ DECIMAL_PLACES: 5 });
 
@@ -261,12 +260,7 @@ const OnboardingPage = () => {
         }
     }, [address, smartAccount]);
 
-    return (
-        <>
-            <MetaTags title={`Onboarding on ${metadata.APP_NAME}`} />
-            <Onboarding setBalance={setBalance} handleAmountIn={handleAmountIn} send={send} />
-        </>
-    );
+    return <Onboarding setBalance={setBalance} handleAmountIn={handleAmountIn} send={send} />;
 };
 
 export default OnboardingPage;

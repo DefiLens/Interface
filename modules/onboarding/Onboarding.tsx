@@ -1,6 +1,6 @@
 // Library Imports
 import { BigNumber } from "ethers";
-import { useAddress, useChain, useSigner } from "@thirdweb-dev/react";
+import { useAddress, useChain } from "@thirdweb-dev/react";
 import { MdLocalGasStation, MdKeyboardArrowUp } from "react-icons/md";
 import { FiCopy } from "react-icons/fi";
 import { LiaWalletSolid } from "react-icons/lia";
@@ -48,7 +48,7 @@ const Onboarding: React.FC<PropsType> = ({ setBalance, handleAmountIn, send }) =
     }: iTransfer = useTransferStore((state) => state);
 
     return (
-        <div className="w-full h-full overflow-scroll flex flex-col justify-start items-center gap-5">
+        <div className="w-full h-full flex flex-col justify-start items-center gap-5">
             {!smartAccount && (
                 <div className="max-w-6xl w-full h-fit flex flex-col justify-center mt-10 items-center gap-5 rounded-3xl px-5 py-20 bg-N20 text-B200 shadow-xl">
                     <LiaWalletSolid className="w-10 h-10 text-black" />
@@ -57,7 +57,7 @@ const Onboarding: React.FC<PropsType> = ({ setBalance, handleAmountIn, send }) =
                 </div>
             )}
             {smartAccount && (
-                <div className="w-full lg:max-w-xl flex flex-col justify-center items-center mt-10 gap-3 shadow-2xl rounded-2xl bg-GR2 overflow-hidden">
+                <div className="w-full lg:max-w-xl flex flex-col justify-center items-center mt-10 gap-3 shadow-xl rounded-2xl bg-GR2 overflow-hidden">
                     <div className="w-full p-5">
                         <h3 className="font-semibold text-lg md:text-2xl text-N20 mb-3">Transfer Fund</h3>
                         <div className="w-full flex flex-col sm:flex-row justify-center items-center gap-2 md:gap-4 bg-[rgba(225,225,225,.4)] rounded-xl text-B100 p-3">

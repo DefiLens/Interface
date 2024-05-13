@@ -23,7 +23,10 @@ const SelectionBar: React.FC<tSelectionBar> = ({
         <div
             onClick={handleSelectionMenu}
             aria-disabled={addToBatchLoading}
-            className={clsx("w-full rounded-lg px-5 py-3 transition cursor-pointer", showBg && "bg-[rgba(132,144,251,.4)]")}
+            className={clsx(
+                "w-full rounded-lg px-5 py-3 transition cursor-pointer",
+                showBg && "bg-[rgba(132,144,251,.4)]"
+            )}
         >
             <h5 className="text-sm md:text-base lg:text-lg font-medium md:font-semibold text-font-100">
                 {titlePlaceholder}

@@ -9,10 +9,7 @@ interface ChainSelectionProps {
 
 const ChainSelection: React.FC<ChainSelectionProps> = ({ dropdown = false }) => {
     const { chainId, setChainId }: iPortfolio = usePortfolioStore((state) => state);
-    const allChains = [
-        { chainName: "All", chainId: 0 },
-        ...chains,
-    ];
+    const allChains = [{ chainName: "All", chainId: 0 }, ...chains];
 
     const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedId = parseInt(e.target.value, 10);
@@ -46,7 +43,7 @@ const ChainSelection: React.FC<ChainSelectionProps> = ({ dropdown = false }) => 
             ) : (
                 <div
                     className="w-full flex items-center gap-3 overflow-scroll"
-                    style={{ scrollbarWidth: "none", "msOverflowStyle": "none" }}
+                    style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
                 >
                     {allChains.map((chain) => (
                         <button
