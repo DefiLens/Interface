@@ -48,14 +48,14 @@ export function useRefinance() {
         amountIn,
     }: tRefinance): Promise<tRefinanceResponse | undefined> {
 
-        console.log(">>>>>>>>>>", selectedFromNetwork.chainName, "- To -", selectedToNetwork.chainName);
-        console.log("amountIn", amountIn)
+        // console.log(">>>>>>>>>>", selectedFromNetwork.chainName, "- To -", selectedToNetwork.chainName);
+        // console.log("amountIn", amountIn)
 
         await onChangeselectedToProtocol(selectedToNetwork);
         // console.log("--------------useRefinance", toTokensData)
 
         try {
-            console.log("tokenInName", tokenInName)
+            // console.log("tokenInName", tokenInName)
             if (!selectedFromNetwork.chainName) {
                 toast.error("Chain is not selected!!");
             }
@@ -161,7 +161,7 @@ export function useRefinance() {
                         address,
                         web3JsonProvider: provider,
                     } as tApprove);
-                    console.log("approveData", approveData)
+                    // console.log("approveData", approveData)
                     if (approveData) tempTxs.push(approveData);
                 }
                 swapData = await oneInchSwap({
@@ -253,9 +253,9 @@ export function useRefinance() {
             return { txArray: tempTxs, batchFlow: batchFlows, value: BigNumber.from("0"), amountOut: _amountOut };
         } catch (error: any) {
             if (error.message) {
-                console.log("refinance: Error", error.message);
+                console.error("refinance: Error", error.message);
             } else {
-                console.log("refinance: Error", error);
+                console.error("refinance: Error", error);
             }
             return;
         }

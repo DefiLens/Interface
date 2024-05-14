@@ -22,7 +22,7 @@ export function useApprove() {
             };
             return approveTx;
         } catch (error) {
-            console.log("approve-error", error);
+            console.error("approve-error", error);
         }
     }
 

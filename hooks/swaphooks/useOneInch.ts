@@ -44,7 +44,7 @@ export function useOneInch() {
                 tokenOutDecimals: parseSwapData.dstToken.decimals,
             };
         } catch (error) {
-            console.log("oneInchSwap-error", tokenOut);
+            console.error("oneInchSwap-error", tokenOut);
             toast.error(`${selectedToken} is not supported.`);
     }
 }

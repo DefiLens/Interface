@@ -38,7 +38,7 @@ const Token: React.FC<PropTypes> = ({
     const tokenName = isErc20 ? token.symbol : token.name;
 
     const getBalance = async () => {
-        console.log("----------------Calling getBalance----------------");
+        // console.log("----------------Calling getBalance----------------");
         if (!smartAccountAddress || !tokenAddress) return;
 
         setIsLoading(true);

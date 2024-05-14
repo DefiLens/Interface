@@ -71,7 +71,7 @@ export function useBiconomySessionKeyProvider() {
             const txReciept = await userOpResponse.wait();
             return txReciept?.receipt.transactionHash;
         } catch (error: unknown) {
-            console.log("sendToSessionKeyBiconomy-error: ", error);
+            // console.log("sendToSessionKeyBiconomy-error: ", error);
             if (error instanceof Error && error.message) { // Type guard to check if error is an instance of Error
                 setHasExecutionError(error.message);
             } else {

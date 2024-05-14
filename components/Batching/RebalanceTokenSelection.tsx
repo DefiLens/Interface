@@ -27,7 +27,7 @@ export interface iRebalanceTokenSelection {
     handlePercentageChange: (index: number, event: any) => void;
 }
 
-export const RebalanceTokenSelection: FC<iRebalanceTokenSelection> = memo(({
+const RebalanceTokenSelection: FC<iRebalanceTokenSelection> = ({
     percentages,
     handlePercentageChange,
     index,
@@ -62,7 +62,7 @@ export const RebalanceTokenSelection: FC<iRebalanceTokenSelection> = memo(({
 
     useEffect(() => {
         if (clearRebalanceData) {
-            console.log("clearRebalanceData", clearRebalanceData);
+            // console.log("clearRebalanceData", clearRebalanceData);
             setSelectedNetwork({
                 key: "",
                 chainName: "",
@@ -72,7 +72,7 @@ export const RebalanceTokenSelection: FC<iRebalanceTokenSelection> = memo(({
             setSelectedProtocol("");
             setSelectedToken("");
             setAmount(0);
-            console.log("rebalanceData", rebalanceData);
+            // console.log("rebalanceData", rebalanceData);
         }
     }, [clearRebalanceData]);
 
@@ -159,7 +159,7 @@ export const RebalanceTokenSelection: FC<iRebalanceTokenSelection> = memo(({
                 <div
                     className={cn(
                         "flex items-center gap-1 relative text-N0 border-b border-gray-300 rounded-md py-1 px-2 max-w-30",
-                        !splitEqually && "bg-[rgba(225,225,225,.3)]",
+                        !splitEqually && "bg-[rgba(225,225,225,.3)]"
                     )}
                 >
                     <input
@@ -192,4 +192,6 @@ export const RebalanceTokenSelection: FC<iRebalanceTokenSelection> = memo(({
             />
         </>
     );
-});
+};
+
+export default memo(RebalanceTokenSelection);

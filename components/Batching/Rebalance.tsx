@@ -5,7 +5,7 @@ import { RxCross2 } from "react-icons/rx";
 import toast from "react-hot-toast";
 import CustomCheckbox from "../common/CustomCheckbox";
 import { BigNumber as bg } from "bignumber.js";
-import { RebalanceTokenSelection } from "./RebalanceTokenSelection";
+import RebalanceTokenSelection from "./RebalanceTokenSelection";
 
 bg.config({ DECIMAL_PLACES: 10 });
 

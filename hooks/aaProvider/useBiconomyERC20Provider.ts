@@ -28,7 +28,7 @@ export function useBiconomyERC20Provider() {
             });
             const feeQuotes = feeQuotesResponse.feeQuotes as PaymasterFeeQuote[];
             const usdcFeeQuotes = feeQuotes[0];
-            console.log('usdcFeeQuotes', usdcFeeQuotes)
+            // console.log('usdcFeeQuotes', usdcFeeQuotes)
 
             const finalUserOp = await smartAccount.buildTokenPaymasterUserOp(partialUserOp, {
                 feeQuote: usdcFeeQuotes,
@@ -66,7 +66,7 @@ export function useBiconomyERC20Provider() {
             const txReciept = await userOpResponse.wait();
             return txReciept?.receipt.transactionHash;
         } catch (error: unknown) {
-            console.log("sendToERC20Biconomy-error: ", error);
+            // console.log("sendToERC20Biconomy-error: ", error);
             if (error instanceof Error && error.message) {
                 // Type guard to check if error is an instance of Error
                 setHasExecutionError(error.message);

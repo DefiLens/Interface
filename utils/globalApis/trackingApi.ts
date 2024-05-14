@@ -35,7 +35,7 @@ export const saveMigrateTxnHistory = async (
         });
 
         if (response.status === 201) {
-            console.log('Migrate transaction created:', response.data);
+            // console.log('Migrate transaction created:', response.data);
         }
 
         return response.data as iTransactionData;
@@ -58,7 +58,7 @@ export const handleLogin = async (smartAccountAddress: string, eoaAccount: strin
 
         // Check if the login was successful
         if (response.status === 200) {
-            console.log('Login successful');
+            // console.log('Login successful');
         }
     } catch (error) {
         console.error('Error:', error);

@@ -194,23 +194,23 @@ const MigrateAssetContainer: React.FC = () => {
                 }
             }
             if (isSCW) {
-                console.log("txArray:", txArray);
+                // console.log("txArray:", txArray);
                 const tempTxhash = await sendToBiconomy(txArray);
                 toast.success(`Tx Succefully done: ${tempTxhash}`);
             }
             toast.success(`All Tx Succefully done:`);
         } catch (error) {
-            console.log("getContract-error", error);
+            // console.log("getContract-error", error);
         }
     };
 
     const handleExecuteMgrateAsset = () => {
         if (isSCW) {
             sendAllTokens(true, scwTokenAddressesData);
-            console.log("Execute: Scw Tokens", scwTokenAddressesData);
+            // console.log("Execute: Scw Tokens", scwTokenAddressesData);
         } else {
             sendAllTokens(false, eoaTokenAddressesData);
-            console.log("Execute: Eoa Tokens", eoaTokenAddressesData);
+            // console.log("Execute: Eoa Tokens", eoaTokenAddressesData);
         }
     };
 

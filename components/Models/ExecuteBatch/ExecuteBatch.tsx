@@ -56,13 +56,13 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
             await axiosInstance
                 .post(`/transactions/${isSimulate ? "batch-simulation" : "batch"}`, txHistory)
                 .then(async (res) => {
-                    console.log("Thanks for Working with us");
+                    // console.log("Thanks for Working with us");
                 })
                 .catch((err) => {
-                    console.log("Error! While storing history", err);
+                    // console.log("Error! While storing history", err);
                 });
         } catch (error: any) {
-            console.log("handleTxnHistory: error:", error);
+            // console.log("handleTxnHistory: error:", error);
         }
     };
 

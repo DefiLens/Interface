@@ -8,7 +8,7 @@ export function useCreateSession() {
     async function createSession() {
         try {
         } catch (error: unknown) {
-            console.log("createSession-error: ", error);
+            // console.log("createSession-error: ", error);
             return;
         }
     }

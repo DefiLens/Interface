@@ -20,7 +20,6 @@ import { logoLight } from "../../assets/images";
 
 const Header: React.FC<tHeader> = ({ switchOnSpecificChain }) => {
     const pathname = usePathname();
-    useEffect(() => console.log("path", pathname), [pathname]);
 
     const {
         loading,
