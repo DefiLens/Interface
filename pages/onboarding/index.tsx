@@ -6,7 +6,7 @@ import toast from "react-hot-toast";
 import { BigNumber, Contract, ethers } from "ethers";
 import { BigNumber as bg } from "bignumber.js";
 // Type, Helper, Component Imports
-import Onboarding from "./Onboarding";
+import Onboarding from "./onboard";
 import { useCalculateGasCost } from "../../hooks/utilsHooks/useCalculateGasCost";
 import IERC20 from "../../abis/IERC20.json";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
