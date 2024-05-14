@@ -28,7 +28,7 @@ export function useCalculateGasCost() {
                 }
             }
         } catch (error: any) {
-            console.log("useCalculatebalance:Error: " + error);
+            // console.log("useCalculatebalance:Error: " + error);
             toast.error(error);
             return 0;
         }

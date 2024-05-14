@@ -66,7 +66,7 @@ export function useSwitchOnSpecificChain() {
             if (address && smartAccount && chain) {
                 if (smartAccount.owner == address) return;
                 const _smartAccount = await login(chain?.chainId);
-                console.log("_smartAccount--use", _smartAccount);
+                // console.log("_smartAccount--use", _smartAccount);
                 // @ts-ignore
                 await isNetworkCorrect(chain?.chainId, await _smartAccount.getAccountAddress());
 
@@ -199,7 +199,7 @@ export function useSwitchOnSpecificChain() {
             } else {
             }
         } catch (error) {
-            console.log("isNetworkCorrect:error: ", error);
+            // console.log("isNetworkCorrect:error: ", error);
         }
     };
 
@@ -221,12 +221,12 @@ export function useSwitchOnSpecificChain() {
             const smartAccount = await createAccount(chainId);
             const _smartAccountAddress = await smartAccount.getAccountAddress();
 
-            console.log("smartAccount in setup", smartAccount);
+            // console.log("smartAccount in setup", smartAccount);
 
             setSimulationSmartAddress(isSimulate ? "0x9Ce935D780424FB795bef7E72697f263A8258fAA" : _smartAccountAddress);
             setSmartAccountAddress(_smartAccountAddress);
 
-            console.log("_smartAccountAddress ,", smartAccountAddress);
+            // console.log("_smartAccountAddress ,", smartAccountAddress);
 
             // if (isSimulate) {
             //     setSmartAccountAddress("0x9Ce935D780424FB795bef7E72697f263A8258fAA");
@@ -236,16 +236,16 @@ export function useSwitchOnSpecificChain() {
             setLoading(false);
             setCurrentProvider("Biconomy");
 
-            console.log("----------------------------Log in--------------------------");
-            console.log("address:", _smartAccountAddress);
-            console.log("wallet", wallet);
+            // console.log("----------------------------Log in--------------------------");
+            // console.log("address:", _smartAccountAddress);
+            // console.log("wallet", wallet);
 
             handleLogin(_smartAccountAddress, address, wallet?.walletId);
 
             return smartAccount;
         } catch (err) {
             setLoading(false);
-            console.log("error setting up smart account... ", err);
+            // console.log("error setting up smart account... ", err);
         }
     };
 
@@ -258,7 +258,7 @@ export function useSwitchOnSpecificChain() {
                     await switchChain(137);
                     const _smartAccount = await login(137);
                     const _smartAccountAddress = await _smartAccount?.getAccountAddress();
-                    console.log("_smartAccountAddress: ", _smartAccountAddress);
+                    // console.log("_smartAccountAddress: ", _smartAccountAddress);
                     // @ts-ignore
                     await isNetworkCorrect(137, _smartAccountAddress);
 
@@ -278,7 +278,7 @@ export function useSwitchOnSpecificChain() {
                     await switchChain?.(42161);
                     const _smartAccount = await login(42161);
                     const _smartAccountAddress = await _smartAccount?.getAccountAddress();
-                    console.log("_smartAccountAddress: ", _smartAccountAddress);
+                    // console.log("_smartAccountAddress: ", _smartAccountAddress);
                     // @ts-ignore
                     await isNetworkCorrect(42161, _smartAccountAddress);
 
@@ -299,7 +299,7 @@ export function useSwitchOnSpecificChain() {
 
                     const _smartAccount = await login(43114);
                     const _smartAccountAddress = await _smartAccount?.getAccountAddress();
-                    console.log("_smartAccountAddress: ", _smartAccountAddress);
+                    // console.log("_smartAccountAddress: ", _smartAccountAddress);
                     // @ts-ignore
                     await isNetworkCorrect(43114, _smartAccountAddress);
 
@@ -320,7 +320,7 @@ export function useSwitchOnSpecificChain() {
 
                     const _smartAccount = await login(10);
                     const _smartAccountAddress = await _smartAccount?.getAccountAddress();
-                    console.log("_smartAccountAddress: ", _smartAccountAddress);
+                    // console.log("_smartAccountAddress: ", _smartAccountAddress);
                     // @ts-ignore
                     await isNetworkCorrect(10, _smartAccountAddress);
 
@@ -341,7 +341,7 @@ export function useSwitchOnSpecificChain() {
 
                     const _smartAccount = await login(1);
                     const _smartAccountAddress = await _smartAccount?.getAccountAddress();
-                    console.log("_smartAccountAddress: ", _smartAccountAddress);
+                    // console.log("_smartAccountAddress: ", _smartAccountAddress);
                     // @ts-ignore
                     await isNetworkCorrect(1, _smartAccountAddress);
 
@@ -362,7 +362,7 @@ export function useSwitchOnSpecificChain() {
 
                     const _smartAccount = await login(8453);
                     const _smartAccountAddress = await _smartAccount?.getAccountAddress();
-                    console.log("_smartAccountAddress: ", _smartAccountAddress);
+                    // console.log("_smartAccountAddress: ", _smartAccountAddress);
                     // @ts-ignore
                     await isNetworkCorrect(8453, _smartAccountAddress);
 
@@ -381,10 +381,10 @@ export function useSwitchOnSpecificChain() {
                 }
             } else {
                 if (chain) {
-                    console.log("Already on that chain");
+                    // console.log("Already on that chain");
                     const _smartAccount = await login(chain?.chainId);
                     const _smartAccountAddress = await _smartAccount?.getAccountAddress();
-                    console.log("_smartAccountAddress: ", _smartAccountAddress);
+                    // console.log("_smartAccountAddress: ", _smartAccountAddress);
 
                     setSelectedNetwork({
                         key: chain?.chain,
@@ -404,7 +404,7 @@ export function useSwitchOnSpecificChain() {
                 }
             }
         } catch (error: any) {
-            console.log("changeChain-error", error);
+            // console.log("changeChain-error", error);
         }
     };
 
@@ -417,7 +417,7 @@ export function useSwitchOnSpecificChain() {
             setLoading(false);
         } catch (error: any) {
             setLoading(false);
-            console.log("switchToChain-error: ", error);
+            // console.log("switchToChain-error: ", error);
             return 0;
         }
     };

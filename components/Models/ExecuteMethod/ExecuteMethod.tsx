@@ -24,7 +24,7 @@ const ExecuteMethod = ({ ExecuteAllBatches }: tExecuteMethod) => {
         setShowReviewModal(false);
     };
 
-    console.log(individualBatch, "individualBatch");
+    // console.log(individualBatch, "individualBatch");
 
     const getNetworkLogoByNetworkName = (networkName) => {
         const chainIds = Object.keys(ChainIdDetails);

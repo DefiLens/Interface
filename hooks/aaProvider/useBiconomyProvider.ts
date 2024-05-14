@@ -14,7 +14,7 @@ export function useBiconomyProvider() {
         try {
             const userOp = await smartAccount.buildUserOp(txs);
             userOp.paymasterAndData = "0x";
-            console.log("userOp-: ", userOp, userOp.callGasLimit.toString());
+            // console.log("userOp-: ", userOp, userOp.callGasLimit.toString());
 
             // if (selectedNetwork.chainId == "10") {
             const bundler: IBundler = new Bundler({
@@ -24,7 +24,7 @@ export function useBiconomyProvider() {
             });
 
             const data = await bundler.estimateUserOpGas(userOp);
-            console.log("data: ", data);
+            // console.log("data: ", data);
             // userOp.callGasLimit = BigNumber.from(userOp.callGasLimit).add(0).toNumber();
             // userOp.verificationGasLimit = userOp.verificationGasLimit;
             // userOp.maxFeePerGas = userOp.maxFeePerGas;
@@ -47,18 +47,18 @@ export function useBiconomyProvider() {
                 ? BigNumber.from(data.preVerificationGas).toNumber()
                 : BigNumber.from(userOp.preVerificationGas);
 
-            console.log("userOp-after: ", userOp, userOp.callGasLimit.toString());
+            // console.log("userOp-after: ", userOp, userOp.callGasLimit.toString());
             // } else {
                 // userOp.callGasLimit = BigNumber.from(userOp.callGasLimit).add(BigNumber.from(185000).mul(individualBatch.length-1))
                 // console.log("userOp-after-: ", userOp, userOp.callGasLimit.toString());
             // }
 
             const userOpResponse = await smartAccount.sendUserOp(userOp);
-            console.log("userOpResponse-: ", userOpResponse);
+            // console.log("userOpResponse-: ", userOpResponse);
             const txReciept = await userOpResponse.wait();
             return txReciept?.receipt.transactionHash;
         } catch (error: unknown) {
-            console.log("sendToBiconomy-error: ", error);
+            // console.log("sendToBiconomy-error: ", error);
             if (error instanceof Error && error.message) { // Type guard to check if error is an instance of Error
                 setHasExecutionError(error.message);
             } else {

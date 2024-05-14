@@ -183,14 +183,14 @@ export function useCCSendTx() {
                 chooseChianId(toChainId)
             );
             const gasUsed = simulate.simulation_results[1].transaction.gas_used;
-            console.log('simulate: ', simulate)
+            // console.log('simulate: ', simulate)
 
             setSimulationsHashes([...simulationHashes, simulate.simulation_results[1].simulation.id]);
 
             const stargateRouter = await getContractInstance(fromStarGateRouter, IStarGateRouter, _currentProvider);
             if (!stargateRouter) return;
 
-            console.log("gasUsed: ", gasUsed.toString());
+            // console.log("gasUsed: ", gasUsed.toString());
 
             const lzParams = {
                 dstGasForCall: BigNumber.from(gasUsed).add(BigNumber.from("30000")),
@@ -246,7 +246,7 @@ export function useCCSendTx() {
                 return { txArray: [sendTx], value: stargateTx.value, simulationHash: simulate.simulation_results[1].simulation.id, amountOutWithoutDecimal: _amountOutWithoutDecimal };
             }
         } catch (error: unknown) {
-            console.log("sendTx: Error: ", error);
+            // console.log("sendTx: Error: ", error);
             return;
         }
     }

@@ -10,7 +10,7 @@ export const getAuthToken = async () => {
             token = await refreshAuthToken();
         }
     }
-    console.log("token: ", token)
+    // console.log("token: ", token)
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
     return token;
