@@ -51,18 +51,19 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
         handleIsCrossChainTxs();
     }, [individualBatch]);
 
+    // Updating transction in the TxHistory Db
     const handleTxnHistory = async (txHistory: iBatchHistory) => {
         try {
             await axiosInstance
                 .post(`/transactions/${isSimulate ? "batch-simulation" : "batch"}`, txHistory)
                 .then(async (res) => {
-                    console.log("Thanks for Working with us");
+                    // console.log("Thanks for Working with us.");
                 })
                 .catch((err) => {
-                    console.log("Error! While storing history", err);
+                    console.error("Error! While storing history", err);
                 });
         } catch (error: any) {
-            console.log("handleTxnHistory: error:", error);
+            console.error("handleTxnHistory: error:", error);
         }
     };
 
@@ -80,7 +81,7 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
             return token;
         } else {
             const nativeTokenData = nativeTokenFetcher[chainId][nativeTokenNum[chainId][token]];
-            console.log("nativeTokenData", nativeTokenData);
+            // console.log("nativeTokenData", nativeTokenData);
             return nativeTokenData.symbol;
         }
     };
@@ -101,17 +102,17 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
                 nativeToken: {
                     symbol: gettokenData(item.data.fromProtocol, item.data.fromNetwork, item.data.fromToken),
                     chainId: NETWORK_MAP[item.data.fromNetwork],
-                }
+                },
             }));
 
-            console.log(txHistory, "txHistory");
+            // console.log(txHistory, "txHistory");
             const dataToSend: iBatchHistory = {
                 transactions: txHistory,
                 smartAccount: smartAccountAddress,
                 eoaAccount: address,
             };
-            
-            // Delay the execution of handleTxnHistory for 3 seconds
+
+            // Delay the execution of handleTxnHistory by 3 seconds
             setTimeout(() => {
                 handleTxnHistory(dataToSend);
             }, 3000);
