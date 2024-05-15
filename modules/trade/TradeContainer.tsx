@@ -1071,7 +1071,7 @@ const TradeContainer: React.FC<any> = () => {
         const fetchTokenData = async (_tokenAddress: string) => {
             try {
                 setOraclePriceLoading(true);
-                const response = await axiosInstance.get(`/general/ze/token-data/${_tokenAddress}`);
+                const response = await axiosInstance.get(`/token/detail/${_tokenAddress}`);
 
                 setOraclePrice(response?.data?.market_data?.price);
                 console.log(response?.data);

@@ -3,6 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 import { iPortfolio, usePortfolioStore } from "../../store/Portfolio";
 import { chains } from "../../modules/portfolio/constants";
 import toast from "react-hot-toast";
+import axiosInstance from "../../axiosInstance/axiosInstance";
 
 export function usePortfolio() {
     const { chainId, setChainData, setIsLoading, setError }: iPortfolio = usePortfolioStore((state) => state);
@@ -15,9 +16,6 @@ export function usePortfolio() {
         try {
             setIsLoading(true);
 
-            // Zerion API Key
-            const authToken = process.env.NEXT_PUBLIC_ZERION_API_KEY;
-
             let requests;
             if (chainId) {
                 // Fetch data for a specific chain if chainId is provided
@@ -25,29 +23,13 @@ export function usePortfolio() {
                 if (!chain) {
                     throw new Error(`Chain with ID ${chainId} not found.`);
                 }
-                const response = await axios.get(
-                    `https://api.zerion.io/v1/wallets/${address}/positions/?filter[positions]=no_filter&currency=usd&filter[chain_ids]=${chain.chainName.toLowerCase()}&filter[trash]=only_non_trash&sort=value`,
-                    {
-                        headers: {
-                            Accept: "application/json",
-                            Authorization: `Basic ${authToken}`,
-                        },
-                    }
-                );
+                const response = await axiosInstance.get(`/token/portfolio?address=${address}&chainName=${chain.chainName.toLowerCase()}`);
                 requests = [{ chainId, data: response.data.data }];
             } else {
                 // Fetch data for all chains if chainId is not provided
                 requests = await Promise.all(
                     chains.map(async ({ chainName, chainId }) => {
-                        const response = await axios.get(
-                            `https://api.zerion.io/v1/wallets/${address}/positions/?filter[positions]=no_filter&currency=usd&filter[chain_ids]=${chainName.toLowerCase()}&filter[trash]=only_non_trash&sort=value`,
-                            {
-                                headers: {
-                                    Accept: "application/json",
-                                    Authorization: `Basic ${authToken}`,
-                                },
-                            }
-                        );
+                        const response = await axiosInstance.get(`/token/portfolio?address=${address}&chainName=${chainName.toLowerCase()}`);
                         return { chainId, data: response.data.data };
                     })
                 );
