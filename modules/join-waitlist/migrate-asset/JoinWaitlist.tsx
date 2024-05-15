@@ -19,11 +19,12 @@ const Button = ({ handleClick, isLoading = false, innerText }: tButton) => (
 
 const JoinWaitlist = () => {
     const router = useRouter();
-    const [step, setStep] = useState(1);
+    const [step, setStep] = useState(1); // stepper
     const [email, setEmail] = useState("");
     const [isOpen, setIsOpen] = useState(false);
     const [response, setResponse] = useState(null);
 
+    // checking if user already visited
     useEffect(() => {
         if (localStorage.getItem("visited")) {
             setIsOpen(false);
@@ -36,15 +37,17 @@ const JoinWaitlist = () => {
         setStep(2);
     };
 
+    // email validation using regex
     const isValidEmail = (email) => {
         const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailPattern.test(email);
     };
 
+    // Submitting the email: validation -> post req -> save in localStorage -> update stepper
     const handleSubmitEmail = async () => {
         try {
-            if(!isValidEmail(email)) {
-                toast.error("Enter a valid email address")
+            if (!isValidEmail(email)) {
+                toast.error("Please enter a valid email address.");
                 return;
             }
             const response = await axiosInstance.post(`/public/waitlist`, { email: email });
@@ -58,6 +61,7 @@ const JoinWaitlist = () => {
         }
     };
 
+    // user wants to use simulation
     const trySimulation = () => {
         router.push("/");
         setIsOpen(false);
