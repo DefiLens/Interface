@@ -37,7 +37,7 @@ const JoinWaitlist = () => {
 
     const handleSubmitEmail = async () => {
         try {
-            const response = await axiosInstance.post(`/general/waitlist`, { email: email });
+            const response = await axiosInstance.post(`/public/waitlist`, { email: email });
             setResponse(response.data.message);
 
             localStorage.setItem("visited", "true");

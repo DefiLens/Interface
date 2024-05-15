@@ -9,7 +9,7 @@ import { tExecuteBatch } from "./types";
 import { buildTxHash } from "../../../utils/helper";
 import { closeNarrow, tenderly } from "../../../assets/images";
 import { ChainIdDetails } from "../../../utils/data/network";
-import { protocolNames } from "../../../utils/data/protocols";
+import { nativeTokenFetcher, nativeTokenNum, protocolNames } from "../../../utils/data/protocols";
 import { error, loading, success } from "../../../assets/gifs";
 import { iIndividualBatch, iTrading, useTradingStore } from "../../../store/TradingStore";
 import { iBatchHistory, iSingleTransaction } from "../../../modules/portfolio/types";
@@ -56,13 +56,32 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
             await axiosInstance
                 .post(`/transactions/${isSimulate ? "batch-simulation" : "batch"}`, txHistory)
                 .then(async (res) => {
-                    // console.log("Thanks for Working with us");
+                    console.log("Thanks for Working with us");
                 })
                 .catch((err) => {
-                    // console.log("Error! While storing history", err);
+                    console.log("Error! While storing history", err);
                 });
         } catch (error: any) {
-            // console.log("handleTxnHistory: error:", error);
+            console.log("handleTxnHistory: error:", error);
+        }
+    };
+
+    const NETWORK_MAP: any = {
+        polygon: 137,
+        avalanche: 43114,
+        arbitrum: 42161,
+        optimism: 10,
+        base: 8453,
+    };
+
+    const gettokenData = (protocolName: string, chainName: string, token: string) => {
+        const chainId = NETWORK_MAP[chainName];
+        if (protocolName === "erc20") {
+            return token;
+        } else {
+            const nativeTokenData = nativeTokenFetcher[chainId][nativeTokenNum[chainId][token]];
+            console.log("nativeTokenData", nativeTokenData);
+            return nativeTokenData.symbol;
         }
     };
 
@@ -79,15 +98,23 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
                 txHash: txhash,
                 isSimulate: isSimulate,
                 simulationLink: item.simulationHash,
+                nativeToken: {
+                    symbol: gettokenData(item.data.fromProtocol, item.data.fromNetwork, item.data.fromToken),
+                    chainId: NETWORK_MAP[item.data.fromNetwork],
+                }
             }));
 
+            console.log(txHistory, "txHistory");
             const dataToSend: iBatchHistory = {
                 transactions: txHistory,
                 smartAccount: smartAccountAddress,
                 eoaAccount: address,
             };
-
-            handleTxnHistory(dataToSend);
+            
+            // Delay the execution of handleTxnHistory for 3 seconds
+            setTimeout(() => {
+                handleTxnHistory(dataToSend);
+            }, 3000);
         }
     }, [txhash]);
 
