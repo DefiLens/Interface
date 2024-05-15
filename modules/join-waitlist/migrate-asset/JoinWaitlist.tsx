@@ -4,6 +4,7 @@ import axiosInstance from "../../../axiosInstance/axiosInstance";
 import { CgSpinner } from "react-icons/cg";
 import { tButton } from "../../../components/Button/types";
 import Link from "next/link";
+import toast from "react-hot-toast";
 
 const Button = ({ handleClick, isLoading = false, innerText }: tButton) => (
     <button
@@ -35,8 +36,17 @@ const JoinWaitlist = () => {
         setStep(2);
     };
 
+    const isValidEmail = (email) => {
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailPattern.test(email);
+    };
+
     const handleSubmitEmail = async () => {
         try {
+            if(!isValidEmail(email)) {
+                toast.error("Enter a valid email address")
+                return;
+            }
             const response = await axiosInstance.post(`/public/waitlist`, { email: email });
             setResponse(response.data.message);
 
