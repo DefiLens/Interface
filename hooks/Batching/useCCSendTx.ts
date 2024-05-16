@@ -8,12 +8,12 @@ import IERC20 from "../../abis/IERC20.json";
 import ChainPing from "../../abis/ChainPing.json";
 import { useOneInch } from "../swaphooks/useOneInch";
 import { ChainIdDetails } from "../../utils/data/network";
-import { decreasePowerByDecimals, getScwBalance } from "../../utils/helper";
+import { decreasePowerByDecimals } from "../../utils/helper";
 import IStarGateRouter from "../../abis/IStarGateRouter.json";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import { iTrading, useTradingStore } from "../../store/TradingStore";
 import { tCCSendTx, tOneInch, tOneInchSwapResponse, tStargateData } from "../types";
-import { getContractInstance, getErc20Allownace } from "../../utils/web3Libs/ethers";
+import { getContractInstance, getErc20Allownace, getProvider } from "../../utils/web3Libs/ethers";
 import { calculateFees, chooseChianId, findGasUsedBySimulation } from "../../utils/helper";
 import { _functionType, _nonce, BYTES_ZERO, ZERO_ADDRESS } from "../../utils/data/constants";
 import { nativeTokenFetcher, newChainPingByNetwork, starGateRouterByNetwork, tokensByNetworkForCC } from "../../utils/data/protocols";
@@ -65,13 +65,17 @@ export function useCCSendTx() {
             }
             const _tempAmount = _amountIn;
             let _currentAddress;
-            let _currentProvider;
+            let _currentProvider: ethers.providers.JsonRpcProvider | undefined = await getProvider(selectedFromNetwork.chainId);
+            if (!_currentProvider) {
+                alert("Wallet provider is not connected.")
+                return
+            }
             if (isSCW) {
                 _currentAddress = smartAccountAddress;
-                _currentProvider = smartAccount.provider;
+                // _currentProvider = smartAccount.provider;
             } else {
                 _currentAddress = address;
-                _currentProvider = smartAccount.provider;
+                // _currentProvider = smartAccount.provider;
             }
             const fromStarGateRouter = starGateRouterByNetwork[selectedFromNetwork.chainId];
             const toUsdc = tokensByNetworkForCC[selectedToNetwork.chainId].usdc;
@@ -117,6 +121,7 @@ export function useCCSendTx() {
                     chainId: Number(selectedToNetwork.chainId),
                     selectedToken: selectedToToken
                 } as tOneInch);
+                console.log('swapData: ', swapData)
                 amountOutAfterSlippage = BigNumber.from(swapData?.amountOutprice).sub(
                     BigNumber.from(swapData?.amountOutprice).mul("1000").div("1000000")
                 );
@@ -221,8 +226,8 @@ export function useCCSendTx() {
             );
 
 
-            let scwOrEoaNativeBalance = await getScwBalance(isSimulate, smartAccount, _currentAddress)
-            // const scwOrEoaNativeBalance = await _currentProvider.getBalance(_currentAddress);
+            // let scwOrEoaNativeBalance = await getScwBalance(isSimulate, smartAccount, _currentAddress)
+            const scwOrEoaNativeBalance = await _currentProvider.getBalance(_currentAddress);
             const currentBalance = BigNumber.from(scwOrEoaNativeBalance);
             const minimumBalanceRequired = await decreasePowerByDecimals(quoteData[0], 18);
 

@@ -2,8 +2,9 @@ import { useMutation } from "@tanstack/react-query";
 
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import { iTrading, useTradingStore } from "../../store/TradingStore";
-import { IHybridPaymaster, SponsorUserOperationDto, PaymasterMode, PaymasterFeeQuote } from "@biconomy/paymaster";
-import { ChainIdDetails } from "../../utils/data/network";
+import {
+    IHybridPaymaster, SponsorUserOperationDto, PaymasterMode, PaymasterFeeQuote
+} from "@biconomy/account";
 import { tokensByNetworkForCC } from "../../utils/data/protocols";
 
 export function useBiconomyERC20Provider() {
@@ -28,7 +29,6 @@ export function useBiconomyERC20Provider() {
             });
             const feeQuotes = feeQuotesResponse.feeQuotes as PaymasterFeeQuote[];
             const usdcFeeQuotes = feeQuotes[0];
-            // console.log('usdcFeeQuotes', usdcFeeQuotes)
 
             const finalUserOp = await smartAccount.buildTokenPaymasterUserOp(partialUserOp, {
                 feeQuote: usdcFeeQuotes,
