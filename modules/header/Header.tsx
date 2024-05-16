@@ -87,13 +87,13 @@ const Header: React.FC<tHeader> = ({ switchOnSpecificChain }) => {
                         </Link>
                     </div>
                     <div className="hidden lg:flex lg:gap-x-12">
-                        {NavigationList.map((item, index) => (
+                        {NavigationList.map((item) => (
                             <Link
                                 key={item.title}
                                 href={item.route}
-                                className="flex flex-row transition-colors duration-200 rounded-full justify-between items-center gap-1"
+                                className="flex flex-row transition-colors duration-200 rounded-full justify-between items-center gap-1 group"
                             >
-                                <span className={cn("p-2 rounded-full", pathname == item.route && "bg-purple-100")}>
+                                <span className={cn("p-2 rounded-full group-hover:bg-purple-100 transition-colors duration-200", pathname == item.route && "bg-purple-100")}>
                                     {item.icon && <Image src={item.icon} width={20} height={20} alt={item.title} />}
                                 </span>
                                 <span
