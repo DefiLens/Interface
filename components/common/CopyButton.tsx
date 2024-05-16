@@ -21,9 +21,9 @@ const CopyButton: React.FC<CopyButtonProps> = ({ copy }) => {
     return (
         <div onClick={() => copyToClipboard(copy ?? "")} className="hover:bg-N40 p-2 rounded-md cursor-pointer">
             {copied ? (
-                <FiCheck size="20px" className="text-success-600 active:text-B200" />
+                <FiCheck size="16px" className="text-success-600 active:text-B200" />
             ) : (
-                <FiCopy size="20px" className="text-B100 active:text-B200" />
+                <FiCopy size="16px" className="text-B100 active:text-B200" />
             )}
         </div>
     );
