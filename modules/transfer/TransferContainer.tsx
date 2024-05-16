@@ -89,8 +89,8 @@ const TransferContainer: React.FC = () => {
                     return;
                 }
                 const _eoaBalance = await provider.getBalance(address);
-                // const _scwBalance = await smartAccount.provider.getBalance(smartAccountAddress);
-                let _scwBalance = await getScwBalance(isSimulate, smartAccount, smartAccountAddress)
+                const _scwBalance = await provider.getBalance(smartAccountAddress);
+                // let _scwBalance = await getScwBalance(isSimulate, smartAccount, smartAccountAddress)
                 setScwTokenInbalance(BigNumber.from(_scwBalance));
                 setEoaTokenInbalance(BigNumber.from(_eoaBalance));
                 setTokenInDecimals(18);
@@ -204,8 +204,8 @@ const TransferContainer: React.FC = () => {
                     return;
                 }
 
-                // const balance = await provider.getBalance(_fromAddress);
-                let balance = await getScwBalance(isSimulate, smartAccount, _fromAddress)
+                const balance = await provider.getBalance(_fromAddress);
+                // let balance = await getScwBalance(isSimulate, smartAccount, _fromAddress)
                 if (!BigNumber.from(balance).gte(amountIn)) {
                     toast.error("Not enough balance");
                     return;

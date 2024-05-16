@@ -1,4 +1,3 @@
-import axios from "axios";
 import { useMutation } from "@tanstack/react-query";
 import { iPortfolio, usePortfolioStore } from "../../store/Portfolio";
 import { chains } from "../../modules/portfolio/constants";
@@ -9,7 +8,7 @@ export function usePortfolio() {
     const { chainId, setChainData, setIsLoading, setError }: iPortfolio = usePortfolioStore((state) => state);
 
     /**
-     * 
+     *
      * @param address Requested portfolio's user's account address
      */
     async function fetchPortfolio(address: string) {

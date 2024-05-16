@@ -78,7 +78,8 @@ const OnboardingPage = () => {
                     return;
                 }
                 const _eoaBalance = await provider.getBalance(address);
-                const _scwBalance = await smartAccount.provider.getBalance(smartAccountAddress);
+                const _scwBalance = await provider.getBalance(smartAccountAddress);
+                alert(_scwBalance.toString())
                 setScwTokenInbalance(BigNumber.from(_scwBalance));
                 setEoaTokenInbalance(BigNumber.from(_eoaBalance));
                 setTokenInDecimals(18);
