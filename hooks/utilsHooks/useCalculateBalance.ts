@@ -12,6 +12,7 @@ export function useCalculatebalance() {
 
     async function fetchNativeBalance({ chainId, eoaAddress, scwAddress }) {
         try {
+            console.log("smartAccount-1: ", smartAccount)
 
             const provider: ethers.providers.JsonRpcProvider | undefined = await getProvider(chainId);
             if (!provider) throw "No Provider";
@@ -23,8 +24,8 @@ export function useCalculatebalance() {
             }
             if (scwAddress) {
                 // const scw = isSimulate ? "0x9Ce935D780424FB795bef7E72697f263A8258fAA" : scwAddress;
-                // let _scwbalance: BigNumberish | undefined = await smartAccount.provider.getBalance(scw);
-                let _scwbalance: BigNumberish | undefined = await getScwBalance(isSimulate, smartAccount, scwAddress)
+                let _scwbalance: BigNumberish | undefined = await provider.getBalance(scwAddress);
+                // let _scwbalance: BigNumberish | undefined = await getScwBalance(isSimulate, smartAccount, scwAddress)
                 if (_scwbalance === undefined) return;
                 _scwbalance = await decreasePowerByDecimals(_scwbalance, 18);
                 setScwBalance(_scwbalance);

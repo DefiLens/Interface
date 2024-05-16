@@ -1,7 +1,6 @@
 import { toast } from "react-hot-toast";
 import { BigNumber, ethers } from "ethers";
 
-import { useAddress } from "@thirdweb-dev/react";
 import { useMutation } from "@tanstack/react-query";
 
 import { useCCSendTx } from "./useCCSendTx";

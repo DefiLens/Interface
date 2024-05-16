@@ -4,8 +4,8 @@ import toast from "react-hot-toast";
 import { BigNumber as bg } from "bignumber.js";
 import { useMutation } from "@tanstack/react-query";
 import { Signer } from "ethers";
-import { Bundler, IBundler } from "@biconomy/bundler";
-import { BiconomyPaymaster, IPaymaster } from "@biconomy/paymaster";
+// import { Bundler, IBundler } from "@biconomy/bundler";
+// import { BiconomyPaymaster, IPaymaster } from "@biconomy/paymaster";
 import {
     metamaskWallet,
     phantomWallet,
@@ -18,14 +18,23 @@ import {
     useSwitchChain,
     useWallet,
 } from "@thirdweb-dev/react";
-import { BiconomySmartAccountV2, DEFAULT_ENTRYPOINT_ADDRESS } from "@biconomy/account";
+import {
+    Bundler,
+    IBundler,
+    BiconomyPaymaster,
+    IPaymaster,
+    BiconomySmartAccountV2,
+    DEFAULT_ENTRYPOINT_ADDRESS,
+    DEFAULT_MULTICHAIN_MODULE,
+    MultiChainValidationModule,
+} from "@biconomy/account";
 
 import { ChainIdDetails } from "../utils/data/network";
 import { iGlobal, useGlobalStore } from "../store/GlobalStore";
 import { iTrading, useTradingStore } from "../store/TradingStore";
 import { useCalculatebalance } from "../hooks/utilsHooks/useCalculateBalance";
 import { arbitrum, avalanche, base, ethereum, optimism, polygon } from "../assets/images";
-import { DEFAULT_MULTICHAIN_MODULE, MultiChainValidationModule } from "@biconomy/modules";
+// import { DEFAULT_MULTICHAIN_MODULE, MultiChainValidationModule } from "@biconomy/modules";
 import { handleLogin } from "../utils/globalApis/trackingApi";
 import { iTransfer, useTransferStore } from "../store/TransferStore";
 import { iPortfolio, usePortfolioStore } from "../store/Portfolio";

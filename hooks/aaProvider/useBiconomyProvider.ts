@@ -4,19 +4,16 @@ import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import { iTrading, useTradingStore } from "../../store/TradingStore";
 import { ChainIdDetails } from "../../utils/data/network";
 import { BigNumber } from "ethers";
-import { Bundler, IBundler } from "@biconomy/bundler";
-import { DEFAULT_ENTRYPOINT_ADDRESS } from "@biconomy/account";
+import { DEFAULT_ENTRYPOINT_ADDRESS, Bundler, IBundler } from "@biconomy/account";
 
 export function useBiconomyProvider() {
     const { smartAccount, selectedNetwork }: iGlobal = useGlobalStore((state) => state);
-    const { setHasExecutionError, individualBatch }: iTrading = useTradingStore((state) => state);
+    const { setHasExecutionError }: iTrading = useTradingStore((state) => state);
     async function sendToBiconomy(txs) {
         try {
             const userOp = await smartAccount.buildUserOp(txs);
             userOp.paymasterAndData = "0x";
-            // console.log("userOp-: ", userOp, userOp.callGasLimit.toString());
 
-            // if (selectedNetwork.chainId == "10") {
             const bundler: IBundler = new Bundler({
                 bundlerUrl: ChainIdDetails[selectedNetwork.chainId].bundlerURL,
                 chainId: BigNumber.from(selectedNetwork.chainId).toNumber(),

@@ -2,7 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import { iTrading, useTradingStore } from "../../store/TradingStore";
-import { IHybridPaymaster, SponsorUserOperationDto, PaymasterMode, PaymasterFeeQuote } from "@biconomy/paymaster";
+import { IHybridPaymaster, SponsorUserOperationDto, PaymasterMode, PaymasterFeeQuote } from "@biconomy/account";
 
 export function useBiconomySessionKeyProvider() {
     const { smartAccount }: iGlobal = useGlobalStore((state) => state);

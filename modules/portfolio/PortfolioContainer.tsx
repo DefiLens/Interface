@@ -119,6 +119,7 @@ const PortfolioContainer: React.FC = () => {
     };
 
     const send = async () => {
+        alert("Hello")
         if (selectOneAsset == null) {
             toast.error("Select One Token");
             return;
@@ -151,9 +152,8 @@ const PortfolioContainer: React.FC = () => {
                     return;
                 }
 
-                // const balance = await provider.getBalance(_fromAddress);
-                let balance = await getScwBalance(isSimulate, smartAccount, _fromAddress)
-                alert("balance checking____))))))"+ balance?.toString());
+                const balance = await provider.getBalance(_fromAddress);
+                // let balance = await getScwBalance(isSimulate, smartAccount, _fromAddress)
                 if (!BigNumber.from(balance).gte(amountIn)) {
                     toast.error("Not native enough balance-");
                     return;
@@ -171,7 +171,7 @@ const PortfolioContainer: React.FC = () => {
                     return;
                 }
                 const balance = await contract.balanceOf(_fromAddress);
-             
+
                 if (!BigNumber.from(balance).gte(amountIn)) {
                     toast.error("Not erc20 enough balance");
                     return;
