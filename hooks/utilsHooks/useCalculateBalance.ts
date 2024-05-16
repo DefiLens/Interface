@@ -30,7 +30,7 @@ export function useCalculatebalance() {
                 setScwBalance(_scwbalance);
             }
         } catch (error: any) {
-            console.log("useCalculatebalance:Error: " + error);
+            // console.log("useCalculatebalance:Error: " + error);
             toast.error(error);
             return;
         }

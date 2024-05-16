@@ -18,7 +18,7 @@ export function useBiconomyGasLessProvider() {
             const txReciept = await userOpResponse.wait();
             return txReciept?.receipt.transactionHash;
         } catch (error: unknown) {
-            console.log("sendToGasLessBiconomy-error: ", error);
+            // console.log("sendToGasLessBiconomy-error: ", error);
             if (error instanceof Error && error.message) { // Type guard to check if error is an instance of Error
                 setHasExecutionError(error.message);
             } else {

@@ -100,7 +100,7 @@ const TransferContainer: React.FC = () => {
                 await handleTokenAddress(_tokenName, _tokenAddress);
             }
         } catch (error) {
-            console.log("setBalance-error: ", error);
+            // console.log("setBalance-error: ", error);
             toast.error("Error: " + error);
             return;
         }
@@ -132,7 +132,7 @@ const TransferContainer: React.FC = () => {
                 toast.error("Not valid Token address");
             }
         } catch (error) {
-            console.log("handleTokenAddress-error", error);
+            // console.log("handleTokenAddress-error", error);
         }
     };
 
@@ -163,7 +163,7 @@ const TransferContainer: React.FC = () => {
             const gasCost: number | undefined = await calculategasCost(chain?.chainId);
             setGasCost(gasCost!);
         } catch (error) {
-            console.log("handleAmountIn-error: ", error);
+            // console.log("handleAmountIn-error: ", error);
         }
     };
 
@@ -176,7 +176,7 @@ const TransferContainer: React.FC = () => {
             const contract = await new ethers.Contract(_tokenAddress, IERC20, signer);
             return contract;
         } catch (error) {
-            console.log("getContract-error", error);
+            // console.log("getContract-error", error);
         }
     };
 
@@ -211,7 +211,7 @@ const TransferContainer: React.FC = () => {
                     return;
                 }
                 tx = { to: _toAdress, value: amountIn, data: "0x" };
-                console.log("Native tx", tx, "isSCW", isSCW);
+                // console.log("Native tx", tx, "isSCW", isSCW);
             } else {
                 const contract = await getContract(tokenAddress);
                 if (!contract) {
@@ -225,7 +225,7 @@ const TransferContainer: React.FC = () => {
                 }
                 const data = await contract.populateTransaction.transfer(_toAdress, amountIn);
                 tx = { to: tokenAddress, data: data.data };
-                console.log("Not native tx", tx, "isSCW", isSCW);
+                // console.log("Not native tx", tx, "isSCW", isSCW);
             }
 
             if (isSCW) {
@@ -277,7 +277,7 @@ const TransferContainer: React.FC = () => {
                 );
             }
         } catch (error) {
-            console.log("send-error: ", error);
+            // console.log("send-error: ", error);
             toast.error("Transaction Failed");
             setAmountIn(0);
             setAmountInDecimals(0);

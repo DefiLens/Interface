@@ -85,7 +85,7 @@ export function useSendSimulateTx() {
             // https://dashboard.tenderly.co/sunnyRK/project/simulator/1115b85a-73c7-44dc-abfa-3338d6ed03b5
             return simulate.simulation_results[0].simulation.id // simulation reciept
         } catch (error: unknown) {
-            console.log("sendSimulateTx-error: ", error);
+            // console.log("sendSimulateTx-error: ", error);
             if (error instanceof Error && error.message) { // Type guard to check if error is an instance of Error
                 setHasExecutionError(error.message);
             } else {

@@ -9,7 +9,7 @@ export const getProvider = async (chainId): Promise<ethers.providers.JsonRpcProv
         const newprovider: ethers.providers.JsonRpcProvider = new ethers.providers.JsonRpcProvider(ChainIdDetails[chainId].rpcURL);
         return newprovider;
     } catch (error) {
-        console.log("getProvider-error", error);
+        console.error("getProvider-error", error);
         return;
     }
 };
@@ -19,7 +19,7 @@ export const getContractInstance = async (address, abi, provider): Promise<ether
         const instance = await new ethers.Contract(address, abi, provider);
         return instance;
     } catch (error) {
-        console.log("getContractInstance-error", error);
+        console.error("getContractInstance-error", error);
         return;
     }
 };
@@ -42,7 +42,7 @@ export async function getErc20Data(token, address, spender, provider) {
         ]);
         return { name, symbol, decimals, totalSupply, balance, allowance };
     } catch (error) {
-        console.log("ERC20Data-error", error);
+        console.error("ERC20Data-error", error);
     }
 }
 
@@ -50,7 +50,7 @@ export const getErc20Balanceof = async (erc20: ethers.Contract, address: string)
     try {
         return await erc20.balanceOf(address);
     } catch (error) {
-        console.log("getErc20Balanceof-error", error);
+        console.error("getErc20Balanceof-error", error);
         return;
     }
 };
@@ -59,7 +59,7 @@ export const getErc20Decimals = async (erc20): Promise<number | undefined> => {
     try {
         return await erc20.decimals();
     } catch (error) {
-        console.log("getErc20Decimals-error", error);
+        console.error("getErc20Decimals-error", error);
         return;
     }
 };
@@ -68,7 +68,7 @@ export const getErc20Allownace = async (erc20, from, spender): Promise<BigNumber
     try {
         return await erc20.allowance(from, spender);
     } catch (error) {
-        console.log("getErc20Allownace-error", error);
+        console.error("getErc20Allownace-error", error);
         return;
     }
 };

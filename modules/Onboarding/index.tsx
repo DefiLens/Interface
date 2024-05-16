@@ -58,14 +58,14 @@ const OnboardingPage = () => {
                 return token;
             }
         });
-        console.log("filtered", filtered);
+        // console.log("filtered", filtered);
         return filtered;
     };
 
     const { mutateAsync: calculategasCost } = useCalculateGasCost();
 
     const setBalance = async (_tokenName, _tokenAddress) => {
-        console.log("------------>>.", _tokenName, _tokenAddress);
+        // console.log("------------>>.", _tokenName, _tokenAddress);
         try {
             if (_tokenName == "ethereum") {
                 let provider = await new ethers.providers.Web3Provider(web3.givenProvider);
@@ -88,7 +88,7 @@ const OnboardingPage = () => {
                 await handleTokenAddress(_tokenName, _tokenAddress);
             }
         } catch (error) {
-            console.log("setBalance-error: ", error);
+            // console.log("setBalance-error: ", error);
             toast.error("Error: " + error);
             return;
         }
@@ -112,7 +112,7 @@ const OnboardingPage = () => {
                 toast.error("Not valid Token address");
             }
         } catch (error) {
-            console.log("handleTokenAddress-error", error);
+            // console.log("handleTokenAddress-error", error);
         }
     };
     const handleAmountIn = async (_amountIn) => {
@@ -142,7 +142,7 @@ const OnboardingPage = () => {
             const gasCost: number | undefined = await calculategasCost(chain?.chainId);
             setGasCost(gasCost!);
         } catch (error) {
-            console.log("handleAmountIn-error: ", error);
+            // console.log("handleAmountIn-error: ", error);
         }
     };
 
@@ -155,7 +155,7 @@ const OnboardingPage = () => {
             const contract = await new ethers.Contract(_tokenAddress, IERC20, signer);
             return contract;
         } catch (error) {
-            console.log("getContract-error", error);
+            // console.log("getContract-error", error);
         }
     };
 
@@ -187,7 +187,7 @@ const OnboardingPage = () => {
                     return;
                 }
                 tx = { to: _toAdress, value: amountIn, data: "0x" };
-                console.log("Native tx", tx);
+                // console.log("Native tx", tx);
             } else {
                 const contract = await getContract(tokenAddress);
                 if (!contract) {
@@ -201,7 +201,7 @@ const OnboardingPage = () => {
                 }
                 const data = await contract.populateTransaction.transfer(_toAdress, amountIn);
                 tx = { to: tokenAddress, data: data.data };
-                console.log("Not native tx", tx);
+                // console.log("Not native tx", tx);
             }
 
             if (!signer) {
@@ -216,7 +216,7 @@ const OnboardingPage = () => {
             setSendtxLoading(false);
             toast.success(`Tx Succefully done: ${txReciept?.hash}`);
         } catch (error) {
-            console.log("send-error: ", error);
+            // console.log("send-error: ", error);
             toast.error("Transaction Failed");
             setAmountIn(0);
             setAmountInDecimals(0);

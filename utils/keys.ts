@@ -33,25 +33,25 @@ export const NODE_JWT_TOKEN = process.env.NEXT_PUBLIC_NODE_JWT_TOKEN
 export const get1InchUrl = (NODE_ENV: string | undefined) => {
     switch (NODE_ENV) {
       case 'production':
-        return 'https://server.defilens.tech/api/v1/general/1Inch';
+        return 'https://server.defilens.tech/api/v1/public/1Inch';
 
       case 'staging':
-        return 'https://server.defilens.tech/api/v1/general/1Inch';
+        return 'https://server.defilens.tech/api/v1/public/1Inch';
 
       case 'dev':
-        return 'http://localhost:8080/api/v1/general/1Inch';
+        return 'http://localhost:8080/api/v1/public/1Inch';
 
-      default: return 'http://localhost:8080/api/v1/general/1Inch';
+      default: return 'http://localhost:8080/api/v1/public/1Inch';
     }
   };
 
 const getBaseURL = (NODE_ENV: string | undefined) => {
     switch (NODE_ENV) {
       case 'production':
-        return 'https://server.defilens.tech/api/v1';
+      return 'https://server.defilens.tech/api/v1';
 
       case 'staging':
-        return 'https://server.defilens.tech/api/v1';
+        return 'https://backend-staging-cohr.onrender.com/api/v1';
 
       case 'dev':
         return 'http://localhost:8080/api/v1';

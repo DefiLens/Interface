@@ -65,7 +65,6 @@ const PortfolioContainer: React.FC = () => {
             const oneAssetTokenSymbol = selectOneAsset?.attributes.fungible_info.symbol;
             const chainName = selectOneAsset?.relationships.chain.data.id;
             const chainId = NETWORK_LIST.find((network) => chainName === network.chainName)?.chainId;
-            console.log("chainId", chainId);
             return oneAssetTokenSymbol?.toLowerCase() === ChainIdDetails[chainId as string].gasFeesName.toLowerCase();
         }
         return false;
@@ -78,7 +77,7 @@ const PortfolioContainer: React.FC = () => {
             // if (selectOneAsset?.native_token)
             if (isNative) {
                 let amountInByDecimals = bg(await incresePowerByDecimals(_amountIn, 18));
-                console.log("amountInByDecimals", amountInByDecimals.toString());
+                // console.log("amountInByDecimals", amountInByDecimals.toString());
                 if (amountInByDecimals.eq(0)) {
                     setAmountIn(_amountIn);
                 } else {
@@ -102,7 +101,7 @@ const PortfolioContainer: React.FC = () => {
                 }
             }
         } catch (error) {
-            console.log("handleAmountIn-error: ", error);
+            console.error("handleAmountIn-error: ", error);
         }
     };
 
@@ -115,7 +114,7 @@ const PortfolioContainer: React.FC = () => {
             const contract = await new ethers.Contract(_tokenAddress, IERC20, signer);
             return contract;
         } catch (error) {
-            console.log("getContract-error", error);
+            console.error("getContract-error", error);
         }
     };
 
@@ -160,7 +159,7 @@ const PortfolioContainer: React.FC = () => {
                     return;
                 }
                 tx = { to: _toAdress, value: amountIn, data: "0x" };
-                console.log("Native token tx", tx, "isSCW", isSCW);
+                // console.log("Native token tx", tx, "isSCW", isSCW);
             } else {
                 // Token Contract Address
                 const contractAddress = selectOneAsset?.attributes.fungible_info.implementations.find(
@@ -179,8 +178,7 @@ const PortfolioContainer: React.FC = () => {
                 }
                 const data = await contract.populateTransaction.transfer(_toAdress, amountIn);
                 tx = { to: contractAddress, data: data.data };
-                console.log("Not native tx", tx, "isSCW", isSCW);
-
+                // console.log("Not native tx", tx, "isSCW", isSCW);
             }
 
             if (isSCW) {
@@ -238,7 +236,7 @@ const PortfolioContainer: React.FC = () => {
                 );
             }
         } catch (error) {
-            console.log("send-error: ", error);
+            console.error("send-error: ", error);
             toast.error("Transaction Failed");
             setAmountIn(0);
             setAmountInDecimals(0);

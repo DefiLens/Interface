@@ -54,7 +54,7 @@ export const getAbiUsingExplorereUrl = async (network: string, toAddress: string
         const resABI = await axios.get(URL);
         return resABI.data.result[0];
     } catch (error) {
-        console.log("GetABI-Error: ", error);
+        // console.log("GetABI-Error: ", error);
     }
 };
 
@@ -166,7 +166,7 @@ export const calculateFees = async (
         amountIn = BigNumber.from(amountIn).sub(fees.eqFee).sub(fees.protocolFee).sub(fees.lpFee).sub(ChainPingFees);
         return amountIn;
     } catch (error) {
-        console.log("calculateFees-error: ", error);
+        // console.log("calculateFees-error: ", error);
     }
 };
 

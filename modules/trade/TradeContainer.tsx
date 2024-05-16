@@ -243,7 +243,7 @@ const TradeContainer: React.FC<any> = () => {
                     setSafeState(setFromTokenDecimal, fromTokendecimal, 0);
                 } else {
                     const filteredTokens = getTokenListByChainId(selectedFromNetwork.chainId, UNISWAP_TOKENS);
-                    console.log('filteredTokens: ', filteredTokens)
+                    // console.log('filteredTokens: ', filteredTokens)
                     const newToken: iTokenData = {
                         "chainId": Number(selectedFromNetwork.chainId),
                         "address": ETH_ADDRESS,
@@ -265,7 +265,7 @@ const TradeContainer: React.FC<any> = () => {
             if (selectedToProtocol) {
                 if (selectedToProtocol == "erc20") {
                     const filteredTokens = getTokenListByChainId(selectedToNetwork.chainId, UNISWAP_TOKENS);
-                    console.log('filteredTokens: ', filteredTokens)
+                    // console.log('filteredTokens: ', filteredTokens)
                     const newToken: iTokenData = {
                         "chainId": Number(selectedToNetwork.chainId),
                         "address": ETH_ADDRESS,
@@ -358,7 +358,7 @@ const TradeContainer: React.FC<any> = () => {
                             .tokenAddresses[_fromToken]
                         : erc20Address[0].address;
 
-                console.log(_fromToken, tokenAddress)
+                // console.log(_fromToken, tokenAddress)
                 erc20 = await getContractInstance(tokenAddress, IERC20, provider);
                 fromTokendecimal = await getErc20Decimals(erc20);
                 setSafeState(setFromTokenDecimal, fromTokendecimal, 0);
@@ -366,7 +366,7 @@ const TradeContainer: React.FC<any> = () => {
                 tokenAddress = ETH_ADDRESS
                 fromTokendecimal = 18;
                 setSafeState(setFromTokenDecimal, fromTokendecimal, 0);
-                console.log(_fromToken, tokenAddress)
+                // console.log(_fromToken, tokenAddress)
             }
 
             let scwAddress: any;
@@ -425,7 +425,7 @@ const TradeContainer: React.FC<any> = () => {
             if(!maxBal) return;
             MaxBalance = await decreasePowerByDecimals(maxBal?.toString(), fromTokendecimal);
 
-            console.log("tokenBalances", tokenBalances, _fromToken)
+            // console.log("tokenBalances", tokenBalances, _fromToken)
             if (hasTokenBalance(_fromToken)) {
                 setMaxBalance(getTokenBalance(_fromToken).toString());
             } else {
@@ -435,7 +435,7 @@ const TradeContainer: React.FC<any> = () => {
             setIsmaxBalanceLoading(false);
         } catch (error: any) {
             setIsmaxBalanceLoading(false);
-            console.log("onChangeFromToken ~ error:", error);
+            // console.log("onChangeFromToken ~ error:", error);
         }
     };
 
@@ -547,34 +547,34 @@ const TradeContainer: React.FC<any> = () => {
         try {
             await handleSelectFromNetwork(tempToNetwork);
         } catch (err) {
-            console.log("Swap: handleSelectFromNetwork: Error:", err);
+            // console.log("Swap: handleSelectFromNetwork: Error:", err);
         }
         try {
             await handleSelectToNetwork(tempFromNetwork);
         } catch (err) {
-            console.log("Swap: handleSelectToNetwork: Error:", err);
+            // console.log("Swap: handleSelectToNetwork: Error:", err);
         }
 
         try {
             await onChangeFromProtocol(tempToProtocol);
         } catch (err) {
-            console.log("Swap: onChangeFromProtocol: Error:", err);
+            // console.log("Swap: onChangeFromProtocol: Error:", err);
         }
         try {
             await onChangeToProtocol(tempFromProtocol);
         } catch (err) {
-            console.log("Swap: onChangeToProtocol: Error:", err);
+            // console.log("Swap: onChangeToProtocol: Error:", err);
         }
 
         try {
             await onChangeFromToken(tempToToken);
         } catch (err) {
-            console.log("Swap: onChangeFromToken: Error:", err);
+            // console.log("Swap: onChangeFromToken: Error:", err);
         }
         try {
             await onChangeToToken(tempFromToken);
         } catch (err) {
-            console.log("Swap: onChangeToToken: Error:", err);
+            // console.log("Swap: onChangeToToken: Error:", err);
         }
     };
 
@@ -803,9 +803,9 @@ const TradeContainer: React.FC<any> = () => {
             toast.error("Something went wrong, please try again.");
 
             if (error.message) {
-                console.log("sendBatch: Error", error.message);
+                // console.log("sendBatch: Error", error.message);
             } else {
-                console.log("sendBatch: Error", error);
+                // console.log("sendBatch: Error", error);
             }
             return;
         }
@@ -923,13 +923,13 @@ const TradeContainer: React.FC<any> = () => {
             }
             if (!amountIn && fromTokenDecimal) {
                 toast.error("Select Token amount");
-                console.log(amount, fromTokenDecimal);
+                // console.log(amount, fromTokenDecimal);
                 setAddToBatchLoading(false);
                 return;
             }
             if (!amount && fromTokenDecimal) {
                 toast.error("select amount");
-                console.log(amount, fromTokenDecimal);
+                // console.log(amount, fromTokenDecimal);
                 setAddToBatchLoading(false);
                 return;
             }
@@ -937,7 +937,7 @@ const TradeContainer: React.FC<any> = () => {
                 selectedFromNetwork.chainId
             );
 
-            console.log(amount, "AMount in");
+            // console.log(amount, "AMount in");
             const _tempAmount = BigNumber.from(await incresePowerByDecimals(amount, fromTokenDecimal).toString());
             let refinaceData: tRefinanceResponse | undefined;
             let txArray;
@@ -1035,9 +1035,9 @@ const TradeContainer: React.FC<any> = () => {
             setShowBatchList(true);
 
             if (error.message) {
-                console.log("sendBatch: Error", error.message);
+                // console.log("sendBatch: Error", error.message);
             } else {
-                console.log("sendBatch: Eerror", error);
+                // console.log("sendBatch: Eerror", error);
             }
             return;
         }
@@ -1071,10 +1071,10 @@ const TradeContainer: React.FC<any> = () => {
         const fetchTokenData = async (_tokenAddress: string) => {
             try {
                 setOraclePriceLoading(true);
-                const response = await axiosInstance.get(`/general/ze/token-data/${_tokenAddress}`);
+                const response = await axiosInstance.get(`/token/detail/${_tokenAddress}`);
 
                 setOraclePrice(response?.data?.market_data?.price);
-                console.log(response?.data);
+                // console.log(response?.data);
                 setOraclePriceLoading(false);
             } catch (error) {
                 console.error("Error fetching token data:", error);

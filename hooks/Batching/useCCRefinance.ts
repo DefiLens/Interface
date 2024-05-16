@@ -55,7 +55,7 @@ export function useCCRefinance() {
         amountIn
     }: tRefinance): Promise<tRefinanceResponse | undefined> {
 
-        console.log(">>>>>>>>>>", selectedFromNetwork.chainName, "- To -", selectedToNetwork.chainName);
+        // console.log(">>>>>>>>>>", selectedFromNetwork.chainName, "- To -", selectedToNetwork.chainName);
         await onChangeselectedToProtocol(selectedToNetwork)
         // console.log("--------------useCCRefinance", toTokensData)
 
@@ -163,7 +163,7 @@ export function useCCRefinance() {
                     } as tApprove);
                     if (approveData) tempTxs.push(approveData);
                 }
-                console.log("nativeTokenIn", nativeTokenIn)
+                // console.log("nativeTokenIn", nativeTokenIn)
                 swapData = await oneInchSwap({
                     tokenIn: nativeTokenIn,
                     tokenOut: tokensByNetworkForCC[selectedFromNetwork.chainId].usdc,
@@ -335,9 +335,9 @@ export function useCCRefinance() {
             return { txArray: tempTxs, batchFlow: batchFlows, value: extraValue, simulationHash: simulationHash, amountOut: amountOut };
         } catch (error: any) {
             if (error.message) {
-                console.log("refinanceForCC: Error", error.message);
+                // console.log("refinanceForCC: Error", error.message);
             } else {
-                console.log("refinanceForCC: Error", error);
+                // console.log("refinanceForCC: Error", error);
             }
             return;
         }

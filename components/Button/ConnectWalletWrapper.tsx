@@ -1,4 +1,3 @@
-import { memo } from "react";
 import Image from "next/image";
 import { ConnectWallet } from "@thirdweb-dev/react";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
@@ -15,7 +14,7 @@ const WalletConnected = () => {
     );
 };
 
-const ConnectWalletWrapper = memo(() => {
+const ConnectWalletWrapper = () => {
     return (
         <ConnectWallet
             theme={"light"}
@@ -37,6 +36,6 @@ const ConnectWalletWrapper = memo(() => {
             switchToActiveChain={true}
         />
     );
-});
+};
 
 export default ConnectWalletWrapper;
