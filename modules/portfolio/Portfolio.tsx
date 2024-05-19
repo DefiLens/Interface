@@ -67,11 +67,17 @@ const Portfolio: React.FC<tPortfolio> = ({ smartAccountAddress, handleFetchPorfo
                                     ) : (
                                         <>
                                             {/* <h1 className="text-4xl md:text-5xl font-bold">${getTotalNetworth}</h1> */}
-                                            <CountUp start={0} end={Number(getTotalNetworth)} prefix="$" decimals={4} separator="," duration={1.5}>
+                                            <CountUp
+                                                start={0}
+                                                end={Number(getTotalNetworth)}
+                                                prefix="$"
+                                                decimals={4}
+                                                separator=","
+                                                duration={1.5}
+                                                delay={0}
+                                            >
                                                 {({ countUpRef }) => (
-                                                    <span className="text-4xl md:text-5xl font-bold" ref={countUpRef}>
-                                                        ${getTotalNetworth}
-                                                    </span>
+                                                    <span className="text-4xl md:text-5xl font-bold" ref={countUpRef} />
                                                 )}
                                             </CountUp>
                                         </>
