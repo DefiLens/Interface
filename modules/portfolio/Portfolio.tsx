@@ -1,20 +1,20 @@
-import { useMemo, useState } from "react";
+// Library Imports
+import { useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
-
 import { startCase } from "lodash";
 import { useAddress } from "@thirdweb-dev/react";
 import { LiaWalletSolid } from "react-icons/lia";
+import CountUp from "react-countup";
+import AvatarIcon from "./Avatar";
+// Store, Util, Type Imports
 import { iPortfolio, usePortfolioStore } from "../../store/Portfolio";
 import { ChainIdDetails } from "../../utils/data/network";
-import { defaultBlue, metamask } from "../../assets/images";
-import { tPortfolio, tTxnHistory } from "./types";
-
+import { tPortfolio } from "./types";
 import OneAsset from "./OneAsset";
 import ChainSelection from "../../components/ChainSelection";
 import OneAssetSkeleton from "../../components/skeleton/OneAssetSkeleton";
 import CopyButton from "../../components/common/CopyButton";
-
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import { ConnectWalletWrapper } from "../../components/Button";
 
@@ -24,6 +24,7 @@ const Portfolio: React.FC<tPortfolio> = ({ smartAccountAddress, handleFetchPorfo
     const address = useAddress();
 
     const getTotalNetworth = useMemo(() => {
+        if (!chainData) return 0;
         return chainData
             ?.reduce(
                 (
@@ -54,71 +55,72 @@ const Portfolio: React.FC<tPortfolio> = ({ smartAccountAddress, handleFetchPorfo
             {smartAccountAddress && (
                 <>
                     {/* Account Details */}
-                    <div className="max-w-6xl w-full flex flex-row justify-between items-center gap-3 bg-N0 shadow-lg rounded-lg p-3">
-                        <div className="w-full flex justify-between items-center gap-3 text-start ">
+                    <div className="max-w-6xl w-full flex flex-row justify-between items-center gap-3 bg-N0 shadow-lg rounded-lg px-4 py-6">
+                        <div className="w-full flex flex-col md:flex-row justify-between items-start lg:items-center gap-3 text-start">
                             {/* User Image and total Worth of tokens */}
-                            <div className="flex items-center gap-6">
-                                <Image
-                                    height={100}
-                                    width={100}
-                                    src={metamask}
-                                    alt=""
-                                    className="h-40 w-40 rounded-lg"
-                                />
-                                <div className="flex flex-col gap-3 p-2 text-transparent bg-clip-text bg-GR1">
-                                    <h1 className=" text-4xl font-bold ">Total Networth</h1>
+                            <div className="flex flex-row items-center gap-6">
+                                <AvatarIcon address={address ?? ""} />
+                                <div className="flex flex-col gap-1 md:gap-3 p-2 text-transparent bg-clip-text bg-GR1">
+                                    <h1 className="text-xl md:text-3xl font-bold">Total Networth</h1>
                                     {isLoading ? (
-                                        <div className="animate-pulse bg-gray-300 h-6 w-full rounded-md"></div>
+                                        <div className="animate-pulse bg-gray-300 h-6 w-full rounded-md" />
                                     ) : (
-                                        <h1 className="text-4xl font-bold">${getTotalNetworth}</h1>
+                                        <>
+                                            {/* <h1 className="text-4xl md:text-5xl font-bold">${getTotalNetworth}</h1> */}
+                                            <CountUp
+                                                start={0}
+                                                end={Number(getTotalNetworth)}
+                                                prefix="$"
+                                                decimals={4}
+                                                separator=","
+                                                duration={1.5}
+                                                delay={0}
+                                            >
+                                                {({ countUpRef }) => (
+                                                    <span className="text-4xl md:text-5xl font-bold" ref={countUpRef} />
+                                                )}
+                                            </CountUp>
+                                        </>
                                     )}
-                                    <Link href="/portfolio/batch-history" className="">
-                                        See Batch History
-                                    </Link>
                                 </div>
                             </div>
 
                             {/* Account Address */}
-                            <div className="flex flex-col justify-start items-start gap-1 text-B100 font-bold text-2xl">
-                                <div className="w-full h-40 flex flex-col justify-center items-start gap-6 text-B200 ">
-                                    <button className="w-full relative flex justify-between items-center gap-3">
-                                        <div className="flex flex-col justify-center items-start">
-                                            <span className="text-B100 text-base font-medium">
-                                                {smartAccount && smartAccountAddress}
-                                            </span>
-                                            <span className="text-B100 text-xs">
-                                                {smartAccount &&
-                                                    "SmartAccount : (" +
-                                                        scwBalance +
-                                                        " " +
-                                                        `${
-                                                            ChainIdDetails[selectedNetwork.chainId.toString()]
-                                                                ?.gasFeesName
-                                                        }` +
-                                                        ")"}
-                                            </span>
-                                        </div>
-                                        <CopyButton copy={smartAccountAddress} />
-                                    </button>
-                                    <button className="w-full flex justify-between items-center gap-3">
-                                        <div className="flex flex-col justify-center items-start">
-                                            <span className="text-B100 text-base font-medium">
-                                                {smartAccount && address}
-                                            </span>
-                                            <span className="text-B100 text-xs">
-                                                {smartAccount &&
-                                                    "EOA : (" +
-                                                        eoaBalance +
-                                                        " " +
-                                                        `${
-                                                            ChainIdDetails[selectedNetwork.chainId.toString()]
-                                                                ?.gasFeesName
-                                                        }` +
-                                                        ")"}
-                                            </span>
-                                        </div>
-                                        <CopyButton copy={address ?? ""} />
-                                    </button>
+                            <div className="w-full max-w-full sm:max-w-fit flex flex-col sm:flex-row md:flex-col lg:flex-row justify-center items-start gap-10 text-B200 font-bold">
+                                <div className="w-full relative flex justify-between items-center p-4 rounded bg-zinc-50 gap-3">
+                                    <div className="flex flex-col justify-center items-start">
+                                        <span className="text-sm">Smart Account</span>
+                                        <span className="text-B100 text-base font-medium inline-flex items-center gap-6">
+                                            {smartAccount &&
+                                                smartAccountAddress.slice(0, 8) + "..." + smartAccountAddress.slice(-8)}
+                                            <CopyButton copy={smartAccountAddress} />
+                                        </span>
+                                        <span className="text-B100 text-2xl">
+                                            {smartAccount &&
+                                                Number(scwBalance).toLocaleString("en-US") +
+                                                    " " +
+                                                    `${startCase(
+                                                        ChainIdDetails[selectedNetwork.chainId.toString()]?.gasFeesName
+                                                    )}`}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div className="w-full flex justify-between items-center p-4 rounded bg-zinc-50 gap-3">
+                                    <div className="flex flex-col justify-center items-start">
+                                        <span className="text-sm">EOA</span>
+                                        <span className="text-B100 text-base font-medium inline-flex items-center gap-6">
+                                            {smartAccount && address?.slice(0, 8) + "..." + address?.slice(-8)}
+                                            <CopyButton copy={address ?? ""} />
+                                        </span>
+                                        <span className="text-B100 text-2xl">
+                                            {smartAccount &&
+                                                Number(eoaBalance).toLocaleString("en-US") +
+                                                    " " +
+                                                    `${startCase(
+                                                        ChainIdDetails[selectedNetwork.chainId.toString()]?.gasFeesName
+                                                    )}`}
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
