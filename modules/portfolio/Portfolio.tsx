@@ -1,23 +1,22 @@
-import { useMemo, useState } from "react";
+// Library Imports
+import { useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
-
 import { startCase } from "lodash";
 import { useAddress } from "@thirdweb-dev/react";
 import { LiaWalletSolid } from "react-icons/lia";
+import CountUp from "react-countup";
+import AvatarIcon from "./Avatar";
+// Store, Util, Type Imports
 import { iPortfolio, usePortfolioStore } from "../../store/Portfolio";
 import { ChainIdDetails } from "../../utils/data/network";
-import { defaultBlue, metamask } from "../../assets/images";
-import { tPortfolio, tTxnHistory } from "./types";
-
+import { tPortfolio } from "./types";
 import OneAsset from "./OneAsset";
 import ChainSelection from "../../components/ChainSelection";
 import OneAssetSkeleton from "../../components/skeleton/OneAssetSkeleton";
 import CopyButton from "../../components/common/CopyButton";
-
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import { ConnectWalletWrapper } from "../../components/Button";
-import AvatarIcon from "./Avatar";
 
 const Portfolio: React.FC<tPortfolio> = ({ smartAccountAddress, handleFetchPorfolioData, send, handleAmountIn }) => {
     const { isSCW, chainData, isLoading, setIsSCW }: iPortfolio = usePortfolioStore((state) => state);
@@ -60,26 +59,23 @@ const Portfolio: React.FC<tPortfolio> = ({ smartAccountAddress, handleFetchPorfo
                         <div className="w-full flex flex-col md:flex-row justify-between items-start lg:items-center gap-3 text-start">
                             {/* User Image and total Worth of tokens */}
                             <div className="flex flex-row items-center gap-6">
-                                {/* <Image
-                                    height={100}
-                                    width={100}
-                                    src={metamask}
-                                    alt=""
-                                    className="h-40 w-40 rounded-lg"
-                                /> */}
                                 <AvatarIcon address={address ?? ""} />
                                 <div className="flex flex-col gap-1 md:gap-3 p-2 text-transparent bg-clip-text bg-GR1">
                                     <h1 className="text-xl md:text-3xl font-bold">Total Networth</h1>
                                     {isLoading ? (
-                                        <div className="animate-pulse bg-gray-300 h-6 w-full rounded-md"></div>
+                                        <div className="animate-pulse bg-gray-300 h-6 w-full rounded-md" />
                                     ) : (
-                                        <h1 className="text-4xl md:text-5xl font-bold">${getTotalNetworth}</h1>
+                                        <>
+                                            {/* <h1 className="text-4xl md:text-5xl font-bold">${getTotalNetworth}</h1> */}
+                                            <CountUp start={0} end={Number(getTotalNetworth)} prefix="$" decimals={4} separator="," duration={1.5}>
+                                                {({ countUpRef }) => (
+                                                    <span className="text-4xl md:text-5xl font-bold" ref={countUpRef}>
+                                                        ${getTotalNetworth}
+                                                    </span>
+                                                )}
+                                            </CountUp>
+                                        </>
                                     )}
-                                    {/* <Link href="/portfolio/batch-history" className="">
-                                        <button className="px-4 py-[10px] bg-slate-700 hover:shadow shadow:shadow-xl text-white rounded-lg text-base font-semibold leading-5">
-                                            See Batch History
-                                        </button>
-                                    </Link> */}
                                 </div>
                             </div>
 
