@@ -87,6 +87,7 @@ const Header: React.FC<tHeader> = ({ switchOnSpecificChain }) => {
                         </Link>
                     </div>
                     <div className="hidden lg:flex lg:gap-x-8">
+
                         {NavigationList.map((item) => (
                             <Link
                                 key={item.title}
