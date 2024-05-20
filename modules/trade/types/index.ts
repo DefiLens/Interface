@@ -15,13 +15,13 @@ export type tTrade = {
     sendSingleBatchToList: (isSCW: any) => void;
     handleExecuteMethod: () => void;
     ExecuteAllBatches: (isSCW: any, whichProvider: string) => void;
-    buildRebalance: () => void;
+    buildRebalance?: () => void;
     closeFromSelectionMenu: () => void;
     closeToSelectionMenu: () => void;
-    createSession: () => void;
-    erc20Transfer: () => void;
+    createSession?: () => void;
+    erc20Transfer?: () => void;
     processRebalancing: () => void;
-    handleSelectedTokenAddress: (_tokenAddress: string) => void;
+    handleSelectedTokenAddress?: (_tokenAddress: string) => void;
 };
 
 export type tBatchSelectionSection = {

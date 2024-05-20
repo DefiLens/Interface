@@ -19,7 +19,7 @@ interface iProtocolSelectionProps {
     selectedProtocol: string;
     onChangeToken: (protocol: string) => void;
     protocolNames: iProtocolNames;
-    handleSelectedTokenAddress: (_tokenAddress: string) => void;
+    handleSelectedTokenAddress?: (_tokenAddress: string) => void;
 }
 
 const ProtocolSelection: React.FC<iProtocolSelectionProps> = ({

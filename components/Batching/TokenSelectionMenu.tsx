@@ -25,7 +25,7 @@ interface TokenSelectionMenuProps {
     protocolNames: iProtocolNames;
     title?: string;
     description?: string;
-    handleSelectedTokenAddress: (_tokenAddress: string) => void;
+    handleSelectedTokenAddress?: (_tokenAddress: string) => void;
 }
 
 const TokenSelectionMenu: React.FC<TokenSelectionMenuProps> = ({

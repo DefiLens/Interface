@@ -19,7 +19,7 @@ interface PropTypes {
               [key: string]: string;
           }
         | undefined;
-    handleSelectedTokenAddress: (_tokenAddress: string) => void;
+    handleSelectedTokenAddress?: (_tokenAddress: string) => void;
 }
 
 const Token: React.FC<PropTypes> = ({
