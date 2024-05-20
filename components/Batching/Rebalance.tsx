@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { iRebalance, iSelectedNetwork, iTrading, useRebalanceStore, useTradingStore } from "../../store/TradingStore";
 import { IoIosAdd } from "react-icons/io";
 import { RxCross2 } from "react-icons/rx";
@@ -25,7 +25,6 @@ export const Rebalance: React.FC = () => {
     }: iRebalance = useRebalanceStore((state) => state);
 
     const { addToBatchLoading }: iTrading = useTradingStore((state) => state);
-
     const handleTokenSelect = (
         index: number,
         network: iSelectedNetwork,
@@ -43,9 +42,16 @@ export const Rebalance: React.FC = () => {
             toast.error("wait, tx loading");
             return;
         }
+
         addNewEmptyData();
+
+        if (!splitEqually) {
+            return;
+        }
+
         const numTokens = rebalanceData.length + 1;
-        const equalPercentage = 100 / numTokens;
+        const equalPercentage = parseFloat((100 / numTokens).toFixed(2)); // Round to one decimal place
+        console.log(equalPercentage, Array(numTokens).fill(equalPercentage));
         setPercentages(Array(numTokens).fill(equalPercentage));
     };
 
@@ -75,8 +81,12 @@ export const Rebalance: React.FC = () => {
         }
         setSplitEqually(event.target.checked);
         if (event.target.checked) {
+            // const numTokens = rebalanceData.length;
+            // const equalPercentage = 100 / numTokens;
+            // setPercentages(Array(numTokens).fill(equalPercentage));
+
             const numTokens = rebalanceData.length;
-            const equalPercentage = 100 / numTokens;
+            const equalPercentage = parseFloat((100 / numTokens).toFixed(2)); // Round to one decimal place
             setPercentages(Array(numTokens).fill(equalPercentage));
         }
     };
@@ -104,6 +114,28 @@ export const Rebalance: React.FC = () => {
             addNewEmptyData();
         }
     }, [isRebalance, clearRebalanceData]);
+
+    const [showError, setShowError] = useState<boolean>(false);
+    const [hasTokenPercentage, setHasTokenPercentage] = useState<boolean>(false);
+
+    type Percentage = number;
+    const validateTotalPercentage = (percentages: Percentage[], rebalanceData: any[]): boolean => {
+        const total = rebalanceData.reduce((sum, percentage) => sum + percentage.percentage, 0);
+        if (total < 99.5 || total > 100) {
+            return false;
+        }
+
+        const hasAllTokens = rebalanceData.every((token, index) => percentages[index] > 0);
+        return hasAllTokens;
+    };
+    const validatePercentageExists = (data: any[]): boolean => {
+        return data.every((item) => typeof item.percentage === "number" && item.percentage > 0);
+    };
+
+    useEffect(() => {
+        setShowError(!validateTotalPercentage(percentages, rebalanceData));
+        setHasTokenPercentage(!validatePercentageExists(rebalanceData));
+    }, [percentages, rebalanceData]);
 
     return (
         <div className="w-full flex flex-col justify-center items-center">
@@ -134,6 +166,16 @@ export const Rebalance: React.FC = () => {
                             )}
                         </div>
                     ))}
+                    {showError && (
+                        <div className="w-full bg-[rgba(255,0,0,.2)] rounded-md p-2 text-N0 text-center">
+                            Total percentage must be approximately 100%
+                        </div>
+                    )}
+                    {hasTokenPercentage && (
+                        <div className="w-full bg-[rgba(255,0,0,.2)] rounded-md p-2 text-N0 text-center">
+                            Each token must have a percentage assigned
+                        </div>
+                    )}
 
                     <div className="flex justify-between items-center w-full mt-2">
                         <div className="inline-flex items-center relative">

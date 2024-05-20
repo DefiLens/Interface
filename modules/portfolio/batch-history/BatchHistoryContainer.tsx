@@ -10,7 +10,7 @@ const BatchHistoryContainer = () => {
     const { smartAccountAddress }: iGlobal = useGlobalStore((state) => state);
     const { chainName }: iPortfolio = usePortfolioStore((state) => state);
     const [transactions, setTransactions] = useState<iBatchHistory[]>([]);
-    const [isSimulation, setIsSimulation] = useState<boolean>(false);
+    const [isSimulation, setIsSimulation] = useState<boolean>(true);
 
     const fetchTransactions = async () => {
         try {

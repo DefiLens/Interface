@@ -119,7 +119,6 @@ const RebalanceTokenSelection: FC<iRebalanceTokenSelection> = ({
         }
 
         setShowSelectionMenu((prevIndex) => {
-            // console.log("prevIndex selection menu", prevIndex);
             return prevIndex === index ? null : index;
         });
     };

@@ -62,6 +62,7 @@ const Trade: React.FC<tTrade> = ({
         showReviewModal,
         oraclePrice,
         oraclePriceLoading,
+        individualBatch,
     }: iTrading = useTradingStore((state) => state);
 
     const { scwBalance }: iGlobal = useGlobalStore((state) => state);
@@ -129,8 +130,6 @@ const Trade: React.FC<tTrade> = ({
                         sendSingleBatchToList={sendSingleBatchToList}
                         handleExecuteMethod={handleExecuteMethod}
                         processRebalancing={processRebalancing}
-                        oraclePrice={oraclePrice}
-                        oraclePriceLoading={oraclePriceLoading}
                     />
                     {noScwBalance && address && (
                         <button
@@ -176,7 +175,7 @@ const Trade: React.FC<tTrade> = ({
                 </ModalWrapper>
 
                 {/* Batching List */}
-                {selectedFromNetwork.chainId && showBatchList && (
+                {selectedFromNetwork.chainId && showBatchList && individualBatch.length > 0 && (
                     <BatchingListSection removeBatch={removeBatch} toggleShowBatchList={toggleShowBatchList} />
                 )}
             </div>

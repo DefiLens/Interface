@@ -50,6 +50,7 @@ const BatchSelectionSection: React.FC<tBatchSelectionSection> = ({
         setSelectedExecuteMethod,
     }: iTrading = useTradingStore((state) => state);
 
+    const { isRebalance, setIsRebalance, rebalanceData, percentages }: iRebalance = useRebalanceStore((state) => state);
     const { smartAccount }: iGlobal = useGlobalStore((state) => state);
 
     const [selectedOption, setSelectedOption] = useState<string>("");
@@ -70,7 +71,6 @@ const BatchSelectionSection: React.FC<tBatchSelectionSection> = ({
         }
     }, [ExecutionMethodsList]);
 
-    const { isRebalance, setIsRebalance, rebalanceData }: iRebalance = useRebalanceStore((state) => state);
 
     const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (addToBatchLoading) {
@@ -110,13 +110,6 @@ const BatchSelectionSection: React.FC<tBatchSelectionSection> = ({
         setIsOneBatchBtnClickable(isButtonClickable);
     }, [selectedFromProtocol, selectedFromToken, amountIn, selectedToProtocol, selectedToToken]);
 
-    // useEffect(() => {
-    //     const areAllObjectsFilled =
-    //         individualBatch.length > 0 &&
-    //         individualBatch.every((object) => Object.values(object).every((value) => value !== ""));
-    //     setIsExecuteBtnClickable(areAllObjectsFilled);
-    // }, [individualBatch]);
-
     const handleShowFromSelectionMenu = () => {
         if (addToBatchLoading) {
             toast.error("wait, tx loading");
@@ -131,6 +124,28 @@ const BatchSelectionSection: React.FC<tBatchSelectionSection> = ({
         }
         setShowToSelectionMenu(true);
     };
+
+    const [showError, setShowError] = useState<boolean>(false);
+    const [hasTokenPercentage, setHasTokenPercentage] = useState<boolean>(false);
+
+    type Percentage = number;
+    const validateTotalPercentage = (percentages: Percentage[], rebalanceData: any[]): boolean => {
+        const total = rebalanceData.reduce((sum, percentage) => sum + percentage.percentage, 0);
+        if (total < 99.5 || total > 100) {
+            return false;
+        }
+
+        const hasAllTokens = rebalanceData.every((token, index) => percentages[index] > 0);
+        return hasAllTokens;
+    };
+    const validatePercentageExists = (data: any[]): boolean => {
+        return data.every((item) => typeof item.percentage === "number" && item.percentage > 0);
+    };
+
+    useEffect(() => {
+        setShowError(!validateTotalPercentage(percentages, rebalanceData));
+        setHasTokenPercentage(!validatePercentageExists(rebalanceData));
+    }, [percentages, rebalanceData]);
 
     return (
         <div className="w-full mx-auto flex flex-col gap-5 bg-gradient-to-br from-[#7339FD] via-[#56B0F6] to-[#4DD4F4] rounded-2xl shadow-lg border lg:shadow-xl">
@@ -319,7 +334,7 @@ const BatchSelectionSection: React.FC<tBatchSelectionSection> = ({
                                 handleClick={() => processRebalancing()}
                                 isLoading={addToBatchLoading}
                                 customStyle=""
-                                disabled={!isRebalanceBtnClickable || addToBatchLoading}
+                                disabled={!isRebalanceBtnClickable || addToBatchLoading || showError || hasTokenPercentage}
                                 innerText="Rebalance"
                             />
                         ) : (
