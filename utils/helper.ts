@@ -367,6 +367,6 @@ export const formatDate = (dateString: Date | undefined) => {
 export const getScwBalance = async (isSimulate: boolean, smartAccount, scwAddress) => {
     // const scw = isSimulate ? "0x9Ce935D780424FB795bef7E72697f263A8258fAA" : scwAddress;
     const scw = scwAddress;
-    let _scwbalance: BigNumberish | undefined = await smartAccount.provider.getBalance(scwAddress);
+    let _scwbalance: BigNumberish | undefined = await smartAccount.rpcProvider.getBalance(scwAddress);
     return _scwbalance;
 }

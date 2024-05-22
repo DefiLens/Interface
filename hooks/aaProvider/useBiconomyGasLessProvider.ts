@@ -2,7 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import { iTrading, useTradingStore } from "../../store/TradingStore";
-import { IHybridPaymaster, SponsorUserOperationDto, PaymasterMode } from "@biconomy/paymaster";
+import { IHybridPaymaster, SponsorUserOperationDto, PaymasterMode } from "@biconomy/account";
 
 export function useBiconomyGasLessProvider() {
     const { smartAccount }: iGlobal = useGlobalStore((state) => state);
@@ -18,7 +18,6 @@ export function useBiconomyGasLessProvider() {
             const txReciept = await userOpResponse.wait();
             return txReciept?.receipt.transactionHash;
         } catch (error: unknown) {
-            // console.log("sendToGasLessBiconomy-error: ", error);
             if (error instanceof Error && error.message) { // Type guard to check if error is an instance of Error
                 setHasExecutionError(error.message);
             } else {

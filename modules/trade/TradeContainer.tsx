@@ -3,16 +3,16 @@ import { useEffect, useState } from "react";
 import { ethers, BigNumber, Signer } from "ethers";
 import { toast } from "react-hot-toast";
 import { BigNumber as bg } from "bignumber.js";
-import { Bundler, IBundler } from "@biconomy/bundler";
 import { useAddress, useSigner } from "@thirdweb-dev/react";
-import { BiconomyPaymaster, IPaymaster } from "@biconomy/paymaster";
-import { BiconomySmartAccountV2, DEFAULT_ENTRYPOINT_ADDRESS } from "@biconomy/account";
 import {
     DEFAULT_ECDSA_OWNERSHIP_MODULE,
     DEFAULT_SESSION_KEY_MANAGER_MODULE,
     ECDSAOwnershipValidationModule,
     SessionKeyManagerModule,
-} from "@biconomy/modules";
+    BiconomySmartAccountV2, DEFAULT_ENTRYPOINT_ADDRESS,
+    BiconomyPaymaster, IPaymaster,
+    Bundler, IBundler
+} from "@biconomy/account";
 
 // Component, Util Imports
 import Trade from "./Trade";
@@ -419,8 +419,8 @@ const TradeContainer: React.FC<any> = () => {
                 );
             } else {
                 let scw = smartAccountAddress ? smartAccountAddress : scwAddress.address
-                let scwProvider = smartAccountAddress ? smartAccount.provider : biconomySmartAccount.provider
-                maxBal = await scwProvider?.getBalance(scw)
+                // let scwProvider = smartAccountAddress ? smartAccount.provider : biconomySmartAccount.provider
+                maxBal = await provider?.getBalance(scw)
             }
             if(!maxBal) return;
             MaxBalance = await decreasePowerByDecimals(maxBal?.toString(), fromTokendecimal);

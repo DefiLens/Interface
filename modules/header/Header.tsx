@@ -11,7 +11,7 @@ import { HiBars3 } from "react-icons/hi2";
 import { tHeader } from "./types";
 import useClickOutside from "../../hooks/useClickOutside";
 import { ChainIdDetails, NETWORK_LIST, SUPPORTED_NETWORKS } from "../../utils/data/network";
-import { NavigationList } from "../../utils/data/navigation";
+import { NavigationList } from "../../utils/constants";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import toast from "react-hot-toast";
 import CopyButton from "../../components/common/CopyButton";
@@ -86,14 +86,20 @@ const Header: React.FC<tHeader> = ({ switchOnSpecificChain }) => {
                             <Image src={logoLight} width={150} height={150} alt="defilens logo" />
                         </Link>
                     </div>
-                    <div className="hidden lg:flex lg:gap-x-12">
-                        {NavigationList.map((item, index) => (
+                    <div className="hidden lg:flex lg:gap-x-8">
+
+                        {NavigationList.map((item) => (
                             <Link
                                 key={item.title}
                                 href={item.route}
-                                className="flex flex-row transition-colors duration-200 rounded-full justify-between items-center gap-1"
+                                className="flex flex-row transition-colors duration-200 rounded-full justify-between items-center gap-1 group"
                             >
-                                <span className={cn("p-2 rounded-full", pathname == item.route && "bg-purple-100")}>
+                                <span
+                                    className={cn(
+                                        "p-2 rounded-full group-hover:bg-purple-100 transition-colors duration-200",
+                                        pathname == item.route && "bg-purple-100"
+                                    )}
+                                >
                                     {item.icon && <Image src={item.icon} width={20} height={20} alt={item.title} />}
                                 </span>
                                 <span
@@ -143,9 +149,9 @@ const Header: React.FC<tHeader> = ({ switchOnSpecificChain }) => {
                                                 <div className="flex flex-col justify-center items-start">
                                                     <span className="text-B200 text-base font-medium">
                                                         {smartAccount &&
-                                                            smartAccountAddress.slice(0, 13) +
+                                                            smartAccountAddress.slice(0, 8) +
                                                                 "..." +
-                                                                smartAccountAddress.slice(-3)}
+                                                                smartAccountAddress.slice(-5)}
                                                     </span>
                                                     <span className="text-B100 text-xs">
                                                         {smartAccount &&
@@ -167,7 +173,7 @@ const Header: React.FC<tHeader> = ({ switchOnSpecificChain }) => {
                                                     <span className="text-B200 text-base font-medium">
                                                         {smartAccount &&
                                                             address &&
-                                                            address.slice(0, 13) + "..." + address.slice(-3)}
+                                                            address.slice(0, 8) + "..." + address.slice(-5)}
                                                     </span>
                                                     <span className="text-B100 text-xs">
                                                         {smartAccount &&

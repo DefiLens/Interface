@@ -4,8 +4,8 @@ import toast from "react-hot-toast";
 import { BigNumber as bg } from "bignumber.js";
 import { useMutation } from "@tanstack/react-query";
 import { Signer } from "ethers";
-import { Bundler, IBundler } from "@biconomy/bundler";
-import { BiconomyPaymaster, IPaymaster } from "@biconomy/paymaster";
+// import { Bundler, IBundler } from "@biconomy/bundler";
+// import { BiconomyPaymaster, IPaymaster } from "@biconomy/paymaster";
 import {
     metamaskWallet,
     phantomWallet,
@@ -18,14 +18,23 @@ import {
     useSwitchChain,
     useWallet,
 } from "@thirdweb-dev/react";
-import { BiconomySmartAccountV2, DEFAULT_ENTRYPOINT_ADDRESS } from "@biconomy/account";
+import {
+    Bundler,
+    IBundler,
+    BiconomyPaymaster,
+    IPaymaster,
+    BiconomySmartAccountV2,
+    DEFAULT_ENTRYPOINT_ADDRESS,
+    DEFAULT_MULTICHAIN_MODULE,
+    MultiChainValidationModule,
+} from "@biconomy/account";
 
 import { ChainIdDetails } from "../utils/data/network";
 import { iGlobal, useGlobalStore } from "../store/GlobalStore";
 import { iTrading, useTradingStore } from "../store/TradingStore";
 import { useCalculatebalance } from "../hooks/utilsHooks/useCalculateBalance";
 import { arbitrum, avalanche, base, ethereum, optimism, polygon } from "../assets/images";
-import { DEFAULT_MULTICHAIN_MODULE, MultiChainValidationModule } from "@biconomy/modules";
+// import { DEFAULT_MULTICHAIN_MODULE, MultiChainValidationModule } from "@biconomy/modules";
 import { handleLogin } from "../utils/globalApis/trackingApi";
 import { iTransfer, useTransferStore } from "../store/TransferStore";
 import { iPortfolio, usePortfolioStore } from "../store/Portfolio";
@@ -145,33 +154,27 @@ export function useSwitchOnSpecificChain() {
             });
     };
 
-    const createAccount = async (chainId: number) => {
+    /**
+     *
+     * Setup Bundler, Paymaster, multichain module and generates Smart-Account.
+     * @returns Biconomy Smart-Account
+     */
+    const createAccount = async (chainId: number): Promise<BiconomySmartAccountV2> => {
         const bundler: IBundler = new Bundler({
             bundlerUrl: ChainIdDetails[chainId].bundlerURL,
             chainId: chainId,
             entryPointAddress: DEFAULT_ENTRYPOINT_ADDRESS,
         });
+
         const paymaster: IPaymaster = new BiconomyPaymaster({
             paymasterUrl: ChainIdDetails[chainId].paymasterURL,
         });
-        // const biconomySmartAccountConfig: BiconomySmartAccountConfig = {
-        //     signer: signer,
-        //     chainId: chainId,
-        //     bundler: bundler,
-        //     paymaster: paymaster,
-        // };
-        // let biconomySmartAccount = new BiconomySmartAccount(biconomySmartAccountConfig);
-        // biconomySmartAccount = await biconomySmartAccount.init();
 
-        // const ownerShipModule: any = await ECDSAOwnershipValidationModule.create({
-        //     signer: signer as Signer,
-        //     moduleAddress: DEFAULT_ECDSA_OWNERSHIP_MODULE,
-        // });
         const multiChainModule = await MultiChainValidationModule.create({
             signer: signer as Signer,
             moduleAddress: DEFAULT_MULTICHAIN_MODULE,
         });
-        //   setProvider(provider)
+
         let biconomySmartAccount = await BiconomySmartAccountV2.create({
             chainId: chainId,
             bundler: bundler,
@@ -180,9 +183,6 @@ export function useSwitchOnSpecificChain() {
             defaultValidationModule: multiChainModule,
             activeValidationModule: multiChainModule,
         });
-
-        // await biconomySmartAccount.init()
-        // console.log('biconomySmartAccount-2', biconomySmartAccount)
 
         return biconomySmartAccount;
     };
@@ -199,61 +199,52 @@ export function useSwitchOnSpecificChain() {
             } else {
             }
         } catch (error) {
-            // console.log("isNetworkCorrect:error: ", error);
+            console.error("Error: IsNetworkCorrect", error);
         }
     };
 
-    const login = async (chainId: number) => {
-        if (!chainId) {
-            toast.error("No ChainId");
-            return;
-        }
-
-        return setupSmartAccount(chainId);
-    };
-
+    /**
+     * Setup Smart-Account and passes data to global context
+     */
     const setupSmartAccount = async (chainId: number) => {
-        // if (!sdkRef?.current?.provider) return;
-        // sdkRef.current.hideWallet();
         setLoading(true);
-        // const web3Provider = new ethers.providers.Web3Provider(sdkRef.current.provider);
         try {
             const smartAccount = await createAccount(chainId);
             const _smartAccountAddress = await smartAccount.getAccountAddress();
 
-            // console.log("smartAccount in setup", smartAccount);
-
+            // if simulation is ON, set a proxy address instead of user's original
             setSimulationSmartAddress(isSimulate ? "0x9Ce935D780424FB795bef7E72697f263A8258fAA" : _smartAccountAddress);
             setSmartAccountAddress(_smartAccountAddress);
 
-            // console.log("_smartAccountAddress ,", smartAccountAddress);
-
-            // if (isSimulate) {
-            //     setSmartAccountAddress("0x9Ce935D780424FB795bef7E72697f263A8258fAA");
-            // } else {
-            // }
             setSmartAccount(smartAccount);
             setLoading(false);
             setCurrentProvider("Biconomy");
-
-            // console.log("----------------------------Log in--------------------------");
-            // console.log("address:", _smartAccountAddress);
-            // console.log("wallet", wallet);
 
             handleLogin(_smartAccountAddress, address, wallet?.walletId);
 
             return smartAccount;
         } catch (err) {
             setLoading(false);
-            // console.log("error setting up smart account... ", err);
+            console.error("Error while setting up smart account.", err);
         }
+    };
+
+    const login = async (chainId: number) => {
+        if (!chainId) {
+            toast.error("No Chain ID!");
+            return;
+        }
+
+        return setupSmartAccount(chainId);
     };
 
     const changeChain = async (chainName: string) => {
         try {
+            // Wallet connect handler
             if (!connected) await handleConnect();
+
+            // Network switcher handler
             if (chain?.slug != chainName) {
-                // await logout()
                 if (chainName == "polygon") {
                     await switchChain(137);
                     const _smartAccount = await login(137);
@@ -408,6 +399,10 @@ export function useSwitchOnSpecificChain() {
         }
     };
 
+    /**
+     * Switch to a given Network. Called automactically when wallet connects.
+     * @param chainName current Network
+     */
     const switchOnSpecificChain = async (chainName: string) => {
         try {
             setLoading(true);
