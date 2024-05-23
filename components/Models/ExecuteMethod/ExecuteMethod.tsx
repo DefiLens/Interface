@@ -39,21 +39,21 @@ const ExecuteMethod = ({ ExecuteAllBatches }: tExecuteMethod) => {
     };
 
     return (
-        <div className="fixed w-full h-full flex justify-center items-center top-0 right-0 left-0 bottom-0 z-50 text-black backdrop-brightness-50 p-5 md:p-10">
-            <div className="min-h-80 w-[40rem] flex flex-col justify-center items-center gap-2 bg-white border-2 border-gray-300 rounded-2xl relative p-5">
+        <div className="fixed w-full h-full flex justify-center items-center top-0 right-0 left-0 bottom-0 z-[110] text-black backdrop-brightness-50 p-3 md:p-5">
+            <div className="min-h-52 w-[35rem] flex flex-col justify-center items-center gap-2 bg-white border-2 border-gray-300 rounded-2xl relative p-3">
                 {/* Heading */}
-                <div className="w-full flex items-center justify-between text-center text-xl md:text-2xl text-black font-bold">
+                <div className="w-full flex items-center justify-between text-center text-xl md:text-lg text-black font-bold">
                     <span>Review Batch</span>
                     <button
                         type="button"
                         onClick={() => closeExecuteMethodModel()}
                         className="place-self-end p-2 text-font-700 hover:text-font-800 bg-slate-100 hover:bg-slate-200 cursor-pointer outline-none rounded-full transition-colors"
                     >
-                        <HiXMark size="20px" />
+                        <HiXMark size="15px" />
                     </button>
                 </div>
                 <div className="h-full w-full flex flex-col justify-center items-center gap-2">
-                    <div className="w-full border-3 max-h-96 overflow-auto flex flex-col justify-start items-center gap-5 my-5">
+                    <div className="w-full border-3 max-h-96 overflow-auto flex flex-col justify-start items-center gap-5 my-3">
                         <div className="w-full max-h-full overflow-auto flex flex-col gap-5">
                             {selectedFromNetwork?.chainId &&
                                 individualBatch?.length > 0 &&
@@ -93,11 +93,11 @@ const ExecuteMethod = ({ ExecuteAllBatches }: tExecuteMethod) => {
                                                                         </div>
                                                                     </div>
                                                                     <div className="flex flex-col justify-start items-start">
-                                                                        <span className="text-md md:text-lg lg:text-lg font-semibold text-B200">
+                                                                        <span className="text-xs md:text-sm lg:text-base font-semibold text-B200">
                                                                             {bar.data.fromProtocol} on{" "}
                                                                             {bar.data.fromNetwork}
                                                                         </span>
-                                                                        <p className="inline-flex items-center gap-2 text-sm xl:text-sm font-bold text-font-600">
+                                                                        <p className="inline-flex items-center gap-2 text-xs xl:text-xs font-bold text-font-600">
                                                                             {bar.data.amountIn} {bar.data.fromToken}
                                                                         </p>
                                                                     </div>
@@ -131,11 +131,11 @@ const ExecuteMethod = ({ ExecuteAllBatches }: tExecuteMethod) => {
                                                                         </div>
                                                                     </div>
                                                                     <div className="flex flex-col justify-start items-start">
-                                                                        <span className="text-md md:text-lg lg:text-lg font-semibold text-B200">
+                                                                        <span className="text-xs md:text-sm lg:text-base font-semibold text-B200">
                                                                             {bar.data.toProtocol} on{" "}
                                                                             {bar.data.toNetwork}
                                                                         </span>
-                                                                        <p className="inline-flex items-center gap-2 text-sm xl:text-sm font-bold text-font-600">
+                                                                        <p className="inline-flex items-center gap-2 text-xs xl:text-xs font-bold text-font-600">
                                                                             {Number(bar.data.amountOut).toFixed(6)}{" "}
                                                                             {bar.data.toToken}
                                                                         </p>
@@ -143,7 +143,7 @@ const ExecuteMethod = ({ ExecuteAllBatches }: tExecuteMethod) => {
                                                                 </div>
                                                             </div>
                                                             <div className="flex flex-col gap-2 mt-2">
-                                                                <div className="flex items-center justify-between text-base font-semibold">
+                                                                <div className="flex items-center justify-between text-sm font-semibold">
                                                                     <span className="opacity-70">Bridge Fee:</span>
                                                                     <span>
                                                                         {bar.data !== undefined &&
@@ -154,7 +154,7 @@ const ExecuteMethod = ({ ExecuteAllBatches }: tExecuteMethod) => {
                                                                             bar.batchesFlow[1].tokenOut} */}
                                                                     </span>
                                                                 </div>
-                                                                <div className="flex items-center justify-between text-base font-semibold">
+                                                                <div className="flex items-center justify-between text-sm font-semibold">
                                                                     <span className="opacity-70">Gas Fee:</span>
                                                                     <span>
                                                                         {Number(bar.data.fees)

@@ -1,14 +1,17 @@
-import Image from "next/image";
-import { ConnectWallet } from "@thirdweb-dev/react";
+import { ConnectWallet, useAddress } from "@thirdweb-dev/react";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import { walletInfo } from "../../utils/constants";
+import AvatarIcon from "../../modules/portfolio/Avatar";
+import styles from "./wallet.module.css";
+import { smallLogo } from "../../assets/images";
 
 const WalletConnected = () => {
     const { selectedNetwork }: iGlobal = useGlobalStore((state) => state);
+    const address = useAddress();
     return (
-        <div className="shadow-md rounded-full cursor-pointer overflow-hidden p-1">
+        <div className="shadow-md rounded-full cursor-pointer overflow-hidden p-1 border">
             {selectedNetwork?.chainName && (
-                <Image src={selectedNetwork.icon} alt="Current Network Icon" className="h-9 w-9 rounded-full" />
+                <AvatarIcon address={address ?? ""} size={32} />
             )}
         </div>
     );
@@ -18,11 +21,11 @@ const ConnectWalletWrapper = () => {
     return (
         <ConnectWallet
             theme={"light"}
-            modalSize={"wide"}
-            btnTitle={walletInfo.buttonTitle}
-            className="Custom-btn"
+            modalSize="compact"
+            btnTitle="Login"
+            modalTitleIconUrl='https://res.cloudinary.com/dsguoq6ad/image/upload/v1716444923/mentorexperienceImages/otdarxcjkhxhrv2ldtii.svg'
             modalTitle={walletInfo.modalTitle}
-            modalTitleIconUrl=""
+            className={styles.customBtn}
             detailsBtn={() => <WalletConnected />}
             welcomeScreen={{
                 title: walletInfo.welcomeScreen.title,
@@ -34,6 +37,7 @@ const ConnectWalletWrapper = () => {
                 },
             }}
             switchToActiveChain={true}
+            hideTestnetFaucet={true}
         />
     );
 };

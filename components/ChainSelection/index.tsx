@@ -23,7 +23,7 @@ const ChainSelection: React.FC<ChainSelectionProps> = ({ dropdown = false }) => 
     return (
         <div className="">
             {dropdown ? (
-                <div className="text-N20 text-lg bg-GR1 border rounded-lg px-2 cursor-pointer shadow-lg">
+                <div className="text-N20 text-sm bg-GR1 border rounded-lg px-2 cursor-pointer shadow-lg">
                     <select
                         value={chainId}
                         onChange={handleSelectChange}
@@ -33,7 +33,7 @@ const ChainSelection: React.FC<ChainSelectionProps> = ({ dropdown = false }) => 
                             <option
                                 key={chain.chainId}
                                 value={chain.chainId}
-                                className="bg-N20-300 py-2 px-4 border-none rounded-lg text-B100"
+                                className="bg-N20 py-2 text-sm px-3 border-none rounded-lg text-B100"
                             >
                                 {chain.chainName}
                             </option>
@@ -42,14 +42,14 @@ const ChainSelection: React.FC<ChainSelectionProps> = ({ dropdown = false }) => 
                 </div>
             ) : (
                 <div
-                    className="w-full flex items-center gap-3 overflow-scroll"
+                    className="w-full flex items-center gap-2 overflow-scroll"
                     style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
                 >
                     {allChains.map((chain) => (
                         <button
                             key={chain.chainId}
                             onClick={() => handleButtonClick(chain.chainId)}
-                            className={`py-2 px-4 rounded-lg border border-B50 hover:bg-N50 ${
+                            className={`py-2 px-3 text-xs rounded-lg border text-B200 border-gray-300 bg-W100 hover:bg-W50 transition-all duration-300 ${
                                 chainId === chain.chainId ? "bg-GR1 text-N20 border-none" : "bg-N40 text-B100"
                             }`}
                         >

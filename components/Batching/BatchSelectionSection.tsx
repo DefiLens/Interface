@@ -17,6 +17,8 @@ import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import { ExecutionMethodsList } from "../../utils/data/constants";
 import { ConnectWalletWrapper } from "../Button";
+import { usePathname } from "next/navigation";
+import { set } from "lodash";
 
 bg.config({ DECIMAL_PLACES: 10 });
 
@@ -70,7 +72,6 @@ const BatchSelectionSection: React.FC<tBatchSelectionSection> = ({
             setSelectedExecuteMethod(ExecutionMethodsList[0].providerName);
         }
     }, [ExecutionMethodsList]);
-
 
     const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (addToBatchLoading) {
@@ -148,28 +149,28 @@ const BatchSelectionSection: React.FC<tBatchSelectionSection> = ({
     }, [percentages, rebalanceData]);
 
     return (
-        <div className="w-full mx-auto flex flex-col gap-5 bg-gradient-to-br from-[#7339FD] via-[#56B0F6] to-[#4DD4F4] rounded-2xl shadow-lg border lg:shadow-xl">
-            <div className="px-5 pt-7">
-                <div className="flex flex-col gap-3 bg-[rgba(225,225,225,.4)] rounded-xl px-5 py-3">
+        <div className="w-full mx-auto flex flex-col bg-gradient-to-br from-[#7339FD] via-[#56B0F6] to-[#4DD4F4] rounded-xl shadow-lg">
+            <div className="p-3">
+                <div className="flex flex-col gap-3 bg-[rgba(225,225,225,.4)] rounded-xl px-3 py-2 ">
                     {/* Token Selection */}
                     <div
                         className={cn(
-                            "w-full relative flex justify-center items-center gap-5",
+                            "w-full relative flex justify-center items-center gap-3 flex-col",
                             !isRebalance &&
                                 selectedToNetwork.chainName &&
                                 selectedToProtocol &&
                                 selectedToToken &&
                                 selectedFromNetwork.chainName &&
-                                selectedFromProtocol &&
-                                selectedFromToken
-                                ? "flex-row"
-                                : "flex-col"
+                                selectedFromProtocol
+                            // selectedFromToken
+                            // ? "flex-row"
+                            // : "flex-col"
                         )}
                     >
                         {/* Selection Bar - FROM */}
                         <SelectionBar
                             handleSelectionMenu={handleShowFromSelectionMenu}
-                            titlePlaceholder="From"
+                            titlePlaceholder="Send"
                             iconCondition={selectedFromNetwork.chainName && selectedFromProtocol}
                             mainIcon={selectedFromNetwork?.icon}
                             subIcon={
@@ -185,18 +186,18 @@ const BatchSelectionSection: React.FC<tBatchSelectionSection> = ({
                         />
 
                         {/* Swap Btn */}
-                        {!isRebalance &&
-                            selectedToNetwork.chainName &&
-                            selectedToProtocol &&
-                            selectedToToken &&
-                            selectedFromNetwork.chainName &&
-                            selectedFromProtocol &&
-                            selectedFromToken && (
+                        {!isRebalance && (
+                        //     selectedToNetwork.chainName &&
+                        //     selectedToProtocol &&
+                        //     selectedToToken &&
+                        //     selectedFromNetwork.chainName &&
+                        //     selectedFromProtocol &&
+                        //     selectedFromToken && (
                                 <div
                                     onClick={handleSwap}
-                                    className="absolute flex justify-center items-center border-2 bg-N60 hover:bg-font-100 active:bg-font-400 rounded-full p-1"
+                                    className="absolute flex justify-center items-center border-2 bg-N60 hover:bg-font-100 active:bg-font-400 rounded-full p-[.1rem] rotate-90 cursor-pointer"
                                 >
-                                    <HiOutlineArrowsRightLeft size="25px" className="rotate-90 sm:rotate-0 text-B100" />
+                                    <HiOutlineArrowsRightLeft size="18px" className="rotate-90 sm:rotate-0 text-B100" />
                                 </div>
                             )}
 
@@ -204,7 +205,7 @@ const BatchSelectionSection: React.FC<tBatchSelectionSection> = ({
                         {!isRebalance ? (
                             <SelectionBar
                                 handleSelectionMenu={handleShowToSelectionMenu}
-                                titlePlaceholder="To"
+                                titlePlaceholder="Recieve"
                                 iconCondition={selectedToNetwork.chainName}
                                 mainIcon={selectedToNetwork?.icon}
                                 subIcon={
@@ -223,32 +224,34 @@ const BatchSelectionSection: React.FC<tBatchSelectionSection> = ({
                         )}
                     </div>
                     {/* Rebalance Checkbox */}
-                    <div className="flex items-center w-full">
+                    <div className={`flex items-center w-full ${isRebalance ? "-mt-2" : ""}`}>
                         <CustomCheckbox checked={isRebalance} onChange={handleCheckboxChange} />
-                        <span className="ml-2 text-N0">Rebalance</span>
+                        <span className="ml-1 text-N0 text-[.75rem]">Rebalance</span>
                     </div>
                 </div>
             </div>
 
-            <div className="w-full flex flex-col gap-5 px-5 py-7 bg-W100 rounded-xl">
+            <div className="w-full flex flex-col gap-2 p-3 bg-W100 rounded-xl">
                 {/* Amount Selection */}
                 <div
                     className={cn(
-                        "border rounded-lg px-5 py-3",
+                        "border rounded-lg px-3 py-2",
                         bg(maxBalance).isLessThan(amountIn) ? "border-error-600" : "border-[#A9A9A9]"
                     )}
                 >
-                    <h5 className="text-sm md:text-base lg:text-lg font-medium md:font-semibold text-B200">You Pay</h5>
+                    <h5 className="text-sm md:text-base lg:text-base font-medium md:font-semibold text-B200">
+                        You Pay
+                    </h5>
                     {/* Token Icons */}
-                    <div className="relative flex flex-row justify-start items-center gap-8 py-3">
+                    <div className="relative flex flex-row justify-start items-center gap-4">
                         {selectedFromNetwork.chainName && selectedFromProtocol ? (
                             <div className="relative">
                                 <Image
                                     src={selectedFromNetwork.icon}
                                     alt=""
-                                    className="h-12 w-12 bg-N40 rounded-full cursor-pointer"
+                                    className="h-10 w-10 bg-N40 rounded-full cursor-pointer"
                                 />
-                                <div className="absolute -bottom-1 -right-1 border-[3px] border-W100 bg-N50 h-6 w-6 flex justify-center items-center rounded-full">
+                                <div className="absolute -bottom-1 -right-1 border-[3px] border-W100 bg-N50 h-5 w-5 flex justify-center items-center rounded-full">
                                     <Image
                                         src={
                                             protocolNames[selectedFromNetwork.chainId].key.find(
@@ -256,14 +259,14 @@ const BatchSelectionSection: React.FC<tBatchSelectionSection> = ({
                                             )?.icon || defaultBlue
                                         }
                                         alt="Selected Source Network Icon"
-                                        className="h-5 w-5 rounded-full cursor-pointer"
+                                        className="h-4 w-4 rounded-full cursor-pointer"
                                     />
                                 </div>
                             </div>
                         ) : (
                             <div className="relative">
-                                <div className="h-12 w-12 bg-N50 rounded-full cursor-pointer" />
-                                <div className="absolute -bottom-1 border-[3px] border-W100 -right-1 bg-N50 h-6 w-6 flex justify-center items-center rounded-full">
+                                <div className="h-10 w-10 bg-N50 rounded-full cursor-pointer" />
+                                <div className="absolute -bottom-1 border-[3px] border-W100 -right-1 bg-N50 h-5 w-5 flex justify-center items-center rounded-full">
                                     <div className="h-5 w-5 rounded-full cursor-pointer" />
                                 </div>
                             </div>
@@ -279,7 +282,7 @@ const BatchSelectionSection: React.FC<tBatchSelectionSection> = ({
                                     fromTokenDecimal && amountIn && bg(amountIn).isGreaterThan(0) ? amountIn : amountIn
                                 }
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChangeAmountIn(e.target.value)}
-                                className="w-full text-xl bg-W100 md:text-2xl text-B100 placeholder:text-slate-400 font-bold outline-none"
+                                className="w-full text-xl bg-W100 md:text-xl text-B100 placeholder:text-slate-400 font-bold outline-none"
                             />
                             <div className="text-xs md:text-sm text-B100 font-medium">
                                 {oraclePriceLoading ? (
@@ -292,19 +295,18 @@ const BatchSelectionSection: React.FC<tBatchSelectionSection> = ({
                                 {maxBalance !== amountIn && maxBalance !== "0" ? (
                                     <span
                                         onClick={() => onChangeAmountIn(maxBalance ? maxBalance.toString() : "0")}
-                                        className="text-xs md:text-sm text-S600 font-medium bg-[rgba(109,223,255,.4)] rounded-xl px-3 py-1 cursor-pointer"
+                                        className="text-xs md:text-[.65rem] text-S600 font-medium bg-[rgba(109,223,255,.4)] rounded-xl px-2 py-1 cursor-pointer"
                                     >
                                         Max
                                     </span>
                                 ) : maxBalance == "0" ? (
-                                    <span className="text-xs md:text-sm text-S600 font-medium bg-[rgba(109,223,255,.4)] rounded-xl px-3 py-1 cursor-default">
+                                    <span className="text-xs md:text-[.65rem] text-S600 font-medium bg-[rgba(109,223,255,.4)] rounded-xl px-2 py-1 cursor-default">
                                         No Balance
                                     </span>
                                 ) : null}
-                                <span className="flex gap-2 text-xs md:text-sm text-B100 font-semibold cursor-default">
+                                <span className="flex gap-2 text-xs md:text-xs text-B100 font-semibold cursor-default">
                                     Balance:
                                     {ismaxBalanceLoading ? (
-                                        // <BiLoaderAlt className="animate-spin h-4 w-4" />
                                         <div className="bg-gray-200 h-4 w-14 animate-pulse rounded-md"></div>
                                     ) : (
                                         <span className="text-B100">
@@ -318,7 +320,7 @@ const BatchSelectionSection: React.FC<tBatchSelectionSection> = ({
 
                     {/* Error Message */}
                     {bg(maxBalance).isLessThan(amountIn) && (
-                        <div className="text-sm md:text-base text-error-600 font-semibold">Insufficient Balance</div>
+                        <div className="text-xs md:text-sm text-error-600 font-semibold">Insufficient Balance</div>
                     )}
                 </div>
 
@@ -334,7 +336,9 @@ const BatchSelectionSection: React.FC<tBatchSelectionSection> = ({
                                 handleClick={() => processRebalancing()}
                                 isLoading={addToBatchLoading}
                                 customStyle=""
-                                disabled={!isRebalanceBtnClickable || addToBatchLoading || showError || hasTokenPercentage}
+                                disabled={
+                                    !isRebalanceBtnClickable || addToBatchLoading || showError || hasTokenPercentage
+                                }
                                 innerText="Rebalance"
                             />
                         ) : (
@@ -356,7 +360,7 @@ const BatchSelectionSection: React.FC<tBatchSelectionSection> = ({
                                     type="button"
                                     className={cn(
                                         "flex justify-center items-center gap-2", // position
-                                        "rounded-lg w-full py-3 px-2 text-base md:text-lg font-bold whitespace-nowrap", // size
+                                        "rounded-lg w-full py-2.5 px-2 text-xs md:text-sm font-bold whitespace-nowrap", // size
                                         "focus:outline-none focus:shadow-outline hover:border-gray-400 bg-[rgba(132,144,251,.08)] hover:bg-[rgba(132,144,251,.1)] border border-[rgba(132,144,251)] text-[rgba(132,144,251)]  transition duration-300" // colors
                                     )}
                                 >
@@ -373,14 +377,14 @@ const BatchSelectionSection: React.FC<tBatchSelectionSection> = ({
 
                                 {/* Dropdown Items */}
                                 {isOpen && (
-                                    <div className="absolute bottom-0 left-0 mb-14 rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-200 focus:outline-none min-w-[250px] sm:min-w-fit overflow-hidden">
+                                    <div className="absolute -bottom-3 left-0 mb-14 rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-200 focus:outline-none min-w-[250px] sm:min-w-fit overflow-hidden">
                                         {ExecutionMethodsList.length > 0 &&
                                             ExecutionMethodsList.map((item) => (
                                                 <button
                                                     disabled={!item.isEnable}
                                                     key={item.title}
                                                     className={cn(
-                                                        "px-4 py-2 text-lg text-gray-700 w-full text-start",
+                                                        "px-4 py-2 text-sm text-gray-700 w-full text-start",
                                                         !item.isEnable
                                                             ? "opacity-50 cursor-not-allowed"
                                                             : "bg-white hover:bg-gray-100"

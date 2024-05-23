@@ -120,25 +120,25 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
     }, [txhash]);
 
     return (
-        <div className="fixed w-full h-full flex justify-center items-center top-0 right-0 left-0 bottom-0 z-50 text-black backdrop-brightness-50 p-5 md:p-10">
-            <div className="h-auto w-[600px] flex flex-col justify-center items-center gap-2 bg-white border-gray-300 rounded-2xl p-3 border-8 relative">
+        <div className="fixed w-full h-full flex justify-center items-center top-0 right-0 left-0 bottom-0 z-[110] text-black backdrop-brightness-50 p-5 md:p-10">
+            <div className="w-auto flex flex-col justify-center items-center gap-2 bg-white border-gray-300 rounded-2xl p-2 border-4 relative">
                 {txhash || hasExecutionError ? (
                     <button
                         type="button"
                         onClick={() => closeExecuteBatchModel()}
-                        className="absolute top-2 right-2 w-8 h-8 place-self-end p-2 bg-slate-50 hover:bg-slate-200 active:bg-slate-100 rounded-full cursor-pointer outline-none"
+                        className="absolute top-2 right-2 w-7 h-7 place-self-end p-2 bg-slate-50 hover:bg-slate-200 active:bg-slate-100 rounded-full cursor-pointer outline-none"
                     >
                         <Image src={closeNarrow} alt="close button" />
                     </button>
                 ) : null}
-                <div className="h-full w-full flex flex-col justify-center items-center gap-2 p-5">
+                <div className="h-full w-full flex flex-col justify-center items-center gap-2 p-2">
                     <Image
                         src={txhash ? success : hasExecutionError ? error : loading}
                         alt="transaction_state_icon"
-                        className="w-20 h-20 md:w-28 md:h-28 !bg-green-400"
+                        className="w-16 h-16 md:w-20 md:h-20 !bg-green-400"
                     />
                     {/* <PiShieldCheckLight size={80} /> */}
-                    <div className="w-full text-center text-xl md:text-2xl text-black font-bold mb-8 mt-2">
+                    <div className="w-full text-center text-base md:text-lg text-black font-bold mb-4 mt-1">
                         {txhash
                             ? isSimulate
                                 ? "Simulation Executed Successfully"
@@ -152,9 +152,9 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
                             !hasExecutionError &&
                             (individualBatch.length > 0 && individualBatch[0].txArray.length > 0 ? (
                                 <div className="flex flex-col gap-4">
-                                    <div className="w-full flex justify-start items-center gap-5">
-                                        <div className="w-full flex justify-start items-center gap-3">
-                                            <h1 className="text-xl font-bold">Source</h1>
+                                    <div className="w-full flex justify-start items-center gap-2 px-2">
+                                        <div className="w-full flex justify-start items-center gap-1">
+                                            <h1 className="text-base font-bold">Source</h1>
                                             {txhash && (
                                                 <a
                                                     target="_blank"
@@ -171,16 +171,16 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
                                         </div>
 
                                         <div className="w-full flex justify-start items-center gap-3">
-                                            <h1 className="text-xl font-bold">Destination</h1>
+                                            <h1 className="text-base font-bold">Destination</h1>
                                         </div>
                                     </div>
-                                    <div className="w-full max-h-60 flex flex-col justify-start items-center text-sm md:text-base gap-6 py-1">
+                                    <div className="min-w-[30rem] max-h-60 flex flex-col justify-start items-center text-sm md:text-base gap-2 py-1 px-2 overflow-y-scroll overflow-x-hidden">
                                         {individualBatch.map(
                                             (bar: iIndividualBatch) =>
                                                 bar.txArray.length > 0 && (
                                                     <div
                                                         key={bar.id}
-                                                        className="w-full flex justify-start items-center gap-5"
+                                                        className="w-full flex justify-start items-center gap-1"
                                                     >
                                                         <div className="w-full flex justify-start items-center gap-3">
                                                             <div className="relative">
@@ -191,9 +191,9 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
                                                                         ]?.networkLogo
                                                                     }
                                                                     alt="from network logo"
-                                                                    className="h-10 w-10 bg-slate-200 rounded-full"
+                                                                    className="h-8 w-8 bg-slate-200 rounded-full"
                                                                 />
-                                                                <div className="absolute -bottom-1 -right-1 bg-white h-5 w-5 flex justify-center items-center rounded-full">
+                                                                <div className="absolute -bottom-1 -right-1 bg-white h-4 w-4 flex justify-center items-center rounded-full">
                                                                     <Image
                                                                         src={
                                                                             protocolNames[
@@ -204,15 +204,15 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
                                                                             )?.icon
                                                                         }
                                                                         alt="from protocol logo"
-                                                                        className="h-5 w-5 bg-slate-200 rounded-full"
+                                                                        className="h-3 w-3 bg-slate-200 rounded-full"
                                                                     />
                                                                 </div>
                                                             </div>
                                                             <div className="flex flex-col justify-start items-start">
-                                                                <span className="text-sm md:text-base font-semibold text-slate-700">
+                                                                <span className="text-xs md:text-sm font-semibold text-slate-700">
                                                                     {bar.data.amountIn} {bar.data.fromToken}
                                                                 </span>
-                                                                <span className="text-xs md:text-sm font-semibold text-slate-700">
+                                                                <span className="text-xs md:text-xs font-semibold text-slate-700">
                                                                     {bar.data.fromProtocol} on {bar.data.fromNetwork}
                                                                 </span>
                                                             </div>
@@ -226,9 +226,9 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
                                                                             ?.networkLogo
                                                                     }
                                                                     alt="to network logo"
-                                                                    className="h-10 w-10 bg-slate-200 rounded-full"
+                                                                    className="h-8 w-8 bg-slate-200 rounded-full"
                                                                 />
-                                                                <div className="absolute -bottom-1 -right-1 bg-white h-5 w-5 flex justify-center items-center rounded-full">
+                                                                <div className="absolute -bottom-1 -right-1 bg-white h-4 w-4 flex justify-center items-center rounded-full">
                                                                     <Image
                                                                         src={
                                                                             protocolNames[bar.data.toChainId].key.find(
@@ -237,16 +237,16 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
                                                                             )?.icon
                                                                         }
                                                                         alt="to protocol logo"
-                                                                        className="h-5 w-5 bg-slate-200 rounded-full"
+                                                                        className="h-3 w-3 bg-slate-200 rounded-full"
                                                                     />
                                                                 </div>
                                                             </div>
                                                             <div className="flex flex-col justify-start items-start">
-                                                                <span className="text-sm md:text-base font-semibold text-slate-700">
+                                                                <span className="text-xs md:text-sm font-semibold text-slate-700">
                                                                     {/* {bar.data.toProtocol} */}
                                                                     {bar.data.amountOut} {bar.data.toToken}
                                                                 </span>
-                                                                <span className="text-xs md:text-sm font-semibold text-slate-700">
+                                                                <span className="text-xs md:text-xs font-semibold text-slate-700">
                                                                     {bar.data.toProtocol} on {bar.data.toNetwork}
                                                                     {/* {bar.data.amountIn} {bar.data.toToken} */}
                                                                 </span>

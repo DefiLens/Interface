@@ -33,22 +33,22 @@ const OneAsset: React.FC<tOneAsset> = ({ positions, send, handleAmountIn, curren
                 .map((item) => (
                     <div
                         key={item.id}
-                        className="w-full flex justify-end items-center gap-3 text-[13px] md:text-[15px] font-medium text-B200 py-4 border-t border-B50"
+                        className="w-full flex justify-end items-center gap-3 text-xs md:text-sm font-medium text-B200 py-4 border-t border-B50"
                     >
-                        <div className="w-full flex max-w-md justify-start items-center gap-3 text-start">
+                        <div className="w-full flex max-w-md justify-start items-center gap-2 text-start">
                             {/* Token logo */}
                             <Image
-                                height={38}
-                                width={38}
+                                height={33}
+                                width={33}
                                 src={item?.attributes.fungible_info.icon?.url || defaultBlue}
                                 alt="Token logo"
                                 className="rounded-full bg-N60"
                             />
-                            <div className="flex flex-col gap-[6px]">
+                            <div className="flex flex-col gap-[.15rem]">
                                 {/* Token Name */}
-                                <div>{item?.attributes.fungible_info.name}</div>
+                                <div className="text-xs">{item?.attributes.fungible_info.name}</div>
                                 {/* Chain logo and name */}
-                                <div className="inline-flex justify-start items-center gap-1 text-xs text-font-500">
+                                <div className="inline-flex justify-start items-center gap-1 text-[.6rem] text-font-500">
                                     <p className="text-gray-500 font-medium">
                                         {item?.attributes.protocol
                                             ? item?.attributes.protocol.toUpperCase()
@@ -57,7 +57,7 @@ const OneAsset: React.FC<tOneAsset> = ({ positions, send, handleAmountIn, curren
                                     {item?.attributes.protocol && (
                                         <>
                                             <span className="text-sm"> · </span>
-                                            <p className="bg-gray-100 text-gray-500 rounded-md px-[6px] py-[2px]">
+                                            <p className="bg-gray-100 text-[.55rem] text-gray-500 rounded-md px-[.4rem]">
                                                 Deposited
                                             </p>
                                         </>
@@ -65,7 +65,7 @@ const OneAsset: React.FC<tOneAsset> = ({ positions, send, handleAmountIn, curren
                                 </div>
                             </div>
                         </div>
-                        <div className="w-full inline-flex items-center">
+                        <div className="w-full inline-flex items-center text-xs">
                             <div className="w-1/3 text-start">
                                 {item?.attributes.price && `$${Number(item.attributes.price.toFixed(4))}`}
                             </div>
@@ -77,7 +77,7 @@ const OneAsset: React.FC<tOneAsset> = ({ positions, send, handleAmountIn, curren
                                 {item?.attributes.value && `$${Number(item.attributes.value.toFixed(4))}`}
                             </div>
                         </div>
-                        <div className="w-[3%]">
+                        {/* <div className="w-[3%]">
                             {chainId === currentChainId && (
                                 <div className="group flex justify-center transition-all p-1 hover:bg-N40 rounded-md cursor-pointer">
                                     <BiDotsVerticalRounded
@@ -90,7 +90,7 @@ const OneAsset: React.FC<tOneAsset> = ({ positions, send, handleAmountIn, curren
                                     </span>
                                 </div>
                             )}
-                        </div>
+                        </div> */}
 
                         {/* Migrate Assets Modal */}
                         {selectOneAsset === item && <MigrateAsset send={send} handleAmountIn={handleAmountIn} />}
@@ -150,9 +150,9 @@ const OneAsset: React.FC<tOneAsset> = ({ positions, send, handleAmountIn, curren
                 {positions.length > 4 && (
                     <button
                         onClick={toggleShowAll}
-                        className="cursor-pointer px-3 py-1 md:text-base text-center rounded-lg transition duration-300 border border-B50 bg-N40 hover:bg-N50"
+                        className="cursor-pointer px-3 py-1 md:text-xs text-center rounded-lg transition duration-300 border border-B50 bg-N40 hover:bg-N50"
                     >
-                        {showAll ? "Show Less" : "Show All"}
+                        {showAll ? "Show Less" : "Show More"}
                     </button>
                 )}
             </div>

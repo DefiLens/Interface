@@ -445,6 +445,6 @@ const createEmptyData = (): iRebalanceData => ({
     network: { key: "", chainName: "", chainId: "", icon: "" },
     protocol: "",
     token: "",
-    percentage: 0,
+    percentage: 100,
     amount: 0,
 });

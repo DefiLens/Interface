@@ -25,13 +25,13 @@ export const NavigationList = [
         route: "/portfolio",
         icon: portfolio,
     },
+    // {
+    //     title: "Transfer Fund",
+    //     route: "/transfer-fund",
+    //     icon: transferfund,
+    // },
     {
-        title: "Transfer Fund",
-        route: "/transfer-fund",
-        icon: transferfund,
-    },
-    {
-        title: "Batch History",
+        title: "History",
         route: "/portfolio/batch-history",
         icon: batching,
     },
@@ -58,11 +58,11 @@ export const socialHandles: tSocialHandle[] = [
     //     key: "github",
     //     href: "https://github.com/sunnyRK",
     // },
-    {
-        icon: web,
-        key: "web",
-        href: "https://defilens.tech/",
-    },
+    // {
+    //     icon: web,
+    //     key: "web",
+    //     href: "https://defilens.tech/",
+    // },
 ];
 
 export const walletInfo = {

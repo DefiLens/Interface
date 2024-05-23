@@ -80,7 +80,7 @@ const JoinWaitlist = () => {
         <div className={cn("fixed z-30 inset-0 overflow-y-auto", isOpen ? "block" : "hidden")}>
             <div className="fixed inset-0 bg-black bg-opacity-20 backdrop-blur-sm backdrop-filter"></div>
             <div className="relative flex items-center justify-center min-h-screen">
-                <div className="flex flex-col bg-white rounded-lg shadow-lg p-8 max-w-[35rem] w-full relative">
+                <div className="flex flex-col bg-white rounded-lg shadow-lg p-8 max-w-[30rem] w-full relative">
                     {step === 1 && (
                         <>
                             <h2 className="text-3xl font-bold mb-1 text-gray-800 font-sans">Welcome to Defilens</h2>
@@ -123,7 +123,7 @@ const JoinWaitlist = () => {
                     )}
                     {step === 3 && (
                         <>
-                            <h2 className="text-3xl font-bold mb-6 text-gray-800 font-sans">{response}</h2>
+                            <h2 className="text-2xl font-bold mb-6 text-gray-800 font-sans">{response}</h2>
                             <Button
                                 handleClick={trySimulation}
                                 isLoading={false}

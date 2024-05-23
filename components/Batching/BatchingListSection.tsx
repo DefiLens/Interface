@@ -41,22 +41,22 @@ const BatchingListSection: React.FC<tBatchListSection> = ({ removeBatch, toggleS
     return (
         <div
             className={cn(
-                "flex flex-col justify-start items-center gap-1", // position
-                "min-w-fit md:max-w-xl max-h-full rounded-2xl", // sizes
-                "bg-W100 shadow-lg lg:shadow-xl cursor-pointer" // colors
+                "flex flex-col justify-start items-center gap-1 max-w-md", // position
+                "min-w-fit md:max-w-xl h-fit rounded-2xl", // sizes
+                "bg-W100 shadow-lg lg:shadow-lg cursor-pointer max-h-[31.75rem]" // colors
             )}
         >
             {/* Batching List Title */}
-            <div className="w-full flex justify-between items-center gap-1 px-5 pt-7 ">
-                <h1 className="text-B200 text-lg md:text-xl lg:text-2xl text-center font-bold rounded-t-2xl">
+            <div className="w-full flex justify-between items-center gap-1 p-4">
+                <h1 className="text-B200 text-base md:text-lg lg:text-xl text-center font-bold rounded-t-2xl">
                     Batching List
                 </h1>
 
                 {/* Display Total Gas if available */}
                 {selectedFromNetwork.chainId && totalFees != 0 && (
-                    <div className="w-auto flex justify-between items-center text-green-400 gap-4 md:gap-6 bg-[rgba(109,223,255,.2)] border border-green-400 rounded-xl px-4 py-2">
-                        <h3 className="flex justify-start items-center gap-1 font-bold text-xs md:text-sm">
-                            <Image src={gas} alt="gas" className="h-5 w-5 mr-1 sm:mr-2" />
+                    <div className="w-auto flex justify-between items-center text-green-400 gap-2 md:gap-3 bg-[rgba(109,223,255,.2)] border border-green-400 rounded-xl px-3 py-1.5">
+                        <h3 className="flex justify-start items-center gap-1 font-bold text-xs md:text-xs">
+                            <Image src={gas} alt="gas" className="h-4 w-4 mr-1" />
                             <span>Total Gas</span>
                         </h3>
 
@@ -64,16 +64,16 @@ const BatchingListSection: React.FC<tBatchListSection> = ({ removeBatch, toggleS
                             <Image
                                 src={ChainIdDetails[selectedFromNetwork.chainId].networkLogo}
                                 alt="gas"
-                                className="h-5 w-5 rounded-full"
+                                className="h-4 w-4 rounded-full"
                             />
-                            <h6 className="font-semibold text-sm">{Number(totalFees).toPrecision(4).toString()}</h6>
+                            <h6 className="font-semibold text-xs">{Number(totalFees).toPrecision(4).toString()}</h6>
                         </div>
                     </div>
                 )}
             </div>
 
             {/* Batching List Content */}
-            <div className="w-full max-h-full overflow-auto flex flex-col gap-5 px-5 py-7">
+            <div className="w-full max-h-full overflow-auto flex flex-col gap-5 px-2 py-3">
                 {selectedFromNetwork?.chainId &&
                 individualBatch?.length > 0 &&
                 individualBatch[0]?.txArray?.length > 0 ? (
@@ -82,10 +82,10 @@ const BatchingListSection: React.FC<tBatchListSection> = ({ removeBatch, toggleS
                             {/* Display individual batch */}
                             {bar.txArray.length > 0 && (
                                 <div key={bar.id} className="relative">
-                                    <div className="simulation-success flex flex-col justify-center items-start border-2 border-B50 rounded-lg bg-N0 p-5 text-black font-medium transition duration-300">
+                                    <div className="simulation-success flex flex-col justify-center items-start border-2 border-B50 rounded-lg bg-N0 p-3 text-black font-medium transition duration-300">
                                         <div className="w-full flex justify-between items-center gap-2">
                                             {/* Display batch index and networks */}
-                                            <h1 className="flex justify-center items-center gap-2 text-B100 font-extrabold text-base text-transparent bg-clip-text bg-gradient-to-br from-[#7339FD] via-[#56B0F6] to-[#4DD4F4]">
+                                            <h1 className="flex justify-center items-center gap-2 text-B100 font-extrabold text-sm text-transparent bg-clip-text bg-gradient-to-br from-[#7339FD] via-[#56B0F6] to-[#4DD4F4]">
                                                 {inputBarIndex + 1}.
                                                 <span>
                                                     {startCase(bar.data.fromNetwork)} to {startCase(bar.data.toNetwork)}
@@ -110,14 +110,17 @@ const BatchingListSection: React.FC<tBatchListSection> = ({ removeBatch, toggleS
                                                 {/* Display Header */}
                                                 <div className="flex justify-start items-start gap-5">
                                                     <div className="relative">
-                                                        <Image
-                                                            src={
-                                                                ChainIdDetails[selectedFromNetwork.chainId].networkLogo
-                                                            }
-                                                            alt="network logo"
-                                                            className="h-10 w-10 bg-font-200 rounded-full cursor-pointer"
-                                                        />
-                                                        <div className="absolute -bottom-1 -right-1 bg-font-100 h-5 w-5 flex justify-center items-center rounded-full">
+                                                        <div  className="h-9 w-9">
+                                                            <Image
+                                                                src={
+                                                                    ChainIdDetails[selectedFromNetwork.chainId]
+                                                                        .networkLogo
+                                                                }
+                                                                alt="network logo"
+                                                                className="h-9 w-9 bg-font-200 rounded-full cursor-pointer"
+                                                            />
+                                                        </div>
+                                                        <div className="absolute -bottom-1 -right-1 bg-font-100 h-4 w-4 flex justify-center items-center rounded-full">
                                                             <Image
                                                                 src={
                                                                     protocolNames[selectedFromNetwork.chainId].key.find(
@@ -125,15 +128,15 @@ const BatchingListSection: React.FC<tBatchListSection> = ({ removeBatch, toggleS
                                                                     )?.icon || defaultBlue
                                                                 }
                                                                 alt="protocol icon"
-                                                                className="h-4 w-4  bg-font-200 rounded-full cursor-pointer"
+                                                                className="h-3 w-3  bg-font-200 rounded-full cursor-pointer"
                                                             />
                                                         </div>
                                                     </div>
                                                     <div className="flex flex-col justify-start items-start">
-                                                        <span className="text-md md:text-lg lg:text-xl font-bold text-B200">
+                                                        <span className="text-md md:text-lg lg:text-sm font-bold text-B200">
                                                             {bar.data.amountIn} {bar.data.fromToken}
                                                         </span>
-                                                        <p className="inline-flex items-center gap-2 text-sm xl:text-base font-semibold text-font-500">
+                                                        <p className="inline-flex items-center gap-1 text-sm xl:text-xs font-semibold text-font-500">
                                                             <span>
                                                                 {bar.data.fromProtocol} on{" "}
                                                                 {startCase(bar.data.fromNetwork)}
@@ -157,13 +160,13 @@ const BatchingListSection: React.FC<tBatchListSection> = ({ removeBatch, toggleS
                                             </div>
                                             {/* Display Batch Flow */}
                                             {showIndividualBatchList === inputBarIndex && (
-                                                <div className="flex flex-col justify-start items-start gap-1 pl-10 pt-3">
+                                                <div className="flex flex-col justify-start items-start gap-1 pl-8 pt-3">
                                                     {bar.batchesFlow !== undefined &&
                                                         bar.batchesFlow.length > 0 &&
                                                         bar.batchesFlow.map((item, index: number) => (
                                                             <div
                                                                 key={item.action}
-                                                                className="flex flex-col justify-start items-start gap-1"
+                                                                className="flex flex-col justify-start items-start"
                                                             >
                                                                 <div
                                                                     key={item.action}
@@ -176,9 +179,9 @@ const BatchingListSection: React.FC<tBatchListSection> = ({ removeBatch, toggleS
                                                                                     .networkLogo
                                                                             }
                                                                             alt="network_chain_logo"
-                                                                            className="h-8 w-8 bg-slate-200 rounded-full cursor-pointer"
+                                                                            className="h-7 w-7 bg-slate-200 rounded-full cursor-pointer"
                                                                         />
-                                                                        <div className="absolute -bottom-1 -right-1 bg-font-100 h-4 w-4 flex justify-center items-center rounded-full">
+                                                                        <div className="absolute -bottom-1 -right-1 bg-font-100 h-3.5 w-3.5 flex justify-center items-center rounded-full">
                                                                             <Image
                                                                                 src={
                                                                                     protocolNames[
@@ -189,15 +192,15 @@ const BatchingListSection: React.FC<tBatchListSection> = ({ removeBatch, toggleS
                                                                                     )?.icon || defaultBlue
                                                                                 }
                                                                                 alt="protocol_logo"
-                                                                                className="h-3 w-3 bg-font-200 rounded-full cursor-pointer"
+                                                                                className="h-2.5 w-2.5 bg-font-200 rounded-full cursor-pointer"
                                                                             />
                                                                         </div>
                                                                     </div>
                                                                     <div className="flex flex-col justify-start items-start">
-                                                                        <span className="text-sm md:text-base font-semibold text-B200 break-all">
+                                                                        <span className="text-xs md:text-sm font-semibold text-B200 break-all">
                                                                             {item.action} on {item.protocol}
                                                                         </span>
-                                                                        <span className="text-xs md:text-sm font-semibold text-font-400">
+                                                                        <span className="text-xs md:text-xs font-semibold text-font-400">
                                                                             {item.amount.toString()} {item.tokenIn} for{" "}
                                                                             {item.tokenOut}
                                                                         </span>
@@ -207,7 +210,7 @@ const BatchingListSection: React.FC<tBatchListSection> = ({ removeBatch, toggleS
                                                                 {bar.batchesFlow !== undefined &&
                                                                     bar.batchesFlow.length - 1 > index && (
                                                                         <HiOutlineEllipsisVertical
-                                                                            size="32px"
+                                                                            size="1.7rem"
                                                                             className="text-B200"
                                                                         />
                                                                     )}
@@ -217,10 +220,10 @@ const BatchingListSection: React.FC<tBatchListSection> = ({ removeBatch, toggleS
                                             )}
                                             {/* Display Gas Used */}
                                             {showIndividualBatchList === inputBarIndex && (
-                                                <div className="w-full flex flex-col justify-between items-center gap-1 px-0 pt-2 mt-3 border-t border-slate-300">
+                                                <div className="w-full flex flex-col justify-between items-center px-0 pt-2 mt-3 border-t border-slate-300">
                                                     {/* Gas Used for Executing Batching */}
                                                     <div className="w-full flex justify-between items-center text-font-700  gap-4 md:gap-6 rounded-xl px-4 py-2">
-                                                        <h3 className="flex justify-start items-center gap-1 font-bold text-xs md:text-sm">
+                                                        <h3 className="flex justify-start items-center gap-1 font-bold text-xs md:text-xs">
                                                             <BsFillFuelPumpFill size="16px" className="mr-1 sm:mr-2" />
                                                             <span>Gas Used</span>
                                                         </h3>
@@ -232,9 +235,9 @@ const BatchingListSection: React.FC<tBatchListSection> = ({ removeBatch, toggleS
                                                                         .networkLogo
                                                                 }
                                                                 alt="gas"
-                                                                className="h-5 w-5 rounded-full"
+                                                                className="h-4 w-4 rounded-full"
                                                             />
-                                                            <h6 className="font-semibold text-sm">
+                                                            <h6 className="font-semibold text-xs">
                                                                 {Number(bar.data.fees).toPrecision(3).toString()}
                                                             </h6>
                                                         </div>
@@ -242,9 +245,9 @@ const BatchingListSection: React.FC<tBatchListSection> = ({ removeBatch, toggleS
                                                     {/* Extra Native Gas */}
                                                     {Number(bar.data.extraValue) ? (
                                                         <div className="w-full flex justify-between items-center text-font-700 gap-4 md:gap-6 rounded-xl px-4 py-2">
-                                                            <h3 className="flex justify-start items-center gap-1 font-bold text-xs md:text-sm">
+                                                            <h3 className="flex justify-start items-center gap-1 font-bold text-xs md:text-xs">
                                                                 <BsFillFuelPumpFill
-                                                                    size="16px"
+                                                                    size=".9rem"
                                                                     className="mr-1 sm:mr-2"
                                                                 />
                                                                 <span>Extra Native Gas</span>
@@ -257,9 +260,9 @@ const BatchingListSection: React.FC<tBatchListSection> = ({ removeBatch, toggleS
                                                                             .networkLogo
                                                                     }
                                                                     alt="gas"
-                                                                    className="h-5 w-5 rounded-full"
+                                                                    className="h-4 w-4 rounded-full"
                                                                 />
-                                                                <h6 className="font-semibold text-sm">
+                                                                <h6 className="font-semibold text-xs">
                                                                     {Number(bar.data.extraValue)
                                                                         .toPrecision(3)
                                                                         .toString()}

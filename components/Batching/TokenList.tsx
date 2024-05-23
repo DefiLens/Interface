@@ -24,7 +24,7 @@ const TokenList: React.FC<TokenListProps> = ({
 }) => {
     return (
         <>
-            <div className="border border-[rgba(132,144,251)] text-B200 border-t-0 rounded-lg rounded-t-none max-h-[247px] p-3 overflow-auto">
+            <div className="border border-[rgba(132,144,251)] text-B200 border-t-0 rounded-lg rounded-t-none max-h-[247px] p-2 overflow-auto">
                 <ul className="flex flex-col divide-y divide-gray-200">
                     {tokens.map((token) => {
                         // Check if the token matches the filter value

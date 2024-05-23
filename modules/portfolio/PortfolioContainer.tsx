@@ -41,12 +41,12 @@ const PortfolioContainer: React.FC = () => {
             await fetchPortfolio(address);
         };
 
-        if (isSCW && smartAccountAddress) {
+        if (!isSCW && smartAccountAddress) {
             setChainData(null);
             // Fetch SCW Portfolio Data
             fetch(smartAccountAddress);
         }
-        if (!isSCW && address) {
+        if (isSCW && address) {
             setChainData(null);
             // Fetch EOA Portfolio Data
             fetch(address);

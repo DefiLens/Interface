@@ -47,9 +47,11 @@ import mirgrate_asset from "./nav-mirgrate-asset.svg";
 import radiant from "./radiant.jpeg";
 import tenderly from "./tenderly.png";
 import transferfund from "./nav-transfer-fund.svg";
+import smallLogo from "./smallLogo.svg";
 
 export {
     closeNarrow,
+    smallLogo,
     arbitrum,
     avalanche,
     base,

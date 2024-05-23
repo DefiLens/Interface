@@ -24,6 +24,7 @@ export const Rebalance: React.FC = () => {
         clearRebalanceData,
     }: iRebalance = useRebalanceStore((state) => state);
 
+    console.log(rebalanceData, "rebalanceData");
     const { addToBatchLoading }: iTrading = useTradingStore((state) => state);
     const handleTokenSelect = (
         index: number,
@@ -42,7 +43,10 @@ export const Rebalance: React.FC = () => {
             toast.error("wait, tx loading");
             return;
         }
-
+        if (rebalanceData.length >= 10) {
+            toast.error("You can only add 10 batches");
+            return;
+        }
         addNewEmptyData();
 
         if (!splitEqually) {
@@ -51,7 +55,7 @@ export const Rebalance: React.FC = () => {
 
         const numTokens = rebalanceData.length + 1;
         const equalPercentage = parseFloat((100 / numTokens).toFixed(2)); // Round to one decimal place
-        console.log(equalPercentage, Array(numTokens).fill(equalPercentage));
+        // console.log(equalPercentage, Array(numTokens).fill(equalPercentage));
         setPercentages(Array(numTokens).fill(equalPercentage));
     };
 
@@ -112,6 +116,7 @@ export const Rebalance: React.FC = () => {
         if (clearRebalanceData) {
             removeAllData();
             addNewEmptyData();
+            setSplitEqually(true);
         }
     }, [isRebalance, clearRebalanceData]);
 
@@ -121,7 +126,7 @@ export const Rebalance: React.FC = () => {
     type Percentage = number;
     const validateTotalPercentage = (percentages: Percentage[], rebalanceData: any[]): boolean => {
         const total = rebalanceData.reduce((sum, percentage) => sum + percentage.percentage, 0);
-        if (total < 99.5 || total > 100) {
+        if (total < 99.5 || total > 100.2) {
             return false;
         }
 
@@ -141,38 +146,40 @@ export const Rebalance: React.FC = () => {
         <div className="w-full flex flex-col justify-center items-center">
             <div className="flex flex-col gap-4 w-full">
                 <div className="flex flex-col gap-3">
-                    {rebalanceData?.map((item, index) => (
-                        <div key={index} className="w-full relative rounded-lg bg-[rgba(132,144,251,.4)]">
-                            <RebalanceTokenSelection
-                                onTokenSelect={(network, protocol, token, percentage, amount) =>
-                                    handleTokenSelect(index, network, protocol, token, percentage, amount)
-                                }
-                                network={item.network}
-                                index={index}
-                                protocol={item.protocol}
-                                token={item.token}
-                                amount={item.amount}
-                                percentages={percentages}
-                                splitEqually={splitEqually}
-                                handlePercentageChange={handlePercentageChange}
-                            />
-                            {index !== 0 && (
-                                <button
-                                    className="text-N0 absolute top-3 right-3"
-                                    onClick={() => handleRemoveDiv(index)}
-                                >
-                                    <RxCross2 size="20px" />
-                                </button>
-                            )}
-                        </div>
-                    ))}
+                    <div className="flex flex-col gap-3 max-h-[15rem] overflow-auto">
+                        {rebalanceData?.map((item, index) => (
+                            <div key={index} className="w-full relative rounded-lg bg-[rgba(132,144,251,.4)]">
+                                <RebalanceTokenSelection
+                                    onTokenSelect={(network, protocol, token, percentage, amount) =>
+                                        handleTokenSelect(index, network, protocol, token, percentage, amount)
+                                    }
+                                    network={item.network}
+                                    index={index}
+                                    protocol={item.protocol}
+                                    token={item.token}
+                                    amount={item.amount}
+                                    percentages={percentages}
+                                    splitEqually={splitEqually}
+                                    handlePercentageChange={handlePercentageChange}
+                                />
+                                {index !== 0 && (
+                                    <button
+                                        className="text-N0 absolute top-1 right-1 hover:bg-gray-50 hover:bg-opacity-15 rounded-full p-1 transition duration-300 ease-in-out   "
+                                        onClick={() => handleRemoveDiv(index)}
+                                    >
+                                        <RxCross2 size="16px" />
+                                    </button>
+                                )}
+                            </div>
+                        ))}
+                    </div>
                     {showError && (
-                        <div className="w-full bg-[rgba(255,0,0,.2)] rounded-md p-2 text-N0 text-center">
+                        <div className="w-full bg-[rgba(255,0,0,.2)] rounded-md p-1 text-N0 text-sm text-center">
                             Total percentage must be approximately 100%
                         </div>
                     )}
                     {hasTokenPercentage && (
-                        <div className="w-full bg-[rgba(255,0,0,.2)] rounded-md p-2 text-N0 text-center">
+                        <div className="w-full bg-[rgba(255,0,0,.2)] rounded-md p-1 text-N0 text-sm text-center">
                             Each token must have a percentage assigned
                         </div>
                     )}
@@ -180,14 +187,14 @@ export const Rebalance: React.FC = () => {
                     <div className="flex justify-between items-center w-full mt-2">
                         <div className="inline-flex items-center relative">
                             <CustomCheckbox checked={splitEqually} onChange={handleSplitEquallyChange} />
-                            <span className="ml-2 text-N0 ">Split Equally</span>
+                            <span className="ml-1 text-N0 text-[.75rem]">Split Equally</span>
                         </div>
                         <button
-                            className="flex items-center justify-center gap-1 text-N0 bg-GR1 hover:scale-95 transition duration-300 ease-in-out font-bold h-8 w-[115px] rounded-md"
+                            className="flex items-center justify-center gap-1 text-N0 bg-GR1 hover:scale-95 transition duration-300 ease-in-out font-bold h-7 w-[6rem] rounded-md text-xs"
                             onClick={handleAddDiv}
                         >
                             Add More
-                            <IoIosAdd size="25px" className="h-6 w-6" />
+                            <IoIosAdd size="18px" className="h-5 w-5" />
                         </button>
                     </div>
                 </div>

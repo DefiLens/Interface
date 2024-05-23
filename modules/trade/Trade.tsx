@@ -17,6 +17,7 @@ import { iTrading, useTradingStore } from "../../store/TradingStore";
 import { protocolNames } from "../../utils/data/protocols";
 import { cn } from "../../lib/utils";
 import { socialHandles } from "../../utils/constants";
+import Header from "../header/Header";
 
 bg.config({ DECIMAL_PLACES: 10 });
 
@@ -77,109 +78,112 @@ const Trade: React.FC<tTrade> = ({
         setIsOnboardOpen(balance <= 0);
     }, [scwBalance, useAddress]);
 
-    return (
-        <div className="w-full flex flex-col justify-center items-center py-5">
-            <div
-                className={cn(
-                    showBatchList ? "!w-full" : "w-full md:w-3/4 lg:!w-1/2", // width when showing batchlist
-                    "flex flex-col lg:flex-row justify-start lg:justify-center items-center lg:items-start gap-4", // positions
-                    "h-full px-4 sm:px-0 lg:px-5 xl:px-0 max-w-lg lg:max-w-7xl" // sizes
-                )}
-            >
-                {/* FROM_TOKEN SELECTION MODAL */}
-                <TokenSelectionMenu
-                    showMenu={showFromSelectionMenu}
-                    closeMenu={closeFromSelectionMenu}
-                    handleSelectNetwork={handleSelectFromNetwork}
-                    selectedNetwork={selectedFromNetwork}
-                    filterToken={filterFromToken}
-                    setFilterToken={setFilterFromToken}
-                    filterAddress={filterFromAddress}
-                    setFilterAddress={setFilterFromAddress}
-                    tokensData={fromTokensData}
-                    selectedProtocol={selectedFromProtocol}
-                    onChangeToken={onChangeFromToken}
-                    onChangeProtocol={onChangeFromProtocol}
-                    protocolNames={protocolNames}
-                    title="Select source token"
-                    handleSelectedTokenAddress={handleSelectedTokenAddress}
-                />
-                {/* TO_TOKEN SELECTION MODAL */}
-                <TokenSelectionMenu
-                    showMenu={showToSelectionMenu}
-                    closeMenu={closeToSelectionMenu}
-                    handleSelectNetwork={handleSelectToNetwork}
-                    selectedNetwork={selectedToNetwork}
-                    filterToken={filterToToken}
-                    setFilterToken={setFilterToToken}
-                    filterAddress={filterToAddress}
-                    setFilterAddress={setFilterToAddress}
-                    tokensData={toTokensData}
-                    selectedProtocol={selectedToProtocol}
-                    onChangeToken={onChangeToToken}
-                    onChangeProtocol={onChangeToProtocol}
-                    protocolNames={protocolNames}
-                    title="Select destination token"
-                />
+    const [showRightColumn, setShowRightColumn] = useState(false);
 
-                {/* BATCHING TOKEN SELECTION --> TO AND FROM */}
-                <div className={cn("relative md:max-w-xl", showBatchList ? "w-full" : "w-full xl:w-3/4")}>
-                    <BatchSelectionSection
-                        handleSwap={handleSwap}
-                        onChangeAmountIn={onChangeAmountIn}
-                        sendSingleBatchToList={sendSingleBatchToList}
-                        handleExecuteMethod={handleExecuteMethod}
-                        processRebalancing={processRebalancing}
-                    />
-                    {noScwBalance && address && (
-                        <button
-                            className="absolute -top-4 -right-4 z-0 rounded-full border bg-white hover:scale-105 transition-transform"
-                            onClick={() => setIsOnboardOpen(true)}
-                        >
-                            <HiMiniExclamationCircle className="text-red-500 text-3xl" />
-                        </button>
+    const toggleRightColumn = () => {
+        setShowRightColumn(!showRightColumn);
+    };
+    return (
+        <>
+            <Header title="Batching" />
+            <div className="mx-auto">
+                <div className={`w-full grid gap-3 ${selectedFromNetwork.chainId && showBatchList && individualBatch.length > 0 ? "grid-cols-2" : "grid-cols-1"} md:grid-cols-2`}>
+                    {/* Batching*/}
+                    <div className={cn("relative mx-auto max-w-md", showBatchList ? "w-full" : "w-full")}>
+                        {/* <div className="border border-green-700"> */}
+                        <BatchSelectionSection
+                            handleSwap={handleSwap}
+                            onChangeAmountIn={onChangeAmountIn}
+                            sendSingleBatchToList={sendSingleBatchToList}
+                            handleExecuteMethod={handleExecuteMethod}
+                            processRebalancing={processRebalancing}
+                        />
+                        {noScwBalance && address && (
+                            <button
+                                className="absolute -top-4 -right-4 z-0 rounded-full border bg-white hover:scale-105 transition-transform"
+                                onClick={() => setIsOnboardOpen(true)}
+                            >
+                                <HiMiniExclamationCircle className="text-red-500 text-3xl" />
+                            </button>
+                        )}
+                    </div>
+
+                    {/* Batching List */}
+                    {selectedFromNetwork.chainId && showBatchList && individualBatch.length > 0 && (
+                        <BatchingListSection removeBatch={removeBatch} toggleShowBatchList={toggleShowBatchList} />
                     )}
                 </div>
-
-                {/* Modal - Select Execution Method */}
-                {showReviewModal && <ExecuteMethod ExecuteAllBatches={ExecuteAllBatches} />}
-
-                {/* Modal - While Executing Batches */}
-                {showExecuteBatchModel && <ExecuteBatch />}
-
-                {/* Modal that appears if user have no balance in smart-account */}
-                <ModalWrapper
-                    open={isOnboardOpen}
-                    onOpenChange={setIsOnboardOpen}
-                    title="Welcome to DefiLens!"
-                    description="and to the world of Account Abstraction"
-                    footer={
-                        <p className="text-slate-400 text-sm font-medium w-full">
-                            Note: Please contact us on our{" "}
-                            <Link className="underline underline-offset-2" href={socialHandles[0].href} target="_blank">
-                                telegram community
-                            </Link>{" "}
-                            if you need help.
-                        </p>
-                    }
-                >
-                    <div className="flex flex-col gap-4">
-                        <p>You need balance on smart-account to be able to Batch tokens.</p>
-                        <Link
-                            href="/onboarding"
-                            className="rounded-md bg-black/80 hover:bg-black/100 text-white max-w-fit px-4 py-2 hover:shadow-md transition-all"
-                        >
-                            Migrate Tokens
-                        </Link>
-                    </div>
-                </ModalWrapper>
-
-                {/* Batching List */}
-                {selectedFromNetwork.chainId && showBatchList && individualBatch.length > 0 && (
-                    <BatchingListSection removeBatch={removeBatch} toggleShowBatchList={toggleShowBatchList} />
-                )}
             </div>
-        </div>
+
+            {/* FROM_TOKEN SELECTION MODAL */}
+            <TokenSelectionMenu
+                showMenu={showFromSelectionMenu}
+                closeMenu={closeFromSelectionMenu}
+                handleSelectNetwork={handleSelectFromNetwork}
+                selectedNetwork={selectedFromNetwork}
+                filterToken={filterFromToken}
+                setFilterToken={setFilterFromToken}
+                filterAddress={filterFromAddress}
+                setFilterAddress={setFilterFromAddress}
+                tokensData={fromTokensData}
+                selectedProtocol={selectedFromProtocol}
+                onChangeToken={onChangeFromToken}
+                onChangeProtocol={onChangeFromProtocol}
+                protocolNames={protocolNames}
+                title="Select source token"
+                handleSelectedTokenAddress={handleSelectedTokenAddress}
+            />
+            {/* TO_TOKEN SELECTION MODAL */}
+            <TokenSelectionMenu
+                showMenu={showToSelectionMenu}
+                closeMenu={closeToSelectionMenu}
+                handleSelectNetwork={handleSelectToNetwork}
+                selectedNetwork={selectedToNetwork}
+                filterToken={filterToToken}
+                setFilterToken={setFilterToToken}
+                filterAddress={filterToAddress}
+                setFilterAddress={setFilterToAddress}
+                tokensData={toTokensData}
+                selectedProtocol={selectedToProtocol}
+                onChangeToken={onChangeToToken}
+                onChangeProtocol={onChangeToProtocol}
+                protocolNames={protocolNames}
+                title="Select destination token"
+            />
+
+            {/* Modal - Select Execution Method */}
+            {showReviewModal && <ExecuteMethod ExecuteAllBatches={ExecuteAllBatches} />}
+
+            {/* Modal - While Executing Batches */}
+            {showExecuteBatchModel && <ExecuteBatch />}
+
+            {/* Modal that appears if user have no balance in smart-account */}
+            <ModalWrapper
+                open={isOnboardOpen}
+                onOpenChange={setIsOnboardOpen}
+                title="Welcome to DefiLens!"
+                description="and to the world of Account Abstraction"
+                footer={
+                    <p className="text-slate-400 text-sm font-medium w-full">
+                        Note: Please contact us on our{" "}
+                        <Link className="underline underline-offset-2" href={socialHandles[0].href} target="_blank">
+                            telegram community
+                        </Link>{" "}
+                        if you need help.
+                    </p>
+                }
+            >
+                <div className="flex flex-col gap-4">
+                    <p>You need balance on smart-account to be able to Batch tokens.</p>
+                    <Link
+                        href="/onboarding"
+                        className="rounded-md bg-black/80 hover:bg-black/100 text-white max-w-fit px-4 py-2 hover:shadow-md transition-all"
+                    >
+                        Migrate Tokens
+                    </Link>
+                </div>
+            </ModalWrapper>
+        </>
     );
 };
 

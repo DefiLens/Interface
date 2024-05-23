@@ -11,8 +11,6 @@
 }
 
 .main-bg {
-    overflow: hidden;
-    position: relative;
     -webkit-box-align: center;
     background-image: url("../../images/main-bg.svg");
     background-position: center top;

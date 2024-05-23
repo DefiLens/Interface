@@ -27,6 +27,7 @@ export interface iGlobal {
 
     currentProvider: string;
     isSimulate: boolean;
+    mobileMenuOpen: boolean;
 
     connectedWallet: WalletInstance | null;
     setConnectedWallet: (wallet: WalletInstance | null) => void;
@@ -48,6 +49,7 @@ export interface iGlobal {
 
     setCurrentProvider: (currentProvider: string) => void;
     setIsSimulate: (isSimulate: boolean) => void;
+    setMobileMenuOpen: (mobileMenuOpen: boolean) => void;
 }
 
 export const useGlobalStore = create<iGlobal>((set) => ({
@@ -76,6 +78,7 @@ export const useGlobalStore = create<iGlobal>((set) => ({
 
     currentProvider: "",
     isSimulate: true,
+    mobileMenuOpen: false,
 
     setSelectedNetwork: (selectedNetwork) => set(() => ({ selectedNetwork })),
     setActiveChainName: (activeChainName) => set(() => ({ activeChainName })),
@@ -94,4 +97,5 @@ export const useGlobalStore = create<iGlobal>((set) => ({
 
     setCurrentProvider: (currentProvider) => set(() => ({ currentProvider })),
     setIsSimulate: (isSimulate) => set(() => ({ isSimulate })),
+    setMobileMenuOpen: (mobileMenuOpen) => set(() => ({ mobileMenuOpen })),
 }));

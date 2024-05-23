@@ -24,35 +24,35 @@ const SelectionBar: React.FC<tSelectionBar> = ({
             onClick={handleSelectionMenu}
             aria-disabled={addToBatchLoading}
             className={clsx(
-                "w-full rounded-lg px-5 py-3 transition cursor-pointer",
+                "w-full rounded-lg px-3 py-1 transition cursor-pointer",
                 showBg && "bg-[rgba(132,144,251,.4)]"
             )}
         >
-            <h5 className="text-sm md:text-base lg:text-lg font-medium md:font-semibold text-font-100">
+            <h5 className="text-sm lg:text-sm text-font-100">
                 {titlePlaceholder}
             </h5>
-            <div className="flex flex-row justify-start items-center gap-8 py-3">
+            <div className="flex flex-row justify-start items-center gap-4 py-3">
                 {iconCondition ? (
                     <div className="relative">
-                        <div className="h-12 w-12">
+                        <div className="h-10 w-10">
                             <Image
                                 src={mainIcon}
                                 alt=""
-                                className="h-12 w-12 full bg-N60 rounded-full cursor-pointer"
+                                className="h-10 w-10 full bg-N60 rounded-full cursor-pointer"
                             />
                         </div>
-                        <div className="absolute -bottom-1 -right-1 bg-N60 h-6 w-6 flex justify-center items-center rounded-full p-1">
+                        <div className="absolute -bottom-1 -right-1 bg-N60 h-5 w-5 flex justify-center items-center rounded-full">
                             <Image
                                 src={subIcon ? subIcon : defaultBlue}
                                 alt=""
-                                className="h-full w-full rounded-full cursor-pointer"
+                                className="h-4 w-4 rounded-full cursor-pointer"
                             />
                         </div>
                     </div>
                 ) : (
                     <div className="relative">
-                        <div className="h-12 w-12 bg-S100 rounded-full cursor-pointer" />
-                        <div className="absolute -bottom-1 -right-1  h-7 w-7 flex justify-center items-center rounded-full">
+                        <div className="h-10 w-10 bg-S100 rounded-full cursor-pointer" />
+                        <div className="absolute -bottom-1 -right-1  h-5 w-5 flex justify-center items-center rounded-full">
                             <div className="h-5 w-5 bg-S200 rounded-full cursor-pointer" />
                         </div>
                     </div>
@@ -60,14 +60,14 @@ const SelectionBar: React.FC<tSelectionBar> = ({
 
                 {valueCondition ? (
                     <div className="text-font-100">
-                        <div className="text-base md:text-lg text-font-100 font-semibold">{mainValue}</div>
-                        <div className="text-xs text-font-100 font-medium">
+                        <div className="text-base lg:text-base text-font-100 font-semibold">{mainValue}</div>
+                        <div className="text-[0.65rem] text-font-100 font-medium">
                             {firstSubValue && <span>on {firstSubValue}</span>}
                             {secondSubValue && <span> ({secondSubValue})</span>}
                         </div>
                     </div>
                 ) : (
-                    <div className="text-base md:text-lg text-font-100">{valuePlaceholder}</div>
+                    <div className="text-sm lg:text-base text-opacity-65 text-font-100">{valuePlaceholder}</div>
                 )}
             </div>
         </div>

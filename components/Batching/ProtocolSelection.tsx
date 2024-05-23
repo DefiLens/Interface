@@ -60,24 +60,24 @@ const ProtocolSelection: React.FC<iProtocolSelectionProps> = ({
                                             key={protocol.name}
                                             onClick={() => onChangeProtocol(protocol.name)}
                                             className={cn(
-                                                "w-full flex justify-between protocols-center gap-3 text-B300 bg-[rgba(132,144,251,.0.9) border border-[rgba(132,144,251)] hover:bg-[rgba(132,144,251,.1)] py-2 px-3 cursor-pointer",
+                                                "w-full flex justify-between itemss-center gap-2 text-B300 bg-[rgba(132,144,251,.0.9) border border-[rgba(132,144,251)] hover:bg-[rgba(132,144,251,.1)] py-1.5 px-3 cursor-pointer",
                                                 selectedProtocol === protocol.name
                                                     ? "border-b-0 rounded-t-lg mb-0"
                                                     : "rounded-lg my-1.5"
                                             )}
                                         >
-                                            <div className="w-full flex justify-start protocols-center gap-3">
+                                            <div className="w-full flex justify-start protocols-center gap-3 text-sm">
                                                 <Image
                                                     src={protocol.icon}
                                                     alt=""
-                                                    className="h-8 w-8 bg-N40 rounded-full cursor-pointer"
+                                                    className="h-6 w-6 bg-N40 rounded-full cursor-pointer"
                                                 />
                                                 <div>{selectedNetworkProtocols.value[protocolIndex]}</div>
                                             </div>
                                             <CiCircleChevDown
                                                 size="30px"
                                                 className={cn(
-                                                    "text-[rgba(132,144,251)] h-7 w-7",
+                                                    "text-[rgba(132,144,251)] h-6 w-6",
                                                     selectedProtocol === protocol.name && "transform rotate-180"
                                                 )}
                                             />

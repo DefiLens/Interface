@@ -239,7 +239,7 @@ export function setSafeState<T>(setStateFunction: (value: T) => void, value: T |
 
 ///// build txHash link from hash and chainId
 
-export const buildTxHash = (chainId: string, txhash: string | undefined, isSocketScan?: boolean, isSimulate?: boolean) => {
+export const buildTxHash = (chainId: string | undefined, txhash: string | undefined, isSocketScan?: boolean, isSimulate?: boolean) => {
     if (isSimulate) {
         return `https://dashboard.tenderly.co/sunnyRK/project/simulator/${txhash}`;
     } else {

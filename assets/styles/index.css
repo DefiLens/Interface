@@ -9,9 +9,11 @@
     html {
         @apply antialiased;
     }
+
     .page-center {
         @apply flex justify-start items-center pt-32 h-[calc(100vh-80px)] sm:h-[calc(100vh-120px)];
     }
+
     /* Track */
     ::-webkit-scrollbar-track {
         border-radius: 6px;
@@ -19,22 +21,26 @@
     }
 
     ::-webkit-scrollbar-thumb {
-        background: #6d55fc;
+        background: #443aff65;
         cursor: default;
         border-radius: 28px;
     }
 
     /* Handle on hover */
     ::-webkit-scrollbar-thumb:hover {
-        background: #7339fd;
+        background: #443aff90;
     }
 
     /* width */
     ::-webkit-scrollbar {
-        width: 4px;
+        width: 6px;
         height: 8px;
         border-radius: 100px;
     }
+
+}
+.font-condensed {
+    font-family: IBM Plex Sans Condensed, IBM Plex Sans, ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol, "Noto Color Emoji";
 }
 
 /*

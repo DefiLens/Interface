@@ -9,13 +9,13 @@ interface SearchInputProps {
 
 const SearchInput: React.FC<SearchInputProps> = ({ value, onChange, placeholder = "Search" }) => {
     return (
-        <div className="w-full flex justify-start items-center gap-2 bg-N0 border-2 border-B50 rounded-md py-2 px-5">
+        <div className="w-full flex justify-start items-center gap-2 bg-N0 border-2 border-B50 rounded-md py-[.3rem] px-3">
             <input
                 type="text"
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
                 placeholder={placeholder}
-                className="w-full text-sm md:text-base outline-none placeholder-B75 text-B100"
+                className="w-full text-xs md:text-sm outline-none placeholder-B75 text-B100"
             />
             <AiOutlineSearch />
         </div>
