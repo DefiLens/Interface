@@ -63,7 +63,7 @@ export const useTransferStore = create<iTransfer>((set) => ({
     amountIn: 0,
     amountInDecimals: 0,
     isNative: true,
-    isSCW: true,
+    isSCW: false,
     sendTxLoading: false,
     txhash: "",
     tokensData: [],

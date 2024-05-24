@@ -48,6 +48,10 @@ export interface iGlobal {
 
     setCurrentProvider: (currentProvider: string) => void;
     setIsSimulate: (isSimulate: boolean) => void;
+
+
+    isFetchingUsdc: boolean;
+    setIsFetchingUsdc: (isFetchingUsdc: boolean) => void;
 }
 
 export const useGlobalStore = create<iGlobal>((set) => ({
@@ -94,4 +98,7 @@ export const useGlobalStore = create<iGlobal>((set) => ({
 
     setCurrentProvider: (currentProvider) => set(() => ({ currentProvider })),
     setIsSimulate: (isSimulate) => set(() => ({ isSimulate })),
+
+    isFetchingUsdc: false,
+    setIsFetchingUsdc: (isFetchingUsdc) => set(() => ({ isFetchingUsdc })),
 }));

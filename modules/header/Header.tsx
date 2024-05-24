@@ -17,7 +17,12 @@ import toast from "react-hot-toast";
 import CopyButton from "../../components/common/CopyButton";
 import ConnectWalletWrapper from "../../components/Button/ConnectWalletWrapper";
 import { cn } from "../../lib/utils";
-import { logoLight } from "../../assets/images";
+import { logoLight, usdc } from "../../assets/images";
+import { MdOutlineFileDownload } from "react-icons/md";
+import { decreasePowerByDecimals } from "../../utils/helper";
+import { iTransfer, useTransferStore } from "../../store/TransferStore";
+import { iTrading, useTradingStore } from "../../store/TradingStore";
+import { iPortfolio, usePortfolioStore } from "../../store/Portfolio";
 
 const Header: React.FC<tHeader> = ({ switchOnSpecificChain }) => {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -33,7 +38,15 @@ const Header: React.FC<tHeader> = ({ switchOnSpecificChain }) => {
         setShowWalletAddress,
         selectedNetwork,
         setConnectedWallet,
+        isFetchingUsdc,
+        setIsFetchingUsdc,
     }: iGlobal = useGlobalStore((state) => state);
+ 
+    const { txhash: txhashTrading }: iTrading = useTradingStore((state) => state);
+
+    const { txhash: txhashTransferFund }: iTransfer = useTransferStore((state) => state);
+
+    const { txhash: txhashPortfolio }: iPortfolio = usePortfolioStore((state) => state);
 
     const address = useAddress();
     const chainId = useChainId();
@@ -73,6 +86,79 @@ const Header: React.FC<tHeader> = ({ switchOnSpecificChain }) => {
         }
     }, [chainId]);
 
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const toggleSidebar = () => {
+        setMobileMenuOpen(!mobileMenuOpen);
+    };
+
+    useEffect(() => {
+        fetchBalances();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [smartAccountAddress]);
+
+    const tokensByNetworkForCC = {
+        "137": {
+            usdc: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
+        },
+        "42161": {
+            usdc: "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8",
+        },
+        "10": {
+            usdc: "0x7F5c764cBc14f9669B88837ca1490cCa17c31607",
+        },
+        "8453": {
+            usdc: "0xd9aAEc86B65D86f6A7B5B1b0c42FFA531710b6CA",
+        },
+    };
+
+    const [balances, setBalances] = useState({});
+    const [totalUsdcInDecimal, setTotalUsdcInDecimal] = useState<number | string>(0);
+
+    const fetchBalances = async () => {
+        const results = {};
+        let total = 0;
+
+        try {
+            setIsFetchingUsdc(true);
+            const fetchBalancePromises = Object.keys(tokensByNetworkForCC).map(async (chainId) => {
+                const tokenAddress = tokensByNetworkForCC[chainId].usdc;
+                const response = await fetch("http://localhost:8000/getBalances", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        chainId,
+                        tokenAddress,
+                        userAddress: smartAccountAddress,
+                    }),
+                });
+
+                const result = await response.json();
+                results[chainId] = result;
+
+                // Sum up the USDC balance
+                total += parseFloat(result.balance);
+            });
+
+            await Promise.all(fetchBalancePromises);
+
+            setBalances(results);
+
+            // Calculate and set total USDC balance in decimal
+            const totalDecimal = decreasePowerByDecimals(total, 6);
+            setTotalUsdcInDecimal(totalDecimal);
+            setIsFetchingUsdc(false);
+        } catch (error) {
+            console.error("Error fetching balances:", error);
+            setIsFetchingUsdc(false);
+        }  
+    };
+
+    useEffect(() => {
+        if (smartAccountAddress) {
+            fetchBalances();
+        }
+    }, [smartAccountAddress, txhashTransferFund, txhashPortfolio, txhashTrading]);
+
     return (
         <>
             <header className="w-full fixed top-0 left-0 right-0 md:top-3 z-50">
@@ -87,7 +173,6 @@ const Header: React.FC<tHeader> = ({ switchOnSpecificChain }) => {
                         </Link>
                     </div>
                     <div className="hidden lg:flex lg:gap-x-8">
-
                         {NavigationList.map((item) => (
                             <Link
                                 key={item.title}
@@ -128,72 +213,25 @@ const Header: React.FC<tHeader> = ({ switchOnSpecificChain }) => {
 
                         {/* Account Addreses */}
                         <div className="flex flex-wrap justify-center items-center gap-3 text-base">
-                            {smartAccount && !loading && (
-                                <button
-                                    onClick={() => setShowWalletAddress(!showWalletAddress)}
-                                    ref={walletAddressRef}
-                                    className="relative hidden sm:flex justify-center items-center gap-3 wallet-container bg-N0 border border-N40 px-5 py-1 rounded-xl text-B100 shadow-sm font-medium transition duration-300 hover:bg-N20 cursor-pointer"
-                                >
-                                    {/* Smart account address and copy btn */}
-                                    <span className="text-sm font-medium">
-                                        {smartAccount &&
-                                            smartAccountAddress.slice(0, 5) + "..." + smartAccountAddress.slice(-3)}
+                            <div className="flex items-center overflow-hidden h-9 border rounded-lg border-gray-300 bg-white hover:bg-W100">
+                                <div className="hidden lg:flex h-full px-2 text-sm font-semibold text-B200 border-gray-200 bg-white transition-all duration-300 ease-in-out transform shadow-sm text-secondary items-center justify-center font-condensed gap-2">
+                                    <Image src={usdc} width={20} height={20} alt="USDC" />
+                                    <span className="flex items-center gap-1">
+                                        {isFetchingUsdc ? (
+                                            <CgSpinner className="animate-spin h-5 w-5" />
+                                        ) : (
+                                            Number(totalUsdcInDecimal).toFixed(3)
+                                        )}{" "}
                                     </span>
-                                    <CopyButton copy={smartAccountAddress} />
-
-                                    {/* Drop down see both addresses */}
-                                    {showWalletAddress && (
-                                        <div className="w-80 absolute top-16 right-0 z-50 flex flex-col justify-center items-start bg-N0 border-1 border-B75 shadow-xl p-3 rounded-lg">
-                                            {/* SCW Address and Balance */}
-                                            <div className="w-full relative flex justify-between p-2 items-center gap-2 cursor-default">
-                                                <div className="flex flex-col justify-center items-start">
-                                                    <span className="text-B200 text-base font-medium">
-                                                        {smartAccount &&
-                                                            smartAccountAddress.slice(0, 8) +
-                                                                "..." +
-                                                                smartAccountAddress.slice(-5)}
-                                                    </span>
-                                                    <span className="text-B100 text-xs">
-                                                        {smartAccount &&
-                                                            "SmartAccount : (" +
-                                                                scwBalance +
-                                                                " " +
-                                                                `${
-                                                                    ChainIdDetails[selectedNetwork.chainId.toString()]
-                                                                        ?.gasFeesName
-                                                                }` +
-                                                                ")"}
-                                                    </span>
-                                                </div>
-                                                <CopyButton copy={smartAccountAddress} />
-                                            </div>
-                                            {/* EOA Address and Balance */}
-                                            <div className="w-full flex justify-between items-center gap-2 p-2 cursor-default">
-                                                <div className="flex flex-col justify-center items-start">
-                                                    <span className="text-B200 text-base font-medium">
-                                                        {smartAccount &&
-                                                            address &&
-                                                            address.slice(0, 8) + "..." + address.slice(-5)}
-                                                    </span>
-                                                    <span className="text-B100 text-xs">
-                                                        {smartAccount &&
-                                                            "EOA : (" +
-                                                                eoaBalance +
-                                                                " " +
-                                                                `${
-                                                                    ChainIdDetails[selectedNetwork.chainId.toString()]
-                                                                        ?.gasFeesName
-                                                                }` +
-                                                                ")"}
-                                                    </span>
-                                                </div>
-                                                <CopyButton copy={address} />
-                                            </div>
-                                        </div>
-                                    )}
-                                </button>
-                            )}
-
+                                </div>
+                                <Link
+                                    href="deposite-fund"
+                                    className="hidden lg:flex h-full px-2 border-l text-sm font-semibold text-B200 border-gray-300 bg-white hover:bg-W100 transition-all duration-300 ease-in-out transform shadow-sm items-center justify-center gap-1 font-condensed"
+                                >
+                                    <MdOutlineFileDownload className="text-B200 text-lg" />
+                                    Deposit USDC
+                                </Link>
+                            </div>
                             {/* Third web auth btn */}
                             <ConnectWalletWrapper />
                         </div>
@@ -310,3 +348,69 @@ const Header: React.FC<tHeader> = ({ switchOnSpecificChain }) => {
 };
 
 export default Header;
+
+// {smartAccount && !loading && (
+//     <button
+//         onClick={() => setShowWalletAddress(!showWalletAddress)}
+//         ref={walletAddressRef}
+//         className="relative hidden sm:flex justify-center items-center gap-3 wallet-container bg-N0 border border-N40 px-5 py-1 rounded-xl text-B100 shadow-sm font-medium transition duration-300 hover:bg-N20 cursor-pointer"
+//     >
+//         {/* Smart account address and copy btn */}
+//         <span className="text-sm font-medium">
+//             {smartAccount &&
+//                 smartAccountAddress.slice(0, 5) + "..." + smartAccountAddress.slice(-3)}
+//         </span>
+//         <CopyButton copy={smartAccountAddress} />
+
+//         {/* Drop down see both addresses */}
+//         {showWalletAddress && (
+//             <div className="w-80 absolute top-16 right-0 z-50 flex flex-col justify-center items-start bg-N0 border-1 border-B75 shadow-xl p-3 rounded-lg">
+//                 {/* SCW Address and Balance */}
+//                 <div className="w-full relative flex justify-between p-2 items-center gap-2 cursor-default">
+//                     <div className="flex flex-col justify-center items-start">
+//                         <span className="text-B200 text-base font-medium">
+//                             {smartAccount &&
+//                                 smartAccountAddress.slice(0, 8) +
+//                                     "..." +
+//                                     smartAccountAddress.slice(-5)}
+//                         </span>
+//                         <span className="text-B100 text-xs">
+//                             {smartAccount &&
+//                                 "SmartAccount : (" +
+//                                     scwBalance +
+//                                     " " +
+//                                     `${
+//                                         ChainIdDetails[selectedNetwork.chainId.toString()]
+//                                             ?.gasFeesName
+//                                     }` +
+//                                     ")"}
+//                         </span>
+//                     </div>
+//                     <CopyButton copy={smartAccountAddress} />
+//                 </div>
+//                 {/* EOA Address and Balance */}
+//                 <div className="w-full flex justify-between items-center gap-2 p-2 cursor-default">
+//                     <div className="flex flex-col justify-center items-start">
+//                         <span className="text-B200 text-base font-medium">
+//                             {smartAccount &&
+//                                 address &&
+//                                 address.slice(0, 8) + "..." + address.slice(-5)}
+//                         </span>
+//                         <span className="text-B100 text-xs">
+//                             {smartAccount &&
+//                                 "EOA : (" +
+//                                     eoaBalance +
+//                                     " " +
+//                                     `${
+//                                         ChainIdDetails[selectedNetwork.chainId.toString()]
+//                                             ?.gasFeesName
+//                                     }` +
+//                                     ")"}
+//                         </span>
+//                     </div>
+//                     <CopyButton copy={address} />
+//                 </div>
+//             </div>
+//         )}
+//     </button>
+// )}

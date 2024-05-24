@@ -20,13 +20,11 @@ import { LiaWalletSolid } from "react-icons/lia";
 import { transferText } from "../../utils/constants";
 import { success } from "../../assets/gifs";
 import { useEffect } from "react";
+import { FaArrowCircleRight } from "react-icons/fa";
+import { TiInfoLarge } from "react-icons/ti";
+import { BsInfoCircleFill } from "react-icons/bs";
 
-const Transfer: React.FC<tTransfer> = ({
-    onOptionChangeForWallet,
-    setBalance,
-    handleAmountIn,
-    send,
-}) => {
+const Transfer: React.FC<tTransfer> = ({ onOptionChangeForWallet, setBalance, handleAmountIn, send }) => {
     const { smartAccount, smartAccountAddress }: iGlobal = useGlobalStore((state) => state);
 
     const {
@@ -57,9 +55,28 @@ const Transfer: React.FC<tTransfer> = ({
 
     useEffect(() => {
         if (amountInDecimals === 0) {
-            setSelectedToken("")
+            setSelectedToken("");
         }
-    }, [amountInDecimals])
+    }, [amountInDecimals]);
+
+    const usdcData = {
+        "137": {
+            address: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
+            name: "USDCoin",
+        },
+        "42161": {
+            address: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
+            name: "USDC",
+        },
+        "10": {
+            address: "0x7F5c764cBc14f9669B88837ca1490cCa17c31607",
+            name: "USDC",
+        },
+        "8453": {
+            address: "0xd9aAEc86B65D86f6A7B5B1b0c42FFA531710b6CA",
+            name: "USDbC",
+        },
+    };
 
     return (
         <div className="w-full h-full flex flex-col justify-start items-center gap-5">
@@ -72,19 +89,16 @@ const Transfer: React.FC<tTransfer> = ({
             )}
             {smartAccount && (
                 <div className="w-full lg:max-w-xl flex flex-col justify-center items-center mt-10 gap-3 border shadow-xl rounded-2xl bg-GR2 overflow-hidden">
-                    <div className="w-full p-5">
-                        <h3 className="font-semibold text-lg md:text-2xl text-N20 mb-3">Transfer Fund</h3>
+                    <div className="w-full pt-5 px-5">
+                        <h3 className="font-semibold text-lg md:text-2xl text-N20 mb-3">Deposite funds</h3>
                         <div className="w-full flex flex-col sm:flex-row justify-center items-center gap-2 md:gap-4 bg-[rgba(225,225,225,.4)] rounded-xl text-B100 p-3">
                             <div className="flex-1 md:w-40 flex flex-col justify-center items-center gap-2">
                                 <div className="flex flex-col justify-center gap-2">
                                     <span className="font-bold text-base text-N40">From</span>
                                     <div className="flex items-center justify-center gap-2 bg-[rgba(225,225,225,.6)] rounded-lg py-3 px-5">
                                         <span className="font-bold text-xl text-N10">{isSCW ? "SCW" : "EOA"}</span>
-                                        <div className="group relative flex justify-center bg-N0 rounded-full">
-                                            <HiOutlineInformationCircle
-                                                size="25px"
-                                                className="text-B300 cursor-pointer"
-                                            />
+                                        <div className="group relative flex justify-center rounded-full">
+                                            <FiCopy size="18px" className="text-white cursor-pointer" />
                                             <span className="w-fit absolute z-50 top-7 -right-[65px] scale-0 transition-all group-hover:scale-100 rounded shadow-lg bg-N0 px-3 py-1 font-medium text-start text-xs text-B100">
                                                 <button className="w-full relative flex justify-between items-center gap-3 py-2 px-2">
                                                     <div className="flex flex-col justify-center items-start text-B100 text-sm">
@@ -105,22 +119,19 @@ const Transfer: React.FC<tTransfer> = ({
                                     </div>
                                 </div>
                             </div>
-                            <button
-                                onClick={() => onOptionChangeForWallet()}
-                                className="w-10 h-10 rounded-full bg-N20 flex items-center justify-center"
+                            <div
+                                // onClick={() => onOptionChangeForWallet()}
+                                className="w-7 h-7 rounded-full flex items-center justify-center"
                             >
-                                <HiOutlineArrowsRightLeft size="30px" className="rotate-90 sm:rotate-0 text-bg-N40" />
-                            </button>
+                                <FaArrowCircleRight size="30px" className="text-N20" />
+                            </div>
                             <div className="flex-1 md:w-40 flex flex-col justify-center items-center gap-2">
                                 <div className="flex flex-col justify-center gap-2">
                                     <span className="font-bold text-base text-N40">To</span>
                                     <div className="flex items-center justify-center gap-2 bg-[rgba(225,225,225,.6)] rounded-lg py-3 px-5">
                                         <span className="font-bold text-xl text-N20">{isSCW ? "EOA" : "SCW"}</span>
-                                        <div className="group relative flex justify-center bg-N0 rounded-full">
-                                            <HiOutlineInformationCircle
-                                                size="25px"
-                                                className="text-B300 cursor-pointer"
-                                            />
+                                        <div className="group relative flex justify-center rounded-full">
+                                            <FiCopy size="18px" className="text-white cursor-pointer" />
 
                                             <span className="w-fit absolute z-50 top-7 -right-[65px] scale-0 transition-all group-hover:scale-100 rounded shadow-lg bg-N0 px-3 py-1 font-medium text-start text-xs text-B100">
                                                 <button className="w-full relative flex justify-between items-center gap-3 py-2 px-2">
@@ -142,6 +153,16 @@ const Transfer: React.FC<tTransfer> = ({
                                     </div>
                                 </div>
                             </div>
+                        </div>
+
+                        <div className="mt-3 flex gap-2 bg-white bg-opacity-20 rounded-lg p-2">
+                            <span className="text-white h-8 w-8">
+                                <BsInfoCircleFill size={21} />
+                            </span>
+                            <p className="text-xs md:text-sm text-N40 ">
+                                Deposit funds from your Externally Owned Account (EOA) to your Smart Contract Wallet
+                                (SCW), or copy the SCW address and deposit funds directly using your preferred wallet.
+                            </p>
                         </div>
                     </div>
 
@@ -218,7 +239,7 @@ const Transfer: React.FC<tTransfer> = ({
                                     </button>
                                 </div>
                             </div>
-
+                            {/* 
                             <div className="w-full flex flex-col justify-center gap-3 border-2 border-B50 rounded-lg my-3 p-4">
                                 <div
                                     role="presentation"
@@ -253,17 +274,23 @@ const Transfer: React.FC<tTransfer> = ({
                                         </h6>
                                     </div>
                                 )}
-                            </div>
+                            </div> */}
 
                             <Button
                                 handleClick={() => send()}
                                 isLoading={sendTxLoading}
                                 disabled={sendTxLoading}
-                                customStyle="sm:w-[65%]"
+                                innerText="Deposite Funds"
+                            />
+                            {/* 
+                            <Button
+                                handleClick={() => send()}
+                                isLoading={sendTxLoading}
+                                disabled={sendTxLoading}
                                 innerText={
                                     isSCW ? transferText.button.migrate_SCW_EOA : transferText.button.migrate_EOA_SCW
                                 }
-                            />
+                            /> */}
 
                             {txhash && (
                                 <div className="flex flex-wrap justify-start items-center gap-3 text-base">

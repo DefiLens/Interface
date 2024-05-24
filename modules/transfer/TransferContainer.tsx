@@ -25,9 +25,11 @@ bg.config({ DECIMAL_PLACES: 5 });
 const TransferContainer: React.FC = () => {
     const { mutateAsync: calculategasCost } = useCalculateGasCost();
 
-    const { smartAccount, smartAccountAddress, showTransferFundToggle, selectedNetwork, isSimulate }: iGlobal = useGlobalStore((state) => state);
+    const { smartAccount, smartAccountAddress, showTransferFundToggle, selectedNetwork, isSimulate }: iGlobal =
+        useGlobalStore((state) => state);
 
     const {
+        tokensData,
         tokenAddress,
         setTokenAddress,
         amountIn,
@@ -46,12 +48,40 @@ const TransferContainer: React.FC = () => {
         setGasCost,
         selectedToken,
         showSuccessModal,
+        setSelectedToken,
         setShowSuccessModal,
     }: iTransfer = useTransferStore((state) => state);
 
     const address = useAddress();
     const signer = useSigner();
     const chain = useChain();
+
+    const usdcOnNetwork = (filteredTokens: any) => {
+        const chainId = selectedNetwork.chainId;
+        const usdcSymbol = {
+            "137": ["USDC", "MATIC"],
+            "42161": ["USDC", "Ethereum"],
+            "8453": ["USDbC", "Ethereum"],
+            "10": ["USDC", "Ethereum"],
+        };
+    
+        // Get the USDC symbols for the current chainId
+        const usdcSymbolsForChain = usdcSymbol[chainId];
+    
+        // Filter tokens with matching symbols for the current chainId
+        const filtered = filteredTokens.filter((token) => {
+            return usdcSymbolsForChain?.includes(token.symbol);
+        });
+    
+        // Specifically remove the token with the name "Matic" for chainId "137"
+        if (chainId === "137") {
+            return filtered.filter((token) => token.name !== "Matic");
+        }
+    
+        // Return the filtered tokens
+        return filtered;
+    };
+    
 
     useEffect(() => {
         async function onChangeFromProtocol() {
@@ -64,7 +94,7 @@ const TransferContainer: React.FC = () => {
                 decimals: 18,
                 logoURI: selectedNetwork.chainId === "137" ? polygon : ethereum,
             });
-            setTokensData(filteredTokens);
+            setTokensData(usdcOnNetwork(filteredTokens));
         }
         setTokenAddress("");
         onChangeFromProtocol();
@@ -277,7 +307,6 @@ const TransferContainer: React.FC = () => {
                 );
             }
         } catch (error) {
-            // console.log("send-error: ", error);
             toast.error("Transaction Failed");
             setAmountIn(0);
             setAmountInDecimals(0);

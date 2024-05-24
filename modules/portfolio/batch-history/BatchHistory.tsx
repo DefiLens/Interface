@@ -1,9 +1,12 @@
 import { iBatchHistory } from "../types";
-import { formatDate } from "../../../utils/helper";
+import { decreasePowerByDecimals, formatDate } from "../../../utils/helper";
 import { NETWORK_LIST } from "../../../utils/data/network";
 import Image from "next/image";
 import CopyButton from "../../../components/common/CopyButton";
 import { iPortfolio, usePortfolioStore } from "../../../store/Portfolio";
+import { useEffect, useState } from "react";
+import { iGlobal, useGlobalStore } from "../../../store/GlobalStore";
+import { arbitrum, base, optimism, polygon } from "viem/chains";
 
 interface BatchHistoryProps {
     transactions: iBatchHistory[];
@@ -93,6 +96,223 @@ const FilterSelection: React.FC<FilterSelectionProps> = ({ dropdown = false, set
                 </div>
             )}
         </div>
+    );
+};
+
+const tokensByNetworkForCC = {
+    "137": {
+        usdc: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
+    },
+    "42161": {
+        usdc: "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8",
+    },
+    "10": {
+        usdc: "0x7F5c764cBc14f9669B88837ca1490cCa17c31607",
+    },
+    "8453": {
+        usdc: "0xd9aAEc86B65D86f6A7B5B1b0c42FFA531710b6CA",
+    },
+};
+
+const ChainData = [
+    {
+        key: "Polygon",
+        chainName: "polygon",
+        chainId: "137",
+        icon: polygon,
+    },
+    {
+        key: "Arbitrum",
+        chainName: "arbitrum",
+        chainId: "42161",
+        icon: arbitrum,
+    },
+    {
+        key: "Optimism",
+        chainName: "optimism",
+        chainId: "10",
+        icon: optimism,
+    },
+    {
+        key: "Base",
+        chainName: "base",
+        chainId: "8453",
+        icon: base,
+    },
+];
+
+const TokenB2alance = () => {
+    const { smartAccountAddress }: iGlobal = useGlobalStore((state) => state);
+    const [balances, setBalances] = useState({});
+    const [isLoading, setIsLoading] = useState(true);
+    const [totalUSDC, setTotalUSDC] = useState(0);
+
+    useEffect(() => {
+        const fetchBalances = async () => {
+            const results = {};
+            let total = 0;
+
+            try {
+                const fetchBalancePromises = Object.keys(tokensByNetworkForCC).map(async (chainId) => {
+                    const tokenAddress = tokensByNetworkForCC[chainId].usdc;
+                    const response = await fetch("http://localhost:8000/getBalances", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            chainId,
+                            tokenAddress,
+                            userAddress: "0x9Ce935D780424FB795bef7E72697f263A8258fAA",
+                        }),
+                    });
+                    const result = await response.json();
+                    results[chainId] = result;
+
+                    // Sum up the USDC balance
+                    total += parseFloat(result.balance);
+                });
+
+                await Promise.all(fetchBalancePromises);
+                setBalances(results);
+                setTotalUSDC(total);
+            } catch (error) {
+                console.error("Error fetching balances:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchBalances();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [smartAccountAddress]);
+
+    if (isLoading) {
+        return <div className="flex justify-center items-center h-screen">Loading...</div>;
+    }
+
+    const calculateTotalUSDC = () => {
+        let totalUSDC = 0;
+        Object.values(balances).forEach((balanceInfo: any) => {
+            const balance = parseFloat(balanceInfo.balance);
+            totalUSDC += balance;
+        });
+        return totalUSDC > 0 && decreasePowerByDecimals(totalUSDC, 6);
+    };
+
+    if (isLoading) {
+        return <div className="flex justify-center items-center h-screen">Loading...</div>;
+    }
+    const t: any = calculateTotalUSDC();
+
+    return (
+        <div className="container mx-auto p-4">
+            {/* <h1 className="text-3xl font-bold mb-6">Total USDC Balance: {decreasePowerByDecimals(totalUSDC, 6)}</h1> */}
+            <h1 className="text-3xl font-bold mb-6">Total USDC Balance: {t}</h1>
+
+            {balances &&
+                Object.keys(balances).map((chainId) => (
+                    <div key={chainId} className="mb-8">
+                        <h2 className="text-2xl font-bold mb-4">Chain ID: {chainId}</h2>
+                        <div className="bg-white shadow-md rounded-lg p-4">
+                            <h3 className="text-xl font-semibold">{balances[chainId].symbol}</h3>
+                            <p>
+                                <strong>Token Address:</strong> {balances[chainId].nativeToken}
+                            </p>
+                            <p>
+                                <strong>Balance:</strong>{" "}
+                                {balances[chainId]?.balance && decreasePowerByDecimals(balances[chainId]?.balance, 6)}
+                            </p>
+                            <p>
+                                <strong>Total Supply:</strong> {balances[chainId].totalSupply}
+                            </p>
+                        </div>
+                    </div>
+                ))}
+        </div>
+    );
+};
+
+const TokenBalance = () => {
+    const { smartAccountAddress }: iGlobal = useGlobalStore((state) => state);
+    const [balances, setBalances] = useState({});
+    const [isLoading, setIsLoading] = useState(true);
+    const [totalUSDCPerChain, setTotalUSDCPerChain] = useState({});
+    const [overallTotalUSDC, setOverallTotalUSDC] = useState(0);
+
+    useEffect(() => {
+        const fetchBalances = async () => {
+            const results = {};
+            const perChainTotal = {};
+            let overallTotal = 0;
+
+            try {
+                const fetchBalancePromises = Object.keys(tokensByNetworkForCC).map(async (chainId) => {
+                    const tokenAddress = tokensByNetworkForCC[chainId].usdc;
+                    const response = await fetch("http://localhost:8000/getBalances", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ chainId, tokenAddress, userAddress: smartAccountAddress }),
+                    });
+                    const result = await response.json();
+                    results[chainId] = result;
+
+                    // Calculate the total USDC balance per chain
+                    const balance = parseFloat(result.balance);
+                    perChainTotal[chainId] = balance;
+                    overallTotal += balance;
+                });
+
+                await Promise.all(fetchBalancePromises);
+                setBalances(results);
+                setTotalUSDCPerChain(perChainTotal);
+                setOverallTotalUSDC(overallTotal);
+            } catch (error) {
+                console.error("Error fetching balances:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchBalances();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [smartAccountAddress]);
+
+    if (isLoading) {
+        return <div className="flex justify-center items-center h-screen">Loading...</div>;
+    }
+
+    return (
+        <>
+            {!isLoading ? (
+                <div className="container mx-auto p-4">
+                    <h1 className="text-3xl font-bold mb-6">
+                        Overall Total USDC Balance: {overallTotalUSDC && decreasePowerByDecimals(overallTotalUSDC, 6)}
+                    </h1>
+                    {Object.keys(balances).map((chainId) => (
+                        <div key={chainId} className="mb-8">
+                            <h2 className="text-2xl font-bold mb-4">Chain ID: {chainId}</h2>
+                            <div className="bg-white shadow-md rounded-lg p-4">
+                                <h3 className="text-xl font-semibold">{balances[chainId].symbol}</h3>
+                                <p>
+                                    <strong>Token Address:</strong> {balances[chainId].nativeToken}
+                                </p>
+                                <p>
+                                    <strong>Balance:</strong> {balances[chainId].balance}
+                                </p>
+                                <p>
+                                    <strong>Total Supply:</strong> {balances[chainId].totalSupply}
+                                </p>
+                            </div>
+                            <p className="text-lg font-bold mt-4">
+                                Total USDC Balance for Chain ID {chainId}:{" "}
+                                {totalUSDCPerChain[chainId] && decreasePowerByDecimals(totalUSDCPerChain[chainId], 6)}
+                            </p>
+                        </div>
+                    ))}
+                </div>
+            ) : (
+                <div className="flex justify-center animate-pulse items-center h-screen">Loading...</div>
+            )}
+        </>
     );
 };
 

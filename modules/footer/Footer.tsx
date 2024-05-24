@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { tFooter } from "./types";
 import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
-import { tenderly } from "../../assets/images";
+import { biconomy, tenderly } from "../../assets/images";
 import { metadata } from "../../utils/constants";
 
 const Footer: React.FC<tFooter> = ({ SocialHandles }) => {
@@ -28,8 +28,10 @@ const Footer: React.FC<tFooter> = ({ SocialHandles }) => {
                 </div>
                 <span>
                     {isSimulate && (
-                        <h2 className="flex justify-center sm:my-0 gap-1 mx-auto w-full md:w-fit md: items-center">
-                            <span className="text-sm text-font-500 font-medium">simulation by</span>
+                        <h2 className="flex justify-center sm:my-0 gap-[.1rem] mx-auto w-full md:w-fit md: items-center">
+                            <span className="text-sm text-font-500 font-medium">Powered by</span>
+                            <Image src={biconomy} alt="tenderly logo" width={32} height={32} />
+                            <span className="text-base md:text-lg font-bold text-slate-900 mr-2">Biconomy</span>
                             <Image src={tenderly} alt="tenderly logo" width={32} height={32} />
                             <span className="text-base md:text-lg font-bold text-slate-900">tenderly</span>
                         </h2>

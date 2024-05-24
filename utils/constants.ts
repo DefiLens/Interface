@@ -25,13 +25,13 @@ export const NavigationList = [
         route: "/portfolio",
         icon: portfolio,
     },
+    // {
+    //     title: "Transfer Fund",
+    //     route: "/transfer-fund",
+    //     icon: transferfund,
+    // },
     {
-        title: "Transfer Fund",
-        route: "/transfer-fund",
-        icon: transferfund,
-    },
-    {
-        title: "Batch History",
+        title: "Txns History",
         route: "/portfolio/batch-history",
         icon: batching,
     },

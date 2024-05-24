@@ -47,8 +47,10 @@ import mirgrate_asset from "./nav-mirgrate-asset.svg";
 import radiant from "./radiant.jpeg";
 import tenderly from "./tenderly.png";
 import transferfund from "./nav-transfer-fund.svg";
+import biconomy from "./biconomy.png";
 
 export {
+    biconomy,
     closeNarrow,
     arbitrum,
     avalanche,

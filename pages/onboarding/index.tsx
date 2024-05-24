@@ -38,6 +38,7 @@ const Onboard = () => {
         setIsnative,
         setSendtxLoading,
         setTxHash,
+        tokensData,
         setTokensData,
         setScwTokenInbalance,
         setEoaTokenInbalance,
@@ -45,7 +46,8 @@ const Onboard = () => {
         setGasCost,
     }: iTransfer = useTransferStore((state) => state);
 
-    const usdcOnNetwork = (filteredTokens: iTokenInfo[]) => {
+    const usdcOnNetwork2 = (filteredTokens: iTokenInfo[]) => {
+        console.log("filteredTokens", filteredTokens);
         const chainId = selectedNetwork.chainId;
         const usdcSymbol = {
             "137": "USDC",
@@ -59,6 +61,29 @@ const Onboard = () => {
             }
         });
         // console.log("filtered", filtered);
+        return filtered;
+    };
+
+    const usdcOnNetwork = (filteredTokens: iTokenInfo[]) => {
+        console.log("filteredTokens", filteredTokens);
+        const chainId = selectedNetwork.chainId;
+        const usdcSymbol = {
+            "137": ["USDC"],
+            "42161": ["USDC"],
+            "8453": ["USDbC"],
+            "10": ["USDC", "Ethereum"],
+        };
+
+        // Get the USDC symbols for the current chainId
+        const usdcSymbolsForChain = usdcSymbol[chainId];
+
+        // Find the token with a matching symbol for the current chainId
+        const filtered = filteredTokens.find((token) => {
+            return usdcSymbolsForChain.includes(token.symbol);
+        });
+
+        console.log("filtered", filtered);  
+        // Return the filtered token
         return filtered;
     };
 
@@ -250,10 +275,12 @@ const Onboard = () => {
             }
             setTokensData(usdcOnNetwork(filteredTokens));
         }
+
         setTokenAddress("");
         onChangeFromProtocol();
     }, [selectedNetwork.chainId]);
 
+    console.log(tokensData, "tokensData");
     useEffect(() => {
         if (address && smartAccount) {
             setBalance("ethereum", "0x");
