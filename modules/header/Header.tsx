@@ -23,6 +23,7 @@ import { decreasePowerByDecimals } from "../../utils/helper";
 import { iTransfer, useTransferStore } from "../../store/TransferStore";
 import { iTrading, useTradingStore } from "../../store/TradingStore";
 import { iPortfolio, usePortfolioStore } from "../../store/Portfolio";
+import axiosInstance from "../../axiosInstance/axiosInstance";
 
 const Header: React.FC<tHeader> = ({ switchOnSpecificChain }) => {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -41,7 +42,7 @@ const Header: React.FC<tHeader> = ({ switchOnSpecificChain }) => {
         isFetchingUsdc,
         setIsFetchingUsdc,
     }: iGlobal = useGlobalStore((state) => state);
- 
+
     const { txhash: txhashTrading }: iTrading = useTradingStore((state) => state);
 
     const { txhash: txhashTransferFund }: iTransfer = useTransferStore((state) => state);
@@ -122,26 +123,22 @@ const Header: React.FC<tHeader> = ({ switchOnSpecificChain }) => {
             setIsFetchingUsdc(true);
             const fetchBalancePromises = Object.keys(tokensByNetworkForCC).map(async (chainId) => {
                 const tokenAddress = tokensByNetworkForCC[chainId].usdc;
-                const response = await fetch("http://localhost:8000/getBalances", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        chainId,
-                        tokenAddress,
-                        userAddress: smartAccountAddress,
-                    }),
+                const response = await axiosInstance.post("/token/getBalance", {
+                    chainId,
+                    tokenAddress,
+                    userAddress: smartAccountAddress,
                 });
 
-                const result = await response.json();
+                const result = await response.data;    
                 results[chainId] = result;
 
                 // Sum up the USDC balance
-                total += parseFloat(result.balance);
-            });
+                total += parseFloat(result.balance);   
+            });   
 
             await Promise.all(fetchBalancePromises);
 
-            setBalances(results);
+            setBalances(results); 
 
             // Calculate and set total USDC balance in decimal
             const totalDecimal = decreasePowerByDecimals(total, 6);
@@ -150,7 +147,7 @@ const Header: React.FC<tHeader> = ({ switchOnSpecificChain }) => {
         } catch (error) {
             console.error("Error fetching balances:", error);
             setIsFetchingUsdc(false);
-        }  
+        }
     };
 
     useEffect(() => {
@@ -161,9 +158,10 @@ const Header: React.FC<tHeader> = ({ switchOnSpecificChain }) => {
 
     return (
         <>
-            <header className="w-full fixed top-0 left-0 right-0 md:top-3 z-50">
+            {/* <header className="w-full fixed top-0 left-0 right-0 md:top-3 z-50"> */}
+            <header className="w-full">
                 <nav
-                    className="max-w-[1380px] w-full md:w-[94%] mx-auto h-[70px] placeholder:h-[70px] flex justify-between items-center gap-3 bg-N0 md:border md:rounded-full py-3 px-7"
+                    className="max-w-[1380px] w-full md:w-[94%] mx-auto h-[70px] mt-[10px] placeholder:h-[70px] flex justify-between items-center gap-3 bg-N0 md:border md:rounded-full py-3 px-7"
                     aria-label="Global"
                 >
                     <div className="flex lg:flex-1">
@@ -214,7 +212,9 @@ const Header: React.FC<tHeader> = ({ switchOnSpecificChain }) => {
                         {/* Account Addreses */}
                         <div className="flex flex-wrap justify-center items-center gap-3 text-base">
                             <div className="flex items-center overflow-hidden h-9 border rounded-lg border-gray-300 bg-white hover:bg-W100">
-                                <div className="hidden lg:flex h-full px-2 text-sm font-semibold text-B200 border-gray-200 bg-white transition-all duration-300 ease-in-out transform shadow-sm text-secondary items-center justify-center font-condensed gap-2">
+                                <div
+                                    className={`hidden lg:flex h-full px-2 text-sm font-semibold text-B200 border-gray-200 bg-white transition-all duration-300 ease-in-out transform shadow-sm text-secondary items-center justify-center font-condensed gap-2 ${!smartAccountAddress && "hidden lg:hidden"}`}
+                                >
                                     <Image src={usdc} width={20} height={20} alt="USDC" />
                                     <span className="flex items-center gap-1">
                                         {isFetchingUsdc ? (
@@ -226,7 +226,7 @@ const Header: React.FC<tHeader> = ({ switchOnSpecificChain }) => {
                                 </div>
                                 <Link
                                     href="deposite-fund"
-                                    className="hidden lg:flex h-full px-2 border-l text-sm font-semibold text-B200 border-gray-300 bg-white hover:bg-W100 transition-all duration-300 ease-in-out transform shadow-sm items-center justify-center gap-1 font-condensed"
+                                    className={`hidden lg:flex h-full px-2 ${smartAccountAddress && "border-l"} text-sm font-semibold text-B200 border-gray-300 bg-white hover:bg-W100 transition-all duration-300 ease-in-out transform shadow-sm items-center justify-center gap-1 font-condensed`}
                                 >
                                     <MdOutlineFileDownload className="text-B200 text-lg" />
                                     Deposit USDC
