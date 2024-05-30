@@ -1,5 +1,5 @@
 import { iBatchHistory } from "../types";
-import { decreasePowerByDecimals, formatDate } from "../../../utils/helper";
+import { buildTxHash, decreasePowerByDecimals, formatDate } from "../../../utils/helper";
 import { NETWORK_LIST } from "../../../utils/data/network";
 import Image from "next/image";
 import CopyButton from "../../../components/common/CopyButton";
@@ -7,12 +7,25 @@ import { iPortfolio, usePortfolioStore } from "../../../store/Portfolio";
 import { useEffect, useState } from "react";
 import { iGlobal, useGlobalStore } from "../../../store/GlobalStore";
 import { arbitrum, base, optimism, polygon } from "viem/chains";
+import { tokensByProtocol } from "../../../utils/data/tokensByProtocol";
+import axiosInstance from "../../../axiosInstance/axiosInstance";
+import {
+    abiFetcher,
+    abiFetcherNum,
+    fetchApy,
+    nativeTokenFetcher,
+    nativeTokenNum,
+    protocolNames,
+} from "../../../utils/data/protocols";
+import { RxExternalLink } from "react-icons/rx";
+import { getProvider } from "../../../utils/web3Libs/ethers";
 
 interface BatchHistoryProps {
     transactions: iBatchHistory[];
     smartAccountAddress: string;
     isSimulation: boolean;
     setIsSimulation: (isSimulation: boolean) => void;
+    errorMessage: string;
 }
 
 interface Chain {
@@ -31,10 +44,6 @@ const FilterSelection: React.FC<FilterSelectionProps> = ({ dropdown = false, set
 
     const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setChainName(e.target.value);
-    };
-
-    const handleButtonClick = (chainName: string) => {
-        setChainName(chainName);
     };
 
     const chains: Chain[] = [
@@ -66,17 +75,6 @@ const FilterSelection: React.FC<FilterSelectionProps> = ({ dropdown = false, set
                 </div>
             ) : (
                 <div className="w-full flex items-center gap-3 overflow-scroll" style={{ scrollbarWidth: "none" }}>
-                    {/* {chains.map((chain) => (
-                        <button
-                            key={chain.chainName}
-                            onClick={() => handleButtonClick(chain.value)}
-                            className={`py-2 px-4 rounded-lg border border-B50 hover:bg-N50 ${
-                                chainName === chain.value ? "bg-GR1 text-N20 border-none" : "bg-N40 text-B100"
-                            }`}
-                        >
-                            {chain.chainName}
-                        </button>
-                    ))} */}
                     <button
                         onClick={() => setIsSimulation(true)}
                         className={`py-2 px-4 rounded-lg border border-B50 hover:bg-N50 ${
@@ -316,49 +314,249 @@ const TokenBalance = () => {
     );
 };
 
-const BatchHistory: React.FC<BatchHistoryProps> = ({ transactions, setIsSimulation, isSimulation }) => {
+const TokenItem = ({ token }) => {
+    return (
+        <div className="flex items-center p-4 border-b border-gray-200 min-w-[30rem]">
+            <img src={token.image} alt={`${token.name} logo`} className="w-10 h-10 rounded-full mr-4" />
+            <div className="flex-grow mr-10">
+                <div className="font-semibold text-lg">
+                    {token.nativeName} <span className="text-B100 text-base">(APY: {token.apy}%)</span>
+                </div>
+                <div className="text-gray-600">
+                    {token.name}
+                    <span className="bg-gray-200 text-gray-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded ml-2">
+                        deposited
+                    </span>
+                    {token.deposited}
+                </div>
+            </div>
+            <div className=" flex flex-col justify-end items-end">
+                <div className="font-semibold">{token.usdcBalance}</div>
+                <div className="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded">available</div>
+            </div>
+        </div>
+    );
+};
+
+const tokens = [
+    {
+        image: "https://via.placeholder.com/40", // replace with actual image URL
+        nativeName: "USDC",
+        apy: 0.2,
+        name: "aUSDC",
+        balance: 100,
+        deposited: 0.2,
+        usdcBalance: 1000,
+    },
+    {
+        image: "https://via.placeholder.com/40", // replace with actual image URL
+        nativeName: "DAI",
+        apy: 0.3,
+        name: "aDAI",
+        balance: 150,
+        deposited: 0.3,
+        usdcBalance: 2000,
+    },
+    // Add more tokens as needed
+];
+
+const TokenList = () => {
+    return (
+        <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
+            {tokens.map((token, index) => (
+                <TokenItem key={index} token={token} />
+            ))}
+        </div>
+    );
+};
+
+const BatchHistory: React.FC<BatchHistoryProps> = ({ transactions, setIsSimulation, isSimulation, errorMessage }) => {
+    // const word = "aUSDC";
+
+    // const [tokenAddress, setTokenAddress] = useState("");
+    // // const fetchTokenData = async () => {
+    // //     try {
+    // //         const response = await axiosInstance.get(`/token/detail/${tokenAddress}`);
+
+    // //         console.log(response?.data);
+    // //     } catch (error) {
+    // //         console.error("Error fetching token data:", error);
+    // //     }
+    // // };
+
+    // const [mergedData, setMergedData] = useState<any>(null);
+    // const [extractedData, setExtractedData] = useState<any>(null);
+
+    // // Function to fetch token data from the API
+    // const fetchTokenData = async (tokenAddress) => {
+    //     try {
+    //         const response = await axiosInstance.get(`/token/detail/${tokenAddress}`);
+    //         return response.data; // Return fetched token data
+    //     } catch (error) {
+    //         console.error("Error fetching token data:", error);
+    //         return null; // Return null in case of error
+    //     }
+    // };
+
+    // const fetchAndMergeTokenData = async () => {
+    //     try {
+    //         const mergedData = {}; // Object to store merged token data
+    //         const extractedData = {}; // Object to store extracted data
+
+    //         // Iterate over each chain ID
+    //         for (const chainId in nativeTokenFetcher) {
+    //             const implementations = nativeTokenFetcher[chainId];
+
+    //             // Iterate over implementations for each chain ID
+    //             for (const implementationId in implementations) {
+    //                 const tokenAddress = implementations[implementationId].nativeToken;
+
+    //                 // Fetch token data from the API
+    //                 const tokenData = await fetchTokenData(tokenAddress);
+
+    //                 // Extract image, token name, and symbol
+    //                 const { icon, name, symbol } = tokenData;
+    //                 extractedData[tokenAddress] = { icon: icon.url, name, symbol };
+
+    //                 // Merge fetched token data with existing data
+    //                 if (tokenData) {
+    //                     if (!mergedData[chainId]) {
+    //                         mergedData[chainId] = {};
+    //                     }
+    //                     mergedData[chainId][implementationId] = { ...implementations[implementationId], ...tokenData };
+    //                 }
+    //             }
+    //         }
+
+    //         setMergedData(mergedData); // Set merged token data
+    //         setExtractedData(extractedData); // Set extracted data
+    //     } catch (error) {
+    //         console.error("Error fetching and merging token data:", error);
+    //     }
+    // };
+
+    // useEffect(() => {
+    //     fetchAndMergeTokenData(); // Fetch and merge token data on component mount
+    // }, []);
+
+    // console.log(mergedData, "mergedData");
+    // console.log(extractedData, "extractedData");
+    interface INetworkMap {
+        [networkName: string]: number;
+    }
+
+    const NETWORK_MAP: INetworkMap = {
+        polygon: 137,
+        avalanche: 43114,
+        arbitrum: 42161,
+        optimism: 10,
+        base: 8453,
+    };
+
+    const chainId = "137";
+    const tokenName = "aUSDC";
+
+    // console.log(abiFetcherNum[chainId][tokenName])
+    // console.log(abiFetcher[chainId][abiFetcherNum[chainId][tokenName]].contractAddress)
+
+    const tokenAbiData: any = abiFetcher[chainId][abiFetcherNum[chainId][tokenName]];
+    const apyFunc: any = tokenAbiData.apyFetch;
+
+    const contractAddress = tokenAbiData.isContractSet
+        ? tokenAbiData.contractSet[tokenName]
+        : tokenAbiData.contractAddress;
+
+    const nativeTokenNumber = nativeTokenNum[chainId][tokenName];
+    const nativeTokenDetail = nativeTokenFetcher[chainId][nativeTokenNumber];
+
+    // console.log(nativeTokenDetail, "nativeTokenDetail")
+
+    const [tokenBal, setTokenBal] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
+    const { smartAccountAddress }: iGlobal = useGlobalStore((state) => state);
+
+    const getBalance = async () => {
+        setIsLoading(true);
+
+        try {
+            const provider = await getProvider(chainId);
+
+            const data = await fetchApy(
+                apyFunc,
+                tokenAbiData.contractAddress,
+                provider,
+                "",
+                nativeTokenDetail.nativeToken
+            );
+            console.log("data", data);
+
+            setIsLoading(false);
+        } catch (error) {
+            console.error(error);
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        getBalance();
+    }, []);
+
     return (
         <div className="w-full flex flex-col justify-center items-center gap-10 p-4">
             <div className="max-w-6xl sticky h-[65px] top-0 z-20 w-full mx-auto bg-N0 shadow-lg rounded-md p-3 flex justify-between gap-2">
                 <FilterSelection setIsSimulation={setIsSimulation} isSimulation={isSimulation} />
                 <FilterSelection dropdown={true} />
             </div>
-            <div className="max-w-6xl w-full mx-auto bg-N0 shadow-lg rounded-md p-3">
-                <h1 className="text-2xl font-bold mb-4">Transaction History</h1>
 
+            <div className="max-w-6xl w-full mx-auto  p-3">
                 <div className="flex flex-col gap-10">
                     {transactions && transactions.length > 0 ? (
                         transactions.map((parentTransaction: iBatchHistory, index: number) => (
-                            <div key={index}>
-                                <h2 className="text-xl font-semibold">#{index + 1} Batch</h2>
-                                <div className="flex justify-between items-end mb-4">
-                                    <div className="flex items-center gap-3">
-                                        <p className="font-semibold">
-                                            Transaction Hash:{"  "}
-                                            {parentTransaction.txHash
-                                                ? parentTransaction.txHash.slice(0, 20) +
-                                                  "......." +
-                                                  parentTransaction.txHash.slice(-8)
-                                                : "N/A"}
-                                        </p>
-                                        <CopyButton copy={parentTransaction.txHash || ""} />
-                                    </div>
-                                    <div className="flex flex-col items-center gap-3">
-                                        <p className="font-semibold">Total Amount: {parentTransaction.totalAmount}</p>
+                            <div key={index} className="bg-N0 shadow-lg rounded-xl border border-N40 p-4">
+                                <div className="flex flex-col mb-4">
+                                    {!isSimulation ? (
+                                        <div className="flex items-center gap-1 text-base text-B200">
+                                            <p className="font-semibold">
+                                                Simulation Link:{"  "}
+                                                {parentTransaction.txHash
+                                                    ? parentTransaction.txHash.slice(0, 20) +
+                                                      "......." +
+                                                      parentTransaction.txHash.slice(-8)
+                                                    : "N/A"}
+                                            </p>
+                                            <a href={parentTransaction.txHash} target="_blank">
+                                                <RxExternalLink />
+                                            </a>
+                                        </div>
+                                    ) : (
+                                        <div className="flex items-center gap-1 text-base text-B200">
+                                            <p className="font-semibold">
+                                                Transaction Hash:{"  "}
+                                                {parentTransaction.txHash
+                                                    ? parentTransaction.txHash.slice(0, 20) +
+                                                      "......." +
+                                                      parentTransaction.txHash.slice(-8)
+                                                    : "N/A"}
+                                            </p>
+                                            <CopyButton copy={parentTransaction.txHash || ""} />
+                                        </div>
+                                    )}
+                                    <div className="flex gap-3 text-sm text-B200">
                                         <p className="font-semibold">Date: {formatDate(parentTransaction.createdAt)}</p>
+                                        <p className="font-semibold">
+                                            Total Amount: {Number(parentTransaction.totalAmount).toFixed(4)}
+                                        </p>
                                     </div>
                                 </div>
                                 <div className="overflow-x-auto">
-                                    <table className="table-auto border-collapse w-full">
+                                    <table className="table-auto border-collapse w-full border border-N40">
                                         <thead>
-                                            <tr>
-                                                <th className="px-4 py-2">From Network</th>
-                                                <th className="px-4 py-2">From Protocol</th>
-                                                <th className="px-4 py-2">From Token</th>
-                                                <th className="px-4 py-2">To Network</th>
-                                                <th className="px-4 py-2">To Protocol</th>
-                                                <th className="px-4 py-2">To Token</th>
-                                                <th className="px-4 py-2">Amount In</th>
+                                            <tr className="text-sm text-B200 text-start border border-N40">
+                                                <th className="px-4 py-2 text-start">Source</th>
+                                                <th className="px-4 py-2 text-start">Destination</th>
+                                                <th className="px-4 py-2 text-start">From Protocol</th>
+                                                <th className="px-4 py-2 text-start">To Protocol</th>
+                                                <th className="px-4 py-2 text-start">Amount</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -377,46 +575,175 @@ const BatchHistory: React.FC<BatchHistoryProps> = ({ transactions, setIsSimulati
                                                         transaction.toNetwork.toLowerCase()
                                                 );
 
+                                                const findTokenDetails = (chain, protocol, tokenName) => {
+                                                    // Check if the chain exists in the data structure
+                                                    if (protocol === "erc20") {
+                                                        return { chain, protocol, tokenName };
+                                                    }
+                                                    if (tokensByProtocol[chain]) {
+                                                        // Check if the protocol exists within the specified chain
+                                                        if (tokensByProtocol[chain][protocol]) {
+                                                            // Find the token by name within the specified protocol
+                                                            const token = tokensByProtocol[chain][protocol].find(
+                                                                (t) => t.name === tokenName
+                                                            );
+                                                            if (token) {
+                                                                return token;
+                                                            } else {
+                                                                console.error(
+                                                                    `Token with name "${tokenName}" not found in protocol "${protocol}" on chain "${chain}".`
+                                                                );
+                                                                return null;
+                                                            }
+                                                        } else {
+                                                            console.error(
+                                                                `Protocol "${protocol}" not found on chain "${chain}".`
+                                                            );
+                                                            return null;
+                                                        }
+                                                    } else {
+                                                        console.error(`Chain "${chain}" not found.`);
+                                                        return null;
+                                                    }
+                                                };
+                                                const fromTokenDetails = findTokenDetails(
+                                                    transaction.fromNetwork,
+                                                    transaction.fromProtocol,
+                                                    transaction.fromToken
+                                                );
+                                                const toTokenDetails = findTokenDetails(
+                                                    transaction.toNetwork,
+                                                    transaction.toProtocol,
+                                                    transaction.toToken
+                                                );
+
+                                                const getProtocolIcon = (chainName: string, protocolName: string) => {
+                                                    const chainId = NETWORK_MAP[chainName];
+                                                    const protocol = protocolNames[chainId]?.key?.find(
+                                                        (protocol) => protocol.name === protocolName
+                                                    );
+                                                    return protocol;
+                                                };
+
+                                                // Example usage
+                                                const fromProtocolDetails = getProtocolIcon(
+                                                    transaction.fromNetwork,
+                                                    transaction.fromProtocol
+                                                );
+                                                const toProtocolDetails = getProtocolIcon(
+                                                    transaction.toNetwork,
+                                                    transaction.toProtocol
+                                                );
+
                                                 return (
-                                                    <tr key={transaction._id}>
-                                                        <td className="border px-4 py-2 text-center">
+                                                    <tr key={transaction._id} className="border-b border-N40">
+                                                        <td className=" px-4 py-2 text-sm gap-2">
+                                                            <div className="flex gap-2 items-center mb-2">
+                                                                Token:
+                                                                {fromTokenDetails.image ? (
+                                                                    <Image
+                                                                        src={
+                                                                            fromTokenDetails.image &&
+                                                                            fromTokenDetails.image
+                                                                        }
+                                                                        alt={`${fromTokenDetails.name}-logo`}
+                                                                        width={10}
+                                                                        height={10}
+                                                                        className="w-7 h-7 rounded-full"
+                                                                    />
+                                                                ) : (
+                                                                    <div className="flex items-center justify-center w-7 h-7 rounded-full bg-B50 text-B100 font-bold text-[.6rem]">
+                                                                        {transaction.fromToken.slice(0, 2)}
+                                                                    </div>
+                                                                )}
+                                                                {transaction.fromToken}
+                                                            </div>
                                                             {fromNetworkObj ? (
                                                                 <div className="flex gap-2 items-center">
+                                                                    Chain:
                                                                     <Image
                                                                         src={fromNetworkObj.icon}
                                                                         alt={fromNetworkObj.key}
-                                                                        className="h-8 w-8 rounded-full"
+                                                                        className="h-7 w-7 rounded-full"
                                                                     />
                                                                     {fromNetworkObj.key}
                                                                 </div>
                                                             ) : null}
                                                         </td>
-                                                        <td className="border px-4 py-2 text-center">
-                                                            {transaction.fromProtocol}
-                                                        </td>
-                                                        <td className="border px-4 py-2 text-center">
-                                                            {transaction.fromToken}
-                                                        </td>
-                                                        <td className="border px-4 py-2 text-center">
+
+                                                        <td className="px-4 py-2 gap-2 text-sm">
+                                                            <div className="flex gap-2 items-center mb-2">
+                                                                Token:
+                                                                {toTokenDetails.image ? (
+                                                                    <Image
+                                                                        src={
+                                                                            toTokenDetails.image && toTokenDetails.image
+                                                                        }
+                                                                        alt={`${toTokenDetails.name}-logo`}
+                                                                        width={10}
+                                                                        height={10}
+                                                                        className="w-7 h-7 rounded-full"
+                                                                    />
+                                                                ) : (
+                                                                    <div className="flex items-center justify-center w-7 h-7 rounded-full bg-B50 text-B100 font-bold text-[.6rem]">
+                                                                        {transaction.toToken.slice(0, 2)}
+                                                                    </div>
+                                                                )}
+                                                                {transaction.toToken}
+                                                            </div>
                                                             {toNetworkObj ? (
-                                                                <div className="flex gap-2 items-center">
+                                                                <div className="flex gap-2">
+                                                                    Chain:
                                                                     <Image
                                                                         src={toNetworkObj.icon}
                                                                         alt={toNetworkObj.key}
-                                                                        className="h-8 w-8 rounded-full"
+                                                                        className="h-7 w-7 rounded-full"
                                                                     />
                                                                     {toNetworkObj.key}
                                                                 </div>
                                                             ) : null}
                                                         </td>
-                                                        <td className="border px-4 py-2 text-center">
-                                                            {transaction.toProtocol}
+                                                        <td className="px-4 py-2 ">
+                                                            <div className="flex gap-2 items-center mb-2">
+                                                                {fromProtocolDetails && fromProtocolDetails.icon ? (
+                                                                    <Image
+                                                                        src={fromProtocolDetails.icon}
+                                                                        alt={`${fromTokenDetails.name}-logo`}
+                                                                        width={10}
+                                                                        height={10}
+                                                                        className="w-6 h-6 rounded-full"
+                                                                    />
+                                                                ) : (
+                                                                    <div className="flex items-center justify-center w-6 h-6 rounded-full bg-B50 text-B100 font-bold text-[.6rem]">
+                                                                        {fromTokenDetails.name.slice(0, 2)}
+                                                                    </div>
+                                                                )}
+                                                                {transaction.fromProtocol === "erc20"
+                                                                    ? transaction.fromProtocol
+                                                                    : fromProtocolDetails && fromTokenDetails.name}
+                                                            </div>
                                                         </td>
-                                                        <td className="border px-4 py-2 text-center">
-                                                            {transaction.toToken}
+                                                        <td className="px-4 py-2 ">
+                                                            <div className="flex gap-2 items-center mb-2">
+                                                                {toProtocolDetails && toProtocolDetails.icon ? (
+                                                                    <Image
+                                                                        src={toProtocolDetails.icon}
+                                                                        alt={`${toProtocolDetails.name}-logo`}
+                                                                        width={10}
+                                                                        height={10}
+                                                                        className="w-6 h-6 rounded-full"
+                                                                    />
+                                                                ) : (
+                                                                    <div className="flex items-center justify-center w-6 h-6 rounded-full bg-B50 text-B100 font-bold text-[.6rem]">
+                                                                        {toProtocolDetails &&
+                                                                            toProtocolDetails.name.slice(0, 2)}
+                                                                    </div>
+                                                                )}
+                                                                {toProtocolDetails && toProtocolDetails.name}
+                                                            </div>
                                                         </td>
-                                                        <td className="border px-4 py-2 text-center">
-                                                            {transaction.amountIn}
+                                                        <td className="px-4 py-2">
+                                                            {Number(transaction.amountIn).toFixed(4)}
                                                         </td>
                                                     </tr>
                                                 );
@@ -427,7 +754,7 @@ const BatchHistory: React.FC<BatchHistoryProps> = ({ transactions, setIsSimulati
                             </div>
                         ))
                     ) : (
-                        <>{transactions?.message}</>
+                        <div className="bg-N0 shadow-lg rounded-xl border border-N40 p-4">{errorMessage}</div>
                     )}
                 </div>
             </div>

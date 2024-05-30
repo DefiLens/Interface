@@ -8,8 +8,8 @@ const Footer: React.FC<tFooter> = ({ SocialHandles }) => {
     const { isSimulate }: iGlobal = useGlobalStore((state) => state);
 
     return (
-        <footer className="bg-white mx-auto">
-            <div className="mx-auto max-w-7xl px-6 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-y-2 lg:px-8">
+        <footer className="bg-white mx-auto h-[50px]">
+            <div className="mx-auto max-w-7xl px-6 py-1.5 flex flex-col md:flex-row md:items-center md:justify-between gap-y-2 lg:px-8">
                 <div className="flex justify-center items-center space-x-6">
                     <p className="hidden md:block text-center text-xs leading-5 text-gray-500">
                         &copy; {new Date().getFullYear()} {metadata.APP_NAME}. All rights reserved.

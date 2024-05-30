@@ -115,6 +115,7 @@ export interface iBatchHistory {
     transactions: iSingleTransaction[];
     createdAt?: Date;
     updatedAt?: Date;
+    message?: any;
     __v?: number;
 }
 

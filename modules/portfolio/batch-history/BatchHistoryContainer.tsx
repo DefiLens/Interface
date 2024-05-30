@@ -10,6 +10,7 @@ const BatchHistoryContainer = () => {
     const { smartAccountAddress }: iGlobal = useGlobalStore((state) => state);
     const { chainName }: iPortfolio = usePortfolioStore((state) => state);
     const [transactions, setTransactions] = useState<iBatchHistory[]>([]);
+    const [errorMessage, setErrorMessage] = useState<string>("");
     const [isSimulation, setIsSimulation] = useState<boolean>(true);
 
     const fetchTransactions = async () => {
@@ -20,7 +21,8 @@ const BatchHistoryContainer = () => {
                     params: { network: chainName },
                 }
             );
-            setTransactions(response.data as iBatchHistory[]);
+            setTransactions(response.data);
+            setErrorMessage(response.data.message);
         } catch (error) {
             console.error("Error fetching transaction history:", error);
         }
@@ -30,7 +32,7 @@ const BatchHistoryContainer = () => {
         fetchTransactions();
     }, [smartAccountAddress, chainName, isSimulation]);
 
-    return <BatchHistory transactions={transactions} smartAccountAddress={smartAccountAddress} isSimulation={isSimulation} setIsSimulation={setIsSimulation} />;
+    return <BatchHistory transactions={transactions} smartAccountAddress={smartAccountAddress} isSimulation={isSimulation} setIsSimulation={setIsSimulation} errorMessage={errorMessage}/>;
 };
 
 export default BatchHistoryContainer;

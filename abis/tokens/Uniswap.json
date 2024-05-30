@@ -16,7 +16,7 @@
             "name": "1inch",
             "symbol": "1INCH",
             "decimals": 18,
-            "logoURI": "https://assets.coingecko.com/coins/images/13469/thumb/1inch-token.png?1608803028",
+            "logoURI": "https://token-icons.s3.amazonaws.com/0x111111111117dc0aa78b770fa6a738034120c302.png",
             "extensions": {
                 "bridgeInfo": {
                     "10": {
@@ -1370,7 +1370,7 @@
             "name": "Harvest Finance",
             "symbol": "FARM",
             "decimals": 18,
-            "logoURI": "https://assets.coingecko.com/coins/images/12304/thumb/Harvest.png?1613016180",
+            "logoURI": "https://token-icons.s3.amazonaws.com/0xa0246c9032bc3a600820415ae600c6388619a14d.png",
             "extensions": {
                 "bridgeInfo": {
                     "56": {
@@ -3523,7 +3523,7 @@
             "name": "Sushi",
             "symbol": "SUSHI",
             "decimals": 18,
-            "logoURI": "https://assets.coingecko.com/coins/images/12271/thumb/512x512_Logo_no_chop.png?1606986688",
+            "logoURI": "https://token-icons.s3.amazonaws.com/0x8798249c2e607446efb7ad49ec89dd1865ff4272.png",
             "extensions": {
                 "bridgeInfo": {
                     "10": {
@@ -3707,7 +3707,7 @@
             "name": "OriginTrail",
             "symbol": "TRAC",
             "decimals": 18,
-            "logoURI": "https://assets.coingecko.com/coins/images/1877/thumb/TRAC.jpg?1635134367",
+            "logoURI": "https://token-icons.s3.amazonaws.com/0xaa7a9ca87d3694b5755f213b5d04094b8d0f0a6f.png",
             "extensions": {
                 "bridgeInfo": {
                     "137": {
@@ -3941,7 +3941,7 @@
             "chainId": 1,
             "name": "Wrapped Ampleforth",
             "symbol": "WAMPL",
-            "logoURI": "https://assets.coingecko.com/coins/images/20825/thumb/photo_2021-11-25_02-05-11.jpg?1637811951",
+            "logoURI": "https://token-icons.s3.amazonaws.com/0xd46ba6d942050d489dbd938a2c909a5d5039a161.png",
             "address": "0xEDB171C18cE90B633DB442f2A6F72874093b49Ef",
             "decimals": 18,
             "extensions": {
@@ -4249,7 +4249,7 @@
             "name": "1inch",
             "symbol": "1INCH",
             "decimals": 18,
-            "logoURI": "https://assets.coingecko.com/coins/images/13469/thumb/1inch-token.png?1608803028",
+            "logoURI": "https://token-icons.s3.amazonaws.com/0x111111111117dc0aa78b770fa6a738034120c302.png",
             "extensions": {
                 "bridgeInfo": {
                     "1": {
@@ -4707,7 +4707,7 @@
             "name": "Sushi",
             "symbol": "SUSHI",
             "decimals": 18,
-            "logoURI": "https://assets.coingecko.com/coins/images/12271/thumb/512x512_Logo_no_chop.png?1606986688",
+            "logoURI": "https://token-icons.s3.amazonaws.com/0x8798249c2e607446efb7ad49ec89dd1865ff4272.png",
             "extensions": {
                 "bridgeInfo": {
                     "1": {
@@ -4904,7 +4904,7 @@
             "name": "1inch",
             "symbol": "1INCH",
             "decimals": 18,
-            "logoURI": "https://assets.coingecko.com/coins/images/13469/thumb/1inch-token.png?1608803028",
+            "logoURI": "https://token-icons.s3.amazonaws.com/0x111111111117dc0aa78b770fa6a738034120c302.png",
             "extensions": {
                 "bridgeInfo": {
                     "1": {
@@ -5324,7 +5324,7 @@
             "name": "Harvest Finance",
             "symbol": "FARM",
             "decimals": 18,
-            "logoURI": "https://assets.coingecko.com/coins/images/12304/thumb/Harvest.png?1613016180",
+            "logoURI": "https://token-icons.s3.amazonaws.com/0xa0246c9032bc3a600820415ae600c6388619a14d.png",
             "extensions": {
                 "bridgeInfo": {
                     "1": {
@@ -5744,7 +5744,7 @@
             "name": "Sushi",
             "symbol": "SUSHI",
             "decimals": 18,
-            "logoURI": "https://assets.coingecko.com/coins/images/12271/thumb/512x512_Logo_no_chop.png?1606986688",
+            "logoURI": "https://token-icons.s3.amazonaws.com/0x8798249c2e607446efb7ad49ec89dd1865ff4272.png",
             "extensions": {
                 "bridgeInfo": {
                     "1": {
@@ -5962,7 +5962,7 @@
             "name": "1inch",
             "symbol": "1INCH",
             "decimals": 18,
-            "logoURI": "https://assets.coingecko.com/coins/images/13469/thumb/1inch-token.png?1608803028",
+            "logoURI": "https://token-icons.s3.amazonaws.com/0x111111111117dc0aa78b770fa6a738034120c302.png",
             "extensions": {
                 "bridgeInfo": {
                     "1": {
@@ -6757,7 +6757,7 @@
             "name": "Harvest Finance",
             "symbol": "FARM",
             "decimals": 18,
-            "logoURI": "https://assets.coingecko.com/coins/images/12304/thumb/Harvest.png?1613016180",
+            "logoURI": "https://token-icons.s3.amazonaws.com/0xa0246c9032bc3a600820415ae600c6388619a14d.png",
             "extensions": {
                 "bridgeInfo": {
                     "1": {
@@ -8152,7 +8152,7 @@
             "name": "Sushi",
             "symbol": "SUSHI",
             "decimals": 18,
-            "logoURI": "https://assets.coingecko.com/coins/images/12271/thumb/512x512_Logo_no_chop.png?1606986688",
+            "logoURI": "https://token-icons.s3.amazonaws.com/0x8798249c2e607446efb7ad49ec89dd1865ff4272.png",
             "extensions": {
                 "bridgeInfo": {
                     "1": {
@@ -8197,7 +8197,7 @@
             "name": "OriginTrail",
             "symbol": "TRAC",
             "decimals": 18,
-            "logoURI": "https://assets.coingecko.com/coins/images/1877/thumb/TRAC.jpg?1635134367",
+            "logoURI": "https://token-icons.s3.amazonaws.com/0xaa7a9ca87d3694b5755f213b5d04094b8d0f0a6f.png",
             "extensions": {
                 "bridgeInfo": {
                     "1": {
@@ -8483,7 +8483,7 @@
             "name": "1inch",
             "symbol": "1INCH",
             "decimals": 18,
-            "logoURI": "https://assets.coingecko.com/coins/images/13469/thumb/1inch-token.png?1608803028",
+            "logoURI": "https://token-icons.s3.amazonaws.com/0x111111111117dc0aa78b770fa6a738034120c302.png",
             "extensions": {
                 "bridgeInfo": {
                     "1": {
@@ -8573,7 +8573,7 @@
             "name": "Harvest Finance",
             "symbol": "FARM",
             "decimals": 18,
-            "logoURI": "https://assets.coingecko.com/coins/images/12304/thumb/Harvest.png?1613016180",
+            "logoURI": "https://token-icons.s3.amazonaws.com/0xa0246c9032bc3a600820415ae600c6388619a14d.png",
             "extensions": {
                 "bridgeInfo": {
                     "1": {
@@ -8588,7 +8588,7 @@
             "name": "Sushi",
             "symbol": "SUSHI",
             "decimals": 18,
-            "logoURI": "https://assets.coingecko.com/coins/images/12271/thumb/512x512_Logo_no_chop.png?1606986688",
+            "logoURI": "https://token-icons.s3.amazonaws.com/0x8798249c2e607446efb7ad49ec89dd1865ff4272.png",
             "extensions": {
                 "bridgeInfo": {
                     "1": {
@@ -8618,7 +8618,7 @@
             "name": "OriginTrail",
             "symbol": "TRAC",
             "decimals": 18,
-            "logoURI": "https://assets.coingecko.com/coins/images/1877/thumb/TRAC.jpg?1635134367",
+            "logoURI": "https://token-icons.s3.amazonaws.com/0xaa7a9ca87d3694b5755f213b5d04094b8d0f0a6f.png",
             "extensions": {
                 "bridgeInfo": {
                     "1": {
@@ -8646,7 +8646,7 @@
             "chainId": 8453,
             "name": "Wrapped Ampleforth",
             "symbol": "WAMPL",
-            "logoURI": "https://assets.coingecko.com/coins/images/20825/thumb/photo_2021-11-25_02-05-11.jpg?1637811951",
+            "logoURI": "https://token-icons.s3.amazonaws.com/0xd46ba6d942050d489dbd938a2c909a5d5039a161.png",
             "address": "0x489fe42C267fe0366B16b0c39e7AEEf977E841eF",
             "decimals": 18,
             "extensions": {
@@ -8693,7 +8693,7 @@
             "name": "1inch",
             "symbol": "1INCH",
             "decimals": 18,
-            "logoURI": "https://assets.coingecko.com/coins/images/13469/thumb/1inch-token.png?1608803028",
+            "logoURI": "https://token-icons.s3.amazonaws.com/0x111111111117dc0aa78b770fa6a738034120c302.png",
             "extensions": {
                 "bridgeInfo": {
                     "1": {
@@ -9338,7 +9338,7 @@
             "name": "Harvest Finance",
             "symbol": "FARM",
             "decimals": 18,
-            "logoURI": "https://assets.coingecko.com/coins/images/12304/thumb/Harvest.png?1613016180",
+            "logoURI": "https://token-icons.s3.amazonaws.com/0xa0246c9032bc3a600820415ae600c6388619a14d.png",
             "extensions": {
                 "bridgeInfo": {
                     "1": {
@@ -10381,7 +10381,7 @@
             "name": "Sushi",
             "symbol": "SUSHI",
             "decimals": 18,
-            "logoURI": "https://assets.coingecko.com/coins/images/12271/thumb/512x512_Logo_no_chop.png?1606986688",
+            "logoURI": "https://token-icons.s3.amazonaws.com/0x8798249c2e607446efb7ad49ec89dd1865ff4272.png",
             "extensions": {
                 "bridgeInfo": {
                     "1": {
@@ -10537,7 +10537,7 @@
             "chainId": 42161,
             "name": "Wrapped Ampleforth",
             "symbol": "WAMPL",
-            "logoURI": "https://assets.coingecko.com/coins/images/20825/thumb/photo_2021-11-25_02-05-11.jpg?1637811951",
+            "logoURI": "https://token-icons.s3.amazonaws.com/0xd46ba6d942050d489dbd938a2c909a5d5039a161.png",
             "address": "0x1c8Ec4DE3c2BFD3050695D89853EC6d78AE650bb",
             "decimals": 18,
             "extensions": {
@@ -10667,7 +10667,7 @@
             "name": "1inch",
             "symbol": "1INCH",
             "decimals": 18,
-            "logoURI": "https://assets.coingecko.com/coins/images/13469/thumb/1inch-token.png?1608803028",
+            "logoURI": "https://token-icons.s3.amazonaws.com/0x111111111117dc0aa78b770fa6a738034120c302.png",
             "extensions": {
                 "bridgeInfo": {
                     "1": {
@@ -11020,7 +11020,7 @@
             "name": "Sushi",
             "symbol": "SUSHI",
             "decimals": 18,
-            "logoURI": "https://assets.coingecko.com/coins/images/12271/thumb/512x512_Logo_no_chop.png?1606986688",
+            "logoURI": "https://token-icons.s3.amazonaws.com/0x8798249c2e607446efb7ad49ec89dd1865ff4272.png",
             "extensions": {
                 "bridgeInfo": {
                     "1": {
@@ -11282,7 +11282,7 @@
             "chainId": 84531,
             "name": "Wrapped Ampleforth",
             "symbol": "WAMPL",
-            "logoURI": "https://assets.coingecko.com/coins/images/20825/thumb/photo_2021-11-25_02-05-11.jpg?1637811951",
+            "logoURI": "https://token-icons.s3.amazonaws.com/0xd46ba6d942050d489dbd938a2c909a5d5039a161.png",
             "address": "0x395Ae52bB17aef68C2888d941736A71dC6d4e125",
             "decimals": 18,
             "extensions": {

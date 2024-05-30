@@ -220,6 +220,11 @@ export interface iTrading {
 
     selectedExecuteMethod: string;
     setSelectedExecuteMethod: (selectedExecuteMethod: string) => void;
+
+    balances: { [key: string]: { [key: string]: { [key: string]: string } } };
+    apy: { [key: string]: { [key: string]: { [key: string]: string } } };
+    setBalances: (tokenName: string, protocolName: string, chainId: string, balance: string) => void;
+    setApy: (tokenName: string, protocolName: string, chainId: string, apyValue: string) => void;
 }
 
 export const useTradingStore = create<iTrading>((set) => ({
@@ -346,6 +351,39 @@ export const useTradingStore = create<iTrading>((set) => ({
 
     selectedExecuteMethod: "",
     setSelectedExecuteMethod: (selectedExecuteMethod) => set(() => ({ selectedExecuteMethod })),
+
+    // balances: {},
+    // setBalances: (balances) => set(() => ({ balances }))
+
+    balances: {},
+    apy: {},
+    setBalances: (tokenName, protocolName, chainId, balance) =>
+        set((state) => ({
+            balances: {
+                ...state.balances,
+                [tokenName]: {
+                    ...state.balances[tokenName],
+                    [protocolName]: {
+                        ...state.balances[tokenName]?.[protocolName],
+                        [chainId]: balance,
+                    },
+                },
+            },
+        })),
+    setApy: (tokenName, protocolName, chainId, apyValue) =>
+        set((state) => ({
+            apy: {
+                ...state.apy,
+                [tokenName]: {
+                    ...state.apy[tokenName],
+                    [protocolName]: {
+                        ...state.apy[tokenName]?.[protocolName],
+                        [chainId]: apyValue,
+                    },
+                },
+            },
+        })),
+
 }));
 
 //Rebalance Store

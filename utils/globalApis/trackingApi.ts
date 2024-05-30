@@ -1,3 +1,4 @@
+import axios from "axios";
 import axiosInstance from "../../axiosInstance/axiosInstance";
 
 export interface iTransactionData {
@@ -52,6 +53,14 @@ export const handleLogin = async (
     wallet: string | undefined
 ) => {
     try {
+        // Check if the user is already logged in
+        const existingUserResponse = await axiosInstance.get(`/auth/login/${smartAccountAddress}`);
+        if (existingUserResponse.status === 200) {
+            // User is already registered, do not proceed witxh login
+            return;
+        }
+
+        // Proceed with login
         const requestBody = {
             smartAccount: smartAccountAddress,
             eoaAccount: eoaAccount,
@@ -62,7 +71,6 @@ export const handleLogin = async (
 
         // Check if the login was successful
         if (response.status === 200) {
-            // console.log('Login successful');
         }
     } catch (error) {
         console.error("Error:", error);

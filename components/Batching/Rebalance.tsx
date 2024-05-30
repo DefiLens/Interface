@@ -141,31 +141,33 @@ export const Rebalance: React.FC = () => {
         <div className="w-full flex flex-col justify-center items-center">
             <div className="flex flex-col gap-4 w-full">
                 <div className="flex flex-col gap-3">
-                    {rebalanceData?.map((item, index) => (
-                        <div key={index} className="w-full relative rounded-lg bg-[rgba(132,144,251,.4)]">
-                            <RebalanceTokenSelection
-                                onTokenSelect={(network, protocol, token, percentage, amount) =>
-                                    handleTokenSelect(index, network, protocol, token, percentage, amount)
-                                }
-                                network={item.network}
-                                index={index}
-                                protocol={item.protocol}
-                                token={item.token}
-                                amount={item.amount}
-                                percentages={percentages}
-                                splitEqually={splitEqually}
-                                handlePercentageChange={handlePercentageChange}
-                            />
-                            {index !== 0 && (
-                                <button
-                                    className="text-N0 absolute top-3 right-3"
-                                    onClick={() => handleRemoveDiv(index)}
-                                >
-                                    <RxCross2 size="20px" />
-                                </button>
-                            )}
-                        </div>
-                    ))}
+                    <div className="flex flex-col gap-3 max-h-96 overflow-auto">
+                        {rebalanceData?.map((item, index) => (
+                            <div key={index} className="w-full relative rounded-lg bg-[rgba(132,144,251,.4)]">
+                                <RebalanceTokenSelection
+                                    onTokenSelect={(network, protocol, token, percentage, amount) =>
+                                        handleTokenSelect(index, network, protocol, token, percentage, amount)
+                                    }
+                                    network={item.network}
+                                    index={index}
+                                    protocol={item.protocol}
+                                    token={item.token}
+                                    amount={item.amount}
+                                    percentages={percentages}
+                                    splitEqually={splitEqually}
+                                    handlePercentageChange={handlePercentageChange}
+                                />
+                                {index !== 0 && (
+                                    <button
+                                        className="text-N0 absolute top-3 right-3"
+                                        onClick={() => handleRemoveDiv(index)}
+                                    >
+                                        <RxCross2 size="20px" />
+                                    </button>
+                                )}
+                            </div>
+                        ))}
+                    </div>
                     {showError && (
                         <div className="w-full bg-[rgba(255,0,0,.2)] rounded-md p-2 text-N0 text-center">
                             Total percentage must be approximately 100%

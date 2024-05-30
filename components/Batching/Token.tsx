@@ -1,25 +1,20 @@
+import { iTrading, useTradingStore } from "../../store/TradingStore";
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import IERC20 from "../../abis/IERC20.json";
 import { optimism } from "../../assets/images";
-import { BigNumber, Contract, ethers } from "ethers";
-import { iSelectedNetwork, iTrading, useTradingStore } from "../../store/TradingStore";
-import { iGlobal, useGlobalStore } from "../../store/GlobalStore";
-import { getContractInstance, getErc20Balanceof, getErc20Decimals, getProvider } from "../../utils/web3Libs/ethers";
+// import { useGlobalStore } from "../../store/GlobalStore";
 import { decreasePowerByDecimals } from "../../utils/helper";
 import axiosInstance from "../../axiosInstance/axiosInstance";
+import { nativeTokenFetcher, nativeTokenNum } from "../../utils/data/protocols";
 
 interface PropTypes {
-    network: iSelectedNetwork;
-    isErc20: boolean;
+    network: any;
+    isErc20?: boolean;
     token: any;
     onItemClick: (tokenName: string) => void;
-    tokenAddresses:
-        | {
-              [key: string]: string;
-          }
-        | undefined;
-    handleSelectedTokenAddress?: (_tokenAddress: string) => void;
+    tokenAddresses?: { [key: string]: string };
+    handleSelectedTokenAddress?: (tokenAddress: string) => void;
+    protocolName: string;
 }
 
 const Token: React.FC<PropTypes> = ({
@@ -29,125 +24,175 @@ const Token: React.FC<PropTypes> = ({
     onItemClick,
     tokenAddresses,
     handleSelectedTokenAddress,
+    protocolName,
 }) => {
-    const [tokenBal, setTokenBal] = useState("");
-    const [isLoading, setIsLoading] = useState(false);
-    const { smartAccountAddress }: iGlobal = useGlobalStore((state) => state);
-
+    console.log(network);
+    // const { smartAccountAddress } = useGlobalStore((state) => state);
+    const { balances, apy, setBalances, setApy, simulationSmartAddress}: iTrading = useTradingStore((state) => state); // Use Zustand store
+    const smartAccountAddress = simulationSmartAddress;
     const tokenAddress = isErc20 ? token.address : tokenAddresses?.[token.name];
     const tokenName = isErc20 ? token.symbol : token.name;
+    const chainId = network.chainId.toString();
+    const nativeToken = nativeTokenFetcher[network.chainId][nativeTokenNum[network.chainId][tokenName]];
 
-    const getBalance = async () => {
-        // console.log("----------------Calling getBalance----------------");
-        if (!smartAccountAddress || !tokenAddress) return;
+    const [tokenBalance, setTokenBalance] = useState("");
+    const [fetchingBalance, setFetchingBalance] = useState(false);
+    const [nativeTokenBalances, setNativeTokenBalances] = useState("");
+    const [fetchingNativeBalance, setFetchingNativeBalance] = useState(false);
 
-        setIsLoading(true);
-
-        try {
-            const provider = await getProvider(network.chainId);
-
-            const erc20 = await getContractInstance(
-                isErc20 ? token.address : tokenAddresses?.[token.name],
-                IERC20,
-                provider
-            );
-
-            let balance = "";
-
-            if (isErc20) {
-                // ERC20 Tokens
-                const tokendecimal = (await getErc20Decimals(erc20)) ?? 0;
-                const balBigNum = (await getErc20Balanceof(erc20 as Contract, smartAccountAddress)) ?? BigNumber.from(0);
-
-                balance = await decreasePowerByDecimals(balBigNum?.toString(), tokendecimal);
-            } else {
-                // Non ERC20 Tokens
-                const tokendecimal = (await getErc20Decimals(erc20)) ?? 0;
-                const balBigNum: ethers.BigNumber =
-                    (await getErc20Balanceof(erc20 as ethers.Contract, smartAccountAddress)) ?? BigNumber.from(0);
-                balance = await decreasePowerByDecimals(balBigNum?.toString(), tokendecimal);
+    useEffect(() => {
+        const getTokenApy = async () => {
+            if (!apy[tokenName]?.[protocolName]?.[chainId]) {
+                try {
+                    const response = await axiosInstance.post("/token/apy", { chainId, tokenName });
+                    setApy(tokenName, protocolName, chainId, response.data);
+                } catch (error) {
+                    console.error("Error fetching token APY:", error);
+                }
             }
-
-            if (balance !== tokenBal && parseFloat(balance) > 0) {
-                setTokenBal(balance);
-            }
-
-            setIsLoading(false);
-        } catch (error) {
-            console.error(error);
-            setIsLoading(false);
+        };
+        // if (chainId === "137" && protocolName === "aaveV2" || protocolName === "aaveV3" || protocolName === "compoundV3") {
+        if (!isErc20) {
+            getTokenApy();
         }
-    };
+        // }
+    }, []);
 
-    const [oraclePrice, setOraclePrice] = useState<number>(0);
-    const [oraclePriceLoading, setOraclePriceLoading] = useState<boolean>(false);
-    // useEffect(() => {
-    //     const fetchTokenData = async (_tokenAddress: string) => {
-    //         try {
-    //             setOraclePriceLoading(true);
-    //             const response = await axiosInstance.get(`/general/ze/token-data/${_tokenAddress}`);
+    useEffect(() => {
+        const fetchBalances = async () => {
+            setFetchingBalance(true);
+            if (!balances[tokenName]?.[protocolName]?.[chainId]) {
+                try {
+                    const response = await axiosInstance.get(
+                        `/token/getBalance?userAddress=${smartAccountAddress}&tokenAddress=${tokenAddress}&chainId=${chainId}`
+                    );
 
-    //             setOraclePrice(response?.data?.market_data?.price);
-    //             console.log(response?.data);
-    //             setOraclePriceLoading(false);
-    //         } catch (error) {
-    //             console.error("Error fetching token data:", error);
-    //             setOraclePriceLoading(false);
-    //         }
-    //     };
+                    const balance = await decreasePowerByDecimals(response.data.balance, response.data.decimals);
+                    setBalances(tokenName, protocolName, chainId, balance);
+                    setTokenBalance(balance);
+                } catch (error) {
+                    console.error("Error fetching token balances:", error);
+                } finally {
+                    setFetchingBalance(false);
+                }
+            } else {
+                setTokenBalance(balances[tokenName][protocolName][chainId]);
+                setFetchingBalance(false);
+            }
+        };
+        if (!isErc20) {
+            fetchBalances();
+        }
+    }, []);
 
-    //     if (tokenAddress) {
-    //         fetchTokenData(tokenAddress);
-    //     }
-    // }, [tokenAddress, smartAccountAddress]);
+    useEffect(() => {
+        const fetchNativeBalances = async () => {
+            setFetchingNativeBalance(true);
+            if (!balances[isErc20 ? token.address : nativeToken.nativeToken]?.[protocolName]?.[chainId]) {
+                try {
+                    const response = await axiosInstance.get(
+                        `/token/getBalance?userAddress=${smartAccountAddress}&tokenAddress=${isErc20 ? token.address : nativeToken.nativeToken}&chainId=${chainId}`
+                    );
 
-    // useEffect(() => {
-    //     getBalance();
-    //     // eslint-disable-next-line react-hooks/exhaustive-deps
-    // }, []); // Run only when the token prop changes
+                    const balance = await decreasePowerByDecimals(response.data.balance, response.data.decimals);
+                    setBalances(isErc20 ? token.address : nativeToken.nativeToken, protocolName, chainId, balance);
+                    setNativeTokenBalances(balance);
+                } catch (error) {
+                    console.error("Error fetching token balances:", error);
+                } finally {
+                    setFetchingNativeBalance(false);
+                }
+            } else {
+                setNativeTokenBalances(balances[isErc20 ? token.address : nativeToken.nativeToken][protocolName][chainId]);
+                setFetchingNativeBalance(false);
+            }
+        };
+        fetchNativeBalances();
+    }, []);
 
     return (
-        <li className="py-2">
-            <button
+        <li className="">
+            <div
                 onClick={() => {
                     onItemClick(isErc20 ? token.symbol : token.name);
-                    {
-                        handleSelectedTokenAddress && handleSelectedTokenAddress(tokenAddress);
-                    }
+                    handleSelectedTokenAddress && handleSelectedTokenAddress(tokenAddress);
                 }}
-                className="flex items-center justify-between w-full px-4 py-2 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-100 focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75"
+                className="cursor-pointer rounded-lg hover:bg-W200 flex items-center p-4 min-w-[30rem] transition-all duration-200"
             >
-                <div className="flex items-center w-full justify-between">
-                    <div className="inline-flex items-center">
-                        {isErc20 && (
+                <div className="mr-4">
+                    {isErc20 &&
+                        (token.logoURI ? (
                             <Image
                                 src={token.logoURI.includes("s2.coinmarketcap.com") ? optimism : token.logoURI}
                                 alt={`${tokenName}-logo`}
                                 width={10}
                                 height={10}
-                                className="w-8 h-8 mr-2"
+                                className="w-12 h-12 mr-2 rounded-full"
                             />
-                        )}
-                        <span>{tokenName}</span>
-                    </div>
-                    <div className="inline-flex items-center gap-1 text-gray-500">
-                        {/* {!isLoading ? (
-                            parseFloat(oraclePrice) > 0 ? (
-                                <span>
-                                    {tokenBal} {tokenName}
-                                </span>
-                            ) : null
                         ) : (
-                            <span>Loading...</span>
-                        )} */}
-                        {oraclePriceLoading ? (
-                            <div className="bg-gray-200 h-4 w-16 animate-pulse rounded-md"></div>
+                            <div className="flex items-center justify-center w-10 h-10 rounded-full bg-B50 text-B100 font-bold text:xs lg:text-sm mr-2">
+                                {token.name.slice(0, 2)}
+                            </div>
+                        ))}
+                    {!isErc20 &&
+                        (nativeToken?.image ? (
+                            <Image
+                                src={nativeToken.image}
+                                alt={`${tokenName}-logo`}
+                                width={10}
+                                height={10}
+                                className="w-14 h-14 rounded-full"
+                            />
                         ) : (
-                            <p>{oraclePrice > 0 && oraclePrice?.toFixed(5)}</p>
-                        )}
-                    </div>
+                            <div className="flex items-center justify-center w-10 h-10 rounded-full bg-B50 text-B100 font-bold text:xs lg:text-sm mr-2">
+                                {token.name.slice(0, 2)}
+                            </div>
+                        ))}
                 </div>
-            </button>
+                <div className="flex-grow mr-10">
+                    <div className="font-semibold text-lg text-B200">
+                        {isErc20 ? tokenName : nativeToken?.symbol}
+                        {!isErc20 && parseFloat(apy[tokenName]?.[protocolName]?.[chainId]) > 0 && (
+                            <span className="ml-1 text-sm">
+                                (
+                                {Number(apy[tokenName][protocolName][chainId]) > 0.0001
+                                    ? Number(apy[tokenName][protocolName][chainId]).toFixed(4)
+                                    : Number(apy[tokenName][protocolName][chainId]).toFixed(7)}
+                                %)
+                            </span>
+                        )}
+                    </div>
+                    {!fetchingBalance ? (
+                        <div className="text-B200 text-sm">
+                            {parseFloat(tokenBalance) > 0 ? <span>{Number(tokenBalance).toFixed(5)}</span> : null}
+                            <span className="text-B200 ml-1">{token.name}</span>
+                            {parseFloat(tokenBalance) > 0 && (
+                                <span className="bg-gray-200 text-gray-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded ml-2">
+                                    deposited
+                                </span>
+                            )}
+                        </div>
+                    ) : (
+                        <div className="bg-gray-200 h-4 w-16 animate-pulse rounded-md"></div>
+                    )}
+                </div>
+                <div className="flex flex-col justify-end items-end">
+                    {!fetchingNativeBalance ? (
+                        parseFloat(nativeTokenBalances) > 0 ? (
+                            <>
+                                <div className="font-semibold">
+                                    <span className="mr-1">{Number(nativeTokenBalances) > 0.001 ? Number(nativeTokenBalances).toFixed(5) : Number(nativeTokenBalances)}</span>
+                                </div>
+                                <div className="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded">
+                                    available
+                                </div>
+                            </>
+                        ) : null
+                    ) : (
+                        <div className="bg-gray-200 h-4 w-16 animate-pulse rounded-md"></div>
+                    )}
+                </div>
+            </div>
         </li>
     );
 };

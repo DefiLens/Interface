@@ -67,9 +67,9 @@ export default function App({ Component, pageProps }: AppProps) {
                     />
 
                     <Suspense fallback={<div>Loading...</div>}>
-                        <div className="main-bg min-h-screen w-screen overflow-hidden">
-                            <HeaderContainer />
-                            <main className="mt-20 min-h-[calc(100vh-80px)] w-full h-full">
+                        <div className="main-bg min-h-screen max-h-screen w-screen overflow-hidden">
+                            <main className="min-h-[calc(100vh-50px)] max-h-[calc(100vh-50px)] w-full h-full overflow-scroll">
+                                <HeaderContainer />
                                 <JoinWaitlistContainer />
                                 <Component {...pageProps} />
                             </main>

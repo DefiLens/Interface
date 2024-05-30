@@ -9,9 +9,12 @@ import {
     DEFAULT_SESSION_KEY_MANAGER_MODULE,
     ECDSAOwnershipValidationModule,
     SessionKeyManagerModule,
-    BiconomySmartAccountV2, DEFAULT_ENTRYPOINT_ADDRESS,
-    BiconomyPaymaster, IPaymaster,
-    Bundler, IBundler
+    BiconomySmartAccountV2,
+    DEFAULT_ENTRYPOINT_ADDRESS,
+    BiconomyPaymaster,
+    IPaymaster,
+    Bundler,
+    IBundler,
 } from "@biconomy/account";
 
 // Component, Util Imports
@@ -167,6 +170,7 @@ const TradeContainer: React.FC<any> = () => {
     const handleSelectToNetwork = async (_toNetwork: iSelectedNetwork) => {
         try {
             setSelectedToNetwork(_toNetwork);
+            setSelectedToProtocol("");
         } catch (error) {
             console.error("API Error:", error);
         }
@@ -245,12 +249,15 @@ const TradeContainer: React.FC<any> = () => {
                     const filteredTokens = getTokenListByChainId(selectedFromNetwork.chainId, UNISWAP_TOKENS);
                     // console.log('filteredTokens: ', filteredTokens)
                     const newToken: iTokenData = {
-                        "chainId": Number(selectedFromNetwork.chainId),
-                        "address": ETH_ADDRESS,
-                        "name": selectedFromNetwork.chainId === "137" ? "MATIC" : "ETH",
-                        "symbol": selectedFromNetwork.chainId === "137" ? "MATIC" : "ETH",
-                        "decimals": 18,
-                        "logoURI":  selectedFromNetwork.chainId === "137" ? "https://token-icons.s3.amazonaws.com/0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0.png" : "https://token-icons.s3.amazonaws.com/eth.png"
+                        chainId: Number(selectedFromNetwork.chainId),
+                        address: ETH_ADDRESS,
+                        name: selectedFromNetwork.chainId === "137" ? "MATIC" : "ETH",
+                        symbol: selectedFromNetwork.chainId === "137" ? "MATIC" : "ETH",
+                        decimals: 18,
+                        logoURI:
+                            selectedFromNetwork.chainId === "137"
+                                ? "https://token-icons.s3.amazonaws.com/0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0.png"
+                                : "https://token-icons.s3.amazonaws.com/eth.png",
                     };
                     const updatedTokens: iTokenData[] | undefined = [newToken, ...filteredTokens]; // Add the new token at index 0
                     setFromTokensData(updatedTokens);
@@ -267,19 +274,23 @@ const TradeContainer: React.FC<any> = () => {
                     const filteredTokens = getTokenListByChainId(selectedToNetwork.chainId, UNISWAP_TOKENS);
                     // console.log('filteredTokens: ', filteredTokens)
                     const newToken: iTokenData = {
-                        "chainId": Number(selectedToNetwork.chainId),
-                        "address": ETH_ADDRESS,
-                        "name": selectedToNetwork.chainId === "137" ? "MATIC" : "ETH",
-                        "symbol": selectedToNetwork.chainId === "137" ? "MATIC" : "ETH",
-                        "decimals": 18,
-                        "logoURI":  selectedToNetwork.chainId === "137" ? "https://token-icons.s3.amazonaws.com/0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0.png" : "https://token-icons.s3.amazonaws.com/eth.png"
+                        chainId: Number(selectedToNetwork.chainId),
+                        address: ETH_ADDRESS,
+                        name: selectedToNetwork.chainId === "137" ? "MATIC" : "ETH",
+                        symbol: selectedToNetwork.chainId === "137" ? "MATIC" : "ETH",
+                        decimals: 18,
+                        logoURI:
+                            selectedToNetwork.chainId === "137"
+                                ? "https://token-icons.s3.amazonaws.com/0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0.png"
+                                : "https://token-icons.s3.amazonaws.com/eth.png",
                     };
                     const updatedTokens: iTokenData[] | undefined = [newToken, ...filteredTokens]; // Add the new token at index 0
                     setToTokensData(updatedTokens);
                 }
             }
         }
-    },[selectedToProtocol, rebalanceData, isModalOpen, isRebalance]);
+        onChangeselectedToProtocol();
+    }, [selectedToProtocol, rebalanceData, isModalOpen, isRebalance, selectedToNetwork]);
 
     const onChangeFromProtocol = async (_fromProtocol: string) => {
         if (addToBatchLoading) {
@@ -342,35 +353,38 @@ const TradeContainer: React.FC<any> = () => {
                 setSelectedFromToken(_fromToken);
             }
 
-            const provider: ethers.providers.JsonRpcProvider | undefined = await getProvider(selectedFromNetwork.chainId);
+            const provider: ethers.providers.JsonRpcProvider | undefined = await getProvider(
+                selectedFromNetwork.chainId
+            );
 
-            let tokenAddress:  string
-            let erc20
-            let fromTokendecimal
+            let tokenAddress: string;
+            let erc20;
+            let fromTokendecimal;
 
             if (_fromToken != "ETH" && _fromToken != "MATIC") {
                 let erc20Address: any =
-                selectedFromProtocol == "erc20" ? fromTokensData.filter((token: any) => token.symbol === _fromToken) : "";
+                    selectedFromProtocol == "erc20"
+                        ? fromTokensData.filter((token: any) => token.symbol === _fromToken)
+                        : "";
 
                 tokenAddress =
-                    selectedFromProtocol != "erc20"
-                        ? protocolNames[selectedFromNetwork.chainId].key.find((entry) => entry.name == selectedFromProtocol)
-                            .tokenAddresses[_fromToken]
+                    selectedFromProtocol !== "erc20"
+                        ? protocolNames[selectedFromNetwork.chainId]?.key.find(
+                              (entry) => entry.name === selectedFromProtocol
+                          )?.tokenAddresses[_fromToken]
                         : erc20Address[0].address;
 
-                // console.log(_fromToken, tokenAddress)
                 erc20 = await getContractInstance(tokenAddress, IERC20, provider);
                 fromTokendecimal = await getErc20Decimals(erc20);
                 setSafeState(setFromTokenDecimal, fromTokendecimal, 0);
             } else {
-                tokenAddress = ETH_ADDRESS
+                tokenAddress = ETH_ADDRESS;
                 fromTokendecimal = 18;
                 setSafeState(setFromTokenDecimal, fromTokendecimal, 0);
-                // console.log(_fromToken, tokenAddress)
             }
 
             let scwAddress: any;
-            let biconomySmartAccount
+            let biconomySmartAccount;
             if (!simulationSmartAddress) {
                 const createAccount = async (chainId: any) => {
                     const bundler: IBundler = new Bundler({
@@ -409,20 +423,20 @@ const TradeContainer: React.FC<any> = () => {
                 scwAddress = await createAccount(selectedFromNetwork.chainId);
             }
 
-            let maxBal: BigNumber | undefined
-            let MaxBalance
+            let maxBal: BigNumber | undefined;
+            let MaxBalance;
 
             if (_fromToken != "ETH" && _fromToken != "MATIC") {
-                maxBal= await getErc20Balanceof(
+                maxBal = await getErc20Balanceof(
                     erc20,
                     simulationSmartAddress ? simulationSmartAddress : scwAddress.address
                 );
             } else {
-                let scw = smartAccountAddress ? smartAccountAddress : scwAddress.address
+                let scw = smartAccountAddress ? smartAccountAddress : scwAddress.address;
                 // let scwProvider = smartAccountAddress ? smartAccount.provider : biconomySmartAccount.provider
-                maxBal = await provider?.getBalance(scw)
+                maxBal = await provider?.getBalance(scw);
             }
-            if(!maxBal) return;
+            if (!maxBal) return;
             MaxBalance = await decreasePowerByDecimals(maxBal?.toString(), fromTokendecimal);
 
             // console.log("tokenBalances", tokenBalances, _fromToken)
@@ -445,12 +459,12 @@ const TradeContainer: React.FC<any> = () => {
 
     const setMaxTokenBalance = (token: string, amount: number, isRemove: boolean, maxbal?: number) => {
         if (isRemove) {
-            setTokenBalances(prevBalances => ({
+            setTokenBalances((prevBalances) => ({
                 ...prevBalances,
                 [token]: (Number(maxbal) || 0) + amount,
             }));
         } else {
-            setTokenBalances(prevBalances => ({
+            setTokenBalances((prevBalances) => ({
                 ...prevBalances,
                 [token]: (Number(maxBalance) || 0) - amount,
             }));
@@ -580,7 +594,12 @@ const TradeContainer: React.FC<any> = () => {
 
     const removeBatch = (index: number) => {
         const updatedBatch = [...individualBatch];
-        setMaxTokenBalance(updatedBatch[index].data.fromToken, Number(updatedBatch[index].data.amountIn), true, getTokenBalance(updatedBatch[index].data.fromToken))
+        setMaxTokenBalance(
+            updatedBatch[index].data.fromToken,
+            Number(updatedBatch[index].data.amountIn),
+            true,
+            getTokenBalance(updatedBatch[index].data.fromToken)
+        );
         removeBatchItem(index);
         setSimulationsHashes(simulationHashes.filter((_, idx) => idx !== index));
     };

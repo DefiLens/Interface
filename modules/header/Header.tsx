@@ -123,22 +123,25 @@ const Header: React.FC<tHeader> = ({ switchOnSpecificChain }) => {
             setIsFetchingUsdc(true);
             const fetchBalancePromises = Object.keys(tokensByNetworkForCC).map(async (chainId) => {
                 const tokenAddress = tokensByNetworkForCC[chainId].usdc;
-                const response = await axiosInstance.post("/token/getBalance", {
-                    chainId,
-                    tokenAddress,
-                    userAddress: smartAccountAddress,
-                });
+                // const response = await axiosInstance.post("/token/getBalance", {
+                //     chainId,
+                //     tokenAddress,
+                //     userAddress: smartAccountAddress,
+                // });
+                const response = await axiosInstance.get(
+                    `/token/getBalance?userAddress=${smartAccountAddress}&tokenAddress=${tokenAddress}&chainId=${chainId}`
+                );
 
-                const result = await response.data;    
+                const result = await response.data;
                 results[chainId] = result;
 
                 // Sum up the USDC balance
-                total += parseFloat(result.balance);   
-            });   
+                total += parseFloat(result.balance);
+            });
 
             await Promise.all(fetchBalancePromises);
 
-            setBalances(results); 
+            setBalances(results);
 
             // Calculate and set total USDC balance in decimal
             const totalDecimal = decreasePowerByDecimals(total, 6);

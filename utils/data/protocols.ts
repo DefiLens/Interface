@@ -28,6 +28,7 @@ import {
 
 export type tokenList = {
     name: string;
+    symbol?: string;
     icon: any;
 };
 
@@ -664,6 +665,7 @@ export const abiFetcher = {
 };
 
 export const nativeTokenNum = {
+    //Polygon
     "137": {
         cUSDC: "1",
 
@@ -686,6 +688,7 @@ export const nativeTokenNum = {
         aWBTCv3: "7",
         aBALv3: "8",
     },
+    //Avalanche
     "43114": {
         aUSDT: "1",
         aUSDC: "2",
@@ -712,6 +715,7 @@ export const nativeTokenNum = {
         qiUSDCn: "2",
         qiDAI: "9",
     },
+    //Arbitrum
     "42161": {
         aWETH: "1",
         aUSDC: "2",
@@ -729,7 +733,17 @@ export const nativeTokenNum = {
         aEURS: "14",
         cUSDCev3: "3",
         cUSDCv3: "2",
+
+        rWBTC: "5",
+        rUSDT: "6",
+        "rUSDC.e": "3",
+        rDAI: "9",
+        rWETH: "1",
+        rwstETH: "4",
+        rARB: "7",
+        rUSDC: "2",
     },
+    //OP
     "10": {
         aDAI: "1",
         aOP: "2",
@@ -775,6 +789,7 @@ export const nativeTokenNum = {
         "grainSNX": "15",
         "grainWSTETH": "4",
     },
+    //base
     "8453": {
         cUSDbCv3: "1",
         aBasUSDbC: "1",
@@ -807,41 +822,49 @@ export const nativeTokenFetcher = {
             nativeToken: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
             symbol: "usdc",
             decimals: 6,
+            image: "https://token-icons.s3.amazonaws.com/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.png",
         },
         "2": {
             nativeToken: "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
             symbol: "usdt",
             decimals: 6,
+            image: "https://token-icons.s3.amazonaws.com/0xdac17f958d2ee523a2206206994597c13d831ec7.png"
         },
         "3": {
             nativeToken: "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063",
             symbol: "dai",
             decimals: 18,
+            image: "https://s3.amazonaws.com/token-icons/0x6b175474e89094c44da98b954eedeac495271d0f.png"
         },
         "4": {
             nativeToken: "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619",
             symbol: "weth",
             decimals: 18,
+            image: "https://token-icons.s3.amazonaws.com/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.png"
         },
         "5": {
             nativeToken: "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
             symbol: "wmatic",
             decimals: 18,
+            image: "https://token-icons.s3.amazonaws.com/ef4dfcc9-4a7e-4a92-a538-df3d6f53e517.png"
         },
         "6": {
             nativeToken: "0xD6DF932A45C0f255f85145f286eA0b292B21C90B",
             symbol: "aave",
             decimals: 18,
+            image: "https://token-icons.s3.amazonaws.com/0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9.png"
         },
         "7": {
             nativeToken: "0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6",
             symbol: "wbtc",
             decimals: 8,
+            image: "https://token-icons.s3.amazonaws.com/0x2260fac5e5542a773aa44fbcfedf7c193bc2c599.png"
         },
         "8": {
             nativeToken: "0x9a71012B13CA4d3D0Cdc72A177DF3ef03b0E76A3",
             symbol: "bal",
             decimals: 18,
+            image: "https://token-icons.s3.amazonaws.com/0xba100000625a3754423978a60c9317c58a424e3d.png"
         },
     },
     "43114": {
@@ -849,71 +872,85 @@ export const nativeTokenFetcher = {
             nativeToken: "0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7",
             symbol: "usdt",
             decimals: 6,
+            image: "https://token-icons.s3.amazonaws.com/0xdac17f958d2ee523a2206206994597c13d831ec7.png"
         },
         "2": {
             nativeToken: "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E",
             symbol: "usdc",
             decimals: 6,
+            image: "https://token-icons.s3.amazonaws.com/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.png"
         },
         "3": {
             nativeToken: "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
             symbol: "wavax",
             decimals: 18,
+            image: "https://token-icons.s3.amazonaws.com/0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7.png"
         },
         "4": {
             nativeToken: "0x152b9d0FdC40C096757F570A51E494bd4b943E50",
             symbol: "btc.b",
             decimals: 8,
+            image: "https://token-icons.s3.amazonaws.com/0x2260fac5e5542a773aa44fbcfedf7c193bc2c599.png"
         },
         "5": {
             nativeToken: "0x49D5c2BdFfac6CE2BFdB6640F4F80f226bc10bAB",
             symbol: "weth.e",
             decimals: 18,
+            image: "https://token-icons.s3.amazonaws.com/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.png"
         },
         "6": {
             nativeToken: "0x50b7545627a5162F82A992c33b87aDc75187B218",
             symbol: "wbtc.3",
             decimals: 8,
+            image: "https://token-icons.s3.amazonaws.com/0x2260fac5e5542a773aa44fbcfedf7c193bc2c599.png"
         },
         "7": {
             nativeToken: "0x2b2C81e08f1Af8835a78Bb2A90AE924ACE0eA4bE",
             symbol: "savax",
             decimals: 18,
+            image: "https://token-icons.s3.amazonaws.com/0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7.png"
         },
         "8": {
             nativeToken: "0x5947BB275c521040051D82396192181b413227A3",
             symbol: "link.e",
             decimals: 18,
+            image: "https://token-icons.s3.amazonaws.com/0x514910771af9ca656af840dff83e8264ecf986ca.png"
         },
         "9": {
             nativeToken: "0xd586E7F844cEa2F87f50152665BCbc2C279D8d70",
             symbol: "dai.e",
             decimals: 18,
+            image: "https://s3.amazonaws.com/token-icons/0x6b175474e89094c44da98b954eedeac495271d0f.png"
         },
         "10": {
             nativeToken: "0x63a72806098Bd3D9520cC43356dD78afe5D386D9",
             symbol: "aave.e",
             decimals: 18,
+            image: "https://token-icons.s3.amazonaws.com/0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9.png"
         },
         "11": {
             nativeToken: "0x5c49b268c9841AFF1Cc3B0a418ff5c3442eE3F3b",
             symbol: "mai",
             decimals: 18,
+            image: "https://token-icons.s3.amazonaws.com/0xa3fa99a148fa48d14ed51d610c367c61876997f1.png"
         },
         "12": {
             nativeToken: "0xD24C2Ad096400B6FBcd2ad8B24E7acBc21A1da64",
             symbol: "frax",
             decimals: 18,
+            image: "https://token-icons.s3.amazonaws.com/0x853d955acef822db058eb8505911ed77f175b99e.png"
         },
         "13": {
             nativeToken: "0xc7198437980c041c805A1EDcbA50c1Ce5db95118",
             symbol: "usdt.e",
             decimal: 6,
+            image: "https://token-icons.s3.amazonaws.com/be5db576-5c03-4e85-951a-01fe784a8364.png"
         },
         "14": {
             nativeToken: "0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664",
             symbol: "usdc.e",
             decimal: 6,
+            image: "https://token-icons.s3.amazonaws.com/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.png"
         },
     },
     "42161": {
@@ -921,71 +958,85 @@ export const nativeTokenFetcher = {
             nativeToken: "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
             symbol: "weth",
             decimals: 18,
+            image: "https://token-icons.s3.amazonaws.com/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.png"
         },
         "2": {
             nativeToken: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
             symbol: "usdc",
             decimals: 6,
+            image: "https://token-icons.s3.amazonaws.com/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.png"
         },
         "3": {
             nativeToken: "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8",
             symbol: "usdc.e",
             decimals: 6,
+            image: "https://token-icons.s3.amazonaws.com/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.png"
         },
         "4": {
             nativeToken: "0x5979D7b546E38E414F7E9822514be443A4800529",
             symbol: "wstETH",
             decimals: 18,
+            image: "https://token-icons.s3.amazonaws.com/0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0.png"
         },
         "5": {
             nativeToken: "0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f",
             symbol: "wbtc",
             decimals: 8,
+            image: "https://token-icons.s3.amazonaws.com/0x2260fac5e5542a773aa44fbcfedf7c193bc2c599.png"
         },
         "6": {
             nativeToken: "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9",
             symbol: "usdt",
             decimals: 6,
+            image: "https://token-icons.s3.amazonaws.com/0xdac17f958d2ee523a2206206994597c13d831ec7.png"
         },
         "7": {
             nativeToken: "0x912CE59144191C1204E64559FE8253a0e49E6548",
             symbol: "arb",
             decimals: 18,
+            image: "https://token-icons.s3.amazonaws.com/0xb50721bcf8d664c30412cfbc6cf7a15145234ad1.png"
         },
         "8": {
             nativeToken: "0xf97f4df75117a78c1A5a0DBb814Af92458539FB4",
             symbol: "link",
             decimals: 18,
+            image: "https://token-icons.s3.amazonaws.com/0x514910771af9ca656af840dff83e8264ecf986ca.png"
         },
         "9": {
             nativeToken: "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1",
             symbol: "dai",
             decimals: 18,
+            image: "https://s3.amazonaws.com/token-icons/0x6b175474e89094c44da98b954eedeac495271d0f.png"
         },
         "10": {
             nativeToken: "0xEC70Dcb4A1EFa46b8F2D97C310C9c4790ba5ffA8",
             symbol: "rETH",
             decimals: 18,
+            image: "https://token-icons.s3.amazonaws.com/0xae78736cd615f374d3085123a210448e74fc6393.png"
         },
         "11": {
             nativeToken: "0x93b346b6BC2548dA6A1E7d98E9a421B42541425b",
             symbol: "lusd",
             decimals: 18,
+            image: "https://token-icons.s3.amazonaws.com/0x5f98805a4e8be255a32880fdec7f6728c6568ba0.png"
         },
         "12": {
             nativeToken: "0xba5DdD1f9d7F570dc94a51479a000E3BCE967196",
             symbol: "aave",
             decimals: 18,
+            image: "https://token-icons.s3.amazonaws.com/0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9.png"
         },
         "13": {
             nativeToken: "0x17FC002b466eEc40DaE837Fc4bE5c67993ddBd6F",
             symbol: "frax",
             decimals: 18,
+            image: "https://token-icons.s3.amazonaws.com/0x853d955acef822db058eb8505911ed77f175b99e.png"
         },
         "14": {
             nativeToken: "0xD22a58f79e9481D1a88e00c343885A588b34b68B",
             symbol: "eurs",
             decimals: 2,
+            image: "https://token-icons.s3.amazonaws.com/0xdb25f211ab05b1c97d595516f45794528a807ad8.png"
         },
     },
     "10": {
@@ -993,86 +1044,103 @@ export const nativeTokenFetcher = {
             nativeToken: "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1",
             symbol: "dai",
             decimals: 18,
+            image: "https://s3.amazonaws.com/token-icons/0x6b175474e89094c44da98b954eedeac495271d0f.png"
         },
         "2": {
             nativeToken: "0x4200000000000000000000000000000000000042",
             symbol: "op",
             decimals: 18,
+            image: "https://token-icons.s3.amazonaws.com/0x4200000000000000000000000000000000000042.png"
         },
         "3": {
             nativeToken: "0x4200000000000000000000000000000000000006",
             symbol: "weth",
             decimals: 18,
+            image: "https://token-icons.s3.amazonaws.com/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.png"
         },
         "4": {
             nativeToken: "0x1F32b1c2345538c0c6f582fCB022739c4A194Ebb",
             symbol: "wsteth",
             decimals: 18,
+            image: "https://token-icons.s3.amazonaws.com/0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0.png"
         },
         "5": {
             nativeToken: "0x68f180fcCe6836688e9084f035309E29Bf0A2095",
             symbol: "wbtc",
             decimals: 8,
+            image: "https://token-icons.s3.amazonaws.com/0x2260fac5e5542a773aa44fbcfedf7c193bc2c599.png"
         },
         "6": {
             nativeToken: "0x7F5c764cBc14f9669B88837ca1490cCa17c31607",
             symbol: "usdc",
             decimals: 6,
+            image: "https://token-icons.s3.amazonaws.com/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.png"
         },
         "7": {
             nativeToken: "0x94b008aA00579c1307B0EF2c499aD98a8ce58e58",
             symbol: "usdt",
             decimals: 6,
+            image: "https://token-icons.s3.amazonaws.com/0xdac17f958d2ee523a2206206994597c13d831ec7.png"
         },
         "8": {
             nativeToken: "0x350a791Bfc2C21F9Ed5d10980Dad2e2638ffa7f6",
             symbol: "link",
             decimals: 18,
+            image: "https://token-icons.s3.amazonaws.com/0x514910771af9ca656af840dff83e8264ecf986ca.png"
         },
         "9": {
             nativeToken: "0x8c6f28f2F1A3C87F0f938b96d27520d9751ec8d9",
             symbol: "susd",
             decimals: 18,
+            image: "https://token-icons.s3.amazonaws.com/0x57ab1ec28d129707052df4df418d58a2d46d5f51.png"
         },
         "10": {
             nativeToken: "0x9Bcef72be871e61ED4fBbc7630889beE758eb81D",
             symbol: "reth",
             decimals: 18,
+            image: "https://token-icons.s3.amazonaws.com/0xae78736cd615f374d3085123a210448e74fc6393.png"
         },
         "11": {
             nativeToken: "0x76FB31fb4af56892A25e32cFC43De717950c9278",
             symbol: "aave",
             decimals: 18,
+            image: "https://token-icons.s3.amazonaws.com/0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9.png"
         },
         "12": {
             nativeToken: "0xc40F949F8a4e094D1b49a23ea9241D289B7b2819",
             symbol: "lusd",
             decimals: 18,
+            image: "https://token-icons.s3.amazonaws.com/0x5f98805a4e8be255a32880fdec7f6728c6568ba0.png"
         },
         "13": {
             nativeToken: "0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85",
             symbol: "usdc",
             decimals: 6,
+            image: "https://token-icons.s3.amazonaws.com/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.png"
         },
         "14": {
             nativeToken: "0xdFA46478F9e5EA86d57387849598dbFB2e964b02",
             symbol: "mai",
             decimals: 18,
+            image: "https://token-icons.s3.amazonaws.com/0xa3fa99a148fa48d14ed51d610c367c61876997f1.png"
         },
         "15": {
             nativeToken: "0x8700dAec35aF8Ff88c16BdF0418774CB3D7599B4",
             symbol: "snx",
             decimals: 18,
+            image: "https://token-icons.s3.amazonaws.com/0xc011a73ee8576fb46f5e1c5751ca3b9fe0af2a6f.png"
         },
         "16": {
             nativeToken: "0x1DB2466d9F5e10D7090E7152B68d62703a2245F0",
             symbol: "sonne",
             decimals: 18,
+            image: "https://token-icons.s3.amazonaws.com/3f06218d-a77b-4705-83c9-46b63a776756.png"
         },
         "17": {
             nativeToken: "0xFE8B128bA8C78aabC59d4c64cEE7fF28e9379921",
             symbol: "bal",
-            decimals: 18
+            decimals: 18,
+            image: "https://token-icons.s3.amazonaws.com/0xba100000625a3754423978a60c9317c58a424e3d.png"
         }
     },
     "8453": {
@@ -1080,36 +1148,43 @@ export const nativeTokenFetcher = {
             nativeToken: "0xd9aAEc86B65D86f6A7B5B1b0c42FFA531710b6CA", // USDC
             symbol: "usdc", // USDbC
             decimals: 6,
+            image: "https://token-icons.s3.amazonaws.com/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.png"
         },
         "2": {
             nativeToken: "0x4200000000000000000000000000000000000006", // WETH
             symbol: "weth",
             decimals: 18,
+            image: "https://token-icons.s3.amazonaws.com/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.png"
         },
         "3": {
             nativeToken: "0x2Ae3F1Ec7F1F5012CFEab0185bfc7aa3cf0DEc22", // cbETH
             symbol: "cbeth",
             decimals: 18,
+            image: "https://token-icons.s3.amazonaws.com/0xbe9895146f7af43049ca1c1ae358b0541ea49704.png"
         },
         "4": {
             nativeToken: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913", // cbETH
             symbol: "usdc",
             decimals: 6,
+            image: "https://token-icons.s3.amazonaws.com/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.png"
         },
         "5": {
             nativeToken: "0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb", // cbETH
             symbol: "dai",
             decimals: 18,
+            image: "https://s3.amazonaws.com/token-icons/0x6b175474e89094c44da98b954eedeac495271d0f.png"
         },
         "6": {
             nativeToken: "0xc1CBa3fCea344f92D9239c08C0568f6F2F0ee452", // cbETH
             symbol: "wstETH",
             decimals: 18,
+            image: "https://token-icons.s3.amazonaws.com/c7e7a185-d512-499b-977d-ebc48a9e6245.png"
         },
         "7": {
             nativeToken: "0xB6fe221Fe9EeF5aBa221c348bA20A1Bf5e73624c", // cbETH
             symbol: "rETH",
             decimals: 18,
+            image: "https://token-icons.s3.amazonaws.com/0xae78736cd615f374d3085123a210448e74fc6393.png"
         },
     },
 };
@@ -1185,8 +1260,7 @@ export async function amountIndexInParams(paramDetailsMethod) {
         paramDetailsMethod == "compound_supply" ||
         paramDetailsMethod == "compound_withdraw" ||
         paramDetailsMethod == "dForce_deposit" ||
-        paramDetailsMethod == "dForce_withdraw")
-    {
+        paramDetailsMethod == "dForce_withdraw") {
         return "1"
     } else if (
         paramDetailsMethod == "exactly_deposit" ||
@@ -1202,11 +1276,12 @@ export async function amountIndexInParams(paramDetailsMethod) {
     }
 }
 
-export async function fetchApy({ protocol, contractAddress, provider, signer, token }) {
+export async function fetchApy( protocol, contractAddress, provider, signer, token ) {
     if (protocol == "fetchApyForAaveV2Polygon") {
         let abi = new ethers.utils.Interface(aave_v2_Abi);
         const protocolInstance = await getContractInstance(contractAddress, abi, provider);
         const reserveData = await protocolInstance?.getReserveData(token);
+        console.log("decreasePowerByDecimals",decreasePowerByDecimals(reserveData[3].toString().toString(), 25))
         return await decreasePowerByDecimals(reserveData[3].toString().toString(), 25);
     } else if (protocol == "fetchApyForAaveV3Polygon") {
         let abi = new ethers.utils.Interface(aave_v2_Abi);

@@ -32,7 +32,7 @@ export const NavigationList = [
     // },
     {
         title: "Txns History",
-        route: "/portfolio/batch-history",
+        route: "/batch-history",
         icon: batching,
     },
 ];

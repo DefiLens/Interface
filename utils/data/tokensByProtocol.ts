@@ -6,76 +6,93 @@ export const tokensByProtocol = {
             {
                 name: "aUSDC",
                 icon: ethereum,
+                image: "https://token-icons.s3.amazonaws.com/0xbcca60bb61934080951369a648fb03df4f96263c.png",
             },
             {
                 name: "aUSDT",
                 icon: optimism,
+                image: "https://token-icons.s3.amazonaws.com/0x3ed3b47dd13ec9a98b44e6204a523e766b225811.png",
             },
             {
                 name: "aDAI",
                 icon: avalanche,
+                image: "https://token-icons.s3.amazonaws.com/0x028171bca77440897b824ca71d1c56cac55b68a3.png",
             },
             {
                 name: "aWETH",
                 icon: ethereum,
+                image: "https://token-icons.s3.amazonaws.com/0x030ba81f1c18d280636f32af80b9aad02cf0854e.png",
             },
             {
                 name: "aWMATIC",
                 icon: optimism,
+                image: "https://token-icons.s3.amazonaws.com/0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0.png",
             },
             {
                 name: "aAAVE",
                 icon: avalanche,
+                image: "https://token-icons.s3.amazonaws.com/0xffc97d72e13e01096502cb8eb52dee56f74dad7b.png",
             },
             {
                 name: "aWBTC",
                 icon: optimism,
+                image: "https://token-icons.s3.amazonaws.com/0x9ff58f4ffb29fa2266ab25e75e2a8b3503311656.png",
             },
         ],
         aaveV3: [
             {
                 name: "aUSDCv3",
                 icon: ethereum,
+                image: "https://token-icons.s3.amazonaws.com/0x9ba00d6856a4edf4665bca2c2309936572473b7e.png",
             },
             {
                 name: "aUSDTv3",
                 icon: optimism,
+                image: "https://token-icons.s3.amazonaws.com/0x71fc860f7d3a592a4a98740e39db31d25db65ae8.png",
             },
             {
                 name: "aDAIv3",
                 icon: avalanche,
+                image: "https://token-icons.s3.amazonaws.com/0xfc1e690f61efd961294b3e1ce3313fbd8aa4f85d.png",
             },
             {
                 name: "aWETHv3",
                 icon: ethereum,
+                image: "https://token-icons.s3.amazonaws.com/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.png",
             },
             {
                 name: "aWMATICv3",
                 icon: optimism,
+                image: "https://token-icons.s3.amazonaws.com/0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0.png",
             },
             {
                 name: "aAAVEv3",
                 icon: avalanche,
+                image: "https://token-icons.s3.amazonaws.com/0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9.png",
             },
             {
                 name: "aWBTCv3",
                 icon: ethereum,
+                image: "https://token-icons.s3.amazonaws.com/0xfc4b8ed459e00e5400be803a9bb3954234fd50e3.png",
             },
             {
                 name: "aBALv3",
                 icon: optimism,
+                image: "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xba100000625a3754423978a60c9317c58a424e3D/logo.png",
             },
         ],
         compoundV3: [
             {
                 name: "cUSDC",
                 icon: ethereum,
+                image: "https://s3.amazonaws.com/token-icons/0x39aa39c021dfbae8fac545936693ac917d5e7563.png",
             },
         ],
         dForce: [
             {
                 name: "dForceUSDC",
                 icon: optimism,
+                image: "https://token-icons.s3.amazonaws.com/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.png",
             },
         ],
     },
@@ -84,50 +101,62 @@ export const tokensByProtocol = {
             {
                 name: "aUSDT",
                 icon: avalanche,
+                image: "",
             },
             {
                 name: "aUSDC",
                 icon: ethereum,
+                image: "",
             },
             {
                 name: "aWAVAX",
                 icon: avalanche,
+                image: "",
             },
             {
                 name: "aBTCb",
                 icon: ethereum,
+                image: "",
             },
             {
                 name: "aWETHe",
                 icon: avalanche,
+                image: "",
             },
             {
                 name: "aWBTCe",
                 icon: ethereum,
+                image: "",
             },
             {
                 name: "asAVAX",
                 icon: avalanche,
+                image: "",
             },
             {
                 name: "aLINKe",
                 icon: ethereum,
+                image: "",
             },
             {
                 name: "aDAIe",
                 icon: avalanche,
+                image: "",
             },
             {
                 name: "aAAVEe",
                 icon: ethereum,
+                image: "",
             },
             {
                 name: "aMAI",
                 icon: avalanche,
+                image: "",
             },
             {
                 name: "aFRAX",
                 icon: ethereum,
+                image: "",
             },
         ],
         benqi: [
@@ -182,102 +211,140 @@ export const tokensByProtocol = {
             {
                 name: "aWETH",
                 icon: avalanche,
+                image: "https://token-icons.s3.amazonaws.com/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.png",
             },
             {
                 name: "aUSDC",
                 icon: avalanche,
+                image: "https://token-icons.s3.amazonaws.com/0x9ba00d6856a4edf4665bca2c2309936572473b7e.png",
             },
             {
                 name: "aUSDCe",
                 icon: avalanche,
+                image: "https://token-icons.s3.amazonaws.com/0x9ba00d6856a4edf4665bca2c2309936572473b7e.png",
             },
             {
                 name: "awstETH",
                 icon: avalanche,
+                image: "https://assets.coingecko.com/coins/images/18834/standard/wstETH.png?1696518295",
             },
             {
                 name: "aWBTC",
                 icon: avalanche,
+                image: "https://token-icons.s3.amazonaws.com/0x2260fac5e5542a773aa44fbcfedf7c193bc2c599.png",
+
             },
             {
                 name: "aUSDT",
                 icon: avalanche,
+                image: "https://token-icons.s3.amazonaws.com/0x71fc860f7d3a592a4a98740e39db31d25db65ae8.png",
             },
             {
                 name: "aARB",
                 icon: avalanche,
+                image: "",
             },
             {
                 name: "aLINK",
                 icon: avalanche,
+                image: "https://token-icons.s3.amazonaws.com/0xa64bd6c70cb9051f6a9ba1f163fdc07e0dfb5f84.png",
             },
             {
                 name: "aDAI",
                 icon: avalanche,
+                image: "https://token-icons.s3.amazonaws.com/0xfc1e690f61efd961294b3e1ce3313fbd8aa4f85d.png",
             },
             {
                 name: "arETH",
                 icon: avalanche,
+                image: "",
             },
             {
                 name: "aLUSD",
                 icon: avalanche,
+                image: "",
+
             },
             {
                 name: "aAAVE",
                 icon: avalanche,
+                image: "https://token-icons.s3.amazonaws.com/0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9.png",
             },
             {
                 name: "aFRAX",
                 icon: avalanche,
+                image: "https://token-icons.s3.amazonaws.com/0x853d955acef822db058eb8505911ed77f175b99e.png",
+
             },
             {
                 name: "aEURS",
                 icon: avalanche,
+                image: "https://token-icons.s3.amazonaws.com/0xdb25f211ab05b1c97d595516f45794528a807ad8.png",
+
             },
         ],
         compoundV3: [
             {
                 name: "cUSDCev3",
                 icon: arbitrum,
+                image: "https://s3.amazonaws.com/token-icons/0x39aa39c021dfbae8fac545936693ac917d5e7563.png",
+
             },
             {
                 name: "cUSDCv3",
                 icon: arbitrum,
+                image: "https://s3.amazonaws.com/token-icons/0x39aa39c021dfbae8fac545936693ac917d5e7563.png",
+
             },
         ],
         radiant: [
             {
                 name: "rWBTC",
                 icon: arbitrum,
+                image: "https://token-icons.s3.amazonaws.com/0x2260fac5e5542a773aa44fbcfedf7c193bc2c599.png",
+
             },
             {
                 name: "rUSDT",
                 icon: arbitrum,
+                image: "https://token-icons.s3.amazonaws.com/0x71fc860f7d3a592a4a98740e39db31d25db65ae8.png",
+
             },
             {
                 name: "rUSDC.e",
                 icon: arbitrum,
+                image: "https://token-icons.s3.amazonaws.com/faa2e9db-03cd-47d5-847b-3add52239107.png",
+
             },
             {
                 name: "rDAI",
                 icon: arbitrum,
+                image: "https://s3.amazonaws.com/token-icons/0x6b175474e89094c44da98b954eedeac495271d0f.png",
+
             },
             {
                 name: "rWETH",
                 icon: arbitrum,
+                image: "",
+
             },
             {
                 name: "rwstETH",
                 icon: arbitrum,
+                image: "",
+
             },
             {
                 name: "rARB",
                 icon: arbitrum,
+                image: "",
+
             },
             {
                 name: "rUSDC",
                 icon: arbitrum,
+                image: "",
+
             },
         ],
 
@@ -287,168 +354,211 @@ export const tokensByProtocol = {
             {
                 name: "aDAI",
                 icon: optimism,
+                image: "https://token-icons.s3.amazonaws.com/0xfc1e690f61efd961294b3e1ce3313fbd8aa4f85d.png",
             },
             {
                 name: "aOP",
                 icon: optimism,
+                image: "https://token-icons.s3.amazonaws.com/0x4200000000000000000000000000000000000042.png",
             },
             {
                 name: "aWETH",
                 icon: optimism,
+                image: "https://token-icons.s3.amazonaws.com/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.png",
             },
             {
                 name: "awstETH",
                 icon: optimism,
+                image: "https://assets.coingecko.com/coins/images/18834/standard/wstETH.png?1696518295",
             },
             {
                 name: "aWBTC",
                 icon: optimism,
+                image: "https://token-icons.s3.amazonaws.com/0x2260fac5e5542a773aa44fbcfedf7c193bc2c599.png",
             },
             {
                 name: "aUSDC",
                 icon: optimism,
+                image: "https://token-icons.s3.amazonaws.com/0x9ba00d6856a4edf4665bca2c2309936572473b7e.png",
             },
             {
                 name: "aUSDT",
                 icon: optimism,
+                image: "https://token-icons.s3.amazonaws.com/0x71fc860f7d3a592a4a98740e39db31d25db65ae8.png",
             },
             {
                 name: "aLINK",
                 icon: optimism,
+                image: "https://token-icons.s3.amazonaws.com/0xa64bd6c70cb9051f6a9ba1f163fdc07e0dfb5f84.png",
             },
             {
                 name: "asUSD",
                 icon: optimism,
+                image: "https://token-icons.s3.amazonaws.com/0x625ae63000f46200499120b906716420bd059240.png",
             },
             {
                 name: "arETH",
                 icon: optimism,
+                image: "",
             },
             {
                 name: "aAAVE",
                 icon: optimism,
+                image: "https://token-icons.s3.amazonaws.com/0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9.png",
             },
             {
                 name: "aLUSD",
                 icon: optimism,
+                image: "https://token-icons.s3.amazonaws.com/0x5f98805a4e8be255a32880fdec7f6728c6568ba0.png",
             },
         ],
         sonne: [
             {
                 name: "soWETH",
-                icon: optimism
+                icon: optimism,
+                image: "",
             },
             {
                 name: "soDAI",
-                icon: optimism
+                icon: optimism,
+                image: "",
             },
             {
                 name: "soUSDC.e",
-                icon: optimism
+                icon: optimism,
+                image: "https://token-icons.s3.amazonaws.com/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.png",
             },
             {
                 name: "soUSDT",
-                icon: optimism
+                icon: optimism,
+                image: "https://token-icons.s3.amazonaws.com/559c040c-6d7f-48d9-b7b0-843411d653e0.png",
             },
             {
                 name: "soOP",
-                icon: optimism
+                icon: optimism,
+                image: "",
             },
             {
                 name: "soSUSD",
-                icon: optimism
+                icon: optimism,
+                image: "",
             },
             {
                 name: "sSONNE",
-                icon: optimism
+                icon: optimism,
+                image: "https://token-icons.s3.amazonaws.com/3f06218d-a77b-4705-83c9-46b63a776756.png",
             },
             {
                 name: "soSNX",
-                icon: optimism
+                icon: optimism,
+                image: "",
             },
             {
                 name: "soWBTC",
-                icon: optimism
+                icon: optimism,
+                image: "https://token-icons.s3.amazonaws.com/0x2260fac5e5542a773aa44fbcfedf7c193bc2c599.png",
             },
             {
                 name: "soLUSD",
-                icon: optimism
+                icon: optimism,
+                image: "",
             },
             {
                 name: "sowstETH",
-                icon: optimism
+                icon: optimism,
+                image: "",
             },
             {
                 name: "soMAI",
-                icon: optimism
+                icon: optimism,
+                image: "https://token-icons.s3.amazonaws.com/0xa3fa99a148fa48d14ed51d610c367c61876997f1.png",
             },
             {
                 name: "soUSDC",
-                icon: optimism
+                icon: optimism,
+                image: "https://token-icons.s3.amazonaws.com/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.png",
             }
         ],
         exactly: [
             {
                 name: "exaOP",
-                icon: optimism
+                icon: optimism,
+                image: "",
             },
             {
                 name: "exaUSDC",
-                icon: optimism
+                icon: optimism,
+                image: "https://token-icons.s3.amazonaws.com/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.png",
+
             },
             {
                 name: "exaWBTC",
-                icon: optimism
+                icon: optimism,
+                image: "",
             },
             {
                 name: "exaWETH",
-                icon: optimism
+                icon: optimism,
+                image: "",
             },
             {
                 name: "exawstETH",
-                icon: optimism
+                icon: optimism,
+                image: "",
             },
         ],
         granary: [
             {
                 name: "grainDAI",
-                icon: optimism
+                icon: optimism,
+                image: "",
             },
             {
                 name: "grainUSDC",
-                icon: optimism
+                icon: optimism,
+                image: "https://token-icons.s3.amazonaws.com/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.png",
             },
             {
                 name: "grainUSDT",
-                icon: optimism
+                icon: optimism,
+                image: "https://token-icons.s3.amazonaws.com/0xdac17f958d2ee523a2206206994597c13d831ec7.png",
             },
             {
                 name: "grainWBTC",
-                icon: optimism
+                icon: optimism,
+                image: "",
             },
             {
                 name: "grainWETH",
-                icon: optimism
+                icon: optimism,
+                image: "",
             },
             {
                 name: "grainOP",
-                icon: optimism
+                icon: optimism,
+                image: "",
             },
             {
                 name: "grainSUSD",
-                icon: optimism
+                icon: optimism,
+                image: "",
             },
             {
                 name: "grainBAL",
-                icon: optimism
+                icon: optimism,
+                image: "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xba100000625a3754423978a60c9317c58a424e3D/logo.png",
             },
             {
                 name: "grainSNX",
-                icon: optimism
+                icon: optimism,
+                image: "",
+
             },
             {
                 name: "grainWSTETH",
-                icon: optimism
+                icon: optimism,
+                image: "",
+
             },
         ]
     },
@@ -457,90 +567,110 @@ export const tokensByProtocol = {
             {
                 name: "aBasUSDbC",
                 icon: avalanche,
+                image: "https://token-icons.s3.amazonaws.com/6c8eaf54-30fe-41ff-b1b3-17b16875cc95.png",
             },
             {
                 name: "aBasWETH",
                 icon: ethereum,
+                image: "",
             },
         ],
         compoundV3: [
             {
                 name: "cUSDbCv3",
                 icon: optimism,
+                image: "",
             },
         ],
         seamless: [
             {
                 name: "sUSDbC",
                 icon: avalanche,
+                image: "",
             },
             {
                 name: "sWETH",
                 icon: avalanche,
+                image: "",
             },
             {
                 name: "scbETH",
                 icon: avalanche,
+                image: "",
             },
             {
                 name: "sUSDC",
                 icon: avalanche,
+                image: "https://token-icons.s3.amazonaws.com/6c8eaf54-30fe-41ff-b1b3-17b16875cc95.png",
             },
             {
                 name: "sDAI",
                 icon: avalanche,
+                image: "https://token-icons.s3.amazonaws.com/0xfc1e690f61efd961294b3e1ce3313fbd8aa4f85d.png",
             }
         ],
         moonwell: [
             {
                 name: "mDAI",
                 icon: avalanche,
+                image: "https://token-icons.s3.amazonaws.com/0xfc1e690f61efd961294b3e1ce3313fbd8aa4f85d.png",
             },
             {
                 name: "mUSDC",
                 icon: avalanche,
+                image: "https://token-icons.s3.amazonaws.com/3a31b65e-8ca1-449d-9488-e843f70a6905.png",
             },
             {
                 name: "mUSDbC",
                 icon: avalanche,
+                image: "",
             },
             {
                 name: "mWETH",
                 icon: avalanche,
+                image: "",
             },
             {
                 name: "mcbETH",
                 icon: avalanche,
+                image: "",
             },
             {
                 name: "mwstETH",
                 icon: avalanche,
+                image: "",
             },
             {
                 name: "mrETH",
                 icon: avalanche,
+                image: "",
             }
         ],
         sonne: [
             {
                 name: "sobUSDbC",
                 icon: avalanche,
+                image: "",
             },
             {
                 name: "sobUSDC",
                 icon: avalanche,
+                image: "https://token-icons.s3.amazonaws.com/3a31b65e-8ca1-449d-9488-e843f70a6905.png",
             },
             {
                 name: "sobDAI",
                 icon: avalanche,
+                image: "https://token-icons.s3.amazonaws.com/0xfc1e690f61efd961294b3e1ce3313fbd8aa4f85d.png",
             },
             {
                 name: "sobWETH",
                 icon: avalanche,
+                image: "https://token-icons.s3.amazonaws.com/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.png",
             },
             {
                 name: "sobcbETH",
                 icon: avalanche,
+                image: "",
             },
         ]
     },
