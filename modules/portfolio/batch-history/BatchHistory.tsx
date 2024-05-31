@@ -1,31 +1,22 @@
 import { iBatchHistory } from "../types";
-import { buildTxHash, decreasePowerByDecimals, formatDate } from "../../../utils/helper";
+import { formatDate } from "../../../utils/helper";
 import { NETWORK_LIST } from "../../../utils/data/network";
 import Image from "next/image";
 import CopyButton from "../../../components/common/CopyButton";
 import { iPortfolio, usePortfolioStore } from "../../../store/Portfolio";
-import { useEffect, useState } from "react";
-import { iGlobal, useGlobalStore } from "../../../store/GlobalStore";
-import { arbitrum, base, optimism, polygon } from "viem/chains";
+import { useEffect, useRef } from "react";
 import { tokensByProtocol } from "../../../utils/data/tokensByProtocol";
-import axiosInstance from "../../../axiosInstance/axiosInstance";
-import {
-    abiFetcher,
-    abiFetcherNum,
-    fetchApy,
-    nativeTokenFetcher,
-    nativeTokenNum,
-    protocolNames,
-} from "../../../utils/data/protocols";
+import { protocolNames } from "../../../utils/data/protocols";
 import { RxExternalLink } from "react-icons/rx";
-import { getProvider } from "../../../utils/web3Libs/ethers";
 
 interface BatchHistoryProps {
     transactions: iBatchHistory[];
-    smartAccountAddress: string;
     isSimulation: boolean;
-    setIsSimulation: (isSimulation: boolean) => void;
+    setIsSimulation: (value: boolean) => void;
     errorMessage: string;
+    page: number;
+    setPage: (value: number) => void;
+    totalPages: number;
 }
 
 interface Chain {
@@ -97,350 +88,15 @@ const FilterSelection: React.FC<FilterSelectionProps> = ({ dropdown = false, set
     );
 };
 
-const tokensByNetworkForCC = {
-    "137": {
-        usdc: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
-    },
-    "42161": {
-        usdc: "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8",
-    },
-    "10": {
-        usdc: "0x7F5c764cBc14f9669B88837ca1490cCa17c31607",
-    },
-    "8453": {
-        usdc: "0xd9aAEc86B65D86f6A7B5B1b0c42FFA531710b6CA",
-    },
-};
-
-const ChainData = [
-    {
-        key: "Polygon",
-        chainName: "polygon",
-        chainId: "137",
-        icon: polygon,
-    },
-    {
-        key: "Arbitrum",
-        chainName: "arbitrum",
-        chainId: "42161",
-        icon: arbitrum,
-    },
-    {
-        key: "Optimism",
-        chainName: "optimism",
-        chainId: "10",
-        icon: optimism,
-    },
-    {
-        key: "Base",
-        chainName: "base",
-        chainId: "8453",
-        icon: base,
-    },
-];
-
-const TokenB2alance = () => {
-    const { smartAccountAddress }: iGlobal = useGlobalStore((state) => state);
-    const [balances, setBalances] = useState({});
-    const [isLoading, setIsLoading] = useState(true);
-    const [totalUSDC, setTotalUSDC] = useState(0);
-
-    useEffect(() => {
-        const fetchBalances = async () => {
-            const results = {};
-            let total = 0;
-
-            try {
-                const fetchBalancePromises = Object.keys(tokensByNetworkForCC).map(async (chainId) => {
-                    const tokenAddress = tokensByNetworkForCC[chainId].usdc;
-                    const response = await fetch("http://localhost:8000/getBalances", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            chainId,
-                            tokenAddress,
-                            userAddress: "0x9Ce935D780424FB795bef7E72697f263A8258fAA",
-                        }),
-                    });
-                    const result = await response.json();
-                    results[chainId] = result;
-
-                    // Sum up the USDC balance
-                    total += parseFloat(result.balance);
-                });
-
-                await Promise.all(fetchBalancePromises);
-                setBalances(results);
-                setTotalUSDC(total);
-            } catch (error) {
-                console.error("Error fetching balances:", error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        fetchBalances();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [smartAccountAddress]);
-
-    if (isLoading) {
-        return <div className="flex justify-center items-center h-screen">Loading...</div>;
-    }
-
-    const calculateTotalUSDC = () => {
-        let totalUSDC = 0;
-        Object.values(balances).forEach((balanceInfo: any) => {
-            const balance = parseFloat(balanceInfo.balance);
-            totalUSDC += balance;
-        });
-        return totalUSDC > 0 && decreasePowerByDecimals(totalUSDC, 6);
-    };
-
-    if (isLoading) {
-        return <div className="flex justify-center items-center h-screen">Loading...</div>;
-    }
-    const t: any = calculateTotalUSDC();
-
-    return (
-        <div className="container mx-auto p-4">
-            {/* <h1 className="text-3xl font-bold mb-6">Total USDC Balance: {decreasePowerByDecimals(totalUSDC, 6)}</h1> */}
-            <h1 className="text-3xl font-bold mb-6">Total USDC Balance: {t}</h1>
-
-            {balances &&
-                Object.keys(balances).map((chainId) => (
-                    <div key={chainId} className="mb-8">
-                        <h2 className="text-2xl font-bold mb-4">Chain ID: {chainId}</h2>
-                        <div className="bg-white shadow-md rounded-lg p-4">
-                            <h3 className="text-xl font-semibold">{balances[chainId].symbol}</h3>
-                            <p>
-                                <strong>Token Address:</strong> {balances[chainId].nativeToken}
-                            </p>
-                            <p>
-                                <strong>Balance:</strong>{" "}
-                                {balances[chainId]?.balance && decreasePowerByDecimals(balances[chainId]?.balance, 6)}
-                            </p>
-                            <p>
-                                <strong>Total Supply:</strong> {balances[chainId].totalSupply}
-                            </p>
-                        </div>
-                    </div>
-                ))}
-        </div>
-    );
-};
-
-const TokenBalance = () => {
-    const { smartAccountAddress }: iGlobal = useGlobalStore((state) => state);
-    const [balances, setBalances] = useState({});
-    const [isLoading, setIsLoading] = useState(true);
-    const [totalUSDCPerChain, setTotalUSDCPerChain] = useState({});
-    const [overallTotalUSDC, setOverallTotalUSDC] = useState(0);
-
-    useEffect(() => {
-        const fetchBalances = async () => {
-            const results = {};
-            const perChainTotal = {};
-            let overallTotal = 0;
-
-            try {
-                const fetchBalancePromises = Object.keys(tokensByNetworkForCC).map(async (chainId) => {
-                    const tokenAddress = tokensByNetworkForCC[chainId].usdc;
-                    const response = await fetch("http://localhost:8000/getBalances", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ chainId, tokenAddress, userAddress: smartAccountAddress }),
-                    });
-                    const result = await response.json();
-                    results[chainId] = result;
-
-                    // Calculate the total USDC balance per chain
-                    const balance = parseFloat(result.balance);
-                    perChainTotal[chainId] = balance;
-                    overallTotal += balance;
-                });
-
-                await Promise.all(fetchBalancePromises);
-                setBalances(results);
-                setTotalUSDCPerChain(perChainTotal);
-                setOverallTotalUSDC(overallTotal);
-            } catch (error) {
-                console.error("Error fetching balances:", error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        fetchBalances();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [smartAccountAddress]);
-
-    if (isLoading) {
-        return <div className="flex justify-center items-center h-screen">Loading...</div>;
-    }
-
-    return (
-        <>
-            {!isLoading ? (
-                <div className="container mx-auto p-4">
-                    <h1 className="text-3xl font-bold mb-6">
-                        Overall Total USDC Balance: {overallTotalUSDC && decreasePowerByDecimals(overallTotalUSDC, 6)}
-                    </h1>
-                    {Object.keys(balances).map((chainId) => (
-                        <div key={chainId} className="mb-8">
-                            <h2 className="text-2xl font-bold mb-4">Chain ID: {chainId}</h2>
-                            <div className="bg-white shadow-md rounded-lg p-4">
-                                <h3 className="text-xl font-semibold">{balances[chainId].symbol}</h3>
-                                <p>
-                                    <strong>Token Address:</strong> {balances[chainId].nativeToken}
-                                </p>
-                                <p>
-                                    <strong>Balance:</strong> {balances[chainId].balance}
-                                </p>
-                                <p>
-                                    <strong>Total Supply:</strong> {balances[chainId].totalSupply}
-                                </p>
-                            </div>
-                            <p className="text-lg font-bold mt-4">
-                                Total USDC Balance for Chain ID {chainId}:{" "}
-                                {totalUSDCPerChain[chainId] && decreasePowerByDecimals(totalUSDCPerChain[chainId], 6)}
-                            </p>
-                        </div>
-                    ))}
-                </div>
-            ) : (
-                <div className="flex justify-center animate-pulse items-center h-screen">Loading...</div>
-            )}
-        </>
-    );
-};
-
-const TokenItem = ({ token }) => {
-    return (
-        <div className="flex items-center p-4 border-b border-gray-200 min-w-[30rem]">
-            <img src={token.image} alt={`${token.name} logo`} className="w-10 h-10 rounded-full mr-4" />
-            <div className="flex-grow mr-10">
-                <div className="font-semibold text-lg">
-                    {token.nativeName} <span className="text-B100 text-base">(APY: {token.apy}%)</span>
-                </div>
-                <div className="text-gray-600">
-                    {token.name}
-                    <span className="bg-gray-200 text-gray-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded ml-2">
-                        deposited
-                    </span>
-                    {token.deposited}
-                </div>
-            </div>
-            <div className=" flex flex-col justify-end items-end">
-                <div className="font-semibold">{token.usdcBalance}</div>
-                <div className="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded">available</div>
-            </div>
-        </div>
-    );
-};
-
-const tokens = [
-    {
-        image: "https://via.placeholder.com/40", // replace with actual image URL
-        nativeName: "USDC",
-        apy: 0.2,
-        name: "aUSDC",
-        balance: 100,
-        deposited: 0.2,
-        usdcBalance: 1000,
-    },
-    {
-        image: "https://via.placeholder.com/40", // replace with actual image URL
-        nativeName: "DAI",
-        apy: 0.3,
-        name: "aDAI",
-        balance: 150,
-        deposited: 0.3,
-        usdcBalance: 2000,
-    },
-    // Add more tokens as needed
-];
-
-const TokenList = () => {
-    return (
-        <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
-            {tokens.map((token, index) => (
-                <TokenItem key={index} token={token} />
-            ))}
-        </div>
-    );
-};
-
-const BatchHistory: React.FC<BatchHistoryProps> = ({ transactions, setIsSimulation, isSimulation, errorMessage }) => {
-    // const word = "aUSDC";
-
-    // const [tokenAddress, setTokenAddress] = useState("");
-    // // const fetchTokenData = async () => {
-    // //     try {
-    // //         const response = await axiosInstance.get(`/token/detail/${tokenAddress}`);
-
-    // //         console.log(response?.data);
-    // //     } catch (error) {
-    // //         console.error("Error fetching token data:", error);
-    // //     }
-    // // };
-
-    // const [mergedData, setMergedData] = useState<any>(null);
-    // const [extractedData, setExtractedData] = useState<any>(null);
-
-    // // Function to fetch token data from the API
-    // const fetchTokenData = async (tokenAddress) => {
-    //     try {
-    //         const response = await axiosInstance.get(`/token/detail/${tokenAddress}`);
-    //         return response.data; // Return fetched token data
-    //     } catch (error) {
-    //         console.error("Error fetching token data:", error);
-    //         return null; // Return null in case of error
-    //     }
-    // };
-
-    // const fetchAndMergeTokenData = async () => {
-    //     try {
-    //         const mergedData = {}; // Object to store merged token data
-    //         const extractedData = {}; // Object to store extracted data
-
-    //         // Iterate over each chain ID
-    //         for (const chainId in nativeTokenFetcher) {
-    //             const implementations = nativeTokenFetcher[chainId];
-
-    //             // Iterate over implementations for each chain ID
-    //             for (const implementationId in implementations) {
-    //                 const tokenAddress = implementations[implementationId].nativeToken;
-
-    //                 // Fetch token data from the API
-    //                 const tokenData = await fetchTokenData(tokenAddress);
-
-    //                 // Extract image, token name, and symbol
-    //                 const { icon, name, symbol } = tokenData;
-    //                 extractedData[tokenAddress] = { icon: icon.url, name, symbol };
-
-    //                 // Merge fetched token data with existing data
-    //                 if (tokenData) {
-    //                     if (!mergedData[chainId]) {
-    //                         mergedData[chainId] = {};
-    //                     }
-    //                     mergedData[chainId][implementationId] = { ...implementations[implementationId], ...tokenData };
-    //                 }
-    //             }
-    //         }
-
-    //         setMergedData(mergedData); // Set merged token data
-    //         setExtractedData(extractedData); // Set extracted data
-    //     } catch (error) {
-    //         console.error("Error fetching and merging token data:", error);
-    //     }
-    // };
-
-    // useEffect(() => {
-    //     fetchAndMergeTokenData(); // Fetch and merge token data on component mount
-    // }, []);
-
-    // console.log(mergedData, "mergedData");
-    // console.log(extractedData, "extractedData");
+const BatchHistory: React.FC<BatchHistoryProps> = ({
+    transactions,
+    isSimulation,
+    setIsSimulation,
+    errorMessage,
+    totalPages,
+    page,
+    setPage,
+}) => {
     interface INetworkMap {
         [networkName: string]: number;
     }
@@ -453,53 +109,25 @@ const BatchHistory: React.FC<BatchHistoryProps> = ({ transactions, setIsSimulati
         base: 8453,
     };
 
-    const chainId = "137";
-    const tokenName = "aUSDC";
+    const containerRef = useRef<HTMLDivElement>(null);
 
-    // console.log(abiFetcherNum[chainId][tokenName])
-    // console.log(abiFetcher[chainId][abiFetcherNum[chainId][tokenName]].contractAddress)
+    const handlePreviousPage = () => {
+        if (page > 1) {
+            setPage(page - 1);
+        }
+    };
 
-    const tokenAbiData: any = abiFetcher[chainId][abiFetcherNum[chainId][tokenName]];
-    const apyFunc: any = tokenAbiData.apyFetch;
-
-    const contractAddress = tokenAbiData.isContractSet
-        ? tokenAbiData.contractSet[tokenName]
-        : tokenAbiData.contractAddress;
-
-    const nativeTokenNumber = nativeTokenNum[chainId][tokenName];
-    const nativeTokenDetail = nativeTokenFetcher[chainId][nativeTokenNumber];
-
-    // console.log(nativeTokenDetail, "nativeTokenDetail")
-
-    const [tokenBal, setTokenBal] = useState("");
-    const [isLoading, setIsLoading] = useState(false);
-    const { smartAccountAddress }: iGlobal = useGlobalStore((state) => state);
-
-    const getBalance = async () => {
-        setIsLoading(true);
-
-        try {
-            const provider = await getProvider(chainId);
-
-            const data = await fetchApy(
-                apyFunc,
-                tokenAbiData.contractAddress,
-                provider,
-                "",
-                nativeTokenDetail.nativeToken
-            );
-            console.log("data", data);
-
-            setIsLoading(false);
-        } catch (error) {
-            console.error(error);
-            setIsLoading(false);
+    const handleNextPage = () => {
+        if (page < totalPages) {
+            setPage(page + 1);
         }
     };
 
     useEffect(() => {
-        getBalance();
-    }, []);
+        if (containerRef.current) {
+            containerRef.current.scrollTop = containerRef.current.scrollHeight;
+        }
+    }, [page]);
 
     return (
         <div className="w-full flex flex-col justify-center items-center gap-10 p-4">
@@ -508,10 +136,10 @@ const BatchHistory: React.FC<BatchHistoryProps> = ({ transactions, setIsSimulati
                 <FilterSelection dropdown={true} />
             </div>
 
-            <div className="max-w-6xl w-full mx-auto  p-3">
-                <div className="flex flex-col gap-10">
+            <div className="max-w-6xl w-full mx-auto p-3">
+                <div className="flex flex-col gap-10 scroll-smooth" ref={containerRef}>
                     {transactions && transactions.length > 0 ? (
-                        transactions.map((parentTransaction: iBatchHistory, index: number) => (
+                        transactions?.map((parentTransaction: iBatchHistory, index: number) => (
                             <div key={index} className="bg-N0 shadow-lg rounded-xl border border-N40 p-4">
                                 <div className="flex flex-col mb-4">
                                     {!isSimulation ? (
@@ -757,6 +385,25 @@ const BatchHistory: React.FC<BatchHistoryProps> = ({ transactions, setIsSimulati
                         <div className="bg-N0 shadow-lg rounded-xl border border-N40 p-4">{errorMessage}</div>
                     )}
                 </div>
+                {transactions && transactions.length !== 0 && (
+                    <div className="flex justify-between items-center mt-4">
+                        <button
+                            onClick={handlePreviousPage}
+                            disabled={page === 1}
+                            className={`px-4 py-2 rounded-md bg-W300 text-B100 border-2 border-W300 hover:bg-white transition-colors ease-in-out duration-300 ${page === 1 ? "hover:bg-W300 cursor-not-allowed opacity-50" : ""}`}
+                        >
+                            Previous
+                        </button>
+                        <span className="mx-4">{`Page ${page} of ${totalPages}`}</span>
+                        <button
+                            onClick={handleNextPage}
+                            disabled={page === totalPages}
+                            className={`px-4 py-2 rounded-md bg-W300 text-B100 border border-gray-100 hover:bg-white transition-colors ease-in-out duration-300 ${page === totalPages ? "hover:bg-W300 cursor-not-allowed opacity-50" : ""}`}
+                        >
+                            Next
+                        </button>
+                    </div>
+                )}
             </div>
         </div>
     );
