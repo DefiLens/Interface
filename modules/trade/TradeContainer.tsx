@@ -1106,7 +1106,7 @@ const TradeContainer: React.FC<any> = () => {
         }
     }, [selectedFromTokenAddress, smartAccountAddress]);
 
-    // console.log("simulationHashes", simulationHashes);
+    console.log("individualBatch", individualBatch);
     return (
         <Trade
             handleSelectFromNetwork={handleSelectFromNetwork}

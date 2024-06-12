@@ -89,7 +89,7 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
     useEffect(() => {
         if (individualBatch.length > 0 && txhash) {
             const txHistory: iSingleTransaction[] = individualBatch.map((item) => ({
-                amountIn: item.data.amountIn,
+                amount: item.data.amountIn,
                 fromNetwork: item.data.fromNetwork,
                 toNetwork: item.data.toNetwork,
                 fromProtocol: item.data.fromProtocol,
@@ -103,6 +103,8 @@ const ExecuteBatch = ({}: tExecuteBatch) => {
                     symbol: gettokenData(item.data.fromProtocol, item.data.fromNetwork, item.data.fromToken),
                     chainId: NETWORK_MAP[item.data.fromNetwork],
                 },
+                smartAccount: smartAccountAddress,
+                eoaAccount: address,
             }));
 
             // console.log(txHistory, "txHistory");

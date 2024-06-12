@@ -127,7 +127,7 @@ export interface iSingleTransaction {
     toNetwork: string;
     toProtocol: string;
     toToken: string;
-    amountIn: string;
+    amount: string;
     txHash: string;
     createdAt?: Date;
     updatedAt?: Date;

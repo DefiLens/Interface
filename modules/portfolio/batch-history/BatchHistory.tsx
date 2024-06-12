@@ -371,7 +371,7 @@ const BatchHistory: React.FC<BatchHistoryProps> = ({
                                                             </div>
                                                         </td>
                                                         <td className="px-4 py-2">
-                                                            {Number(transaction.amountIn).toFixed(4)}
+                                                            {Number(transaction.amount).toFixed(4)}
                                                         </td>
                                                     </tr>
                                                 );

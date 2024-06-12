@@ -164,8 +164,8 @@ const Token: React.FC<PropTypes> = ({
                     </div>
                     {!fetchingBalance ? (
                         <div className="text-B200 text-sm">
-                            {parseFloat(tokenBalance) > 0 ? <span>{Number(tokenBalance).toFixed(5)}</span> : null}
-                            <span className="text-B200 ml-1">{token.name}</span>
+                            {parseFloat(tokenBalance) > 0 ? <span className="text-B200 mr-1">{Number(tokenBalance).toFixed(5)}</span> : null}
+                            <span className="text-B200">{token.name}</span>
                             {parseFloat(tokenBalance) > 0 && (
                                 <span className="bg-gray-200 text-gray-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded ml-2">
                                     deposited
